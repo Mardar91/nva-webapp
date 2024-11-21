@@ -102,7 +102,8 @@ const PartnersScreen = () => {
                 >
                   Call {item.phone}
                 </Button>
-                {item.website && (
+                {/* Controllo se item ha la proprietà website */}
+                {'website' in item && item.website && (
                   <Button
                     variant="link"
                     className="w-full mt-2"
@@ -111,7 +112,8 @@ const PartnersScreen = () => {
                     Visit Website
                   </Button>
                 )}
-                {item.whatsapp && (
+                {/* Controllo se item ha la proprietà whatsapp */}
+                {'whatsapp' in item && item.whatsapp && (
                   <Button
                     variant="link"
                     className="w-full mt-2"

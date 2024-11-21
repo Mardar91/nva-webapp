@@ -52,7 +52,7 @@
   },
   "scripts": {
     "react-build": "react-scripts build",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider next build"
+    "build": "react-scripts build"
 },
   "main": "/index.tsx"
 }

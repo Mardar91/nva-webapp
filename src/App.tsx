@@ -6,13 +6,13 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Home from "./Pages/Home";
-import Restaurants from "./Pages/Restaurants";
-import Explore from "./Pages/Explore";
-import BookNow from "./Pages/BookNow";
-import CheckIn from "./Pages/CheckIn";
-import Partners from "./Pages/Partners";
-import Layout from "./components/Layout";
+import Home from "../Pages/Home";
+import Restaurants from "../Pages/Restaurants";
+import Explore from "../Pages/Explore";
+import BookNow from "../Pages/BookNow";
+import CheckIn from "../Pages/CheckIn";
+import Partners from "../Pages/Partners";
+import Layout from "../components/Layout";
 
 interface ExternalRedirectProps {
   to: string;

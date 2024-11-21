@@ -26,7 +26,8 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
     return () => clearInterval(interval);
   }, [startWavingAnimation]);
 
-  const handleSwipe = (e) => {
+  // Aggiungi il tipo corretto per l'evento touch
+  const handleSwipe = (e: React.TouchEvent<HTMLDivElement>) => {
     const { clientX } = e.changedTouches[0];
     if (clientX < SWIPE_THRESHOLD) {
       setPanX(window.innerWidth);

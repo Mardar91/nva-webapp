@@ -1,2 +1,7 @@
-import React from "react"; // Aggiungi un'importazione se non c'è
-export {};  // Oppure aggiungi un export se non esiste
+import React from "react";
+
+const Explore: React.FC = () => {
+  return <div></div>; // Una pagina vuota
+};
+
+export default Explore;

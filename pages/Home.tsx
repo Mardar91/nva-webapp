@@ -5,12 +5,18 @@ import ServicesSection from "../components/ServicesSection";
 import FloatingChatButton from "../components/FloatingChatButton";
 
 const Home: React.FC = () => {
+  // Aggiungi una funzione di gestione per il bottone
+  const handleChatButtonPress = () => {
+    console.log("Chat button pressed!");
+  };
+
   return (
     <main className="flex flex-col gap-y-8">
       <HeroSection />
       <SpecialOffers />
       <ServicesSection />
-      <FloatingChatButton />
+      {/* Passa la funzione di gestione al FloatingChatButton */}
+      <FloatingChatButton onPress={handleChatButtonPress} />
     </main>
   );
 };

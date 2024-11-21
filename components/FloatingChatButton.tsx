@@ -6,7 +6,12 @@ import "./FloatingChatButton.css"; // Assicurati che il file CSS sia presente
 const BUTTON_SIZE = 60;
 const SWIPE_THRESHOLD = 50;
 
-const FloatingChatButton = ({ onPress }) => {
+// Definiamo l'interfaccia per i props
+interface FloatingChatButtonProps {
+  onPress: () => void;  // Tipo di onPress come funzione che non restituisce nulla
+}
+
+const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   const [panX, setPanX] = useState(0);
   const [scale, setScale] = useState(1);
   const [opacity, setOpacity] = useState(1);

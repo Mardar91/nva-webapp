@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../components/ui/button"; // Assicurati che il percorso sia corretto
-import { cn } from "../../lib/utils"; // Importa la funzione `cn` per la gestione delle classi
+import { cn } from "../lib/utils"; // Importa la funzione `cn` per la gestione delle classi
 
 const VipTicketHero = () => {
   const handleVipTicket = () => {

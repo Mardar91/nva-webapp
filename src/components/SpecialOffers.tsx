@@ -17,11 +17,11 @@ const SpecialOffers = () => {
         <div className="cardHeader">
           <h3 className="cardTitle">GIFT CARD</h3>
           <div className="discountBadge glowing">
-            <span className="discountText">10% OFF</span>
+            <span className="discountText">+10% FREE</span>
           </div>
         </div>
         <p className="cardText">
-          Get a special 10% discount on gift card purchases for future stays and
+          Get an extra 10% bonus on gift card purchases for future stays and
           services
         </p>
       </div>

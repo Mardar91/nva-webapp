@@ -32,15 +32,15 @@ if (typeof window !== 'undefined') {
     installBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg flex justify-between items-center z-50';
     
     installBanner.innerHTML = `
-      <div>
-        <div class="text-[#1e3a8a] font-bold text-xl mb-2">
+      <div class="flex-1">
+        <div class="text-[#1e3a8a] font-bold text-xl whitespace-nowrap">
           Install Nonna Vittoria Apartments
         </div>
         <div class="text-gray-600">
           Get faster access to bookings and special offers
         </div>
       </div>
-      <div class="flex gap-3">
+      <div class="flex gap-3 ml-4">
         <button id="skip-install" class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
           Not now
         </button>
@@ -85,7 +85,7 @@ if (typeof window !== 'undefined') {
       
       iosBanner.innerHTML = `
         <div class="flex flex-col items-center">
-          <div class="text-[#1e3a8a] font-bold text-xl mb-4">
+          <div class="text-[#1e3a8a] font-bold text-xl mb-4 text-center">
             Install Nonna Vittoria Apartments
           </div>
           <div class="flex items-center gap-2 mb-3">
@@ -118,7 +118,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Service Worker registration and update handling (rest of the code remains the same)
+// Service Worker registration and update handling
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
   serviceWorkerRegistration.register();
 

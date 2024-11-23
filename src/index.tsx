@@ -4,7 +4,7 @@ import "./styles.css";
 import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
-// Funzioni di utilità per il rilevamento della piattaforma
+// Utility functions for platform detection
 const isIOS = () => {
   if (typeof window !== 'undefined') {
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -18,26 +18,33 @@ const isInStandaloneMode = () =>
   ('standalone' in window.navigator) && 
   (window.navigator['standalone'] as boolean);
 
-// Gestione installazione PWA
+// PWA installation handling
 if (typeof window !== 'undefined') {
   let deferredPrompt: any;
 
-  // Banner per Android/Chrome
+  // Android/Chrome banner
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     
     const installBanner = document.createElement('div');
     installBanner.id = 'install-banner';
-    installBanner.className = 'fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg flex justify-between items-center z-50';
+    installBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg flex justify-between items-center z-50';
     
     installBanner.innerHTML = `
-      <div>Install the Nonna Vittoria Apartments app for faster access</div>
-      <div class="flex gap-2">
-        <button id="skip-install" class="bg-gray-200 text-black px-4 py-2 rounded">
+      <div>
+        <div class="text-[#1e3a8a] font-bold text-xl mb-2">
+          Install Nonna Vittoria Apartments
+        </div>
+        <div class="text-gray-600">
+          Get faster access to bookings and special offers
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button id="skip-install" class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
           Not now
         </button>
-        <button id="install-button" class="bg-black text-white px-4 py-2 rounded">
+        <button id="install-button" class="px-6 py-2.5 rounded-lg bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 transition-colors">
           Install
         </button>
       </div>
@@ -59,7 +66,7 @@ if (typeof window !== 'undefined') {
         if (deferredPrompt) {
           deferredPrompt.prompt();
           const { outcome } = await deferredPrompt.userChoice;
-          console.log(`Risposta utente al prompt di installazione: ${outcome}`);
+          console.log(`User response to install prompt: ${outcome}`);
           deferredPrompt = null;
           if (outcome === 'accepted') {
             installBanner.remove();
@@ -69,27 +76,27 @@ if (typeof window !== 'undefined') {
     }
   });
 
-  // Banner per iOS/Safari
+  // iOS/Safari banner
   window.addEventListener('load', () => {
     if (isIOS() && !isInStandaloneMode()) {
       const iosBanner = document.createElement('div');
       iosBanner.id = 'ios-install-banner';
-      iosBanner.className = 'fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg z-50';
+      iosBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg z-50';
       
       iosBanner.innerHTML = `
-        <div class="flex flex-col items-center space-y-2">
-          <div class="text-center font-bold">
-            Install the Nonna Vittoria Apartments app
+        <div class="flex flex-col items-center">
+          <div class="text-[#1e3a8a] font-bold text-xl mb-4">
+            Install Nonna Vittoria Apartments
           </div>
-          <div class="flex items-center space-x-2">
-            <div>1. Tap the Share button</div>
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="text-gray-600">1. Tap the Share button</div>
+            <svg class="w-6 h-6 text-[#1e3a8a]" viewBox="0 0 24 24" fill="none">
               <path d="M12 2L12 15M12 2L8 5.5M12 2L16 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M8 10H5C3.89543 10 3 10.8954 3 12V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V12C21 10.8954 20.1046 10 19 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <div>2. Choose "Add to Home screen"</div>
-          <button id="close-ios-banner" class="mt-2 px-4 py-2 bg-gray-200 rounded">
+          <div class="text-gray-600 mb-4">2. Choose "Add to Home screen"</div>
+          <button id="close-ios-banner" class="px-6 py-2.5 rounded-lg bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 transition-colors">
             Close
           </button>
         </div>
@@ -101,7 +108,7 @@ if (typeof window !== 'undefined') {
       if (closeButton) {
         closeButton.addEventListener('click', () => {
           iosBanner.remove();
-          // Rimostra il banner dopo 24 ore
+          // Show banner again after 24 hours
           setTimeout(() => {
             window.dispatchEvent(new Event('load'));
           }, 24 * 60 * 60 * 1000);
@@ -111,12 +118,10 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Registrazione del Service Worker e gestione degli aggiornamenti
+// Service Worker registration and update handling (rest of the code remains the same)
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-  // Registra il service worker
   serviceWorkerRegistration.register();
 
-  // Gestisci gli aggiornamenti quando l'app torna online
   window.addEventListener('online', () => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
@@ -125,7 +130,6 @@ if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
     }
   });
 
-  // Gestisci gli aggiornamenti quando l'app torna in primo piano
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
@@ -135,7 +139,7 @@ if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
   });
 }
 
-// Rendering dell'app
+// App rendering
 const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = createRoot(rootElement);
@@ -145,5 +149,5 @@ if (rootElement) {
     </StrictMode>
   );
 } else {
-  console.error("Elemento con id 'root' non trovato nel DOM");
+  console.error("Root element not found in DOM");
 }

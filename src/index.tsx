@@ -2,6 +2,7 @@ import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import App from "./App";
+import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
 // Funzioni di utilità per il rilevamento della piattaforma
 const isIOS = () => {
@@ -16,19 +17,6 @@ const isInStandaloneMode = () =>
   typeof window !== 'undefined' && 
   ('standalone' in window.navigator) && 
   (window.navigator['standalone'] as boolean);
-
-// Registrazione del Service Worker
-if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.location.hostname !== 'localhost') {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/serviceWorker.js')
-      .then(registration => {
-        console.log('ServiceWorker registrato con successo:', registration);
-      })
-      .catch(err => {
-        console.error('Errore registrazione ServiceWorker:', err);
-      });
-  });
-}
 
 // Gestione installazione PWA
 if (typeof window !== 'undefined') {
@@ -45,14 +33,27 @@ if (typeof window !== 'undefined') {
     
     installBanner.innerHTML = `
       <div>Installa l'app di Nonna Vittoria Apartments per un accesso più veloce</div>
-      <button id="install-button" class="bg-black text-white px-4 py-2 rounded">
-        Installa
-      </button>
+      <div class="flex gap-2">
+        <button id="skip-install" class="bg-gray-200 text-black px-4 py-2 rounded">
+          Non ora
+        </button>
+        <button id="install-button" class="bg-black text-white px-4 py-2 rounded">
+          Installa
+        </button>
+      </div>
     `;
     
     document.body.appendChild(installBanner);
     
     const installButton = document.getElementById('install-button');
+    const skipButton = document.getElementById('skip-install');
+
+    if (skipButton) {
+      skipButton.addEventListener('click', () => {
+        installBanner.remove();
+      });
+    }
+    
     if (installButton) {
       installButton.addEventListener('click', async () => {
         if (deferredPrompt) {
@@ -60,7 +61,9 @@ if (typeof window !== 'undefined') {
           const { outcome } = await deferredPrompt.userChoice;
           console.log(`Risposta utente al prompt di installazione: ${outcome}`);
           deferredPrompt = null;
-          installBanner.remove();
+          if (outcome === 'accepted') {
+            installBanner.remove();
+          }
         }
       });
     }
@@ -85,8 +88,8 @@ if (typeof window !== 'undefined') {
             </svg>
           </div>
           <div>2. Scegli "Aggiungi alla schermata Home"</div>
-          <button id="close-ios-banner" class="mt-2 px-4 py-2 bg-black text-white rounded">
-            Ho capito
+          <button id="close-ios-banner" class="mt-2 px-4 py-2 bg-gray-200 rounded">
+            Chiudi
           </button>
         </div>
       `;
@@ -97,10 +100,36 @@ if (typeof window !== 'undefined') {
       if (closeButton) {
         closeButton.addEventListener('click', () => {
           iosBanner.remove();
-          // Salva un flag nel localStorage per non mostrare più il banner
-          localStorage.setItem('iosBannerClosed', 'true');
+          // Rimostra il banner dopo 24 ore
+          setTimeout(() => {
+            window.dispatchEvent(new Event('load'));
+          }, 24 * 60 * 60 * 1000);
         });
       }
+    }
+  });
+}
+
+// Registrazione del Service Worker e gestione degli aggiornamenti
+if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+  // Registra il service worker
+  serviceWorkerRegistration.register();
+
+  // Gestisci gli aggiornamenti quando l'app torna online
+  window.addEventListener('online', () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.update();
+      });
+    }
+  });
+
+  // Gestisci gli aggiornamenti quando l'app torna in primo piano
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.update();
+      });
     }
   });
 }

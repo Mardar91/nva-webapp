@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./styles.css";
 import {
   BrowserRouter as Router,
@@ -6,6 +6,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 import Home from "./pages/Home";
 import Restaurants from "./pages/Restaurants";
 import Explore from "./pages/Explore";
@@ -33,6 +34,38 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
 };
 
 const App: React.FC = () => {
+  useEffect(() => {
+    // Registra il service worker
+    serviceWorkerRegistration.register();
+
+    // Gestione aggiornamenti quando l'app torna online
+    const handleOnline = () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.update();
+        });
+      }
+    };
+
+    // Gestione aggiornamenti quando l'app torna in primo piano
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.update();
+        });
+      }
+    };
+
+    window.addEventListener('online', handleOnline);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup degli event listener quando il componente viene smontato
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   return (
     <Router>
       <Layout>

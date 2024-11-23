@@ -29,22 +29,22 @@ if (typeof window !== 'undefined') {
     
     const installBanner = document.createElement('div');
     installBanner.id = 'install-banner';
-    installBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg flex justify-between items-center z-50';
+    installBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg flex flex-col z-50';
     
     installBanner.innerHTML = `
-      <div class="flex-1">
-        <div class="text-[#1e3a8a] font-bold text-xl whitespace-nowrap">
+      <div class="flex flex-col w-full">
+        <div class="text-[#1e3a8a] font-bold text-xl mb-2">
           Install Nonna Vittoria Apartments
         </div>
-        <div class="text-gray-600">
+        <div class="text-gray-600 mb-4">
           Get faster access to bookings and special offers
         </div>
       </div>
-      <div class="flex gap-3 ml-4">
-        <button id="skip-install" class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+      <div class="flex gap-3 w-full">
+        <button id="skip-install" class="flex-1 px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
           Not now
         </button>
-        <button id="install-button" class="px-6 py-2.5 rounded-lg bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 transition-colors">
+        <button id="install-button" class="flex-1 px-6 py-2.5 rounded-lg bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 transition-colors">
           Install
         </button>
       </div>

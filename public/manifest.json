@@ -34,27 +34,11 @@
       "purpose": "any"
     }
   ],
-  "start_url": "/?source=pwa",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#000000",
-  "prefer_related_applications": false,
-  "categories": ["travel", "lifestyle"],
-  "shortcuts": [
-    {
-      "name": "Book Now",
-      "url": "/book",
-      "icons": [
-        {
-          "src": "icons/icon-192x192.png",
-          "sizes": "192x192"
-        }
-      ]
-    }
-  ],
-  "related_applications": [],
-  "handle_links": "preferred"
+  "prefer_related_applications": false
 }

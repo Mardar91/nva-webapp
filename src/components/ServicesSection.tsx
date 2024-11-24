@@ -157,37 +157,48 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delivery Modal */}
-      <Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delivery Service</DialogTitle>
-            <DialogDescription>
-              Order your food online and have it delivered directly to your apartment every day except Wednesday.
-              <br /><br />
-              MONDAY - SATURDAY: 10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM
-              <br />
-              SUNDAY: 9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex flex-col gap-2 sm:flex-row">
-            <Button
-              onClick={() => {
-                window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
-              }}
-            >
-              View Menu
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = "tel:+390804741063";
-              }}
-            >
-              Call Now
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+    {/* Delivery Modal */}
+<Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Delivery Service</DialogTitle>
+      <DialogDescription>
+        Order your food online and have it delivered directly to your apartment every day except Wednesday.
+        <br /><br />
+        MONDAY - SATURDAY: 10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM
+        <br />
+        SUNDAY: 9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+      <Button
+        onClick={() => {
+          window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
+        }}
+      >
+        View Menu
+      </Button>
+      <Button
+        onClick={() => {
+          window.location.href = "tel:+390804741063";
+        }}
+      >
+        Call Now
+      </Button>
+      <p className="text-sm text-gray-600 text-center mt-4">
+        or order online with the code: <strong>NONNAVITTORIA</strong> and get 5% OFF
+      </p>
+      <Button
+        onClick={() => {
+          window.open("https://2ly.link/1yEMK", "_blank");
+        }}
+        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white"
+      >
+        Download the App
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
       {/* Rent Car Modal */}
       <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>

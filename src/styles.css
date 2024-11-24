@@ -379,6 +379,40 @@ body {
   text-align: center;
 }
 
+/* Aggiungi questi stili al tuo file CSS */
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.subTitleContainer {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: #ecfdf5;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.receptionText {
+  font-size: 16px;
+  font-weight: 600;
+  color: #059669;
+  text-align: center;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
 /* Aggiungi questo al tuo file CSS esistente */
 
 @keyframes glowing {

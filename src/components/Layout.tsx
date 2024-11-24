@@ -15,54 +15,46 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <div className="fixed inset-0 flex flex-col">
       <div className="flex-grow overflow-auto">{children}</div>
       <div 
-        className="bg-gray-100 z-50"
-        style={{
-          paddingTop: "0.25rem", // Ridotto da 1rem a 0.5rem
-          paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))", // Ridotto da 1rem a 0.5rem
-        }}
+        className="bg-gray-100 z-50 relative" // Aggiunto relative per il posizionamento
       >
-        <div className="flex justify-center space-x-4">
+        <div 
+          className="flex justify-center space-x-4 absolute inset-x-0"
+          style={{
+            top: "0.5rem", // Sposta il contenuto più in basso rispetto al top della navbar
+            paddingBottom: "env(safe-area-inset-bottom)"
+          }}
+        >
           <Link to="/">
-            <Button 
-              variant="ghost" 
-              className="h-auto py-1" // Aggiunto per ridurre l'altezza del bottone
-            >
+            <Button variant="ghost">
               <div
                 className={`flex flex-col items-center ${getButtonClass("/")}`}
               >
-                <Home className="w-5 h-5 mb-0.5" // Ridotto da w-6 h-6 mb-1
-                />
-                <span className="text-sm">Home</span> {/* Ridotto il testo */}
+                <Home className="w-6 h-6 mb-1" />
+                Home
               </div>
             </Button>
           </Link>
           <Link to="/restaurants">
-            <Button 
-              variant="ghost"
-              className="h-auto py-1"
-            >
+            <Button variant="ghost">
               <div
                 className={`flex flex-col items-center ${getButtonClass(
                   "/restaurants"
                 )}`}
               >
-                <Pizza className="w-5 h-5 mb-0.5" />
-                <span className="text-sm">Restaurants</span>
+                <Pizza className="w-6 h-6 mb-1" />
+                Restaurants
               </div>
             </Button>
           </Link>
           <Link to="/partners">
-            <Button 
-              variant="ghost"
-              className="h-auto py-1"
-            >
+            <Button variant="ghost">
               <div
                 className={`flex flex-col items-center ${getButtonClass(
                   "/partners"
                 )}`}
               >
-                <Handshake className="w-5 h-5 mb-0.5" />
-                <span className="text-sm">Partners</span>
+                <Handshake className="w-6 h-6 mb-1" />
+                Partners
               </div>
             </Button>
           </Link>

@@ -45,8 +45,8 @@
   "categories": ["travel", "lifestyle"],
   "shortcuts": [
     {
-      "name": "Prenota Ora",
-      "url": "/booking",
+      "name": "Book Now",
+      "url": "/book",
       "icons": [
         {
           "src": "icons/icon-192x192.png",

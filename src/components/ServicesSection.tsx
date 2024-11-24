@@ -163,11 +163,11 @@ const ServicesSection = () => {
           <DialogHeader>
             <DialogTitle>Delivery Service</DialogTitle>
             <DialogDescription>
-              Order directly with our takeaway service available every day except Wednesday.
+              Order your food online and have it delivered directly to your apartment every day except Wednesday.
               <br /><br />
-              MONDAY – SATURDAY: 10:00 ~ 14:30 & 18:30 ~ 00:00
+              MONDAY - SATURDAY: 10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM
               <br />
-              SUNDAY: 09:00 ~ 15:00 & 19:00 ~ 00:00
+              SUNDAY: 9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-col gap-2 sm:flex-row">
@@ -226,7 +226,7 @@ const ServicesSection = () => {
           <DialogHeader>
             <DialogTitle>Parking Information</DialogTitle>
             <DialogDescription>
-              We don't have a private parking, but here are some nearby streets where you can park:
+              Nonna Vittoria Apartments does not currently provide private parking. However, there are several secure, free parking options on the surrounding streets:
               <div className="mt-4 flex flex-col space-y-2">
                 {parkingStreets.map((street) => (
                   <Button

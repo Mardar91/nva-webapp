@@ -18,9 +18,57 @@ const isInStandaloneMode = () =>
   ('standalone' in window.navigator) && 
   (window.navigator['standalone'] as boolean);
 
+const isInstalled = () => {
+  if (typeof window !== 'undefined') {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           isInStandaloneMode() ||
+           localStorage.getItem('pwa-installed') === 'true';
+  }
+  return false;
+};
+
+// Handle deep linking
+const handleDeepLink = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('source') && urlParams.get('source') === 'pwa') {
+      // Already in PWA context
+      return;
+    }
+
+    if (isInstalled()) {
+      const pwaUrl = new URL(window.location.href);
+      pwaUrl.searchParams.set('source', 'pwa');
+      
+      // For iOS
+      if (isIOS()) {
+        window.location.href = pwaUrl.toString();
+        
+        // Fallback if redirect doesn't work
+        setTimeout(() => {
+          if (!document.hidden) {
+            console.log('Could not open installed app');
+          }
+        }, 1000);
+      } 
+      // For Android
+      else {
+        try {
+          window.location.replace(pwaUrl.toString());
+        } catch (err) {
+          console.error('Error redirecting to PWA:', err);
+        }
+      }
+    }
+  }
+};
+
 // PWA installation handling
 if (typeof window !== 'undefined') {
   let deferredPrompt: any;
+
+  // Handle deep linking on load
+  window.addEventListener('load', handleDeepLink);
 
   // Android/Chrome banner
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -69,6 +117,7 @@ if (typeof window !== 'undefined') {
           console.log(`User response to install prompt: ${outcome}`);
           deferredPrompt = null;
           if (outcome === 'accepted') {
+            localStorage.setItem('pwa-installed', 'true');
             installBanner.remove();
           }
         }
@@ -115,6 +164,12 @@ if (typeof window !== 'undefined') {
         });
       }
     }
+  });
+
+  // Track installation status
+  window.addEventListener('appinstalled', (evt) => {
+    localStorage.setItem('pwa-installed', 'true');
+    console.log('PWA installed successfully');
   });
 }
 

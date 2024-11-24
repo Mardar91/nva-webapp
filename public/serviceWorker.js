@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'nva-cache-v2'; // Incrementa questa versione ad ogni deploy importante
+const CACHE_VERSION = 'nva-cache-v2';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const urlsToCache = [
   '/',
@@ -8,7 +8,6 @@ const urlsToCache = [
   '/icons/icon-512x512.png'
 ];
 
-// Installazione
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -16,11 +15,9 @@ self.addEventListener('install', (event) => {
       return cache.addAll(urlsToCache);
     })
   );
-  // Forza l'attivazione immediata
   self.skipWaiting();
 });
 
-// Attivazione e pulizia delle vecchie cache
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -34,19 +31,29 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-  // Prende il controllo di tutte le schede
   return self.clients.claim();
 });
 
-// Gestione delle richieste
 self.addEventListener('fetch', (event) => {
+  // Aggiungiamo headers specifici per iOS
+  const headers = new Headers({
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache'
+  });
+
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // Se abbiamo una risposta dalla cache, usiamola
+      // Per le navigazioni, prova sempre prima una richiesta di rete
+      if (event.request.mode === 'navigate') {
+        return fetch(event.request, { headers })
+          .catch(() => response || caches.match('/'));
+      }
+
+      // Per altre risorse, usa la cache prima
       if (response) {
-        // Ma facciamo comunque una richiesta di rete in background
+        // Aggiorna la cache in background
         fetch(event.request).then(networkResponse => {
-          if (networkResponse) {
+          if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then(cache => {
               cache.put(event.request, networkResponse.clone());
             });
@@ -55,23 +62,21 @@ self.addEventListener('fetch', (event) => {
         return response;
       }
 
-      // Altrimenti facciamo una richiesta di rete
+      // Se non è in cache, fai una richiesta di rete
       return fetch(event.request)
-        .then(response => {
-          // Non cachare se non è una risposta valida
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
+        .then(networkResponse => {
+          if (!networkResponse || networkResponse.status !== 200) {
+            return networkResponse;
           }
-
-          const responseToCache = response.clone();
+          
+          const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, responseToCache);
           });
-
-          return response;
+          
+          return networkResponse;
         })
         .catch(() => {
-          // Se la richiesta di rete fallisce, ritorniamo una pagina di fallback
           if (event.request.mode === 'navigate') {
             return caches.match('/');
           }

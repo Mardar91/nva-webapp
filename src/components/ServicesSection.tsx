@@ -81,16 +81,14 @@ const ServicesSection = () => {
 
   const openInMaps = (address: string) => {
     const encodedAddress = encodeURIComponent(address);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");
   };
 
   return (
     <div className="bg-white mt-5 pt-4 pb-8">
       <div className="spacer"></div>
       <div className="container mx-auto px-4">
-        <h2 className="text-lg font-bold text-blue-900 mb-6 ml-4">
-          Our Services
-        </h2>
+        <h2 className="text-lg font-bold text-blue-900 mb-6 ml-4">Our Services</h2>
         <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg">
           {services.map((service) => (
             <Button
@@ -100,23 +98,86 @@ const ServicesSection = () => {
               className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
             >
               <span className="text-2xl mb-1">{service.icon}</span>
-              <span className="text-blue-900 font-medium text-xs">
-                {service.name}
-              </span>
+              <span className="text-blue-900 font-medium text-xs">{service.name}</span>
             </Button>
           ))}
         </div>
       </div>
 
-      {/* Original Wine Modal */}
+      {/* Delivery Modal */}
+      <Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delivery Service</DialogTitle>
+            <DialogDescription>
+              Order your food online and have it delivered directly to your apartment every day except Wednesday.
+              <br /><br />
+              MONDAY - SATURDAY: <br />
+              10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM
+              <br /><br />
+              SUNDAY: <br />
+              9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              onClick={() => {
+                window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              View Menu
+            </Button>
+            <Button
+              onClick={() => {
+                window.location.href = "tel:+390804741063";
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Call Now
+            </Button>
+            <p className="text-sm text-gray-600 text-center mt-4">
+              or order online with the code: <strong>NONNAVITTORIA</strong> and get 5% OFF
+            </p>
+            <Button
+              onClick={() => {
+                window.open("https://2ly.link/1yEMK", "_blank");
+              }}
+              className="mt-2 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Download the App
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rent Car Modal */}
+      <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rent a Car</DialogTitle>
+            <DialogDescription>
+              Rent a car at special prices with our affiliated service. They will deliver the car directly to your location.
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => {
+              window.location.href = "tel:+393493425023";
+            }}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Call Now
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Wine Modal */}
       <Dialog open={openWineModal} onOpenChange={setOpenWineModal}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Room Service</DialogTitle>
             <DialogDescription>
-              Request a bottle of wine or prosecco to be available upon arrival
-              at a special price (subject to availability). To place an order,
-              contact us on WhatsApp.
+              Request a bottle of wine or prosecco to be available upon arrival at a special price (subject to availability). To place an order, contact us on WhatsApp.
             </DialogDescription>
           </DialogHeader>
           <Button
@@ -132,14 +193,12 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Original Clean Modal */}
+      {/* Clean Modal */}
       <Dialog open={openCleanModal} onOpenChange={setOpenCleanModal}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Cleaning Service</DialogTitle>
-            <DialogDescription>
-              Request a cleaning service during your stay for €20.
-            </DialogDescription>
+            <DialogDescription>Request a cleaning service during your stay for €20.</DialogDescription>
           </DialogHeader>
           <Button
             onClick={() => {
@@ -157,76 +216,12 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-    {/* Delivery Modal */}
-<Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Delivery Service</DialogTitle>
-      <DialogDescription>
-        Order your food online and have it delivered directly to your apartment every day except Wednesday.
-        <br /><br />
-        MONDAY - SATURDAY: 10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM
-        <br />
-        SUNDAY: 9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM
-      </DialogDescription>
-    </DialogHeader>
-    <DialogFooter className="flex flex-col gap-2 sm:flex-row">
-      <Button
-        onClick={() => {
-          window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
-        }}
-      >
-        View Menu
-      </Button>
-      <Button
-        onClick={() => {
-          window.location.href = "tel:+390804741063";
-        }}
-      >
-        Call Now
-      </Button>
-      <p className="text-sm text-gray-600 text-center mt-4">
-        or order online with the code: <strong>NONNAVITTORIA</strong> and get 5% OFF
-      </p>
-      <Button
-        onClick={() => {
-          window.open("https://2ly.link/1yEMK", "_blank");
-        }}
-        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white"
-      >
-        Download the App
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
-
-      {/* Rent Car Modal */}
-      <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rent a Car</DialogTitle>
-            <DialogDescription>
-              Rent a car at special prices with our affiliated service. They will deliver the car directly to your location.
-            </DialogDescription>
-          </DialogHeader>
-          <Button
-            onClick={() => {
-              window.location.href = "tel:+393493425023";
-            }}
-          >
-            Call Now
-          </Button>
-        </DialogContent>
-      </Dialog>
-
       {/* Excursions Modal */}
       <Dialog open={openExcursionsModal} onOpenChange={setOpenExcursionsModal}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Excursions</DialogTitle>
-            <DialogDescription>
-              Coming soon
-            </DialogDescription>
+            <DialogDescription>Coming soon</DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>

@@ -6,11 +6,16 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "./ui/dialog";
 
 const ServicesSection = () => {
   const [openWineModal, setOpenWineModal] = useState(false);
   const [openCleanModal, setOpenCleanModal] = useState(false);
+  const [openDeliveryModal, setOpenDeliveryModal] = useState(false);
+  const [openRentCarModal, setOpenRentCarModal] = useState(false);
+  const [openExcursionsModal, setOpenExcursionsModal] = useState(false);
+  const [openParkingModal, setOpenParkingModal] = useState(false);
 
   const services = [
     {
@@ -33,11 +38,55 @@ const ServicesSection = () => {
       icon: "🛍️",
       onClick: () => (window.location.href = "/shop"),
     },
+    {
+      name: "Delivery",
+      icon: "🍔",
+      onClick: () => setOpenDeliveryModal(true),
+    },
+    {
+      name: "Rent Car",
+      icon: "🚗",
+      onClick: () => setOpenRentCarModal(true),
+    },
+    {
+      name: "Excursions",
+      icon: "⛵️",
+      onClick: () => setOpenExcursionsModal(true),
+    },
+    {
+      name: "Parking",
+      icon: "🅿️",
+      onClick: () => setOpenParkingModal(true),
+    },
   ];
+
+  const parkingStreets = [
+    {
+      name: "Corso Regina Margherita",
+      address: "Corso Regina Margherita, 70042 Mola di Bari",
+    },
+    {
+      name: "Via Enrico Toti",
+      address: "Via Enrico Toti, 70042 Mola di Bari",
+    },
+    {
+      name: "Via De Gasperi",
+      address: "Via De Gasperi, 70042 Mola di Bari",
+    },
+    {
+      name: "Via Gramsci",
+      address: "Via Gramsci, 70042 Mola di Bari",
+    },
+  ];
+
+  const openInMaps = (address: string) => {
+    const encodedAddress = encodeURIComponent(address);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+  };
 
   return (
     <div className="bg-white mt-5 pt-4 pb-8">
-      <div className="spacer"></div> {/* Aggiungi questo elemento */}
+      <div className="spacer"></div>
       <div className="container mx-auto px-4">
         <h2 className="text-lg font-bold text-blue-900 mb-6 ml-4">
           Our Services
@@ -58,6 +107,8 @@ const ServicesSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Original Wine Modal */}
       <Dialog open={openWineModal} onOpenChange={setOpenWineModal}>
         <DialogContent>
           <DialogHeader>
@@ -80,6 +131,8 @@ const ServicesSection = () => {
           </Button>
         </DialogContent>
       </Dialog>
+
+      {/* Original Clean Modal */}
       <Dialog open={openCleanModal} onOpenChange={setOpenCleanModal}>
         <DialogContent>
           <DialogHeader>
@@ -101,6 +154,93 @@ const ServicesSection = () => {
           >
             Request on WhatsApp
           </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delivery Modal */}
+      <Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delivery Service</DialogTitle>
+            <DialogDescription>
+              Order directly with our takeaway service available every day except Wednesday.
+              <br /><br />
+              MONDAY – SATURDAY: 10:00 ~ 14:30 & 18:30 ~ 00:00
+              <br />
+              SUNDAY: 09:00 ~ 15:00 & 19:00 ~ 00:00
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              onClick={() => {
+                window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
+              }}
+            >
+              View Menu
+            </Button>
+            <Button
+              onClick={() => {
+                window.location.href = "tel:+390804741063";
+              }}
+            >
+              Call Now
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rent Car Modal */}
+      <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rent a Car</DialogTitle>
+            <DialogDescription>
+              Rent a car at special prices with our affiliated service. They will deliver the car directly to your location.
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => {
+              window.location.href = "tel:+393493425023";
+            }}
+          >
+            Call Now
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Excursions Modal */}
+      <Dialog open={openExcursionsModal} onOpenChange={setOpenExcursionsModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excursions</DialogTitle>
+            <DialogDescription>
+              Coming soon
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Parking Modal */}
+      <Dialog open={openParkingModal} onOpenChange={setOpenParkingModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Parking Information</DialogTitle>
+            <DialogDescription>
+              We don't have a private parking, but here are some nearby streets where you can park:
+              <div className="mt-4 flex flex-col space-y-2">
+                {parkingStreets.map((street) => (
+                  <Button
+                    key={street.name}
+                    variant="outline"
+                    onClick={() => openInMaps(street.address)}
+                    className="justify-start text-left"
+                  >
+                    {street.name}
+                  </Button>
+                ))}
+              </div>
+            </DialogDescription>
+          </DialogHeader>
         </DialogContent>
       </Dialog>
     </div>

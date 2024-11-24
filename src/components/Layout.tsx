@@ -17,7 +17,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div 
         className="bg-gray-100 z-50"
         style={{
-          paddingTop: "0.5rem", // Ridotto da 1rem a 0.5rem
+          paddingTop: "0.25rem", // Ridotto da 1rem a 0.5rem
           paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))", // Ridotto da 1rem a 0.5rem
         }}
       >

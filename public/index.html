@@ -2,16 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Nonna Vittoria Apartments</title>
     
     <!-- Meta tag per PWA -->
     <meta name="description" content="Nonna Vittoria Apartments - Il tuo soggiorno in Puglia" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#ffffff" />
     
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
     
     <!-- Manifest e icone -->
@@ -30,7 +30,6 @@
     
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <!-- Script per gestire il redirect -->
     <script>
       // Controlla se l'app è in modalità standalone
@@ -55,7 +54,6 @@
           }
         }
       }
-
       // Ascolta l'evento di installazione completata
       window.addEventListener('appinstalled', (evt) => {
         localStorage.setItem('pwa-installed', 'true');

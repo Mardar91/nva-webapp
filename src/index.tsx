@@ -1,4 +1,4 @@
-import React, { StrictMode } from "react";
+import React, { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import App from "./App";
@@ -15,49 +15,26 @@ const isIOS = () => {
 
 const isInStandaloneMode = () => 
   typeof window !== 'undefined' && 
-  ('standalone' in window.navigator) && 
-  (window.navigator['standalone'] as boolean);
+  (window.matchMedia('(display-mode: standalone)').matches || 
+   ('standalone' in window.navigator && (window.navigator as any).standalone));
 
-const isInstalled = () => {
-  if (typeof window !== 'undefined') {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           isInStandaloneMode() ||
-           localStorage.getItem('pwa-installed') === 'true';
-  }
-  return false;
+const isPWAInstalled = () => {
+  return localStorage.getItem('pwa-installed') === 'true' || isInStandaloneMode();
 };
 
-// Handle deep linking
-const handleDeepLink = () => {
+// Redirect function
+const attemptPWARedirect = () => {
   if (typeof window !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('source') && urlParams.get('source') === 'pwa') {
-      // Already in PWA context
-      return;
-    }
-
-    if (isInstalled()) {
-      const pwaUrl = new URL(window.location.href);
-      pwaUrl.searchParams.set('source', 'pwa');
-      
-      // For iOS
-      if (isIOS()) {
-        window.location.href = pwaUrl.toString();
+    // Se non siamo già in modalità standalone
+    if (!isInStandaloneMode()) {
+      // Se l'app è installata
+      if (isPWAInstalled()) {
+        // Costruisci l'URL con un timestamp per forzare il refresh
+        const pwaUrl = new URL(window.location.href);
+        pwaUrl.searchParams.set('pwa', Date.now().toString());
         
-        // Fallback if redirect doesn't work
-        setTimeout(() => {
-          if (!document.hidden) {
-            console.log('Could not open installed app');
-          }
-        }, 1000);
-      } 
-      // For Android
-      else {
-        try {
-          window.location.replace(pwaUrl.toString());
-        } catch (err) {
-          console.error('Error redirecting to PWA:', err);
-        }
+        // Prova a reindirizzare
+        window.location.replace(pwaUrl.toString());
       }
     }
   }
@@ -67,8 +44,8 @@ const handleDeepLink = () => {
 if (typeof window !== 'undefined') {
   let deferredPrompt: any;
 
-  // Handle deep linking on load
-  window.addEventListener('load', handleDeepLink);
+  // Prova il redirect quando la pagina viene caricata
+  window.addEventListener('load', attemptPWARedirect);
 
   // Android/Chrome banner
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -170,6 +147,16 @@ if (typeof window !== 'undefined') {
   window.addEventListener('appinstalled', (evt) => {
     localStorage.setItem('pwa-installed', 'true');
     console.log('PWA installed successfully');
+    
+    // Prova a reindirizzare dopo l'installazione
+    attemptPWARedirect();
+  });
+
+  // Ascolta i cambiamenti nella modalità di visualizzazione
+  window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
+    if (evt.matches) {
+      localStorage.setItem('pwa-installed', 'true');
+    }
   });
 }
 

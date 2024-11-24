@@ -26,8 +26,8 @@ const HeroSection = () => {
   return (
     <div className="heroContainer">
       <div className="titleContainer">
-        <h1 className="welcomeText">Nonna Vittoria Apartments</h1>
-        <div className="subTitleContainer">
+        <h1 className="welcomeText mb-1">Nonna Vittoria Apartments</h1>
+        <div className="subTitleContainer -mt-2">
           <span className="receptionText">Online Reception 24h</span>
         </div>
       </div>

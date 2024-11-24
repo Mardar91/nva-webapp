@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Home, Map, Pizza, Handshake } from "lucide-react"; // Aggiunto Handshake
+import { Home, Map, Pizza, Handshake } from "lucide-react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -14,7 +14,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="fixed inset-0 flex flex-col">
       <div className="flex-grow overflow-auto">{children}</div>
-      <div className="bg-gray-100 py-4 z-50">
+      <div 
+        className="bg-gray-100 z-50"
+        style={{
+          paddingTop: "1rem",
+          paddingBottom: "calc(1rem + env(safe-area-inset-bottom))",
+        }}
+      >
         <div className="flex justify-center space-x-4">
           <Link to="/">
             <Button variant="ghost">
@@ -45,8 +51,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   "/partners"
                 )}`}
               >
-                <Handshake className="w-6 h-6 mb-1" />{" "}
-                {/* Usata l'icona Handshake */}
+                <Handshake className="w-6 h-6 mb-1" />
                 Partners
               </div>
             </Button>

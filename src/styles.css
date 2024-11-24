@@ -393,7 +393,7 @@ body {
   border-radius: 20px;
   background-color: #ecfdf5;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  margin-top: -4px; /* Aggiunto margin negativo per avvicinare al titolo */
+  margin-top: -2px; /* Aggiunto margin negativo per avvicinare al titolo */
 }
 
 .receptionText {

@@ -1,4 +1,9 @@
 /* Base styles */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+}
+
 body {
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -9,14 +14,20 @@ body {
   background-color: #f3f4f6;
   margin: 0;
   padding: 0;
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+  min-height: -webkit-fill-available;
 }
 
+/* Modifica il container principale */
 .container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   background-color: #f3f4f6;
-  gap: 5px; /* Aggiungi questa proprietà per ridurre lo spazio tra le sezioni */
+  gap: 5px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 70px);
 }
 
 .heroContainer {
@@ -43,13 +54,20 @@ body {
   object-fit: cover;
 }
 
+/* Aggiorna il buttonContainer in fondo */
 .buttonContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 0 10px;
+  padding: 10px 10px calc(env(safe-area-inset-bottom) + 10px);
   box-sizing: border-box;
-  margin-bottom: 5px; /* Aggiungi questa proprietà */
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+  z-index: 1000;
 }
 
 .heroButton {

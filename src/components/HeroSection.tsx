@@ -4,7 +4,7 @@ import { Calendar, LogIn, Map } from "lucide-react";
 
 const HeroSection = () => {
   const navigate = useNavigate();
-
+  
   const heroItems = [
     {
       title: "Book Now",
@@ -25,7 +25,12 @@ const HeroSection = () => {
 
   return (
     <div className="heroContainer">
-      <h1 className="welcomeText">Nonna Vittoria Apartments</h1>
+      <div className="titleContainer">
+        <h1 className="welcomeText">Nonna Vittoria Apartments</h1>
+        <div className="subTitleContainer">
+          <span className="receptionText">Online Reception 24h</span>
+        </div>
+      </div>
       <img
         src="https://www.assets.houfy.com/assets/images/weblistings/c15e54c09d867202f5c62c04a6768b2d.jpg"
         alt="Nonna Vittoria Apartments"

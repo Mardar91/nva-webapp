@@ -15,15 +15,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <div className="fixed inset-0 flex flex-col">
       <div className="flex-grow overflow-auto">{children}</div>
       <div 
-        className="bg-gray-100 z-50 relative" // Aggiunto relative per il posizionamento
+        className="bg-gray-100 z-50"
+        style={{
+          paddingTop: "1.5rem", // Aumentato per spostare il contenuto più in basso
+          paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))", // Ridotto per compensare
+        }}
       >
-        <div 
-          className="flex justify-center space-x-4 absolute inset-x-0"
-          style={{
-            top: "0.5rem", // Sposta il contenuto più in basso rispetto al top della navbar
-            paddingBottom: "env(safe-area-inset-bottom)"
-          }}
-        >
+        <div className="flex justify-center space-x-4">
           <Link to="/">
             <Button variant="ghost">
               <div

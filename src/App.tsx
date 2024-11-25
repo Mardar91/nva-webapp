@@ -30,15 +30,27 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
   src,
   title,
 }) => {
-  return <iframe src={src} className="w-full h-screen" title={title} />;
+  return (
+    <div className="flex-grow h-full">
+      <iframe 
+        src={src} 
+        className="w-full h-full" 
+        title={title}
+        style={{
+          height: "calc(100vh - 88px)",
+          marginBottom: "88px",
+          border: "none",
+          display: "block"
+        }}
+      />
+    </div>
+  );
 };
 
 const App: React.FC = () => {
   useEffect(() => {
-    // Registra il service worker
     serviceWorkerRegistration.register();
 
-    // Gestione aggiornamenti quando l'app torna online
     const handleOnline = () => {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(registration => {
@@ -47,7 +59,6 @@ const App: React.FC = () => {
       }
     };
 
-    // Gestione aggiornamenti quando l'app torna in primo piano
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && 'serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(registration => {
@@ -59,7 +70,6 @@ const App: React.FC = () => {
     window.addEventListener('online', handleOnline);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Cleanup degli event listener quando il componente viene smontato
     return () => {
       window.removeEventListener('online', handleOnline);
       document.removeEventListener('visibilitychange', handleVisibilityChange);

@@ -50,7 +50,7 @@ const CheckIn = () => {
     <div className="container mx-auto px-4 py-8">
       <Card>
         <CardHeader>
-          <CardTitle>Select your stay date</CardTitle>
+          <CardTitle>Please select your check-in date</CardTitle>
         </CardHeader>
         <CardContent>
           <Calendar

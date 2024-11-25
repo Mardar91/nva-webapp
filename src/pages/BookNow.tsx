@@ -2,11 +2,19 @@ import React from "react";
 
 const BookNow = () => {
   return (
-    <iframe
-      src="https://nonnavittoriaapartments.houfy.com/"
-      className="w-full h-screen"
-      title="Book Now"
-    />
+    <div className="flex-grow h-full">
+      <iframe
+        src="https://nonnavittoriaapartments.houfy.com/"
+        className="w-full h-full"
+        title="Book Now"
+        style={{
+          height: "calc(100vh - 88px)",
+          marginBottom: "88px",
+          border: "none",
+          display: "block"
+        }}
+      />
+    </div>
   );
 };
 

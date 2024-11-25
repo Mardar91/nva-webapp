@@ -226,9 +226,8 @@ const ServicesSection = () => {
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");
   };
 
-  return (
+   return (
     <div className="bg-white mt-5 pt-4 pb-8">
-      <div className="spacer"></div>
       <div className="container mx-auto px-4">
         <h2 className="text-lg font-bold text-blue-900 mb-6 ml-4">Our Services</h2>
         <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg">
@@ -246,8 +245,7 @@ const ServicesSection = () => {
         </div>
       </div>
 
-      <div className="spacer mt-8"></div>
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 mt-8"> {/* Replaced spacer with margin */}
         <h2 className="text-lg font-bold text-blue-900 mb-6 ml-4">Useful Information</h2>
         <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg">
           {utilities.map((utility) => (

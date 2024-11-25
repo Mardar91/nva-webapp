@@ -17,7 +17,6 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   const [waveAnimation, setWaveAnimation] = useState(0);
   const [isIOS, setIsIOS] = useState(false);
 
-  // Rileva se il dispositivo è iOS
   useEffect(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(iOS);

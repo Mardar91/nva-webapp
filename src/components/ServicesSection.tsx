@@ -48,7 +48,7 @@ const ServicesSection = () => {
       onClick: () => setOpenDeliveryModal(true),
     },
     {
-      name: "Rent Car",
+      name: "Rent a Car",
       icon: "🚗",
       onClick: () => setOpenRentCarModal(true),
     },
@@ -181,7 +181,7 @@ const ServicesSection = () => {
           <DialogHeader>
             <DialogTitle>Rent a Car</DialogTitle>
             <DialogDescription>
-              Rent a car at special prices with our affiliated service. They will deliver the car directly to your location.
+              Book a rental car at exclusive rates through our partner service. Enjoy the convenience of having the car delivered directly to your location.
             </DialogDescription>
           </DialogHeader>
           <Button
@@ -314,7 +314,7 @@ const ServicesSection = () => {
                 </Button>
                 <Button
                   onClick={() => {
-                    window.location.href = "https://wa.me/491794265253";
+                    window.location.href = "https://wa.me/393426138594";
                   }}
                   className="bg-[#25D366] hover:bg-[#128C7E] text-white"
                 >

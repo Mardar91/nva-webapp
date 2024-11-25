@@ -372,6 +372,35 @@ main:not(.iframe-container) {
   font-weight: bold;
 }
 
+/* Nuovi stili per estensione blu e status bar */
+.extended-blue-bg {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background-color: #1e3a8a;
+}
+
+/* Stile per il pulsante dorato */
+.golden-vip-button {
+  background-color: #daa520 !important;
+  color: white !important;
+  border: none;
+}
+
+/* Meta tag per status bar */
+@media all and (display-mode: standalone) {
+  html {
+    background-color: #1e3a8a;
+  }
+
+  body {
+    background-color: #1e3a8a;
+  }
+}
+
 /* Surroundings section */
 .surroundingsSection {
   padding: 0;

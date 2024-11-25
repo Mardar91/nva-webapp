@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./styles.css";
 import {
   BrowserRouter as Router,
@@ -14,6 +14,7 @@ import BookNow from "./pages/BookNow";
 import CheckIn from "./pages/CheckIn";
 import Partners from "./pages/Partners";
 import Layout from "./components/Layout";
+import ChatbotPage from "./pages/ChatbotPage"; // Nuova pagina per il chatbot
 
 interface ExternalRedirectProps {
   to: string;
@@ -30,9 +31,7 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
   src,
   title,
 }) => {
-  // Effetto per gestire lo scroll nell'iframe
   useEffect(() => {
-    // Previene il bounce effect su iOS
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = 'auto';
@@ -45,9 +44,9 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
       top: 0,
       left: 0,
       right: 0,
-      bottom: '88px', // Altezza della barra di navigazione
+      bottom: '88px',
       overflow: 'hidden',
-      WebkitOverflowScrolling: 'touch', // Per un migliore scrolling su iOS
+      WebkitOverflowScrolling: 'touch',
     }}>
       <iframe 
         src={src} 
@@ -72,7 +71,6 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
 const App: React.FC = () => {
   useEffect(() => {
     serviceWorkerRegistration.register();
-
     const handleOnline = () => {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(registration => {
@@ -108,6 +106,7 @@ const App: React.FC = () => {
           <Route path="/book" element={<BookNow />} />
           <Route path="/check-in" element={<CheckIn />} />
           <Route path="/partners" element={<Partners />} />
+          <Route path="/chatbot" element={<ChatbotPage />} /> {/* Nuova route per il chatbot */}
           <Route
             path="/taxi"
             element={

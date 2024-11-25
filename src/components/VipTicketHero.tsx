@@ -1,8 +1,23 @@
-import React from "react";
-import { Button } from "../components/ui/button";
+import React, { useEffect } from "react";
+import { Button } from "../components/ui/button"; 
 import { cn } from "../lib/utils";
 
 const VipTicketHero = () => {
+  useEffect(() => {
+    // Imposta il colore del tema per la status bar
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', '#1e3a8a');
+    }
+
+    // Ripristina il colore originale quando il componente viene smontato
+    return () => {
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#ffffff');
+      }
+    };
+  }, []);
+
   const handleVipTicket = () => {
     window.open(
       "https://nonnavittoriaapartments.it/VipTicket.pkpass",

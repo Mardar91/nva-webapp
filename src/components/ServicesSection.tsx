@@ -9,6 +9,97 @@ import {
   DialogFooter,
 } from "./ui/dialog";
 
+const MemoryGame = () => {
+  const [cards, setCards] = useState([
+    { id: 1, emoji: "🍕", isFlipped: false, isMatched: false },
+    { id: 2, emoji: "🍕", isFlipped: false, isMatched: false },
+    { id: 3, emoji: "🍝", isFlipped: false, isMatched: false },
+    { id: 4, emoji: "🍝", isFlipped: false, isMatched: false },
+    { id: 5, emoji: "🍷", isFlipped: false, isMatched: false },
+    { id: 6, emoji: "🍷", isFlipped: false, isMatched: false },
+    { id: 7, emoji: "🏖️", isFlipped: false, isMatched: false },
+    { id: 8, emoji: "🏖️", isFlipped: false, isMatched: false },
+  ].sort(() => Math.random() - 0.5));
+
+  const [flippedCards, setFlippedCards] = useState<number[]>([]);
+  const [moves, setMoves] = useState(0);
+  const [isWon, setIsWon] = useState(false);
+
+  const handleCardClick = (index: number) => {
+    if (flippedCards.length === 2 || cards[index].isMatched || cards[index].isFlipped) return;
+
+    const newCards = [...cards];
+    newCards[index].isFlipped = true;
+    setCards(newCards);
+
+    const newFlippedCards = [...flippedCards, index];
+    setFlippedCards(newFlippedCards);
+
+    if (newFlippedCards.length === 2) {
+      setMoves(moves + 1);
+      const [firstIndex, secondIndex] = newFlippedCards;
+
+      if (cards[firstIndex].emoji === cards[secondIndex].emoji) {
+        newCards[firstIndex].isMatched = true;
+        newCards[secondIndex].isMatched = true;
+        setCards(newCards);
+        setFlippedCards([]);
+
+        if (newCards.every(card => card.isMatched)) {
+          setIsWon(true);
+        }
+      } else {
+        setTimeout(() => {
+          newCards[firstIndex].isFlipped = false;
+          newCards[secondIndex].isFlipped = false;
+          setCards(newCards);
+          setFlippedCards([]);
+        }, 1000);
+      }
+    }
+  };
+
+  const resetGame = () => {
+    setCards(cards.map(card => ({ ...card, isFlipped: false, isMatched: false }))
+      .sort(() => Math.random() - 0.5));
+    setFlippedCards([]);
+    setMoves(0);
+    setIsWon(false);
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="text-center mb-4">
+        <p className="text-lg font-semibold">Moves: {moves}</p>
+        {isWon && (
+          <div className="mt-4">
+            <p className="text-xl font-bold text-green-600">Congratulations! You won! 🎉</p>
+            <Button onClick={resetGame} className="mt-2 bg-blue-600 hover:bg-blue-700 text-white">
+              Play Again
+            </Button>
+          </div>
+        )}
+      </div>
+      <div className="grid grid-cols-4 gap-2">
+        {cards.map((card, index) => (
+          <button
+            key={card.id}
+            onClick={() => handleCardClick(index)}
+            className={`w-16 h-16 flex items-center justify-center text-2xl rounded-lg transition-all duration-300 ${
+              card.isFlipped || card.isMatched
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200"
+            }`}
+            disabled={card.isMatched}
+          >
+            {(card.isFlipped || card.isMatched) ? card.emoji : "?"}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const ServicesSection = () => {
   const [openWineModal, setOpenWineModal] = useState(false);
   const [openCleanModal, setOpenCleanModal] = useState(false);
@@ -20,6 +111,10 @@ const ServicesSection = () => {
   const [openMassageModal, setOpenMassageModal] = useState(false);
   const [openRentBikeModal, setOpenRentBikeModal] = useState(false);
   const [openLaundryModal, setOpenLaundryModal] = useState(false);
+  const [openEmergencyModal, setOpenEmergencyModal] = useState(false);
+  const [openPharmacyModal, setOpenPharmacyModal] = useState(false);
+  const [openRecycleModal, setOpenRecycleModal] = useState(false);
+  const [openGameModal, setOpenGameModal] = useState(false);
 
   const services = [
     {
@@ -48,7 +143,7 @@ const ServicesSection = () => {
       onClick: () => setOpenDeliveryModal(true),
     },
     {
-      name: "Rent a Car",
+      name: "Rent Car",
       icon: "🚗",
       onClick: () => setOpenRentCarModal(true),
     },
@@ -81,6 +176,29 @@ const ServicesSection = () => {
       name: "Laundry",
       icon: "🧺",
       onClick: () => setOpenLaundryModal(true),
+    },
+  ];
+
+  const utilities = [
+    {
+      name: "Emergency",
+      icon: "🚨",
+      onClick: () => setOpenEmergencyModal(true),
+    },
+    {
+      name: "Pharmacy",
+      icon: "💊",
+      onClick: () => setOpenPharmacyModal(true),
+    },
+    {
+      name: "Recycle",
+      icon: "♻️",
+      onClick: () => setOpenRecycleModal(true),
+    },
+    {
+      name: "Game",
+      icon: "🎮",
+      onClick: () => setOpenGameModal(true),
     },
   ];
 
@@ -123,6 +241,24 @@ const ServicesSection = () => {
             >
               <span className="text-2xl mb-1">{service.icon}</span>
               <span className="text-blue-900 font-medium text-xs">{service.name}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="spacer mt-8"></div>
+      <div className="container mx-auto px-4">
+        <h2 className="text-lg font-bold text-blue-900 mb-6 ml-4">Useful Information</h2>
+        <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg">
+          {utilities.map((utility) => (
+            <Button
+              key={utility.name}
+              variant="ghost"
+              onClick={utility.onClick}
+              className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
+            >
+              <span className="text-2xl mb-1">{utility.icon}</span>
+              <span className="text-blue-900 font-medium text-xs">{utility.name}</span>
             </Button>
           ))}
         </div>
@@ -181,7 +317,7 @@ const ServicesSection = () => {
           <DialogHeader>
             <DialogTitle>Rent a Car</DialogTitle>
             <DialogDescription>
-              Book a rental car at exclusive rates through our partner service. Enjoy the convenience of having the car delivered directly to your location.
+              Rent a car at special prices with our affiliated service. They will deliver the car directly to your location.
             </DialogDescription>
           </DialogHeader>
           <Button
@@ -240,7 +376,7 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Excursions Modal */}
+{/* Excursions Modal */}
       <Dialog open={openExcursionsModal} onOpenChange={setOpenExcursionsModal}>
         <DialogContent>
           <DialogHeader>
@@ -314,7 +450,7 @@ const ServicesSection = () => {
                 </Button>
                 <Button
                   onClick={() => {
-                    window.location.href = "https://wa.me/393426138594";
+                    window.location.href = "https://wa.me/491794265253";
                   }}
                   className="bg-[#25D366] hover:bg-[#128C7E] text-white"
                 >
@@ -338,7 +474,7 @@ const ServicesSection = () => {
                   onClick={() => {
                     window.location.href = "https://wa.me/393458381107";
                   }}
-                  className="bg-[#25D366] hover:bg-[#128C7E] text-white"
+                  className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full"
                 >
                   Check Availability on WhatsApp
                 </Button>
@@ -374,6 +510,109 @@ const ServicesSection = () => {
               </div>
             </DialogDescription>
           </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Emergency Modal */}
+      <Dialog open={openEmergencyModal} onOpenChange={setOpenEmergencyModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Emergency Numbers</DialogTitle>
+            <DialogDescription>
+              If you need help, here are all the useful numbers:
+              <div className="mt-4 flex flex-col space-y-2">
+                <Button
+                  onClick={() => {
+                    window.location.href = "tel:112";
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  🚔 Police - 112
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.location.href = "tel:118";
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  🚑 Ambulance - 118
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.location.href = "tel:115";
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  🚒 Fire Department - 115
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.location.href = "tel:+393928431675";
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  🏠 Nonna Vittoria Apartments - +39 392 843 1675
+                </Button>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pharmacy Modal */}
+      <Dialog open={openPharmacyModal} onOpenChange={setOpenPharmacyModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacy Information</DialogTitle>
+            <DialogDescription>
+              Here you can view the pharmacies on duty:
+              <div className="mt-4">
+                <Button
+                  onClick={() => {
+                    window.open("https://www.farmaciediturno.org/comune.asp?cod=72028", "_blank");
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                >
+                  View On-Duty Pharmacies
+                </Button>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Recycle Modal */}
+      <Dialog open={openRecycleModal} onOpenChange={setOpenRecycleModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Recycling Information</DialogTitle>
+            <DialogDescription>
+              Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.
+              <div className="mt-4">
+                <Button
+                  onClick={() => {
+                    window.location.href = "https://wa.me/393458381107";
+                  }}
+                  className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full"
+                >
+                  Schedule a Collection
+                </Button>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Game Modal */}
+      <Dialog open={openGameModal} onOpenChange={setOpenGameModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Memory Game</DialogTitle>
+            <DialogDescription>
+              Find all the matching pairs! Click on the cards to flip them and try to match them with as few moves as possible.
+            </DialogDescription>
+          </DialogHeader>
+          <MemoryGame />
         </DialogContent>
       </Dialog>
 

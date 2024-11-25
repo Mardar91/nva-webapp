@@ -1,68 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ChatbotPage: React.FC = () => {
-  const [chatLoaded, setChatLoaded] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Previene il bounce effect su iOS
-    document.body.style.overflow = 'hidden';
-
-    // Funzione per caricare lo script del chatbot
-    const loadChatbotScript = () => {
-      // Verifica se lo script è già stato caricato
-      if (document.getElementById('chatbot-script')) {
-        setChatLoaded(true);
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.id = 'chatbot-script';
-      script.src = "https://nva.zapier.app";
-      script.async = true;
-      
-      script.onload = () => {
-        setChatLoaded(true);
-        // Imposta flag per indicare che il chatbot è stato caricato
-        localStorage.setItem('chatbotLoaded', 'true');
-      };
-
-      document.body.appendChild(script);
-    };
-
-    // Controlla se il chatbot era già caricato in precedenza
-    if (localStorage.getItem('chatbotLoaded') === 'true') {
-      loadChatbotScript();
-    } else {
-      loadChatbotScript();
+    // Apri il chatbot in una nuova finestra
+    const chatbotWindow = window.open('https://nva.zapier.app', '_blank', 'noopener,noreferrer');
+    
+    // Gestisci il caso in cui il popup viene bloccato
+    if (!chatbotWindow) {
+      alert('Per favore, abilita i popup per aprire il chatbot');
+      navigate('/'); // Torna alla home se il popup è bloccato
+      return;
     }
 
+    // Usa localStorage per tracciare lo stato del chatbot
+    localStorage.setItem('chatbot_opened', 'true');
+
+    // Aggiungi un listener per quando la finestra viene chiusa
+    const checkClosed = setInterval(() => {
+      if (chatbotWindow.closed) {
+        localStorage.removeItem('chatbot_opened');
+        clearInterval(checkClosed);
+        navigate('/'); // Torna alla home quando il chatbot viene chiuso
+      }
+    }, 500);
+
+    // Pulisci l'intervallo quando il componente viene smontato
     return () => {
-      document.body.style.overflow = 'auto';
+      clearInterval(checkClosed);
     };
-  }, []);
+  }, [navigate]);
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: '88px', // Altezza della barra di navigazione
-      overflow: 'hidden',
-      WebkitOverflowScrolling: 'touch',
-    }}>
-      {chatLoaded && (
-        <div 
-          id="chatbot-container"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-        >
-          {/* Il chatbot verrà caricato qui */}
-        </div>
-      )}
+    <div>
+      <p>Aprendo il chatbot...</p>
     </div>
   );
 };

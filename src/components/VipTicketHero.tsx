@@ -38,20 +38,22 @@ const VipTicketHero = () => {
   };
 
   return (
-    <div className="text-center p-4">
-      <h2 className="text-2xl font-bold mb-4">Get Your Free VIP Ticket!</h2>
-      
-      <p className="mb-6">
-        Download your digital VIP Ticket to enjoy exclusive 10% discounts at all our partner locations
-      </p>
-      
-      <Button 
-        onClick={handleVipTicket}
-        className={cn("flex items-center justify-center mx-auto space-x-2")}
-      >
-        <span>🎟️</span>
-        <span>Download VIP Ticket</span>
-      </Button>
+    <div className="bg-blue-950 text-white min-h-screen flex flex-col justify-center items-center">
+      <div className="text-center p-6">
+        <h2 className="text-3xl font-bold mb-4">Get Your Free VIP Ticket!</h2>
+        
+        <p className="mb-6 text-lg">
+          Download your digital VIP Ticket to enjoy exclusive 10% discounts at all our partner locations
+        </p>
+        
+        <button 
+          onClick={handleVipTicket}
+          className="bg-yellow-500 text-black px-6 py-3 rounded-full flex items-center justify-center mx-auto space-x-2 hover:bg-yellow-600 transition-colors"
+        >
+          <span className="text-2xl">🎟️</span>
+          <span>Download VIP Ticket</span>
+        </button>
+      </div>
     </div>
   );
 };

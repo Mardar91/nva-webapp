@@ -1,14 +1,13 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
 import { FaRobot } from "react-icons/fa";
-import { useSpring, animated } from "react-spring"; // Importiamo react-spring
-import "./FloatingChatButton.css"; // Assicurati che il file CSS sia presente
+import { useSpring, animated } from "react-spring";
+import "./FloatingChatButton.css";
 
 const BUTTON_SIZE = 60;
 const SWIPE_THRESHOLD = 50;
 
-// Definiamo l'interfaccia per i props
 interface FloatingChatButtonProps {
-  onPress: () => void;  // Tipo di onPress come funzione che non restituisce nulla
+  onPress: () => void;
 }
 
 const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
@@ -16,17 +15,23 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   const [scale, setScale] = useState(1);
   const [opacity, setOpacity] = useState(1);
   const [waveAnimation, setWaveAnimation] = useState(0);
+  const [isIOS, setIsIOS] = useState(false);
+
+  // Rileva se il dispositivo è iOS
+  useEffect(() => {
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(iOS);
+  }, []);
 
   const startWavingAnimation = useCallback(() => {
     setWaveAnimation((prev) => (prev === 0 ? 1 : 0));
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(startWavingAnimation, 5000); // Ripete l'animazione ogni 5 secondi
+    const interval = setInterval(startWavingAnimation, 5000);
     return () => clearInterval(interval);
   }, [startWavingAnimation]);
 
-  // Aggiungi il tipo corretto per l'evento touch
   const handleSwipe = (e: React.TouchEvent<HTMLDivElement>) => {
     const { clientX } = e.changedTouches[0];
     if (clientX < SWIPE_THRESHOLD) {
@@ -43,7 +48,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   };
 
   const openWebApp = () => {
-    window.open("https://nva.zapier.app", "_blank"); // Apre la webapp in una nuova finestra
+    window.open("https://nva.zapier.app", "_blank");
   };
 
   const springProps = useSpring({
@@ -54,11 +59,22 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
 
   return (
     <animated.div
-      className="floating-chat-button"
-      style={springProps}
+      className={`floating-chat-button ${isIOS ? 'ios-device' : ''}`}
+      style={{
+        ...springProps,
+        WebkitAppearance: 'none',
+        transform: `${springProps.transform} translateZ(0)`,
+      }}
       onTouchMove={handleSwipe}
     >
-      <button className="chat-button" onClick={openWebApp}>
+      <button 
+        className="chat-button"
+        onClick={openWebApp}
+        style={{
+          WebkitAppearance: 'none',
+          transform: 'translateZ(0)',
+        }}
+      >
         <animated.div
           style={{
             transform: waveAnimation === 0 ? "rotate(0deg)" : "rotate(-20deg)",

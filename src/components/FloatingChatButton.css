@@ -1,9 +1,9 @@
 /* FloatingChatButton.css */
 .floating-chat-button {
   position: fixed;
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* Ridotto da 88px a 20px per abbassarlo */
-  right: 20px;  /* Cambiato da left a right per spostarlo a destra */
-  z-index: 1000;
+  bottom: 120px; /* Posizionamento base più alto per tutti i dispositivi */
+  right: 20px;
+  z-index: 9999; /* Aumentato per assicurarsi che stia sopra altri elementi */
   pointer-events: auto;
 }
 
@@ -20,17 +20,34 @@
   transform: translateZ(0);
 }
 
-/* Media query per schermi più piccoli o in modalità landscape */
-@media screen and (max-height: 700px) {
+/* Fix specifico per iPhone */
+@supports (-webkit-touch-callout: none) {
   .floating-chat-button {
-    bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* Aggiustato per mantenere la stessa distanza */
+    bottom: calc(120px + env(safe-area-inset-bottom, 0px)); /* Mantenuto più alto anche su iOS */
+    right: 20px;
+    z-index: 99999; /* Z-index ancora più alto su iOS per stare sopra la barra */
+  }
+
+  .ios-device {
+    transform: translateZ(0);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .ios-device .chat-button {
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
   }
 }
 
-/* Fix specifico per iPhone in modalità portrait */
-@supports (-webkit-touch-callout: none) {
+/* Media query per schermi più piccoli o in modalità landscape */
+@media screen and (max-height: 700px) {
   .floating-chat-button {
-    bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* Ridotto per abbassarlo */
-    right: 20px; /* Cambiato da left a right */
+    bottom: 100px; /* Leggermente più basso per schermi piccoli */
+  }
+  
+  @supports (-webkit-touch-callout: none) {
+    .floating-chat-button {
+      bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+    }
   }
 }

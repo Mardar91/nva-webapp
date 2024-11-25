@@ -42,17 +42,37 @@ const CheckIn = () => {
 
   if (showForm) {
     return (
-      <iframe
-        src="https://form.jotform.com/221524504539049"
-        className="w-full h-screen"
-        title="Check-in Form"
-      />
+      <div className="iframe-container" style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: '88px',
+        overflow: 'hidden',
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        <iframe
+          src="https://form.jotform.com/221524504539049"
+          title="Check-in Form"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          scrolling="yes"
+        />
+      </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card>
+    <div className="container mx-auto px-4 py-8 pb-24">
+      <Card className="mb-24">
         <CardHeader>
           <CardTitle>Please select your check-in date</CardTitle>
         </CardHeader>
@@ -65,7 +85,7 @@ const CheckIn = () => {
           />
         </CardContent>
         {dateSelected && (
-          <CardFooter className="flex justify-end">
+          <CardFooter className="flex justify-end pb-6">
             <Button 
               onClick={handleConfirm}
               className="bg-blue-600 hover:bg-blue-700 text-white"

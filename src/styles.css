@@ -53,12 +53,10 @@ main:not(.iframe-container) {
 .container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: auto;
   min-height: -webkit-fill-available;
   background-color: #f3f4f6;
-  gap: 0px;
-  align-items: flex-start; /* Gli elementi rimarranno in alto */
-  justify-content: flex-start; /* Niente spazi extra in basso */
+  gap: 5px;
   padding-bottom: env(safe-area-inset-bottom);
 }
 

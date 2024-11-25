@@ -53,6 +53,7 @@ main:not(.iframe-container) {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  height: 100%; /* Aggiungi questa proprietà per maggiore compatibilità */
   min-height: -webkit-fill-available;
   background-color: #f3f4f6;
   gap: 5px;

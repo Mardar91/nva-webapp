@@ -30,18 +30,40 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
   src,
   title,
 }) => {
+  // Effetto per gestire lo scroll nell'iframe
+  useEffect(() => {
+    // Previene il bounce effect su iOS
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   return (
-    <div className="flex-grow h-full">
+    <div className="iframe-container" style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: '88px', // Altezza della barra di navigazione
+      overflow: 'hidden',
+      WebkitOverflowScrolling: 'touch', // Per un migliore scrolling su iOS
+    }}>
       <iframe 
         src={src} 
-        className="w-full h-full" 
         title={title}
         style={{
-          height: "calc(100vh - 88px)",
-          marginBottom: "88px",
-          border: "none",
-          display: "block"
+          width: '100%',
+          height: '100%',
+          border: 'none',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
         }}
+        scrolling="yes"
+        allow="fullscreen"
       />
     </div>
   );

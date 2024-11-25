@@ -1,10 +1,10 @@
 /* FloatingChatButton.css */
 .floating-chat-button {
-  position: fixed;  /* Cambiato da absolute a fixed */
-  bottom: calc(88px + env(safe-area-inset-bottom) + 20px); /* Considera la barra di navigazione e la safe area */
-  left: 20px;  /* Spostato a sinistra invece che a destra */
+  position: fixed;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* Ridotto da 88px a 20px per abbassarlo */
+  right: 20px;  /* Cambiato da left a right per spostarlo a destra */
   z-index: 1000;
-  pointer-events: auto; /* Assicura che il pulsante sia cliccabile */
+  pointer-events: auto;
 }
 
 .chat-button {
@@ -16,21 +16,21 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
-  -webkit-transform: translateZ(0); /* Fix per iOS */
+  -webkit-transform: translateZ(0);
   transform: translateZ(0);
 }
 
 /* Media query per schermi più piccoli o in modalità landscape */
 @media screen and (max-height: 700px) {
   .floating-chat-button {
-    bottom: calc(88px + 10px); /* Riduce lo spazio in modalità landscape */
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* Aggiustato per mantenere la stessa distanza */
   }
 }
 
 /* Fix specifico per iPhone in modalità portrait */
 @supports (-webkit-touch-callout: none) {
   .floating-chat-button {
-    bottom: calc(88px + env(safe-area-inset-bottom) + 20px);
-    left: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* Ridotto per abbassarlo */
+    right: 20px; /* Cambiato da left a right */
   }
 }

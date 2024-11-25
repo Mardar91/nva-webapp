@@ -7,11 +7,11 @@
     
     <!-- Meta tag per PWA -->
     <meta name="description" content="Nonna Vittoria Apartments - Il tuo soggiorno in Puglia" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#1e3a8a" />
     
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
     
     <!-- Manifest e icone -->
@@ -30,6 +30,13 @@
     
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @media all and (display-mode: standalone) {
+        html, body {
+          background-color: #1e3a8a;
+        }
+      }
+    </style>
     <!-- Script per gestire il redirect -->
     <script>
       // Controlla se l'app è in modalità standalone

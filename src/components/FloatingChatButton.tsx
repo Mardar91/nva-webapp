@@ -1,16 +1,18 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
 import { FaRobot } from "react-icons/fa";
 import { useSpring, animated } from "react-spring";
+import { useNavigate } from "react-router-dom"; // Aggiungi questa importazione
 import "./FloatingChatButton.css";
 
 const BUTTON_SIZE = 60;
 const SWIPE_THRESHOLD = 50;
 
 interface FloatingChatButtonProps {
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
+  const navigate = useNavigate(); // Hook per la navigazione
   const [panX, setPanX] = useState(0);
   const [scale, setScale] = useState(1);
   const [opacity, setOpacity] = useState(1);
@@ -47,7 +49,8 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   };
 
   const openWebApp = () => {
-    window.open("https://nva.zapier.app", "_blank");
+    // Usa navigate per aprire la pagina del chatbot
+    navigate('/chatbot');
   };
 
   const springProps = useSpring({

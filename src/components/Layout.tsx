@@ -12,13 +12,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       : "text-blue-900";
 
   return (
-    <div className="fixed inset-0 flex flex-col">
-      <div className="flex-grow overflow-auto">{children}</div>
-      <div 
-        className="bg-gray-100 z-50"
+    <div className="flex flex-col h-screen">
+      <main className="flex-1 overflow-y-auto">
+        {children}
+      </main>
+      <nav 
+        className="bg-gray-100 fixed bottom-0 left-0 right-0 z-50"
         style={{
-          paddingTop: "1.5rem", // Aumentato per spostare il contenuto più in basso
-          paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))", // Ridotto per compensare
+          paddingTop: "1rem",
+          paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))",
+          height: "88px"
         }}
       >
         <div className="flex justify-center space-x-4">
@@ -57,7 +60,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </Button>
           </Link>
         </div>
-      </div>
+      </nav>
     </div>
   );
 };

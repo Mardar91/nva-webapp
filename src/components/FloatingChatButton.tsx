@@ -49,16 +49,14 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   };
 
   const openWebApp = () => {
-    // Controlla se il chatbot è già aperto
-    const chatbotOpened = localStorage.getItem('chatbot_opened');
-    
-    if (chatbotOpened) {
-      // Se il chatbot è già aperto, riportalo in primo piano
-      window.open('https://nva.zapier.app', '_blank');
-    } else {
-      // Altrimenti naviga alla pagina del chatbot
-      navigate('/chatbot');
-    }
+    // Controlla se siamo in modalità standalone (PWA)
+    const isInStandaloneMode = () =>
+      (window.matchMedia('(display-mode: standalone)').matches) ||
+      (window.navigator as any).standalone ||
+      document.referrer.includes('android-app://');
+
+    // Apri direttamente il link in tutti i casi
+    window.location.href = 'https://nva.zapier.app';
   };
 
   const springProps = useSpring({

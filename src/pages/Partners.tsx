@@ -73,7 +73,14 @@ const openInMaps = (address: string) => {
 
 const PartnersScreen = () => {
   return (
-    <div className="giftCardSection">
+    <div 
+      className="giftCardSection overflow-y-auto pb-24" 
+      style={{
+        height: 'calc(100vh - 88px)', // Altezza dello schermo meno l'altezza della navbar
+        WebkitOverflowScrolling: 'touch', // Per scrolling fluido su iOS
+        overscrollBehavior: 'none', // Previene lo scroll bounce
+      }}
+    >
       <VipTicketHero />
       <h2 className="sectionTitle">Our Partners</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -102,7 +109,6 @@ const PartnersScreen = () => {
                 >
                   Call {item.phone}
                 </Button>
-                {/* Controllo se item ha la proprietà website */}
                 {'website' in item && item.website && (
                   <Button
                     variant="link"
@@ -112,7 +118,6 @@ const PartnersScreen = () => {
                     Visit Website
                   </Button>
                 )}
-                {/* Controllo se item ha la proprietà whatsapp */}
                 {'whatsapp' in item && item.whatsapp && (
                   <Button
                     variant="link"

@@ -128,9 +128,119 @@ const ServicesSection = () => {
         </div>
       </div>
 
-      {/* Previous modals remain unchanged */}
-      
-      {/* Updated Excursions Modal */}
+      {/* Delivery Modal */}
+      <Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delivery Service</DialogTitle>
+            <DialogDescription>
+              Order your food online and have it delivered directly to your apartment every day except Wednesday.
+              <br /><br />
+              MONDAY - SATURDAY: <br />
+              10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM
+              <br /><br />
+              SUNDAY: <br />
+              9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              onClick={() => {
+                window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              View Menu
+            </Button>
+            <Button
+              onClick={() => {
+                window.location.href = "tel:+390804741063";
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Call Now
+            </Button>
+            <p className="text-sm text-gray-600 text-center mt-4">
+              or order online with the code: <strong>NONNAVITTORIA</strong> and get 5% OFF
+            </p>
+            <Button
+              onClick={() => {
+                window.open("https://2ly.link/1yEMK", "_blank");
+              }}
+              className="mt-2 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Download the App
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rent Car Modal */}
+      <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rent a Car</DialogTitle>
+            <DialogDescription>
+              Rent a car at special prices with our affiliated service. They will deliver the car directly to your location.
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => {
+              window.location.href = "tel:+393493425023";
+            }}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Call Now
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Wine Modal */}
+      <Dialog open={openWineModal} onOpenChange={setOpenWineModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Room Service</DialogTitle>
+            <DialogDescription>
+              Request a bottle of wine or prosecco to be available upon arrival at a special price (subject to availability). To place an order, contact us on WhatsApp.
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => {
+              const phoneNumber = "+393458381107";
+              window.location.href = `https://wa.me/${phoneNumber}`;
+              setOpenWineModal(false);
+            }}
+            className="bg-[#25D366] hover:bg-[#128C7E]"
+          >
+            Contact us on WhatsApp
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Clean Modal */}
+      <Dialog open={openCleanModal} onOpenChange={setOpenCleanModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cleaning Service</DialogTitle>
+            <DialogDescription>Request a cleaning service during your stay for €20.</DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => {
+              const message = encodeURIComponent(
+                "Hello, I would like to request a cleaning service for my apartment. Please let me know the available time slots."
+              );
+              const phoneNumber = "+393458381107";
+              window.location.href = `https://wa.me/${phoneNumber}?text=${message}`;
+              setOpenCleanModal(false);
+            }}
+            className="bg-[#25D366] hover:bg-[#128C7E]"
+          >
+            Request on WhatsApp
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Excursions Modal */}
       <Dialog open={openExcursionsModal} onOpenChange={setOpenExcursionsModal}>
         <DialogContent>
           <DialogHeader>
@@ -152,7 +262,31 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* New Breakfast Modal */}
+      {/* Parking Modal */}
+      <Dialog open={openParkingModal} onOpenChange={setOpenParkingModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Parking Information</DialogTitle>
+            <DialogDescription>
+              Nonna Vittoria Apartments does not currently provide private parking. However, there are several secure, free parking options on the surrounding streets:
+              <div className="mt-4 flex flex-col space-y-2">
+                {parkingStreets.map((street) => (
+                  <Button
+                    key={street.name}
+                    variant="outline"
+                    onClick={() => openInMaps(street.address)}
+                    className="justify-start text-left"
+                  >
+                    {street.name}
+                  </Button>
+                ))}
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Breakfast Modal */}
       <Dialog open={openBreakfastModal} onOpenChange={setOpenBreakfastModal}>
         <DialogContent>
           <DialogHeader>
@@ -162,7 +296,7 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* New Massage Modal */}
+      {/* Massage Modal */}
       <Dialog open={openMassageModal} onOpenChange={setOpenMassageModal}>
         <DialogContent>
           <DialogHeader>
@@ -192,7 +326,7 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* New Rent a Bike Modal */}
+      {/* Rent a Bike Modal */}
       <Dialog open={openRentBikeModal} onOpenChange={setOpenRentBikeModal}>
         <DialogContent>
           <DialogHeader>
@@ -214,7 +348,7 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* New Laundry Modal */}
+      {/* Laundry Modal */}
       <Dialog open={openLaundryModal} onOpenChange={setOpenLaundryModal}>
         <DialogContent>
           <DialogHeader>
@@ -242,8 +376,6 @@ const ServicesSection = () => {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-
-      {/* Previous modals remain unchanged */}
 
     </div>
   );

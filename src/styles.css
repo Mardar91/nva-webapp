@@ -372,8 +372,7 @@ main:not(.iframe-container) {
   font-weight: bold;
 }
 
-/* Nuovi stili per estensione blu e status bar */
-.extended-blue-bg {
+.vipHeroContainer.extended-blue-bg {
   position: relative;
   width: 100vw;
   left: 50%;
@@ -383,22 +382,17 @@ main:not(.iframe-container) {
   background-color: #1e3a8a;
 }
 
+@media all and (display-mode: standalone) {
+  .vipHeroContainer.extended-blue-bg {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
 /* Stile per il pulsante dorato */
 .golden-vip-button {
   background-color: #daa520 !important;
   color: white !important;
   border: none;
-}
-
-/* Meta tag per status bar */
-@media all and (display-mode: standalone) {
-  html {
-    background-color: #1e3a8a;
-  }
-
-  body {
-    background-color: #1e3a8a;
-  }
 }
 
 /* Surroundings section */

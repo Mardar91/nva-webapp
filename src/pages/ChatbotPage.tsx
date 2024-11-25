@@ -17,7 +17,7 @@ const ChatbotPage: React.FC = () => {
 
       const script = document.createElement('script');
       script.id = 'chatbot-script';
-      script.src = "https://nva.zapier.app/embed.js";
+      script.src = "https://nva.zapier.app";
       script.async = true;
       
       script.onload = () => {

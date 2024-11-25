@@ -19,7 +19,8 @@ const VipTicketHero = () => {
 
   const handleVipTicket = () => {
     // Rileva il sistema operativo
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && 
+      !(window as any).MSStream;
     
     if (isIOS) {
       // Per dispositivi iOS, scarica il file .pkpass

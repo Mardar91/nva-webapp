@@ -1,18 +1,16 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
 import { FaRobot } from "react-icons/fa";
 import { useSpring, animated } from "react-spring";
-import { useNavigate } from "react-router-dom";
 import "./FloatingChatButton.css";
 
 const BUTTON_SIZE = 60;
 const SWIPE_THRESHOLD = 50;
 
 interface FloatingChatButtonProps {
-  onPress?: () => void;
+  onPress: () => void;
 }
 
 const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
-  const navigate = useNavigate();
   const [panX, setPanX] = useState(0);
   const [scale, setScale] = useState(1);
   const [opacity, setOpacity] = useState(1);
@@ -49,14 +47,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   };
 
   const openWebApp = () => {
-    // Controlla se siamo in modalità standalone (PWA)
-    const isInStandaloneMode = () =>
-      (window.matchMedia('(display-mode: standalone)').matches) ||
-      (window.navigator as any).standalone ||
-      document.referrer.includes('android-app://');
-
-    // Apri direttamente il link in tutti i casi
-    window.location.href = 'https://nva.zapier.app';
+    window.open("https://nva.zapier.app", "_blank");
   };
 
   const springProps = useSpring({

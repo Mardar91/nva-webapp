@@ -46,7 +46,14 @@ const RestaurantScreen = () => {
   };
 
   return (
-    <div className="giftCardSection">
+    <div 
+      className="giftCardSection overflow-y-auto pb-24" 
+      style={{
+        height: 'calc(100vh - 88px)', // Altezza dello schermo meno l'altezza della navbar
+        WebkitOverflowScrolling: 'touch', // Per scrolling fluido su iOS
+        overscrollBehavior: 'none', // Previene lo scroll bounce
+      }}
+    >
       <VipTicketHero />
       <h2 className="sectionTitle">Partner Restaurants</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

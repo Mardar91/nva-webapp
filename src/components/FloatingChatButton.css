@@ -43,7 +43,7 @@
 @media all and (display-mode: standalone) {
   @supports (-webkit-touch-callout: none) {
     .floating-chat-button {
-      bottom: calc(110px + env(safe-area-inset-bottom, 0px)); /* Leggermente più in basso solo per standalone */
+      bottom: calc(90px + env(safe-area-inset-bottom, 0px)); /* Leggermente più in basso solo per standalone */
     }
   }
 }

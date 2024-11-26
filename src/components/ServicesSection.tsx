@@ -279,22 +279,22 @@ const ServicesSection = () => {
     </DialogHeader>
     <div className="flex flex-col items-center w-full max-w-sm mx-auto">
       <div className="grid grid-cols-2 gap-2 w-full mb-4">
-        <Button
+        <button
           onClick={() => {
             window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
           }}
-          className="bg-blue-600 hover:bg-blue-700 text-white w-full h-10 text-sm"
+          className="delivery-button"
         >
           View Menu
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => {
             window.location.href = "tel:+390804741063";
           }}
-          className="bg-blue-600 hover:bg-blue-700 text-white w-full h-10 text-sm"
+          className="delivery-button"
         >
           Call Now
-        </Button>
+        </button>
       </div>
       
       <div className="text-center w-full mb-4">
@@ -303,14 +303,14 @@ const ServicesSection = () => {
         <p className="text-gray-600 mb-4">and get 5% OFF</p>
       </div>
       
-      <Button
+      <button
         onClick={() => {
           window.open("https://2ly.link/1yEMK", "_blank");
         }}
-        className="bg-blue-600 hover:bg-blue-700 text-white w-full h-10 text-sm"
+        className="delivery-button w-full"
       >
         Download the App
-      </Button>
+      </button>
     </div>
   </DialogContent>
 </Dialog>

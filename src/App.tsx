@@ -30,9 +30,7 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
   src,
   title,
 }) => {
-  // Effetto per gestire lo scroll nell'iframe
   useEffect(() => {
-    // Previene il bounce effect su iOS
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = 'auto';
@@ -45,9 +43,9 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
       top: 0,
       left: 0,
       right: 0,
-      bottom: '88px', // Altezza della barra di navigazione
+      bottom: '88px',
       overflow: 'hidden',
-      WebkitOverflowScrolling: 'touch', // Per un migliore scrolling su iOS
+      WebkitOverflowScrolling: 'touch',
     }}>
       <iframe 
         src={src} 
@@ -99,7 +97,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />

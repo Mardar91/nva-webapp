@@ -1,11 +1,17 @@
 {
-  "routes": [
+  "headers": [
     {
-      "src": "/serviceworker.js",
-      "headers": {
-        "cache-control": "public, max-age=0, must-revalidate",
-        "content-type": "application/javascript; charset=utf-8"
-      }
+      "source": "/serviceworker.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        }
+      ]
     }
   ],
   "cleanUrls": true

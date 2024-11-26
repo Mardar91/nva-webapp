@@ -669,3 +669,36 @@ main:not(.iframe-container) {
   }
 }
 
+/* Aggiungi queste regole alla sezione dei Dialog/Modal styles nel tuo CSS */
+.DialogContent .grid-cols-2 button,
+.DialogContent button {
+  padding: 8px 16px;
+  height: 40px;
+  font-size: 14px;
+  line-height: 1;
+  min-height: unset;
+}
+
+/* Regole specifiche per iOS */
+@supports (-webkit-touch-callout: none) {
+  .DialogContent .grid-cols-2 button,
+  .DialogContent button {
+    padding: 8px 16px;
+    height: 40px !important;
+    min-height: 40px !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+  }
+}
+
+/* Fix per il layout dei pulsanti nel Dialog */
+.DialogContent .grid-cols-2 {
+  grid-template-rows: minmax(40px, auto);
+}
+
+.DialogContent .grid-cols-2 button {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

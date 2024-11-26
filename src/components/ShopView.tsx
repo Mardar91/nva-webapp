@@ -1,15 +1,13 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
 const ShopView: React.FC = () => {
-  const navigate = useNavigate();
+  const openWebApp = () => {
+    window.location.href = "https://store.nonnavittoriaapartments.it";
+  };
 
-  useEffect(() => {
-    // Apre lo shop in una nuova finestra
-    window.open("https://store.nonnavittoriaapartments.it", "_blank");
-    // Torna alla home
-    navigate("/");
-  }, [navigate]);
+  React.useEffect(() => {
+    openWebApp();
+  }, []);
 
   return null;
 };

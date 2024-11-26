@@ -9,6 +9,7 @@ import {
   CardFooter,
 } from "../components/ui/card";
 import { format, differenceInDays } from "date-fns";
+import { cn } from "../lib/utils";
 
 // Custom hook per gestire il salvataggio della data
 const usePersistedDate = (key: string) => {
@@ -138,34 +139,17 @@ const CheckIn = () => {
             mode="single"
             selected={savedDate || undefined}
             onSelect={handleDateSelect}
-            className="rounded-md border"
-            styles={{
-              head_cell: {
-                width: "100%",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                textTransform: "capitalize",
-                color: "#1e3a8a"
-              },
-              caption: {
-                color: "#1e3a8a",
-                fontSize: "0.875rem",
-                padding: "1rem",
-                fontWeight: 500
-              },
-              nav_button_previous: {
-                color: "#1e3a8a !important"
-              },
-              nav_button_next: {
-                color: "#1e3a8a !important"
-              },
-              day: {
-                color: "#1e3a8a"
-              },
-              selected: {
-                backgroundColor: "#1e3a8a !important"
-              }
-            }}
+            className={cn(
+              "rounded-md border",
+              "rdp [&_.rdp-head_cell]:!text-[#1e3a8a]", // Colore blu per i giorni della settimana
+              "[&_.rdp-caption]:!text-[#1e3a8a]", // Colore blu per il mese
+              "[&_.rdp-nav_button]:!text-[#1e3a8a]", // Colore blu per i pulsanti di navigazione
+              "[&_.rdp-day]:!text-[#1e3a8a]", // Colore blu per i giorni
+              "[&_.rdp-day_selected]:!bg-[#1e3a8a]", // Sfondo blu per il giorno selezionato
+              "[&_.rdp-day_selected]:!text-white", // Testo bianco per il giorno selezionato
+              "[&_.rdp-day_today]:!bg-[#e0e7ff]", // Sfondo azzurro chiaro per oggi
+              "[&_.rdp-day_today]:!text-[#1e3a8a]" // Testo blu per oggi
+            )}
           />
         </CardContent>
         {dateSelected && (

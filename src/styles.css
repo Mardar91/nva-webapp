@@ -4,16 +4,20 @@
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
 }
 
-/* Previene il bounce effect e gestisce meglio lo scroll su iOS */
-html, body {
+/* Fix scrolling issues on iOS */
+html {
   position: fixed;
-  width: 100%;
   height: 100%;
   overflow: hidden;
+  width: 100%;
   -webkit-overflow-scrolling: touch;
 }
 
 body {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+  position: fixed;
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
@@ -45,20 +49,24 @@ iframe {
 
 /* Assicura che il contenuto non-iframe abbia scroll corretto */
 main:not(.iframe-container) {
-  height: calc(100vh - 88px);
+  height: calc(100vh - 88px - env(safe-area-inset-bottom));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 88px;
   padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
 }
 
 .container {
-  display: flex;
-  flex-direction: column;
-  min-height: auto;
-  background-color: #f3f4f6;
-  gap: 5px;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
+  height: 100%;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
+  position: relative;
+  z-index: 1;
 }
 
 .heroContainer {
@@ -701,5 +709,25 @@ main:not(.iframe-container) {
     padding: 0 12px !important;
     font-size: 14px !important;
     -webkit-appearance: none;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  main:not(.iframe-container) {
+    height: calc(100vh - 88px - env(safe-area-inset-bottom));
+  }
+
+  /* Prevent bounce effect on iOS */
+  .container, main {
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Standalone mode specific fixes */
+@media all and (display-mode: standalone) {
+  main:not(.iframe-container) {
+    height: calc(100vh - 88px - env(safe-area-inset-bottom));
+    padding-top: env(safe-area-inset-top);
   }
 }

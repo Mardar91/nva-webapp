@@ -1,15 +1,13 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 
 const ShopView: React.FC = () => {
-  const openWebApp = () => {
-    window.location.href = "https://store.nonnavittoriaapartments.it";
-  };
-
   React.useEffect(() => {
-    openWebApp();
+    window.location.href = "https://store.nonnavittoriaapartments.it";
   }, []);
 
-  return null;
+  // Se per qualche motivo l'utente resta in questa view, redirect alla home
+  return <Navigate to="/" replace />;
 };
 
 export default ShopView;

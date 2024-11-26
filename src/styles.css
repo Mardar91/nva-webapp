@@ -613,3 +613,46 @@ main:not(.iframe-container) {
     padding-top: env(safe-area-inset-top);
   }
 }
+
+/* Aggiungi al tuo file CSS */
+@media (orientation: landscape) {
+  .DialogContent {
+    max-height: 90vh;
+    max-width: 90vw;
+    width: auto;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .DialogFooter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .DialogDescription {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+}
+
+.DialogContent {
+  text-align: center;
+  padding: 24px;
+}
+
+.DialogFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.DialogFooter button {
+  width: 100%;
+}

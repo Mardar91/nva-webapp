@@ -14,6 +14,7 @@ import BookNow from "./pages/BookNow";
 import CheckIn from "./pages/CheckIn";
 import Partners from "./pages/Partners";
 import Layout from "./components/Layout";
+import ShopIframeView from './components/ShopIframeView';
 
 interface ExternalRedirectProps {
   to: string;
@@ -115,15 +116,7 @@ const App: React.FC = () => {
               />
             }
           />
-          <Route
-            path="/shop"
-            element={
-              <IframeView
-                src="https://store.nonnavittoriaapartments.it"
-                title="Shop"
-              />
-            }
-          />
+          <Route path="/shop" element={<ShopIframeView />} />
           <Route
             path="/gift-card"
             element={

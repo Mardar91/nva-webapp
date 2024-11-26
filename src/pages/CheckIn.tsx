@@ -50,8 +50,6 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
     return () => clearInterval(interval);
   }, [checkInDate]);
 
-  if (daysLeft < 0) return null;
-
   return (
     <div className="flex justify-center mt-6">
       <div 
@@ -72,17 +70,7 @@ const CheckIn = () => {
   const [savedDate, setSavedDate] = usePersistedDate('check-in-date');
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(() => {
-    return localStorage.getItem('check-in-confirmed') === 'true';
-  });
-
-  // Reset tutti gli stati quando il componente viene montato
-  useEffect(() => {
-    setDateSelected(false);
-    setSavedDate(null);
-    setIsConfirmed(false);
-    localStorage.removeItem('check-in-confirmed');
-  }, []);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const validateDate = (selectedDate: Date) => {
     const currentDate = new Date();
@@ -97,24 +85,24 @@ const CheckIn = () => {
       setSavedDate(newDate);
       setDateSelected(true);
       setIsConfirmed(false);
-      localStorage.setItem('check-in-confirmed', 'false');
     } else {
       setDateSelected(false);
       setSavedDate(null);
       setIsConfirmed(false);
-      localStorage.removeItem('check-in-confirmed');
     }
   };
 
   const handleConfirm = () => {
-    if (savedDate && validateDate(savedDate)) {
-      localStorage.setItem('check-in-confirmed', 'true');
+    if (savedDate) {
       setIsConfirmed(true);
-      setShowForm(true);
-    } else {
-      alert(
-        "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
-      );
+      // Controlla se la data è valida per il check-in
+      if (validateDate(savedDate)) {
+        setShowForm(true);
+      } else {
+        alert(
+          "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
+        );
+      }
     }
   };
 

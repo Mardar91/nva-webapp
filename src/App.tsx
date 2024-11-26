@@ -14,7 +14,6 @@ import BookNow from "./pages/BookNow";
 import CheckIn from "./pages/CheckIn";
 import Partners from "./pages/Partners";
 import Layout from "./components/Layout";
-import ShopView from './components/ShopView';
 
 interface ExternalRedirectProps {
   to: string;
@@ -116,7 +115,6 @@ const App: React.FC = () => {
               />
             }
           />
-          <Route path="/shop" element={<ShopView />} />
           <Route
             path="/gift-card"
             element={

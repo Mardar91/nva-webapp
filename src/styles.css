@@ -48,6 +48,7 @@ main:not(.iframe-container) {
   height: calc(100vh - 88px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
 }
 
 .container {
@@ -56,18 +57,8 @@ main:not(.iframe-container) {
   min-height: auto;
   background-color: #f3f4f6;
   gap: 5px;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* Fix per iOS */
-@supports (-webkit-touch-callout: none) {
-  .container {
-    gap: 0.5rem;
-  }
-  
-  .grid {
-    gap: 0.5rem;
-  }
+  padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
+  -webkit-overflow-scrolling: touch;
 }
 
 .heroContainer {
@@ -123,6 +114,73 @@ main:not(.iframe-container) {
   font-weight: 600;
   color: #1e3a8a;
   text-align: center;
+}
+
+/* Dialog/Modal styles */
+.DialogContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  width: 90vw;
+  max-width: 500px;
+  max-height: 85vh;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.DialogHeader {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.DialogTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 8px;
+}
+
+.DialogDescription {
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.DialogFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* Memory Game styles */
+.memory-game-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
 }
 
 .card {
@@ -193,29 +251,6 @@ main:not(.iframe-container) {
   font-weight: 500;
 }
 
-.datePickerContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #fff;
-  padding: 20px;
-}
-
-.datePickerTitle {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e3a8a;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.ourServicesSection {
-  padding: 0;
-  background-color: #fff;
-  margin-top: 0px;
-}
-
 .sectionTitle {
   font-size: 18px;
   padding: 12px 15px;
@@ -226,114 +261,65 @@ main:not(.iframe-container) {
   margin-bottom: 5px;
 }
 
-.servicesRow {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 15px 15px;
-  gap: 8px;
+/* Fix per layout su iOS */
+@supports (-webkit-touch-callout: none) {
+  .container {
+    overflow-x: hidden;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 120px);
+  }
+  
+  main:not(.iframe-container) {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 120px);
+  }
+
+  .DialogContent {
+    max-height: 80vh;
+    padding: 20px;
+  }
+
+  .grid {
+    gap: 0.5rem;
+  }
+
+  .grid > * {
+    min-height: 4rem;
+  }
+
+  .memory-game-container {
+    padding: 12px;
+    gap: 6px;
+  }
 }
 
-.serviceButton {
-  flex: 1;
-  height: 80px;
-  background-color: #e0e7ff;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1px;
-  min-width: 70px;
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
 }
 
-.serviceIcon {
-  margin-bottom: 5px;
+@keyframes glowing {
+  0% {
+    background-color: #ecfdf5;
+    box-shadow: 0 0 5px rgba(5, 150, 105, 0.2);
+  }
+  50% {
+    background-color: #d1fae5;
+    box-shadow: 0 0 20px rgba(5, 150, 105, 0.4);
+  }
+  100% {
+    background-color: #ecfdf5;
+    box-shadow: 0 0 5px rgba(5, 150, 105, 0.2);
+  }
 }
 
-.serviceText {
-  font-size: 13px;
-  color: #1e3a8a;
-  font-weight: bold;
-  text-align: center;
-}
-
-.spacer {
-  height: 5px;
-  background-color: #f3f4f6;
-}
-
-.subSectionTitle {
-  color: #1e3a8a;
-  text-align: center;
-  font-size: 1rem;
-  margin-bottom: 10px;
-}
-
-/* Modal styles */
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 20px;
-}
-
-.modalContent {
-  background-color: white;
-  border-radius: 15px;
-  padding: 20px;
-  width: 90%;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.modalTitle {
-  font-size: 20px;
-  font-weight: bold;
-  color: #1e3a8a;
-  margin-bottom: 15px;
-}
-
-.modalText {
-  font-size: 16px;
-  color: #4b5563;
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.modalButton {
-  background-color: #25d366;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.modalButtonText {
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.closeButton {
-  margin-top: 15px;
-  padding: 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.closeButtonText {
-  color: #6b7280;
-  font-size: 16px;
+.glowing {
+  animation: glowing 2s ease-in-out infinite;
 }
 
 /* VIP section styles */
@@ -344,43 +330,6 @@ main:not(.iframe-container) {
   flex-direction: column;
   align-items: center;
   margin-bottom: 10px;
-}
-
-.vipHeroTitle {
-  font-size: 24px;
-  font-weight: bold;
-  color: #fff;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.vipHeroSubtitle {
-  font-size: 16px;
-  color: #e0e7ff;
-  text-align: center;
-  margin-bottom: 20px;
-  padding: 0 10px;
-}
-
-.vipButton {
-  background-color: #daa520;
-  display: flex;
-  align-items: center;
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-}
-
-.vipButtonIcon {
-  margin-right: 8px;
-}
-
-.vipButtonText {
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
 }
 
 .vipHeroContainer.extended-blue-bg {
@@ -399,52 +348,6 @@ main:not(.iframe-container) {
   }
 }
 
-/* Stile per il pulsante dorato */
-.golden-vip-button {
-  background-color: #daa520 !important;
-  color: white !important;
-  border: none;
-}
-
-/* Surroundings section */
-.surroundingsSection {
-  padding: 0;
-  background-color: #fff;
-  margin-top: 5px;
-}
-
-.surroundingsRow {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 15px 15px;
-  gap: 8px;
-}
-
-.surroundingButton {
-  flex: 1;
-  height: 80px;
-  background-color: #e0e7ff;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1px;
-  min-width: 70px;
-}
-
-.surroundingIcon {
-  margin-bottom: 5px;
-}
-
-.surroundingText {
-  font-size: 12px;
-  color: #1e3a8a;
-  font-weight: bold;
-  text-align: center;
-}
-
-/* Containers per iOS */
 .titleContainer {
   display: flex;
   flex-direction: column;
@@ -466,61 +369,4 @@ main:not(.iframe-container) {
   font-weight: 600;
   color: #059669;
   text-align: center;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.05);
-  }
-}
-
-/* Aggiunta di stili per il fix iOS */
-@keyframes glowing {
-  0% {
-    background-color: #ecfdf5;
-    box-shadow: 0 0 5px rgba(5, 150, 105, 0.2);
-  }
-  50% {
-    background-color: #d1fae5;
-    box-shadow: 0 0 20px rgba(5, 150, 105, 0.4);
-  }
-  100% {
-    background-color: #ecfdf5;
-    box-shadow: 0 0 5px rgba(5, 150, 105, 0.2);
-  }
-}
-
-.glowing {
-  animation: glowing 2s ease-in-out infinite;
-}
-
-/* Fix per layout su iOS */
-@supports (-webkit-touch-callout: none) {
-  .container {
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .bg-white {
-    background-color: #ffffff;
-    position: relative;
-    z-index: 1;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-    padding-bottom: 1rem;
-  }
-
-  .grid > * {
-    min-height: 4rem;
-  }
 }

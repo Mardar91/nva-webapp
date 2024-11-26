@@ -446,7 +446,7 @@ const ServicesSection = () => {
               const message = encodeURIComponent("I would like to order coffee pods and croissants.");
               window.location.href = `https://wa.me/393458381107?text=${message}`;
             }}
-            className="delivery-button"
+            className="delivery-button bg-[#25D366] hover:bg-[#128C7E]"
           >
             Order on WhatsApp
           </Button>
@@ -459,7 +459,7 @@ const ServicesSection = () => {
                 const address = encodeURIComponent("Café L'Incontro, Piazza Risorgimento, 70042 Mola di Bari BA, Italia");
                 window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
               }}
-              className="delivery-button"
+              className="delivery-button bg-blue-600 hover:bg-blue-700"
             >
               Caffè l'Incontro
             </Button>

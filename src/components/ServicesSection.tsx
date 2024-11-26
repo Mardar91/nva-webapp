@@ -283,7 +283,7 @@ const ServicesSection = () => {
           onClick={() => {
             window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
           }}
-          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+          className="bg-blue-600 hover:bg-blue-700 text-white w-full h-10 text-sm"
         >
           View Menu
         </Button>
@@ -291,7 +291,7 @@ const ServicesSection = () => {
           onClick={() => {
             window.location.href = "tel:+390804741063";
           }}
-          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+          className="bg-blue-600 hover:bg-blue-700 text-white w-full h-10 text-sm"
         >
           Call Now
         </Button>
@@ -307,7 +307,7 @@ const ServicesSection = () => {
         onClick={() => {
           window.open("https://2ly.link/1yEMK", "_blank");
         }}
-        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+        className="bg-blue-600 hover:bg-blue-700 text-white w-full h-10 text-sm"
       >
         Download the App
       </Button>

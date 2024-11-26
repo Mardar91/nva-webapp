@@ -260,52 +260,54 @@ const ServicesSection = () => {
         </div>
       </div>
 
-      {/* Delivery Modal */}
-      <Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Delivery Service</DialogTitle>
-            <DialogDescription>
-              Order your food online and have it delivered directly to your apartment every day except Wednesday.
-              <br /><br />
-              MONDAY - SATURDAY: <br />
-              10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM
-              <br /><br />
-              SUNDAY: <br />
-              9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              onClick={() => {
-                window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-            >
-              View Menu
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = "tel:+390804741063";
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-            >
-              Call Now
-            </Button>
-            <p className="text-sm text-gray-600 text-center mt-4">
-              or order online with the code: <strong>NONNAVITTORIA</strong> and get 5% OFF
-            </p>
-            <Button
-              onClick={() => {
-                window.open("https://2ly.link/1yEMK", "_blank");
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-            >
-              Download the App
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+{/* Delivery Modal */}
+<Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
+  <DialogContent className="DialogContent">
+    <DialogHeader>
+      <DialogTitle>Delivery Service</DialogTitle>
+      <DialogDescription className="text-center">
+        Order your food online and have it delivered directly to your apartment every day except Wednesday.
+        <br /><br />
+        MONDAY - SATURDAY: <br />
+        10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM
+        <br /><br />
+        SUNDAY: <br />
+        9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter className="DialogFooter">
+      <Button
+        onClick={() => {
+          window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+      >
+        View Menu
+      </Button>
+      <Button
+        onClick={() => {
+          window.location.href = "tel:+390804741063";
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+      >
+        Call Now
+      </Button>
+      <div className="text-center w-full">
+        <p className="text-gray-600 mb-2">or order online with the code:</p>
+        <p className="font-bold text-gray-800 mb-2">NONNAVITTORIA</p>
+        <p className="text-gray-600 mb-4">and get 5% OFF</p>
+      </div>
+      <Button
+        onClick={() => {
+          window.open("https://2ly.link/1yEMK", "_blank");
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+      >
+        Download the App
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
       {/* Altri Modal con la stessa struttura */}
       <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>
@@ -434,35 +436,35 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Massage Modal */}
-      <Dialog open={openMassageModal} onOpenChange={setOpenMassageModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Massage Service</DialogTitle>
-            <DialogDescription>
-              Book a massage directly in your apartment. Subject to availability.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              onClick={() => {
-                window.open("https://nonnavittoriaapartments.it/massage.pdf", "_blank");
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-            >
-              Price List
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = "https://wa.me/491794265253";
-              }}
-              className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full"
-            >
-              Contact on WhatsApp
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+{/* Massage Modal */}
+<Dialog open={openMassageModal} onOpenChange={setOpenMassageModal}>
+  <DialogContent className="DialogContent">
+    <DialogHeader>
+      <DialogTitle>Massage Service</DialogTitle>
+      <DialogDescription>
+        Book a massage directly in your apartment. Subject to availability.
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter className="DialogFooter">
+      <Button
+        onClick={() => {
+          window.open("https://nonnavittoriaapartments.it/massage.pdf", "_blank");
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+      >
+        Price List
+      </Button>
+      <Button
+        onClick={() => {
+          window.location.href = "https://wa.me/491794265253";
+        }}
+        className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full"
+      >
+        Contact on WhatsApp
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
       {/* Rent a Bike Modal */}
       <Dialog open={openRentBikeModal} onOpenChange={setOpenRentBikeModal}>
@@ -487,79 +489,79 @@ const ServicesSection = () => {
       </Dialog>
 
       {/* Laundry Modal */}
-      <Dialog open={openLaundryModal} onOpenChange={setOpenLaundryModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Laundry Services</DialogTitle>
-            <DialogDescription>
-              If you need professional wash, you can visit:
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              variant="outline"
-              onClick={() => openInMaps("Via G. Salvemini, 5/B, 70042 Mola di Bari")}
-              className="w-full text-left justify-start"
-            >
-              Via G. Salvemini, 5/B, 70042 Mola di Bari
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = "tel:+390804733856";
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-            >
-              Call Now
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+<Dialog open={openLaundryModal} onOpenChange={setOpenLaundryModal}>
+  <DialogContent className="DialogContent">
+    <DialogHeader>
+      <DialogTitle>Laundry Services</DialogTitle>
+      <DialogDescription>
+        If you need professional wash, you can visit:
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter className="DialogFooter">
+      <Button
+        variant="outline"
+        onClick={() => openInMaps("Via G. Salvemini, 5/B, 70042 Mola di Bari")}
+        className="w-full text-left justify-start"
+      >
+        Via G. Salvemini, 5/B, 70042 Mola di Bari
+      </Button>
+      <Button
+        onClick={() => {
+          window.location.href = "tel:+390804733856";
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+      >
+        Call Now
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
       {/* Emergency Modal */}
-      <Dialog open={openEmergencyModal} onOpenChange={setOpenEmergencyModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Emergency Numbers</DialogTitle>
-            <DialogDescription>
-              If you need help, here are all the useful numbers:
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              onClick={() => {
-                window.location.href = "tel:112";
-              }}
-              className="bg-red-600 hover:bg-red-700 text-white w-full"
-            >
-              🚔 Police - 112
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = "tel:118";
-              }}
-              className="bg-red-600 hover:bg-red-700 text-white w-full"
-            >
-              🚑 Ambulance - 118
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = "tel:115";
-              }}
-              className="bg-red-600 hover:bg-red-700 text-white w-full"
-            >
-              🚒 Fire Department - 115
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = "tel:+393928431675";
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-            >
-              🏠 Nonna Vittoria Apartments - +39 392 843 1675
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+<Dialog open={openEmergencyModal} onOpenChange={setOpenEmergencyModal}>
+  <DialogContent className="DialogContent">
+    <DialogHeader>
+      <DialogTitle>Emergency Numbers</DialogTitle>
+      <DialogDescription>
+        If you need help, here are all the useful numbers:
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter className="DialogFooter">
+      <Button
+        onClick={() => {
+          window.location.href = "tel:112";
+        }}
+        className="bg-red-600 hover:bg-red-700 text-white w-full"
+      >
+        🚔 Police - 112
+      </Button>
+      <Button
+        onClick={() => {
+          window.location.href = "tel:118";
+        }}
+        className="bg-red-600 hover:bg-red-700 text-white w-full"
+      >
+        🚑 Ambulance - 118
+      </Button>
+      <Button
+        onClick={() => {
+          window.location.href = "tel:115";
+        }}
+        className="bg-red-600 hover:bg-red-700 text-white w-full"
+      >
+        🚒 Fire Department - 115
+      </Button>
+      <Button
+        onClick={() => {
+          window.location.href = "tel:+393928431675";
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+      >
+        🏠 Nonna Vittoria Apartments - +39 392 843 1675
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
       {/* Pharmacy Modal */}
       <Dialog open={openPharmacyModal} onOpenChange={setOpenPharmacyModal}>

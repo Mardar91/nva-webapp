@@ -4,7 +4,7 @@ import "./styles.css";
 import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
-// Utility functions
+// Utility functions for PWA detection and platform checking
 const isIOS = () => {
   if (typeof window !== 'undefined') {
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -26,10 +26,11 @@ const isPWAInstalled = () => {
          window.matchMedia('(display-mode: standalone)').matches;
 };
 
-// PWA installation handling
+// PWA installation and redirection handling
 if (typeof window !== 'undefined') {
   // Store original URL
   const originalUrl = window.location.href;
+  const referrer = document.referrer;
   
   const attemptPWARedirect = () => {
     if (!isInStandaloneMode() && isPWAInstalled()) {

@@ -54,10 +54,20 @@ main:not(.iframe-container) {
   display: flex;
   flex-direction: column;
   min-height: auto;
-  min-height: -webkit-fill-available;
   background-color: #f3f4f6;
   gap: 5px;
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Fix per iOS */
+@supports (-webkit-touch-callout: none) {
+  .container {
+    gap: 0.5rem;
+  }
+  
+  .grid {
+    gap: 0.5rem;
+  }
 }
 
 .heroContainer {
@@ -164,7 +174,7 @@ main:not(.iframe-container) {
   margin-bottom: 10px;
   padding: 0 15px;
   margin-bottom: 10px;
-  margin-top: -5px; /* Aggiungi questa proprietà */
+  margin-top: -5px;
 }
 
 .discountBadge {
@@ -213,7 +223,7 @@ main:not(.iframe-container) {
   color: #1e3a8a;
   text-align: left;
   margin-top: 0px !important;
-  margin-bottom: 5px; /* Aggiungi questa proprietà */
+  margin-bottom: 5px;
 }
 
 .servicesRow {
@@ -248,15 +258,15 @@ main:not(.iframe-container) {
 }
 
 .spacer {
-  height: 30px;
+  height: 5px;
   background-color: #f3f4f6;
 }
 
 .subSectionTitle {
-  color: #1e3a8a; /* Aggiungi il colore blu */
-  text-align: center; /* Centra il testo */
-  font-size: 1rem; /* Aggiusta la dimensione del testo, se necessario */
-  margin-bottom: 10px; /* Distanza tra la sottocategoria e la lista */
+  color: #1e3a8a;
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 10px;
 }
 
 /* Modal styles */
@@ -434,12 +444,12 @@ main:not(.iframe-container) {
   text-align: center;
 }
 
-/* Aggiungi questi stili al tuo file CSS */
+/* Containers per iOS */
 .titleContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px; /* Ridotto da 8px a 4px per avvicinare gli elementi */
+  gap: 4px;
   margin-bottom: 24px;
 }
 
@@ -448,7 +458,7 @@ main:not(.iframe-container) {
   border-radius: 20px;
   background-color: #ecfdf5;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  margin-top: -2px; /* Aggiunto margin negativo per avvicinare al titolo */
+  margin-top: -2px;
 }
 
 .receptionText {
@@ -469,8 +479,7 @@ main:not(.iframe-container) {
   }
 }
 
-/* Aggiungi questo al tuo file CSS esistente */
-
+/* Aggiunta di stili per il fix iOS */
 @keyframes glowing {
   0% {
     background-color: #ecfdf5;
@@ -488,4 +497,30 @@ main:not(.iframe-container) {
 
 .glowing {
   animation: glowing 2s ease-in-out infinite;
+}
+
+/* Fix per layout su iOS */
+@supports (-webkit-touch-callout: none) {
+  .container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .bg-white {
+    background-color: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .grid > * {
+    min-height: 4rem;
+  }
 }

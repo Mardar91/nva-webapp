@@ -52,9 +52,9 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
   if (daysLeft < 0) return null;
 
   return (
-    <div className="flex justify-center mt-4 mb-6">
+    <div className="flex justify-center mt-6">
       <div 
-        className="px-4 py-2 rounded-full bg-[#ecfdf5] animate-pulse"
+        className="px-6 py-3 rounded-full bg-[#ecfdf5]"
         style={{ animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
       >
         <span className="text-[#059669] font-semibold">
@@ -71,6 +71,7 @@ const CheckIn = () => {
   const [savedDate, setSavedDate] = usePersistedDate('check-in-date');
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const validateDate = (selectedDate: Date) => {
     const currentDate = new Date();
@@ -84,11 +85,13 @@ const CheckIn = () => {
     if (newDate) {
       setSavedDate(newDate);
       setDateSelected(true);
+      setIsConfirmed(false); // Reset dello stato di conferma quando si seleziona una nuova data
     }
   };
 
   const handleConfirm = () => {
     if (savedDate && validateDate(savedDate)) {
+      setIsConfirmed(true);
       setShowForm(true);
     } else {
       alert(
@@ -129,40 +132,57 @@ const CheckIn = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24">
-      {savedDate && <CountdownDisplay checkInDate={savedDate} />}
       <Card className="mb-24">
         <CardHeader>
-          <CardTitle>Please select your check-in date</CardTitle>
+          <CardTitle className="text-[#1e3a8a]">Please select your check-in date</CardTitle>
         </CardHeader>
         <CardContent>
+          <style>
+            {`
+              .rdp-day_selected { 
+                background-color: #1e3a8a !important;
+                color: white !important;
+              }
+              .rdp-day_today { 
+                background-color: #e0e7ff !important;
+                color: #1e3a8a !important;
+              }
+              .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+                background-color: #bfdbfe !important;
+                color: #1e3a8a !important;
+              }
+              .rdp-head_cell {
+                color: #1e3a8a !important;
+                font-weight: 600 !important;
+              }
+              .rdp-caption_label {
+                color: #1e3a8a !important;
+                font-weight: 600 !important;
+              }
+              .rdp-nav_button {
+                color: #1e3a8a !important;
+              }
+            `}
+          </style>
           <Calendar
             mode="single"
             selected={savedDate || undefined}
             onSelect={handleDateSelect}
-            className={cn(
-              "rounded-md border",
-              "rdp [&_.rdp-head_cell]:!text-[#1e3a8a]", // Colore blu per i giorni della settimana
-              "[&_.rdp-caption]:!text-[#1e3a8a]", // Colore blu per il mese
-              "[&_.rdp-nav_button]:!text-[#1e3a8a]", // Colore blu per i pulsanti di navigazione
-              "[&_.rdp-day]:!text-[#1e3a8a]", // Colore blu per i giorni
-              "[&_.rdp-day_selected]:!bg-[#1e3a8a]", // Sfondo blu per il giorno selezionato
-              "[&_.rdp-day_selected]:!text-white", // Testo bianco per il giorno selezionato
-              "[&_.rdp-day_today]:!bg-[#e0e7ff]", // Sfondo azzurro chiaro per oggi
-              "[&_.rdp-day_today]:!text-[#1e3a8a]" // Testo blu per oggi
-            )}
+            className="rounded-md border"
           />
         </CardContent>
         {dateSelected && (
           <CardFooter className="flex justify-end pb-6">
             <Button 
               onClick={handleConfirm}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white"
             >
               Confirm Check-in Date
             </Button>
           </CardFooter>
         )}
       </Card>
+      {isConfirmed && savedDate && <CountdownDisplay checkInDate={savedDate} />}
     </div>
   );
 };

@@ -1,13 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 const ShopIframeView: React.FC = () => {
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, []);
-
   return (
     <div className="flex-grow h-full">
       <iframe
@@ -21,9 +14,6 @@ const ShopIframeView: React.FC = () => {
         }}
         allow="fullscreen *; clipboard-write; clipboard-read"
         sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
-        referrerPolicy="origin"
-        importance="high"
-        loading="eager"
       />
     </div>
   );

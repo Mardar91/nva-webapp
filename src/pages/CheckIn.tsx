@@ -71,7 +71,10 @@ const CheckIn = () => {
   const [savedDate, setSavedDate] = usePersistedDate('check-in-date');
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(() => {
+    // Controlla se c'è una data confermata nel localStorage
+    return localStorage.getItem('check-in-confirmed') === 'true';
+  });
 
   const validateDate = (selectedDate: Date) => {
     const currentDate = new Date();
@@ -83,14 +86,17 @@ const CheckIn = () => {
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
+      // Reset dello stato di conferma quando si seleziona una nuova data
+      localStorage.setItem('check-in-confirmed', 'false');
+      setIsConfirmed(false);
       setSavedDate(newDate);
       setDateSelected(true);
-      setIsConfirmed(false); // Reset dello stato di conferma quando si seleziona una nuova data
     }
   };
 
   const handleConfirm = () => {
     if (savedDate && validateDate(savedDate)) {
+      localStorage.setItem('check-in-confirmed', 'true');
       setIsConfirmed(true);
       setShowForm(true);
     } else {
@@ -99,6 +105,13 @@ const CheckIn = () => {
       );
     }
   };
+
+  useEffect(() => {
+    // Forza l'aggiornamento di dateSelected quando si carica una data salvata
+    if (savedDate) {
+      setDateSelected(true);
+    }
+  }, [savedDate]);
 
   if (showForm) {
     return (
@@ -132,7 +145,7 @@ const CheckIn = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24">
-      <Card className="mb-24">
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-[#1e3a8a]">Please select your check-in date</CardTitle>
         </CardHeader>

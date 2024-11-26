@@ -10,6 +10,7 @@ import {
 } from "../components/ui/card";
 import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
+import { ChevronDown, ChevronUp, Calendar as CalendarIcon } from "lucide-react";
 
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
@@ -82,8 +83,8 @@ const CheckIn = () => {
   const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
-  // Imposta dateSelected se c'è una data salvata
   useEffect(() => {
     if (checkInDate) {
       setDateSelected(true);
@@ -100,7 +101,6 @@ const CheckIn = () => {
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
-      // Verifica se la data selezionata è nel passato
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (newDate.getTime() >= today.getTime()) {
@@ -123,6 +123,7 @@ const CheckIn = () => {
   const handleConfirm = () => {
     if (checkInDate) {
       setIsConfirmed(true);
+      setShowCalendar(false); // Nascondi il calendario dopo la conferma
       if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {
@@ -165,57 +166,82 @@ const CheckIn = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24">
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-[#1e3a8a]">Please select your check-in date</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <style>
-            {`
-              .rdp-day_selected { 
-                background-color: #1e3a8a !important;
-                color: white !important;
-              }
-              .rdp-day_today { 
-                background-color: #e0e7ff !important;
-                color: #1e3a8a !important;
-              }
-              .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
-                background-color: #bfdbfe !important;
-                color: #1e3a8a !important;
-              }
-              .rdp-head_cell {
-                color: #1e3a8a !important;
-                font-weight: 600 !important;
-              }
-              .rdp-caption_label {
-                color: #1e3a8a !important;
-                font-weight: 600 !important;
-              }
-              .rdp-nav_button {
-                color: #1e3a8a !important;
-              }
-            `}
-          </style>
-          <Calendar
-            mode="single"
-            selected={checkInDate || undefined}
-            onSelect={handleDateSelect}
-            className="rounded-md border"
-          />
-        </CardContent>
-        {dateSelected && checkInDate && (
-          <CardFooter className="flex justify-end pb-6">
-            <Button 
-              onClick={handleConfirm}
-              className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white"
-            >
-              Confirm Check-in Date
-            </Button>
-          </CardFooter>
-        )}
-      </Card>
       {isConfirmed && checkInDate && <CountdownDisplay checkInDate={checkInDate} />}
+      
+      {isConfirmed && (
+        <div className="flex justify-center mt-4">
+          <Button
+            onClick={() => setShowCalendar(!showCalendar)}
+            variant="outline"
+            className="flex items-center gap-2 text-[#1e3a8a]"
+          >
+            {showCalendar ? (
+              <>
+                Hide Calendar <ChevronUp className="h-4 w-4" />
+              </>
+            ) : (
+              <>
+                Change Check-in Date <CalendarIcon className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
+      {(!isConfirmed || showCalendar) && (
+        <Card className={cn("mb-6", isConfirmed ? "mt-4" : "")}>
+          <CardHeader>
+            <CardTitle className="text-[#1e3a8a]">
+              {isConfirmed ? "Change your check-in date" : "Please select your check-in date"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <style>
+              {`
+                .rdp-day_selected { 
+                  background-color: #1e3a8a !important;
+                  color: white !important;
+                }
+                .rdp-day_today { 
+                  background-color: #e0e7ff !important;
+                  color: #1e3a8a !important;
+                }
+                .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+                  background-color: #bfdbfe !important;
+                  color: #1e3a8a !important;
+                }
+                .rdp-head_cell {
+                  color: #1e3a8a !important;
+                  font-weight: 600 !important;
+                }
+                .rdp-caption_label {
+                  color: #1e3a8a !important;
+                  font-weight: 600 !important;
+                }
+                .rdp-nav_button {
+                  color: #1e3a8a !important;
+                }
+              `}
+            </style>
+            <Calendar
+              mode="single"
+              selected={checkInDate || undefined}
+              onSelect={handleDateSelect}
+              className="rounded-md border"
+            />
+          </CardContent>
+          {dateSelected && checkInDate && (
+            <CardFooter className="flex justify-end pb-6">
+              <Button 
+                onClick={handleConfirm}
+                className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white"
+              >
+                Confirm Check-in Date
+              </Button>
+            </CardFooter>
+          )}
+        </Card>
+      )}
     </div>
   );
 };

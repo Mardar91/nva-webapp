@@ -1,0 +1,12 @@
+{
+  "routes": [
+    {
+      "src": "/serviceworker.js",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/javascript; charset=utf-8"
+      }
+    }
+  ],
+  "cleanUrls": true
+}

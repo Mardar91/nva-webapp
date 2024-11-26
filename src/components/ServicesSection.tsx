@@ -135,7 +135,7 @@ const ServicesSection = () => {
     {
       name: "Shop",
       icon: "🛍️",
-      onClick: () => (window.location.href = "/shop"),
+      onClick: () => window.open("https://store.nonnavittoriaapartments.it", "_blank"),
     },
     {
       name: "Delivery",

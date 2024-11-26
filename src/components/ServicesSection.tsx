@@ -292,9 +292,11 @@ const ServicesSection = () => {
             >
               Call Now
             </Button>
-            <p className="text-sm text-gray-600 text-center mt-4">
-              or order online with the code: <strong>NONNAVITTORIA</strong> and get 5% OFF
-            </p>
+            <div className="text-center w-full">
+              <p className="text-gray-600 mb-2">or order online with the code:</p>
+              <p className="font-bold text-gray-800 mb-2">NONNAVITTORIA</p>
+              <p className="text-gray-600 mb-4">and get 5% OFF</p>
+              </div>
             <Button
               onClick={() => {
                 window.open("https://2ly.link/1yEMK", "_blank");

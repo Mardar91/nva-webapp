@@ -143,7 +143,7 @@ const ServicesSection = () => {
       onClick: () => setOpenDeliveryModal(true),
     },
     {
-      name: "Rent Car",
+      name: "Rent a Car",
       icon: "🚗",
       onClick: () => setOpenRentCarModal(true),
     },
@@ -321,7 +321,7 @@ const ServicesSection = () => {
           <DialogHeader>
             <DialogTitle>Rent a Car</DialogTitle>
             <DialogDescription>
-              Rent a car at special prices with our affiliated service. They will deliver the car directly to your location.
+              Rent a car at exclusive rates through our trusted partner. Enjoy the convenience of having the vehicle delivered directly to your location..
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="DialogFooter">
@@ -476,7 +476,7 @@ const ServicesSection = () => {
           <DialogHeader>
             <DialogTitle>Massage Service</DialogTitle>
             <DialogDescription>
-              Book a massage directly in your apartment. Subject to availability.
+              Enjoy the convenience of booking a massage directly in your apartment, subject to availability.
               <div className="mt-4 flex flex-col space-y-2">
                 <Button
                   onClick={() => {
@@ -506,7 +506,7 @@ const ServicesSection = () => {
           <DialogHeader>
             <DialogTitle>Rent a Bike</DialogTitle>
             <DialogDescription>
-              Rent a bicycle for quick and easy transportation. Check availability.
+              Rent a bicycle for convenient and efficient transportation. Availability upon request.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="DialogFooter">
@@ -528,7 +528,7 @@ const ServicesSection = () => {
           <DialogHeader>
             <DialogTitle>Laundry Services</DialogTitle>
             <DialogDescription>
-              If you need professional wash, you can visit:
+              For professional laundry services, visit:
               <div className="mt-4 flex flex-col space-y-2">
                 <Button
                   variant="outline"
@@ -620,26 +620,33 @@ const ServicesSection = () => {
       </Dialog>
 
       {/* Recycle Modal */}
-      <Dialog open={openRecycleModal} onOpenChange={setOpenRecycleModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Recycling Information</DialogTitle>
-            <DialogDescription>
-              Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              onClick={() => {
-                window.location.href = "https://wa.me/393458381107";
-              }}
-              className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full"
-            >
-              Schedule a Collection
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+<Dialog open={openRecycleModal} onOpenChange={setOpenRecycleModal}>
+  <DialogContent className="DialogContent">
+    <DialogHeader>
+      <DialogTitle>Recycling Information</DialogTitle>
+      <DialogDescription>
+        Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.
+        
+        <div className="mt-4 mb-4 text-left">
+          <p className="font-semibold mb-2">Separate the waste as follows:</p>
+          <p className="mb-2">🍌 Organic waste</p>
+          <p className="mb-2">🥫 Plastic and cans</p>
+          <p className="mb-2">🧻 Paper</p>
+        </div>
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter className="DialogFooter">
+      <Button
+        onClick={() => {
+          window.location.href = "https://wa.me/393458381107";
+        }}
+        className="delivery-button bg-[#25D366] hover:bg-[#128C7E]"
+      >
+        Schedule a Collection
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
       {/* Game Modal */}
       <Dialog open={openGameModal} onOpenChange={setOpenGameModal}>

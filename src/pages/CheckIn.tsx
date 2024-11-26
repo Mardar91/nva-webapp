@@ -11,10 +11,10 @@ import {
 import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 
-// Custom hook per gestire il salvataggio della data
-const usePersistedDate = (key: string) => {
-  const [value, setValue] = useState<Date | null>(() => {
-    const saved = localStorage.getItem(key);
+// Custom hook per gestire il salvataggio della data e dello stato di conferma
+const usePersistedCheckIn = () => {
+  const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
+    const saved = localStorage.getItem('check-in-date');
     if (saved) {
       const date = new Date(saved);
       return isNaN(date.getTime()) ? null : date;
@@ -22,26 +22,34 @@ const usePersistedDate = (key: string) => {
     return null;
   });
 
-  useEffect(() => {
-    if (value) {
-      localStorage.setItem(key, value.toISOString());
-    } else {
-      localStorage.removeItem(key);
-    }
-  }, [key, value]);
+  const [isConfirmed, setIsConfirmed] = useState(() => {
+    return localStorage.getItem('check-in-confirmed') === 'true';
+  });
 
-  return [value, setValue] as const;
+  useEffect(() => {
+    if (checkInDate) {
+      localStorage.setItem('check-in-date', checkInDate.toISOString());
+    } else {
+      localStorage.removeItem('check-in-date');
+    }
+  }, [checkInDate]);
+
+  useEffect(() => {
+    localStorage.setItem('check-in-confirmed', isConfirmed.toString());
+  }, [isConfirmed]);
+
+  return { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed };
 };
 
 const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
-  const [daysLeft, setDaysLeft] = useState(0);
+  const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
     const calculateDaysLeft = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const days = differenceInDays(checkInDate, today);
-      setDaysLeft(days);
+      setDaysLeft(days >= 0 ? days : null);
     };
 
     calculateDaysLeft();
@@ -49,6 +57,10 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
 
     return () => clearInterval(interval);
   }, [checkInDate]);
+
+  if (daysLeft === null) {
+    return null;
+  }
 
   return (
     <div className="flex justify-center mt-6">
@@ -67,10 +79,16 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
 };
 
 const CheckIn = () => {
-  const [savedDate, setSavedDate] = usePersistedDate('check-in-date');
+  const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // Imposta dateSelected se c'è una data salvata
+  useEffect(() => {
+    if (checkInDate) {
+      setDateSelected(true);
+    }
+  }, [checkInDate]);
 
   const validateDate = (selectedDate: Date) => {
     const currentDate = new Date();
@@ -82,21 +100,30 @@ const CheckIn = () => {
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
-      setSavedDate(newDate);
-      setDateSelected(true);
-      setIsConfirmed(false);
+      // Verifica se la data selezionata è nel passato
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (newDate.getTime() >= today.getTime()) {
+        setCheckInDate(newDate);
+        setDateSelected(true);
+        setIsConfirmed(false);
+      } else {
+        alert("Please select a future date");
+        setCheckInDate(null);
+        setDateSelected(false);
+        setIsConfirmed(false);
+      }
     } else {
       setDateSelected(false);
-      setSavedDate(null);
+      setCheckInDate(null);
       setIsConfirmed(false);
     }
   };
 
   const handleConfirm = () => {
-    if (savedDate) {
+    if (checkInDate) {
       setIsConfirmed(true);
-      // Controlla se la data è valida per il check-in
-      if (validateDate(savedDate)) {
+      if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {
         alert(
@@ -172,12 +199,12 @@ const CheckIn = () => {
           </style>
           <Calendar
             mode="single"
-            selected={savedDate || undefined}
+            selected={checkInDate || undefined}
             onSelect={handleDateSelect}
             className="rounded-md border"
           />
         </CardContent>
-        {dateSelected && savedDate && (
+        {dateSelected && checkInDate && (
           <CardFooter className="flex justify-end pb-6">
             <Button 
               onClick={handleConfirm}
@@ -188,7 +215,7 @@ const CheckIn = () => {
           </CardFooter>
         )}
       </Card>
-      {isConfirmed && savedDate && <CountdownDisplay checkInDate={savedDate} />}
+      {isConfirmed && checkInDate && <CountdownDisplay checkInDate={checkInDate} />}
     </div>
   );
 };

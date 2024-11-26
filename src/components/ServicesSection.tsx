@@ -227,38 +227,36 @@ const ServicesSection = () => {
   };
 
   return (
-    <div className="bg-white mt-5 pt-4 pb-8">
-      <div className="spacer"></div>
-      <div className="container mx-auto px-4">
-        <h2 className="text-lg font-bold text-blue-900 mb-6 ml-4">Our Services</h2>
-        <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg">
+    <div className="bg-white mt-5 pt-4">
+      <div className="container mx-auto px-4 flex flex-col" style={{ gap: '1rem' }}>
+        <h2 className="text-lg font-bold text-blue-900 mb-2">Our Services</h2>
+        <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg" style={{ marginBottom: '1rem' }}>
           {services.map((service) => (
             <Button
               key={service.name}
               variant="ghost"
               onClick={service.onClick}
               className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
+              style={{ minHeight: '4rem' }}
             >
-              <span className="text-2xl mb-1">{service.icon}</span>
-              <span className="text-blue-900 font-medium text-xs">{service.name}</span>
+              <span className="text-2xl">{service.icon}</span>
+              <span className="text-blue-900 font-medium text-xs mt-1">{service.name}</span>
             </Button>
           ))}
         </div>
-      </div>
 
-      <div className="spacer mt-8"></div>
-      <div className="container mx-auto px-4">
-        <h2 className="text-lg font-bold text-blue-900 mb-6 ml-4">Useful Information</h2>
-        <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg">
+        <h2 className="text-lg font-bold text-blue-900 mb-2">Useful Information</h2>
+        <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg pb-4">
           {utilities.map((utility) => (
             <Button
               key={utility.name}
               variant="ghost"
               onClick={utility.onClick}
               className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
+              style={{ minHeight: '4rem' }}
             >
-              <span className="text-2xl mb-1">{utility.icon}</span>
-              <span className="text-blue-900 font-medium text-xs">{utility.name}</span>
+              <span className="text-2xl">{utility.icon}</span>
+              <span className="text-blue-900 font-medium text-xs mt-1">{utility.name}</span>
             </Button>
           ))}
         </div>
@@ -376,7 +374,7 @@ const ServicesSection = () => {
         </DialogContent>
       </Dialog>
 
-{/* Excursions Modal */}
+      {/* Excursions Modal */}
       <Dialog open={openExcursionsModal} onOpenChange={setOpenExcursionsModal}>
         <DialogContent>
           <DialogHeader>

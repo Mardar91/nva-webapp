@@ -25,6 +25,8 @@ const usePersistedDate = (key: string) => {
   useEffect(() => {
     if (value) {
       localStorage.setItem(key, value.toISOString());
+    } else {
+      localStorage.removeItem(key);
     }
   }, [key, value]);
 
@@ -43,7 +45,6 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
     };
 
     calculateDaysLeft();
-    // Aggiorna il conteggio ogni giorno a mezzanotte
     const interval = setInterval(calculateDaysLeft, 1000 * 60 * 60 * 24);
 
     return () => clearInterval(interval);
@@ -72,9 +73,16 @@ const CheckIn = () => {
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(() => {
-    // Controlla se c'è una data confermata nel localStorage
     return localStorage.getItem('check-in-confirmed') === 'true';
   });
+
+  // Reset tutti gli stati quando il componente viene montato
+  useEffect(() => {
+    setDateSelected(false);
+    setSavedDate(null);
+    setIsConfirmed(false);
+    localStorage.removeItem('check-in-confirmed');
+  }, []);
 
   const validateDate = (selectedDate: Date) => {
     const currentDate = new Date();
@@ -86,11 +94,15 @@ const CheckIn = () => {
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
-      // Reset dello stato di conferma quando si seleziona una nuova data
-      localStorage.setItem('check-in-confirmed', 'false');
-      setIsConfirmed(false);
       setSavedDate(newDate);
       setDateSelected(true);
+      setIsConfirmed(false);
+      localStorage.setItem('check-in-confirmed', 'false');
+    } else {
+      setDateSelected(false);
+      setSavedDate(null);
+      setIsConfirmed(false);
+      localStorage.removeItem('check-in-confirmed');
     }
   };
 
@@ -105,13 +117,6 @@ const CheckIn = () => {
       );
     }
   };
-
-  useEffect(() => {
-    // Forza l'aggiornamento di dateSelected quando si carica una data salvata
-    if (savedDate) {
-      setDateSelected(true);
-    }
-  }, [savedDate]);
 
   if (showForm) {
     return (
@@ -184,7 +189,7 @@ const CheckIn = () => {
             className="rounded-md border"
           />
         </CardContent>
-        {dateSelected && (
+        {dateSelected && savedDate && (
           <CardFooter className="flex justify-end pb-6">
             <Button 
               onClick={handleConfirm}

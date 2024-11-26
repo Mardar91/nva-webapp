@@ -433,14 +433,42 @@ const ServicesSection = () => {
       </Dialog>
 
       {/* Breakfast Modal */}
-      <Dialog open={openBreakfastModal} onOpenChange={setOpenBreakfastModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Breakfast Service</DialogTitle>
-            <DialogDescription>Coming soon</DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+<Dialog open={openBreakfastModal} onOpenChange={setOpenBreakfastModal}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Breakfast Service</DialogTitle>
+      <DialogDescription className="text-center">
+        In our apartments, we offer complimentary coffee pods and croissants upon arrival. If you would like to order more, use the button below to place an order, price varies based on quantity (subject to availability).
+        
+        <div className="mt-6 flex flex-col gap-4">
+          <Button
+            onClick={() => {
+              const message = encodeURIComponent("I would like to order coffee pods and croissants.");
+              window.location.href = `https://wa.me/393458381107?text=${message}`;
+            }}
+            className="delivery-button"
+          >
+            Order on WhatsApp
+          </Button>
+
+          <div className="mt-4 text-left">
+            <p className="mb-4">If you prefer to have breakfast outside, we recommend the following place:</p>
+            
+            <Button
+              onClick={() => {
+                const address = encodeURIComponent("Café L'Incontro, Piazza Risorgimento, 70042 Mola di Bari BA, Italia");
+                window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
+              }}
+              className="delivery-button"
+            >
+              Caffè l'Incontro
+            </Button>
+          </div>
+        </div>
+      </DialogDescription>
+    </DialogHeader>
+  </DialogContent>
+</Dialog>
 
       {/* Massage Modal */}
       <Dialog open={openMassageModal} onOpenChange={setOpenMassageModal}>

@@ -278,19 +278,19 @@ const ServicesSection = () => {
     <DialogFooter className="DialogFooter">
       <Button
         onClick={() => {
-          window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
-        }}
-        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-      >
-        View Menu
-      </Button>
-      <Button
-        onClick={() => {
           window.location.href = "tel:+390804741063";
         }}
         className="bg-blue-600 hover:bg-blue-700 text-white w-full"
       >
         Call Now
+      </Button>
+      <Button
+        onClick={() => {
+          window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+      >
+        View Menu
       </Button>
       <div className="text-center w-full">
         <p className="text-gray-600 mb-2">or order online with the code:</p>

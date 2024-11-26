@@ -133,11 +133,13 @@ main:not(.iframe-container) {
   transform: translate(-50%, -50%);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  text-align: center;
 }
 
 .DialogHeader {
   text-align: center;
   margin-bottom: 16px;
+  width: 100%;
 }
 
 .DialogTitle {
@@ -157,6 +159,11 @@ main:not(.iframe-container) {
   flex-direction: column;
   gap: 8px;
   margin-top: 16px;
+  width: 100%;
+}
+
+.DialogFooter button {
+  width: 100%;
 }
 
 /* Memory Game styles */
@@ -370,8 +377,6 @@ main:not(.iframe-container) {
   color: #059669;
   text-align: center;
 }
-
-/* Aggiungi questo alla fine del file CSS esistente */
 
 .golden-vip-button {
   background-color: #daa520 !important;
@@ -614,15 +619,29 @@ main:not(.iframe-container) {
   }
 }
 
-/* Aggiungi al tuo file CSS */
+/* Media query per la modalità landscape */
 @media (orientation: landscape) {
   .DialogContent {
     max-height: 90vh;
-    max-width: 90vw;
-    width: auto;
+    max-width: 800px;
+    width: 90vw;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .DialogHeader {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+  }
+
+  .DialogDescription {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
   }
 
   .DialogFooter {
@@ -631,28 +650,22 @@ main:not(.iframe-container) {
     gap: 8px;
     width: 100%;
     max-width: 400px;
-    margin: 0 auto;
+    margin: 16px auto 0;
   }
 
-  .DialogDescription {
+  .DialogContent > div {
+    width: 100%;
     max-width: 600px;
     margin: 0 auto;
-    text-align: center;
+  }
+
+  .DialogContent .grid-cols-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    max-width: 400px;
+    margin: 8px auto;
   }
 }
 
-.DialogContent {
-  text-align: center;
-  padding: 24px;
-}
-
-.DialogFooter {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.DialogFooter button {
-  width: 100%;
-}

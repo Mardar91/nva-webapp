@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
     <title>Nonna Vittoria Apartments</title>
     
     <!-- Meta tag per PWA -->
@@ -11,7 +11,7 @@
     
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" /> <!-- Cambiato da black-translucent a default -->
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
     
     <!-- Manifest e icone -->
@@ -42,10 +42,32 @@
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+      /* Stili base per il corpo della pagina */
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #ffffff;
+      }
+
       /* Applica il tema blu solo per VipTicketHero in standalone */
       @media all and (display-mode: standalone) {
         .vipHeroContainer.extended-blue-bg {
           padding-top: env(safe-area-inset-top);
+        }
+
+        /* Fix per la barra di stato iOS */
+        body {
+          padding-top: env(safe-area-inset-top);
+        }
+      }
+
+      /* Fix per iOS PWA */
+      @supports (-webkit-touch-callout: none) {
+        body {
+          min-height: -webkit-fill-available;
         }
       }
     </style>
@@ -73,11 +95,22 @@
           }
         }
       }
+      
       // Ascolta l'evento di installazione completata
       window.addEventListener('appinstalled', (evt) => {
         localStorage.setItem('pwa-installed', 'true');
         console.log('PWA installata con successo');
       });
+
+      // Fix per il viewport su iOS
+      const setViewportHeight = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+
+      window.addEventListener('resize', setViewportHeight);
+      window.addEventListener('orientationchange', setViewportHeight);
+      setViewportHeight();
     </script>
   </head>
   <body>

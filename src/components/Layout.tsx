@@ -9,7 +9,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const getButtonClass = (path: string) =>
     location.pathname === path
       ? "text-[#6699ff]"
-      : "text-blue-900 dark:text-gray-200"; // Aggiunto dark:text-gray-200
+      : "text-blue-900 dark:text-gray-200";
 
   const isIframePage = ['/taxi', '/shop', '/gift-card'].includes(location.pathname);
 
@@ -46,7 +46,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       >
         <div className="flex justify-center space-x-4">
           <Link to="/">
-            <Button variant="ghost">
+            <Button 
+              variant="ghost" 
+              className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"
+            >
               <div className={`flex flex-col items-center ${getButtonClass("/")}`}>
                 <Home className="w-6 h-6 mb-1" />
                 Home
@@ -54,7 +57,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </Button>
           </Link>
           <Link to="/restaurants">
-            <Button variant="ghost">
+            <Button 
+              variant="ghost"
+              className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"
+            >
               <div className={`flex flex-col items-center ${getButtonClass("/restaurants")}`}>
                 <Pizza className="w-6 h-6 mb-1" />
                 Restaurants
@@ -62,7 +68,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </Button>
           </Link>
           <Link to="/partners">
-            <Button variant="ghost">
+            <Button 
+              variant="ghost"
+              className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"
+            >
               <div className={`flex flex-col items-center ${getButtonClass("/partners")}`}>
                 <Handshake className="w-6 h-6 mb-1" />
                 Partners

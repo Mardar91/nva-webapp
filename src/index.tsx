@@ -4,6 +4,39 @@ import "./styles.css";
 import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
+declare global {
+  interface Window {
+    OneSignal: any;
+  }
+}
+
+// OneSignal Initialization
+const initializeOneSignal = async () => {
+  if (typeof window !== 'undefined') {
+    await import('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js');
+    
+    window.OneSignal = window.OneSignal || [];
+    
+    window.OneSignal.push(() => {
+      window.OneSignal.init({
+        appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
+        allowLocalhostAsSecureOrigin: true,
+        serviceWorkerPath: "/OneSignalSDKWorker.js",
+        serviceWorkerParam: { scope: "/" },
+        notifyButton: {
+          enable: true,
+        },
+      }).then(() => {
+        window.OneSignal.Notifications.requestPermission().then((permission: boolean) => {
+          console.log("Notification permission granted:", permission);
+        });
+      }).catch((error: any) => {
+        console.error("OneSignal initialization error:", error);
+      });
+    });
+  }
+};
+
 // Utility functions for PWA detection and platform checking
 const isIOS = () => {
   if (typeof window !== 'undefined') {
@@ -28,6 +61,9 @@ const isPWAInstalled = () => {
 
 // PWA installation and redirection handling
 if (typeof window !== 'undefined') {
+  // Initialize OneSignal
+  window.addEventListener('load', initializeOneSignal);
+
   // Store original URL
   const originalUrl = window.location.href;
   const referrer = document.referrer;

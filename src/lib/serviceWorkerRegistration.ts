@@ -6,20 +6,30 @@ export function register() {
       navigator.serviceWorker
         .register('/serviceworker.js')
         .then(registration => {
-          // Controlla aggiornamenti ogni 60 minuti
+          // Controllo automatico ogni 24 ore
           setInterval(() => {
             registration.update();
-          }, 1000 * 60 * 60);
+          }, 1000 * 60 * 60 * 24); // 24 ore
 
-          // Gestisce gli aggiornamenti
+          // Gestione aggiornamenti
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Nuovo service worker disponibile
-                  if (window.confirm('Nuova versione disponibile! Vuoi aggiornare?')) {
-                    window.location.reload();
+                  // Verifica l'ultima notifica mostrata
+                  const lastUpdatePrompt = localStorage.getItem('lastUpdatePrompt');
+                  const now = Date.now();
+                  
+                  // Se sono passate 24 ore dall'ultima notifica
+                  if (!lastUpdatePrompt || (now - parseInt(lastUpdatePrompt)) > 86400000) {
+                    // Salva il timestamp prima di mostrare la notifica
+                    localStorage.setItem('lastUpdatePrompt', now.toString());
+                    
+                    // Mostra la notifica di aggiornamento
+                    if (window.confirm('Nuova versione disponibile! Vuoi aggiornare?')) {
+                      window.location.reload();
+                    }
                   }
                 }
               });
@@ -31,11 +41,18 @@ export function register() {
         });
     });
 
-    // Aggiorna quando l'app torna in primo piano
+    // Aggiornamento quando l'app torna in primo piano
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         navigator.serviceWorker.ready.then(registration => {
-          registration.update();
+          const lastUpdate = localStorage.getItem('lastServiceWorkerUpdate');
+          const now = Date.now();
+          
+          // Verifica se sono passate 24 ore dall'ultimo aggiornamento
+          if (!lastUpdate || (now - parseInt(lastUpdate)) > 86400000) {
+            registration.update();
+            localStorage.setItem('lastServiceWorkerUpdate', now.toString());
+          }
         });
       }
     });

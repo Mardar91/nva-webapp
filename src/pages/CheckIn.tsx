@@ -12,22 +12,25 @@ import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
-// Dichiarazione dei tipi inline per OneSignal
+// Dichiarazione dei tipi OneSignal
+type OneSignalType = {
+  Notifications: {
+    permission: boolean;
+    requestPermission: () => Promise<void>;
+    schedule: (options: {
+      title: string;
+      body: string;
+      url?: string;
+      icon?: string;
+      sendAfter: string;
+    }) => Promise<void>;
+  };
+};
+
 declare global {
   interface Window {
-    OneSignalDeferred: ((OneSignal: {
-      Notifications: {
-        permission: boolean;
-        requestPermission: () => Promise<void>;
-        schedule: (options: {
-          title: string;
-          body: string;
-          url?: string;
-          icon?: string;
-          sendAfter: string;
-        }) => Promise<void>;
-      };
-    }) => void)[];
+    OneSignal: OneSignalType;
+    OneSignalDeferred: ((OneSignal: OneSignalType) => void)[];
   }
 }
 
@@ -179,32 +182,34 @@ const CheckIn = () => {
     }
   };
 
-  const handleConfirm = async () => {
+   const handleConfirm = async () => {
     if (checkInDate) {
       setIsConfirmed(true);
       setShowCalendar(false);
 
       // Schedula la notifica con OneSignal
       try {
-        await window.OneSignalDeferred.push(async (OneSignal) => {
-          const notificationDate = new Date(checkInDate);
-          notificationDate.setDate(notificationDate.getDate() - 3);
+        if (window.OneSignalDeferred) {
+          await window.OneSignalDeferred.push(async (OneSignal) => {
+            const notificationDate = new Date(checkInDate);
+            notificationDate.setDate(notificationDate.getDate() - 3);
 
-          // Richiedi il permesso per le notifiche
-          const permission = await OneSignal.Notifications.permission;
-          if (permission !== true) {
-            await OneSignal.Notifications.requestPermission();
-          }
+            // Richiedi il permesso per le notifiche
+            const permission = await OneSignal.Notifications.permission;
+            if (permission !== true) {
+              await OneSignal.Notifications.requestPermission();
+            }
 
-          // Programma la notifica
-          await OneSignal.Notifications.schedule({
-            title: "Check-in Available!",
-            body: "Your online check-in is now available. Click here to proceed.",
-            url: window.location.origin + "/check-in",
-            icon: '/icons/icon-192x192.png',
-            sendAfter: notificationDate.toISOString()
+            // Programma la notifica
+            await OneSignal.Notifications.schedule({
+              title: "Check-in Available!",
+              body: "Your online check-in is now available. Click here to proceed.",
+              url: window.location.origin + "/check-in",
+              icon: '/icons/icon-192x192.png',
+              sendAfter: notificationDate.toISOString()
+            });
           });
-        });
+        }
       } catch (error) {
         console.error('Error scheduling notification:', error);
       }

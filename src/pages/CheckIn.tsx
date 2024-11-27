@@ -174,6 +174,11 @@ const CheckIn = () => {
     }
   };
 
+  // Configurazione per disabilitare le date passate
+  const disabledDays = {
+    before: new Date(),
+  };
+
   if (showForm) {
     return (
       <div className="iframe-container" style={{
@@ -263,12 +268,23 @@ const CheckIn = () => {
                 .rdp-nav_button {
                   color: #1e3a8a !important;
                 }
+                .rdp-button[disabled]:not(.rdp-day_selected) {
+                  opacity: 0.5 !important;
+                  background-color: #f3f4f6 !important;
+                  color: #9ca3af !important;
+                  cursor: not-allowed !important;
+                }
+                .rdp-button[disabled]:hover {
+                  background-color: #f3f4f6 !important;
+                  cursor: not-allowed !important;
+                }
               `}
             </style>
             <Calendar
               mode="single"
               selected={checkInDate || undefined}
               onSelect={handleDateSelect}
+              disabled={disabledDays}
               className="rounded-md border"
             />
           </CardContent>

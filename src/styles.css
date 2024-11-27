@@ -773,10 +773,16 @@ main:not(.iframe-container) {
     min-height: 4rem;
   }
 
-  .memory-game-container {
-    padding: 12px;
-    gap: 6px;
-  }
+  /* Memory Game styles */
+.memory-game-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 16px;
+}
 
   .delivery-button {
     height: 36px !important;

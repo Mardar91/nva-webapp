@@ -12,7 +12,40 @@ import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
-// [Previous hooks remain the same...]
+// Custom hook per gestire il salvataggio della data e dello stato di conferma
+const usePersistedCheckIn = () => {
+  const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
+    const saved = localStorage.getItem('check-in-date');
+    if (saved) {
+      const date = new Date(saved);
+      return isNaN(date.getTime()) ? null : date;
+    }
+    return null;
+  });
+
+  const [isConfirmed, setIsConfirmed] = useState<boolean>(() => {
+    return localStorage.getItem('check-in-confirmed') === 'true';
+  });
+
+  useEffect(() => {
+    if (checkInDate) {
+      localStorage.setItem('check-in-date', checkInDate.toISOString());
+    } else {
+      localStorage.removeItem('check-in-date');
+    }
+  }, [checkInDate]);
+
+  useEffect(() => {
+    localStorage.setItem('check-in-confirmed', isConfirmed.toString());
+  }, [isConfirmed]);
+
+  return {
+    checkInDate,
+    setCheckInDate,
+    isConfirmed,
+    setIsConfirmed
+  };
+};
 
 const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
@@ -92,7 +125,84 @@ const CheckIn = () => {
   const [dateSelected, setDateSelected] = useState(false);
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
-  // [Previous code remains the same until return statement...]
+  useEffect(() => {
+    if (checkInDate) {
+      setDateSelected(true);
+    }
+  }, [checkInDate]);
+
+  const validateDate = (selectedDate: Date) => {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    const diffTime = selectedDate.getTime() - currentDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 && diffDays <= 3;
+  };
+
+  const handleDateSelect = (newDate: Date | undefined) => {
+    if (newDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (newDate.getTime() >= today.getTime()) {
+        setCheckInDate(newDate);
+        setDateSelected(true);
+        setIsConfirmed(false);
+      } else {
+        alert("Please select a future date");
+        setCheckInDate(null);
+        setDateSelected(false);
+        setIsConfirmed(false);
+      }
+    } else {
+      setDateSelected(false);
+      setCheckInDate(null);
+      setIsConfirmed(false);
+    }
+  };
+
+  const handleConfirm = () => {
+    if (checkInDate) {
+      setIsConfirmed(true);
+      setShowCalendar(false);
+      if (validateDate(checkInDate)) {
+        setShowForm(true);
+      } else {
+        alert(
+          "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
+        );
+      }
+    }
+  };
+
+  if (showForm) {
+    return (
+      <div className="iframe-container" style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: '88px',
+        overflow: 'hidden',
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        <iframe
+          src="https://form.jotform.com/221524504539049"
+          title="Check-in Form"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          scrolling="yes"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24">

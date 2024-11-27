@@ -11,7 +11,7 @@
     
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" /> <!-- Cambiato da black-translucent a default -->
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
     
     <!-- Manifest e icone -->
@@ -28,15 +28,13 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-touch-startup-image" content="/icons/splash.png" />
     
-    <!-- OneSignal Web Push Notifications -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" async></script>
+    <!-- OneSignal Scripts -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
-      window.OneSignal = window.OneSignal || [];
-      OneSignal.push(function() {
-        OneSignal.init({
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
           appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
-          allowLocalhostAsSecureOrigin: true,
-          serviceWorkerPath: "/OneSignalSDKWorker.js",
         });
       });
     </script>

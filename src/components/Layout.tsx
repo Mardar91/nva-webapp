@@ -9,7 +9,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const getButtonClass = (path: string) =>
     location.pathname === path
       ? "text-[#6699ff]"
-      : "text-blue-900";
+      : "text-blue-900 dark:text-gray-200"; // Aggiunto dark:text-gray-200
 
   const isIframePage = ['/taxi', '/shop', '/gift-card'].includes(location.pathname);
 
@@ -36,7 +36,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       <nav 
-        className="bg-gray-100 fixed bottom-0 left-0 right-0 z-50"
+        className="bg-gray-100 dark:bg-gray-900 fixed bottom-0 left-0 right-0 z-50"
         style={{
           paddingTop: "0.75rem",
           paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))",

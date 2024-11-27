@@ -8,9 +8,9 @@ const urlsToCache = [
   '/icons/icon-512x512.png'
 ];
 
-// Aggiungiamo un controllo per evitare conflitti con OneSignal
+// Controllo per evitare conflitti con OneSignal
 const isOneSignalRequest = (url) => {
-  return url.includes('OneSignalSDK') || url.includes('onesignal');
+  return url.includes('OneSignal') || url.includes('onesignal');
 };
 
 self.addEventListener('install', (event) => {
@@ -40,45 +40,17 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Ignoriamo le richieste OneSignal
+  // Ignora le richieste OneSignal
   if (isOneSignalRequest(event.request.url)) {
     return;
   }
 
-  const headers = new Headers({
-    'Cache-Control': 'no-cache',
-    'Pragma': 'no-cache'
-  });
-
   event.respondWith(
     caches.match(event.request).then((response) => {
-      if (event.request.mode === 'navigate') {
-        return fetch(event.request, { headers })
-          .catch(() => response || caches.match('/'));
-      }
-
       if (response) {
         return response;
       }
-
-      return fetch(event.request)
-        .then(networkResponse => {
-          if (!networkResponse || networkResponse.status !== 200) {
-            return networkResponse;
-          }
-          
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
-          
-          return networkResponse;
-        })
-        .catch(() => {
-          if (event.request.mode === 'navigate') {
-            return caches.match('/');
-          }
-        });
+      return fetch(event.request);
     })
   );
 });

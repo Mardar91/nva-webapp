@@ -5,136 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
     <title>Nonna Vittoria Apartments</title>
     
-    <!-- Meta tag per SEO e PWA -->
+    <!-- Meta tag per PWA -->
     <meta name="description" content="Nonna Vittoria Apartments - Il tuo soggiorno in Puglia" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
-    <meta name="mobile-web-app-capable" content="yes" />
     
-    <!-- PWA support per iOS -->
+    <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" /> <!-- Cambiato da black-translucent a default -->
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="format-detection" content="date=no" />
     
     <!-- Manifest e icone -->
-    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
+    <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
     
-    <!-- Apple touch icons -->
+    <!-- Apple touch icons migliorati -->
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />
     <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png" />
-<!-- OneSignal Web Push Notifications -->
+    
+    <!-- Meta tag per gestire il redirect -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-startup-image" content="/icons/splash.png" />
+    
+    <!-- OneSignal Scripts -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
-          allowLocalhostAsSecureOrigin: true
         });
       });
     </script>
     
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Base styles -->
     <style>
-      :root {
-        --safe-area-top: env(safe-area-inset-top);
-        --safe-area-bottom: env(safe-area-inset-bottom);
-        --vh: 1vh;
-      }
-
-      /* Base styles */
+      /* Stili base per il corpo della pagina */
       body {
         margin: 0;
         padding: 0;
-        padding-top: var(--safe-area-top);
-        padding-bottom: var(--safe-area-bottom);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-tap-highlight-color: transparent;
         background-color: #ffffff;
-        overflow-x: hidden;
-        min-height: 100vh;
-        min-height: calc(var(--vh, 1vh) * 100);
       }
 
-      /* Dark mode support */
-      @media (prefers-color-scheme: dark) {
-        body {
-          background-color: #1a1a1a;
-          color: #ffffff;
-        }
-      }
-
-      /* Standalone mode adjustments */
+      /* Applica il tema blu solo per VipTicketHero in standalone */
       @media all and (display-mode: standalone) {
         .vipHeroContainer.extended-blue-bg {
-          padding-top: var(--safe-area-top);
+          padding-top: env(safe-area-inset-top);
+        }
+
+        /* Fix per la barra di stato iOS */
+        body {
+          padding-top: env(safe-area-inset-top);
         }
       }
 
-      /* iOS PWA fixes */
+      /* Fix per iOS PWA */
       @supports (-webkit-touch-callout: none) {
         body {
           min-height: -webkit-fill-available;
         }
-
-        .ios-safe-area-top {
-          padding-top: var(--safe-area-top);
-        }
-
-        .ios-safe-area-bottom {
-          padding-bottom: var(--safe-area-bottom);
-        }
-      }
-
-      /* Disable pull-to-refresh but allow overscroll */
-      body {
-        overscroll-behavior-y: contain;
-      }
-
-      /* Hide scrollbars while keeping functionality */
-      * {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-      }
-      *::-webkit-scrollbar {
-        display: none;
       }
     </style>
-<!-- PWA and iOS handling scripts -->
+    <!-- Script per gestire il redirect -->
     <script>
-      // Viewport height fix
-      const setViewportHeight = () => {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      };
-
-      // PWA installation detection and handling
-      const handlePWAStatus = () => {
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                            window.navigator.standalone === true;
-        
-        if (isStandalone) {
-          console.log('App in modalità standalone');
-          document.body.classList.add('pwa-standalone');
-        } else if (localStorage.getItem('pwa-installed') === 'true') {
-          // Gestione iOS
+      // Controlla se l'app è in modalità standalone
+      if (window.matchMedia('(display-mode: standalone)').matches || 
+          window.navigator.standalone === true) {
+        // L'app è già aperta in modalità standalone
+        console.log('App aperta in modalità standalone');
+      } else {
+        // Controlla se l'app è stata installata
+        if (localStorage.getItem('pwa-installed') === 'true') {
+          // Se siamo su iOS
           if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            const currentUrl = window.location.href;
-            const pwaUrl = new URL(currentUrl);
-            pwaUrl.searchParams.set('pwa', 'true');
-            pwaUrl.searchParams.set('t', Date.now().toString());
+            // Prova ad aprire l'app
+            window.location.href = window.location.href;
             
-            window.location.href = pwaUrl.toString();
-            
+            // Se dopo 1 secondo siamo ancora qui, probabilmente l'app non è aperta
             setTimeout(() => {
               if (!document.hidden) {
                 console.log('Impossibile aprire l\'app installata');
@@ -142,59 +95,28 @@
             }, 1000);
           }
         }
-      };
-
-      // Event listeners
-      window.addEventListener('load', () => {
-        setViewportHeight();
-        handlePWAStatus();
-        
-        // Gestione tema scuro
-        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const handleDarkMode = (e) => {
-          document.body.classList.toggle('dark-mode', e.matches);
-        };
-        darkModeMediaQuery.addListener(handleDarkMode);
-        handleDarkMode(darkModeMediaQuery);
-      });
-
-      window.addEventListener('resize', () => {
-        setViewportHeight();
-      });
-
-      window.addEventListener('orientationchange', () => {
-        setTimeout(setViewportHeight, 100);
-      });
-
+      }
+      
+      // Ascolta l'evento di installazione completata
       window.addEventListener('appinstalled', (evt) => {
         localStorage.setItem('pwa-installed', 'true');
         console.log('PWA installata con successo');
       });
 
-      // Prevenzione del rimbalzo su Safari iOS
-      document.addEventListener('touchmove', (e) => {
-        if (e.touches.length > 1) {
-          e.preventDefault();
-        }
-      }, { passive: false });
+      // Fix per il viewport su iOS
+      const setViewportHeight = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
 
-      // Gestione stato online/offline
-      window.addEventListener('online', () => {
-        document.body.classList.remove('offline');
-      });
-      
-      window.addEventListener('offline', () => {
-        document.body.classList.add('offline');
-      });
+      window.addEventListener('resize', setViewportHeight);
+      window.addEventListener('orientationchange', setViewportHeight);
+      setViewportHeight();
     </script>
   </head>
   <body>
     <div id="root"></div>
-    <noscript>
-      <div style="padding: 20px; text-align: center; font-family: system-ui, -apple-system, sans-serif;">
-        JavaScript deve essere abilitato per utilizzare questa app.
-      </div>
-    </noscript>
+    <noscript>JavaScript deve essere abilitato per utilizzare questa app.</noscript>
   </body>
 </html>
 

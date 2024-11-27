@@ -18,18 +18,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       className="fixed inset-0 flex flex-col" 
       style={{ 
         background: '#f3f4f6',
-        WebkitOverflowScrolling: 'touch',
-        paddingTop: 'env(safe-area-inset-top)'
+        WebkitOverflowScrolling: 'touch'
       }}
     >
       <div 
         className={`flex-1 ${isIframePage ? '' : ''}`}
         style={{
-          height: `calc(100% - 64px)`,
+          height: `calc(100% - 88px)`,
           overflowY: 'auto',
           overscrollBehavior: 'none',
           WebkitOverflowScrolling: 'touch',
-          paddingBottom: `calc(env(safe-area-inset-bottom) + 64px)`
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: `calc(env(safe-area-inset-bottom) + 88px)`
         }}
       >
         {children}
@@ -38,63 +38,39 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <nav 
         className="bg-gray-100 fixed bottom-0 left-0 right-0 z-50"
         style={{
-          paddingTop: "0.375rem",
-          paddingBottom: "calc(0.375rem + env(safe-area-inset-bottom))",
-          height: "64px",
-          boxShadow: '0 -1px 3px rgba(0,0,0,0.1)'
+          paddingTop: "0.75rem",
+          paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))",
+          height: "88px",
+          boxShadow: '0 -2px 10px rgba(0,0,0,0.1)'
         }}
       >
         <div className="flex justify-center space-x-4">
           <Link to="/">
-            <Button 
-              variant="ghost" 
-              className="h-auto py-1 px-3"
-            >
+            <Button variant="ghost">
               <div className={`flex flex-col items-center ${getButtonClass("/")}`}>
-                <Home className="w-5 h-5 mb-0.5" />
-                <span className="text-xs">Home</span>
+                <Home className="w-6 h-6 mb-1" />
+                Home
               </div>
             </Button>
           </Link>
           <Link to="/restaurants">
-            <Button 
-              variant="ghost"
-              className="h-auto py-1 px-3"
-            >
+            <Button variant="ghost">
               <div className={`flex flex-col items-center ${getButtonClass("/restaurants")}`}>
-                <Pizza className="w-5 h-5 mb-0.5" />
-                <span className="text-xs">Restaurants</span>
+                <Pizza className="w-6 h-6 mb-1" />
+                Restaurants
               </div>
             </Button>
           </Link>
           <Link to="/partners">
-            <Button 
-              variant="ghost"
-              className="h-auto py-1 px-3"
-            >
+            <Button variant="ghost">
               <div className={`flex flex-col items-center ${getButtonClass("/partners")}`}>
-                <Handshake className="w-5 h-5 mb-0.5" />
-                <span className="text-xs">Partners</span>
+                <Handshake className="w-6 h-6 mb-1" />
+                Partners
               </div>
             </Button>
           </Link>
         </div>
       </nav>
-
-      {/* Fix for iPhone with notch */}
-      <style global>{`
-        @supports (-webkit-touch-callout: none) {
-          .fixed.bottom-0 {
-            padding-bottom: calc(env(safe-area-inset-bottom) + 0.375rem);
-          }
-        }
-        
-        @media (display-mode: standalone) {
-          .fixed.bottom-0 {
-            height: calc(64px + env(safe-area-inset-bottom));
-          }
-        }
-      `}</style>
     </div>
   );
 };

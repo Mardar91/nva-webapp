@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'nva-cache-v3';
+const CACHE_VERSION = 'nva-cache-v4';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const urlsToCache = [
   '/',
@@ -7,11 +7,6 @@ const urlsToCache = [
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'
 ];
-
-// Aggiungiamo un controllo per evitare conflitti con OneSignal
-const isOneSignalRequest = (url) => {
-  return url.includes('OneSignalSDK') || url.includes('onesignal');
-};
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'nva-cache-v4';
+const CACHE_VERSION = 'nva-cache-v6';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const urlsToCache = [
   '/',
@@ -23,7 +23,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && !cacheName.includes('OneSignal')) {
+          if (cacheName !== CACHE_NAME) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -35,11 +35,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Ignoriamo le richieste OneSignal
-  if (isOneSignalRequest(event.request.url)) {
-    return;
-  }
-
+  // Aggiungiamo headers specifici per iOS
   const headers = new Headers({
     'Cache-Control': 'no-cache',
     'Pragma': 'no-cache'
@@ -47,15 +43,26 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     caches.match(event.request).then((response) => {
+      // Per le navigazioni, prova sempre prima una richiesta di rete
       if (event.request.mode === 'navigate') {
         return fetch(event.request, { headers })
           .catch(() => response || caches.match('/'));
       }
 
+      // Per altre risorse, usa la cache prima
       if (response) {
+        // Aggiorna la cache in background
+        fetch(event.request).then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, networkResponse.clone());
+            });
+          }
+        });
         return response;
       }
 
+      // Se non è in cache, fai una richiesta di rete
       return fetch(event.request)
         .then(networkResponse => {
           if (!networkResponse || networkResponse.status !== 200) {

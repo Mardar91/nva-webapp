@@ -38,7 +38,7 @@ const VipTicketHero = () => {
   };
 
   return (
-    <div className="vipHeroContainer extended-blue-bg">
+    <div className="vipHeroContainer extended-blue-bg bg-[#1e3a8a] dark:bg-[#1a1a1a]"> {/* Aggiunto dark:bg-[#1a1a1a] */}
       <h2 className="vipHeroTitle">Get Your Free VIP Ticket!</h2>
       <p className="vipHeroSubtitle">
         Download your digital VIP Ticket to enjoy exclusive 10% discounts at all

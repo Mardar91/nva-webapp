@@ -10,30 +10,52 @@ declare global {
   }
 }
 
+// Helper function to load OneSignal script
+const loadOneSignalScript = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if (typeof window === 'undefined') return resolve();
+    
+    const script = document.createElement('script');
+    script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = (error) => reject(error);
+    document.head.appendChild(script);
+  });
+};
+
 // OneSignal Initialization
 const initializeOneSignal = async () => {
   if (typeof window !== 'undefined') {
-    await import('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js');
-    
-    window.OneSignal = window.OneSignal || [];
-    
-    window.OneSignal.push(() => {
-      window.OneSignal.init({
-        appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
-        allowLocalhostAsSecureOrigin: true,
-        serviceWorkerPath: "/OneSignalSDKWorker.js",
-        serviceWorkerParam: { scope: "/" },
-        notifyButton: {
-          enable: true,
-        },
-      }).then(() => {
-        window.OneSignal.Notifications.requestPermission().then((permission: boolean) => {
-          console.log("Notification permission granted:", permission);
+    try {
+      await loadOneSignalScript();
+      
+      window.OneSignal = window.OneSignal || [];
+      
+      window.OneSignal.push(() => {
+        window.OneSignal.init({
+          appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
+          allowLocalhostAsSecureOrigin: true,
+          serviceWorkerPath: "/OneSignalSDKWorker.js",
+          serviceWorkerParam: { scope: "/" },
+          notifyButton: {
+            enable: true,
+          },
+          welcomeNotification: {
+            title: "Nonna Vittoria Apartments",
+            message: "Grazie per esserti iscritto!",
+          },
+        }).then(() => {
+          window.OneSignal.Notifications.requestPermission().then((permission: boolean) => {
+            console.log("Notification permission granted:", permission);
+          });
+        }).catch((error: any) => {
+          console.error("OneSignal initialization error:", error);
         });
-      }).catch((error: any) => {
-        console.error("OneSignal initialization error:", error);
       });
-    });
+    } catch (error) {
+      console.error("Error loading OneSignal script:", error);
+    }
   }
 };
 

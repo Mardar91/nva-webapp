@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'nva-cache-v2';
+const CACHE_VERSION = 'nva-cache-v3';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const urlsToCache = [
   '/',
@@ -7,6 +7,11 @@ const urlsToCache = [
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'
 ];
+
+// Aggiungiamo un controllo per evitare conflitti con OneSignal
+const isOneSignalRequest = (url) => {
+  return url.includes('OneSignalSDK') || url.includes('onesignal');
+};
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -23,7 +28,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          if (cacheName !== CACHE_NAME && !cacheName.includes('OneSignal')) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -35,7 +40,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Aggiungiamo headers specifici per iOS
+  // Ignoriamo le richieste OneSignal
+  if (isOneSignalRequest(event.request.url)) {
+    return;
+  }
+
   const headers = new Headers({
     'Cache-Control': 'no-cache',
     'Pragma': 'no-cache'
@@ -43,26 +52,15 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // Per le navigazioni, prova sempre prima una richiesta di rete
       if (event.request.mode === 'navigate') {
         return fetch(event.request, { headers })
           .catch(() => response || caches.match('/'));
       }
 
-      // Per altre risorse, usa la cache prima
       if (response) {
-        // Aggiorna la cache in background
-        fetch(event.request).then(networkResponse => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, networkResponse.clone());
-            });
-          }
-        });
         return response;
       }
 
-      // Se non è in cache, fai una richiesta di rete
       return fetch(event.request)
         .then(networkResponse => {
           if (!networkResponse || networkResponse.status !== 200) {

@@ -11,6 +11,7 @@ import {
 import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
+import { scheduleCheckInNotification } from '../lib/oneSignalService';
 
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
@@ -160,10 +161,32 @@ const CheckIn = () => {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (checkInDate) {
       setIsConfirmed(true);
       setShowCalendar(false);
+
+      // Schedula la notifica con OneSignal
+      await window.OneSignalDeferred.push(async function(OneSignal) {
+        const notificationDate = new Date(checkInDate);
+        notificationDate.setDate(notificationDate.getDate() - 3);
+
+        // Richiedi il permesso per le notifiche
+        const permission = await OneSignal.Notifications.permission;
+        if (permission !== true) {
+          await OneSignal.Notifications.requestPermission();
+        }
+
+        // Programma la notifica
+        await OneSignal.Notifications.schedule({
+          title: "Check-in Available!",
+          body: "Your online check-in is now available. Click here to proceed.",
+          url: window.location.origin + "/check-in",
+          icon: '/icons/icon-192x192.png',
+          sendAfter: notificationDate.toISOString()
+        });
+      });
+
       if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {

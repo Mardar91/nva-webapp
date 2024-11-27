@@ -39,8 +39,29 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#ffffff",
   "prefer_related_applications": false,
   "capture_links": "existing-client-navigate",
-  "handle_links": "preferred"
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "id": "/",
+  "categories": ["travel", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Book Now",
+      "url": "/book",
+      "icons": [
+        {
+          "src": "icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }

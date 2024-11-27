@@ -323,7 +323,7 @@ main:not(.iframe-container) {
 
 @media (prefers-color-scheme: dark) {
   .vipHeroContainer {
-    background-color: #1e40af;
+    background-color: #1a1a1a;
   }
 }
 
@@ -339,7 +339,7 @@ main:not(.iframe-container) {
 
 @media (prefers-color-scheme: dark) {
   .vipHeroContainer.extended-blue-bg {
-    background-color: #1e40af;
+    background-color: #1a1a1a;
   }
 }
 

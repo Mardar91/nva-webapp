@@ -11,7 +11,25 @@ import {
 import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
-import '../types/oneSignal';
+
+// Dichiarazione dei tipi inline per OneSignal
+declare global {
+  interface Window {
+    OneSignalDeferred: ((OneSignal: {
+      Notifications: {
+        permission: boolean;
+        requestPermission: () => Promise<void>;
+        schedule: (options: {
+          title: string;
+          body: string;
+          url?: string;
+          icon?: string;
+          sendAfter: string;
+        }) => Promise<void>;
+      };
+    }) => void)[];
+  }
+}
 
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {

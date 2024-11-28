@@ -6,71 +6,35 @@ import { Home, Pizza, Handshake } from "lucide-react";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
-  const isAudioEnabled = useRef(false);
 
   useEffect(() => {
-    // Funzione per inizializzare l'audio
-    const initAudio = async () => {
-      if (!audioRef.current) {
-        audioRef.current = new Audio('/sounds/click.mp3');
-        audioRef.current.preload = 'auto';
-        
-        if (isIOS.current) {
-          try {
-            // Su iOS riproduciamo inizialmente con volume 0
-            audioRef.current.volume = 0;
-            await audioRef.current.play();
-            audioRef.current.pause();
-            audioRef.current.volume = 1;
-            isAudioEnabled.current = true;
-          } catch (error) {
-            console.log('iOS audio initialization failed:', error);
-          }
-        } else {
-          isAudioEnabled.current = true;
-        }
+    // Crea un singolo elemento audio
+    audioRef.current = new Audio('/sounds/click.wav');
+    audioRef.current.preload = 'auto';
+
+    // Prova a precaricare l'audio
+    const preloadAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.load();
+        document.removeEventListener('touchstart', preloadAudio);
+        document.removeEventListener('click', preloadAudio);
       }
     };
 
-    // Gestori per l'interazione utente
-    const handleUserInteraction = async () => {
-      if (!isAudioEnabled.current) {
-        await initAudio();
-      }
-    };
+    document.addEventListener('touchstart', preloadAudio, { once: true });
+    document.addEventListener('click', preloadAudio, { once: true });
 
-    // Aggiungi listener per vari eventi di interazione
-    const events = ['touchstart', 'touchend', 'click', 'mousedown', 'keydown'];
-    events.forEach(event => {
-      document.addEventListener(event, handleUserInteraction, { once: true });
-    });
-
-    // Inizializza comunque
-    initAudio();
-
-    // Cleanup
     return () => {
-      events.forEach(event => {
-        document.removeEventListener(event, handleUserInteraction);
-      });
+      document.removeEventListener('touchstart', preloadAudio);
+      document.removeEventListener('click', preloadAudio);
+      audioRef.current = null;
     };
   }, []);
 
-  const handleNavClick = async () => {
-    if (audioRef.current && isAudioEnabled.current) {
-      try {
-        if (isIOS.current) {
-          // Su iOS, ricrea l'elemento audio per ogni click
-          const tempAudio = new Audio('/sounds/click.mp3');
-          await tempAudio.play();
-        } else {
-          audioRef.current.currentTime = 0;
-          await audioRef.current.play();
-        }
-      } catch (error) {
-        console.log('Playback error:', error);
-      }
+  const handleNavClick = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
     }
   };
   

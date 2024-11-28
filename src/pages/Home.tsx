@@ -11,19 +11,23 @@ const Home: React.FC = () => {
 
   return (
     <div 
-      className="overflow-y-auto pb-24 w-full" 
+      className="overflow-y-auto w-full" 
       style={{
         height: 'calc(100vh - 88px)',
         WebkitOverflowScrolling: 'touch',
         overscrollBehavior: 'none',
       }}
     >
-      <main className="flex flex-col gap-y-8 w-full">
+      <div className="flex flex-col w-full min-h-full pb-24">
         <HeroSection />
-        <SpecialOffers />
-        <ServicesSection />
+        <div className="mt-4">
+          <SpecialOffers />
+        </div>
+        <div className="mt-4">
+          <ServicesSection />
+        </div>
         <FloatingChatButton onPress={handleChatButtonPress} />
-      </main>
+      </div>
     </div>
   );
 };

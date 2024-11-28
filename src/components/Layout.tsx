@@ -6,21 +6,33 @@ import { Home, Pizza, Handshake } from "lucide-react";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
 
   useEffect(() => {
-    // Crea un singolo elemento audio
-    audioRef.current = new Audio('/sounds/click.wav');
-    audioRef.current.preload = 'auto';
+    // Creiamo un pool di elementi audio per iOS
+    if (isIOS.current) {
+      audioRef.current = new Audio('/sounds/click.wav');
+      audioRef.current.preload = 'auto';
+      // Precarica multipli elementi audio per iOS
+      for (let i = 0; i < 3; i++) {
+        const audio = new Audio('/sounds/click.wav');
+        audio.preload = 'auto';
+        audio.load();
+      }
+    } else {
+      // Per altri browser, un singolo elemento è sufficiente
+      audioRef.current = new Audio('/sounds/click.wav');
+      audioRef.current.preload = 'auto';
+    }
 
     // Prova a precaricare l'audio
     const preloadAudio = () => {
       if (audioRef.current) {
         audioRef.current.load();
-        document.removeEventListener('touchstart', preloadAudio);
-        document.removeEventListener('click', preloadAudio);
       }
     };
 
+    // Precarica al primo tocco/click
     document.addEventListener('touchstart', preloadAudio, { once: true });
     document.addEventListener('click', preloadAudio, { once: true });
 
@@ -32,7 +44,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const handleNavClick = () => {
-    if (audioRef.current) {
+    if (isIOS.current) {
+      // Su iOS, crea una nuova istanza per ogni click
+      const audio = new Audio('/sounds/click.wav');
+      audio.play().catch(() => {});
+    } else if (audioRef.current) {
+      // Per altri browser, riusa l'istanza esistente
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
     }

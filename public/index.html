@@ -4,31 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
     <title>Nonna Vittoria Apartments</title>
-    
     <!-- Meta tag per PWA -->
     <meta name="description" content="Nonna Vittoria Apartments - Il tuo soggiorno in Puglia" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
-    
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" /> <!-- Cambiato da black-translucent a default -->
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
-    
     <!-- Manifest e icone -->
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
-    
     <!-- Apple touch icons migliorati -->
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />
     <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png" />
-    
     <!-- Meta tag per gestire il redirect -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-touch-startup-image" content="/icons/splash.png" />
-    
     <!-- OneSignal Scripts -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
@@ -39,57 +33,6 @@
         });
       });
     </script>
-
-    <!-- Service Worker Communication Script -->
-    <script>
-      // Gestione messaggi dal Service Worker
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.addEventListener('message', function(event) {
-          console.log('Message from SW:', event.data);
-          
-          if (event.data.type === 'SUBSCRIPTION_EXPIRED') {
-            // Ricarica la pagina per forzare una nuova registrazione
-            window.location.reload();
-          }
-
-          if (event.data.type === 'PUSH_RECEIVED') {
-            console.log('Push notification received:', event.data);
-          }
-
-          if (event.data.type === 'ONLINE' || event.data.type === 'OFFLINE') {
-            console.log('Connection status changed:', event.data.type);
-          }
-        });
-
-        // Stabilisci un canale di comunicazione con il Service Worker
-        navigator.serviceWorker.ready.then(function(registration) {
-          console.log('Service Worker ready');
-          
-          // Crea un canale di messaggistica
-          const channel = new MessageChannel();
-          channel.port1.onmessage = function(event) {
-            console.log('Response from SW:', event.data);
-          };
-
-          // Inizializza il canale di comunicazione
-          if (registration.active) {
-            registration.active.postMessage({
-              type: 'INIT_PORT'
-            }, [channel.port2]);
-          }
-
-          // Forza l'aggiornamento della registrazione OneSignal
-          registration.pushManager.getSubscription().then(function(subscription) {
-            if (subscription) {
-              console.log('Push subscription active');
-            }
-          });
-        }).catch(function(error) {
-          console.error('Service Worker registration failed:', error);
-        });
-      }
-    </script>
-    
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -101,31 +44,25 @@
         -moz-osx-font-smoothing: grayscale;
         -webkit-tap-highlight-color: transparent;
         background-color: #ffffff;
-        overscroll-behavior-y: none;
       }
-
       /* Applica il tema blu solo per VipTicketHero in standalone */
       @media all and (display-mode: standalone) {
         .vipHeroContainer.extended-blue-bg {
           padding-top: env(safe-area-inset-top);
         }
-
         /* Fix per la barra di stato iOS */
         body {
           padding-top: env(safe-area-inset-top);
         }
       }
-
       /* Fix per iOS PWA */
       @supports (-webkit-touch-callout: none) {
         body {
           min-height: -webkit-fill-available;
-          overscroll-behavior-y: none;
         }
       }
     </style>
-
-    <!-- Script per gestire il redirect e l'installazione -->
+    <!-- Script per gestire il redirect -->
     <script>
       // Controlla se l'app è in modalità standalone
       if (window.matchMedia('(display-mode: standalone)').matches || 
@@ -138,8 +75,7 @@
           // Se siamo su iOS
           if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
             // Prova ad aprire l'app
-            window.location.href = window.location.href + '?pwa=true&t=' + Date.now();
-            
+            window.location.href = window.location.href;
             // Se dopo 1 secondo siamo ancora qui, probabilmente l'app non è aperta
             setTimeout(() => {
               if (!document.hidden) {
@@ -149,27 +85,18 @@
           }
         }
       }
-      
       // Ascolta l'evento di installazione completata
       window.addEventListener('appinstalled', (evt) => {
         localStorage.setItem('pwa-installed', 'true');
         console.log('PWA installata con successo');
       });
-
       // Fix per il viewport su iOS
       const setViewportHeight = () => {
         const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        document.documentElement.style.setProperty('--vh', ${vh}px);
       };
-
-      // Gestione degli eventi del viewport
       window.addEventListener('resize', setViewportHeight);
       window.addEventListener('orientationchange', setViewportHeight);
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          setViewportHeight();
-        }
-      });
       setViewportHeight();
     </script>
   </head>
@@ -178,5 +105,3 @@
     <noscript>JavaScript deve essere abilitato per utilizzare questa app.</noscript>
   </body>
 </html>
-
-

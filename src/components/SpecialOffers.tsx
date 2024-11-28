@@ -5,9 +5,8 @@ const SpecialOffers = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="giftCardSection">
+    <div className="px-4">
       <h2 className="sectionTitle">Special Offers</h2>
-
       {/* Prima Card: Gift Card */}
       <div
         className="card"
@@ -25,7 +24,6 @@ const SpecialOffers = () => {
           services
         </p>
       </div>
-
       {/* Seconda Card: Romantic Week */}
       <div className="card">
         <div className="cardHeader">

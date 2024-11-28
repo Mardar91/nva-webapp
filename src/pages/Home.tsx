@@ -11,14 +11,14 @@ const Home: React.FC = () => {
 
   return (
     <div 
-      className="giftCardSection overflow-y-auto pb-24" 
+      className="overflow-y-auto pb-24 w-full" 
       style={{
-        height: 'calc(100vh - 88px)', // Altezza dello schermo meno l'altezza della navbar
-        WebkitOverflowScrolling: 'touch', // Per scrolling fluido su iOS
-        overscrollBehavior: 'none', // Previene lo scroll bounce
+        height: 'calc(100vh - 88px)',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'none',
       }}
     >
-      <main className="flex flex-col gap-y-8">
+      <main className="flex flex-col gap-y-8 w-full">
         <HeroSection />
         <SpecialOffers />
         <ServicesSection />

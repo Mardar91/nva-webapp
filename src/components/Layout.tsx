@@ -3,9 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Home, Pizza, Handshake } from "lucide-react";
 
-// Definizione del tipo per il contesto audio
-type AudioContextType = typeof window !== 'undefined' ? 
-  (window.AudioContext || window.webkitAudioContext) : null;
+// Definizione corretta dei tipi per AudioContext
+declare global {
+  interface Window {
+    webkitAudioContext: typeof AudioContext;
+  }
+}
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -19,7 +22,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const initAudio = async () => {
       try {
         if (!audioContextRef.current) {
-          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          const AudioContextClass = (window.AudioContext || window.webkitAudioContext);
           audioContextRef.current = new AudioContextClass();
           
           // Carica il file audio

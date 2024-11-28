@@ -46,6 +46,7 @@ body {
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   background-color: white;
+  overscroll-behavior-y: none !important; /* Fix per l'effetto rimbalzo */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -66,6 +67,7 @@ main:not(.iframe-container) {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
+  overscroll-behavior-y: none !important; /* Fix per l'effetto rimbalzo */
 }
 
 .container {
@@ -76,6 +78,7 @@ main:not(.iframe-container) {
   gap: 5px;
   padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none !important; /* Fix per l'effetto rimbalzo */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -83,7 +86,6 @@ main:not(.iframe-container) {
     background-color: #1a1a1a;
   }
 }
-
 /* HERO SECTION PARTE2*/
 .heroContainer {
   padding: 20px;
@@ -91,6 +93,10 @@ main:not(.iframe-container) {
   flex-direction: column;
   align-items: center;
   background-color: #fff;
+  position: relative; /* Aggiunto per il fix dello scroll */
+  z-index: 1; /* Aggiunto per il fix dello scroll */
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -119,6 +125,8 @@ main:not(.iframe-container) {
   border-radius: 10px;
   margin-bottom: 24px;
   object-fit: cover;
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 .buttonContainer {
@@ -128,6 +136,8 @@ main:not(.iframe-container) {
   padding: 0 10px;
   box-sizing: border-box;
   margin-bottom: 5px;
+  position: relative; /* Aggiunto per il fix dello scroll */
+  z-index: 2; /* Aggiunto per il fix dello scroll */
 }
 
 .heroButton {
@@ -139,6 +149,8 @@ main:not(.iframe-container) {
   align-items: center;
   width: 31%;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -170,8 +182,13 @@ main:not(.iframe-container) {
   padding: 0 15px;
   margin-bottom: 10px;
   margin-top: -5px;
+  height: calc(100vh - 88px) !important; /* Fix per lo scroll */
+  overflow-y: auto !important; /* Fix per lo scroll */
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: none !important; /* Fix per l'effetto rimbalzo */
+  position: relative; /* Fix per lo scroll */
+  z-index: 1;
 }
-
 /* Dialog/Modal styles PARTE3 */
 .DialogContent {
   display: flex;
@@ -186,10 +203,13 @@ main:not(.iframe-container) {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateZ(0); /* Aggiunto translateZ per il fix su iOS */
+  -webkit-transform: translate(-50%, -50%) translateZ(0);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   text-align: center;
+  overscroll-behavior: contain; /* Fix per l'effetto rimbalzo nel modal */
+  z-index: 100; /* Fix per il layering */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -249,6 +269,10 @@ main:not(.iframe-container) {
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
   transition: transform 0.2s ease;
+  position: relative; /* Fix per lo scroll */
+  z-index: 2; /* Fix per lo scroll */
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 .card:hover {
@@ -310,7 +334,6 @@ main:not(.iframe-container) {
     color: #60a5fa;
   }
 }
-
 /* VIP section styles PARTE 4*/
 .vipHeroContainer {
   background-color: #1e3a8a;
@@ -319,6 +342,10 @@ main:not(.iframe-container) {
   flex-direction: column;
   align-items: center;
   margin-bottom: 10px;
+  position: relative; /* Fix per lo scroll */
+  z-index: 1; /* Fix per lo scroll */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -335,6 +362,8 @@ main:not(.iframe-container) {
   margin-left: -50vw;
   margin-right: -50vw;
   background-color: #1e3a8a;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -348,6 +377,8 @@ main:not(.iframe-container) {
   padding: 0;
   background-color: #fff;
   margin-top: 0px;
+  position: relative; /* Fix per lo scroll */
+  z-index: 2; /* Fix per lo scroll */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -361,6 +392,8 @@ main:not(.iframe-container) {
   justify-content: space-between;
   padding: 0 15px 15px;
   gap: 8px;
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 .surroundingButton, .serviceButton {
@@ -374,6 +407,8 @@ main:not(.iframe-container) {
   justify-content: center;
   margin-top: 1px;
   min-width: 70px;
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -400,6 +435,8 @@ main:not(.iframe-container) {
   padding: 0;
   background-color: #fff;
   margin-top: 5px;
+  position: relative; /* Fix per lo scroll */
+  z-index: 2; /* Fix per lo scroll */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -413,8 +450,9 @@ main:not(.iframe-container) {
   justify-content: space-between;
   padding: 0 15px 15px;
   gap: 8px;
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
-
 /* Modal styles PARTE 5*/
 .modalOverlay {
   position: fixed;
@@ -427,6 +465,9 @@ main:not(.iframe-container) {
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
   padding: 20px;
+  z-index: 99;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain; /* Fix per l'effetto rimbalzo */
 }
 
 .modalContent {
@@ -435,9 +476,16 @@ main:not(.iframe-container) {
   padding: 20px;
   width: 90%;
   max-width: 500px;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  z-index: 100;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -479,6 +527,8 @@ main:not(.iframe-container) {
   border: none;
   cursor: pointer;
   margin-top: 10px;
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 .modalButtonText {
@@ -531,6 +581,8 @@ main:not(.iframe-container) {
   border: none;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 .vipButtonIcon {
@@ -560,6 +612,10 @@ main:not(.iframe-container) {
   width: 100%;
   font-weight: 500;
   transition: background-color 0.2s;
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
+  position: relative;
+  z-index: 2;
 }
 
 .delivery-button:hover {
@@ -571,11 +627,12 @@ main:not(.iframe-container) {
   color: white !important;
   border: none;
 }
-
 /* Utility classes PARTE 6*/
 .spacer {
   height: 5px;
   background-color: #f3f4f6;
+  position: relative; /* Fix per lo scroll */
+  z-index: 1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -603,6 +660,8 @@ main:not(.iframe-container) {
   align-items: center;
   gap: 4px;
   margin-bottom: 24px;
+  position: relative; /* Fix per lo scroll */
+  z-index: 2;
 }
 
 .subTitleContainer {
@@ -611,6 +670,8 @@ main:not(.iframe-container) {
   background-color: #ecfdf5;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   margin-top: -2px;
+  -webkit-transform: translateZ(0); /* Fix per animazioni su iOS */
+  transform: translateZ(0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -640,6 +701,8 @@ main:not(.iframe-container) {
   align-items: center;
   justify-content: center;
   min-width: 80px;
+  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  transform: translateZ(0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -664,15 +727,15 @@ main:not(.iframe-container) {
   animation: glowing 2s ease-in-out infinite;
 }
 
-/* Animations */
+/* Animations - con fix per performance */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateZ(0) scale(1);
   }
   50% {
     opacity: 0.9;
-    transform: scale(1.05);
+    transform: translateZ(0) scale(1.05);
   }
 }
 
@@ -680,14 +743,17 @@ main:not(.iframe-container) {
   0% {
     background-color: #ecfdf5;
     box-shadow: 0 0 5px rgba(5, 150, 105, 0.2);
+    transform: translateZ(0);
   }
   50% {
     background-color: #d1fae5;
     box-shadow: 0 0 20px rgba(5, 150, 105, 0.4);
+    transform: translateZ(0);
   }
   100% {
     background-color: #ecfdf5;
     box-shadow: 0 0 5px rgba(5, 150, 105, 0.2);
+    transform: translateZ(0);
   }
 }
 
@@ -696,19 +762,22 @@ main:not(.iframe-container) {
     0% {
       background-color: #064e3b;
       box-shadow: 0 0 5px rgba(52, 211, 153, 0.2);
+      transform: translateZ(0);
     }
     50% {
       background-color: #065f46;
       box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
+      transform: translateZ(0);
     }
     100% {
       background-color: #064e3b;
       box-shadow: 0 0 5px rgba(52, 211, 153, 0.2);
+      transform: translateZ(0);
     }
   }
 }
 
-/* Media queries and platform-specific fixes */
+/* Media queries e platform-specific fixes */
 @media (orientation: landscape) {
   .DialogContent {
     max-height: 90vh;
@@ -719,6 +788,7 @@ main:not(.iframe-container) {
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    overscroll-behavior: contain; /* Fix per l'effetto rimbalzo */
   }
 
   .DialogHeader {
@@ -774,28 +844,31 @@ main:not(.iframe-container) {
   }
 
   /* Memory Game styles */
-.memory-game-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 16px;
-}
+  .memory-game-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 16px;
+    overscroll-behavior: contain; /* Fix per l'effetto rimbalzo */
+  }
 
-.memory-card {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  background: #f3f4f6;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-}
+  .memory-card {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: #f3f4f6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
 
   .delivery-button {
     height: 36px !important;
@@ -832,4 +905,16 @@ main:not(.iframe-container) {
   .vipHeroContainer.extended-blue-bg {
     padding-top: env(safe-area-inset-top);
   }
+
+  /* Fix aggiuntivo per lo scroll su iPhone in modalità standalone */
+  .giftCardSection {
+    height: calc(100vh - 88px - env(safe-area-inset-bottom)) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-y: none !important;
+  }
 }
+
+
+
+

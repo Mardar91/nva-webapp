@@ -39,7 +39,6 @@ self.addEventListener('install', (event) => {
   );
   self.skipWaiting();
 });
-
 // Attivazione
 self.addEventListener('activate', (event) => {
   event.waitUntil(
@@ -57,14 +56,21 @@ self.addEventListener('activate', (event) => {
         }),
       // Prendi il controllo immediatamente
       self.clients.claim(),
-      // Notifica tutti i client che il service worker è stato attivato
-      self.clients.matchAll().then(clients => {
-        clients.forEach(client => {
-          client.postMessage({
-            type: 'SW_ACTIVATED',
-            version: CACHE_VERSION
+      // Forza la ri-registrazione di OneSignal se necessario
+      self.registration.pushManager.getSubscription().then(function(subscription) {
+        if (subscription) {
+          return subscription.unsubscribe().then(function() {
+            // Notifica i client di aggiornare la registrazione
+            return self.clients.matchAll().then(function(clients) {
+              clients.forEach(function(client) {
+                client.postMessage({
+                  type: 'SUBSCRIPTION_EXPIRED',
+                  timestamp: new Date().getTime()
+                });
+              });
+            });
           });
-        });
+        }
       })
     ])
   );
@@ -118,55 +124,206 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+// Gestione push notifications
+self.addEventListener('push', function(event) {
+  // Log dell'evento per debug
+  console.log('Push received:', event);
+
+  try {
+    // Verifica se l'evento ha dei dati
+    if (event.data) {
+      let data;
+      try {
+        // Tenta di parsare i dati come JSON
+        data = event.data.json();
+      } catch (e) {
+        // Se non è JSON, prova a ottenere il testo
+        data = event.data.text();
+      }
+
+      // Log dei dati ricevuti
+      console.log('Push data:', data);
+
+      // Se è una notifica OneSignal, lascia che OneSignal la gestisca
+      if (data && typeof data === 'object' && data.custom && data.custom.i) {
+        console.log('OneSignal push event detected');
+        return;
+      }
+    }
+
+    // Gestione dell'evento push
+    event.waitUntil(
+      Promise.all([
+        // Notifica tutti i client
+        self.clients.matchAll().then(function(clientList) {
+          clientList.forEach(function(client) {
+            client.postMessage({
+              type: 'PUSH_RECEIVED',
+              timestamp: new Date().getTime(),
+              data: event.data ? event.data.text() : null
+            });
+          });
+        }),
+
+        // Aggiorna la sottoscrizione push
+        self.registration.pushManager.getSubscription().then(function(subscription) {
+          if (subscription) {
+            return subscription.update();
+          }
+        })
+      ])
+    );
+  } catch (err) {
+    console.error('Push event handling error:', err);
+  }
+});
+
+// Sistema di messaggistica migliorato
+let messagePort = null;
 
 // Gestione messaggi
-self.addEventListener('message', (event) => {
-  // Gestione messaggi da OneSignal
+self.addEventListener('message', function(event) {
+  console.log('SW Message received:', event.data);
+
+  // Gestione del canale di comunicazione
+  if (event.data && event.data.type === 'INIT_PORT') {
+    messagePort = event.ports[0];
+    if (messagePort) {
+      messagePort.postMessage({
+        type: 'PORT_READY',
+        timestamp: new Date().getTime()
+      });
+    }
+  }
+
+  // Gestione altri tipi di messaggi
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 
-  // Gestione messaggi per l'aggiornamento della cache
-  if (event.data && event.data.type === 'CACHE_UPDATE') {
-    event.waitUntil(
-      caches.open(CACHE_NAME)
-        .then(cache => {
-          return cache.addAll(urlsToCache);
-        })
-    );
-  }
-
-  // Rispondi a tutti i messaggi per confermare la ricezione
+  // Rispondi sempre al mittente
   if (event.source) {
     event.source.postMessage({
-      type: 'SW_MESSAGE_RECEIVED',
-      originalMessage: event.data
+      type: 'MESSAGE_RECEIVED',
+      originalMessage: event.data,
+      timestamp: new Date().getTime()
     });
   }
 });
-
-// Gestione push notifications (per compatibilità con OneSignal)
-self.addEventListener('push', (event) => {
-  // Lascia che OneSignal gestisca le notifiche push
-  if (event.data && !event.data.text().includes('OneSignal')) {
-    console.log('Push event non-OneSignal:', event);
-  }
-});
-
 // Gestione click sulle notifiche
-self.addEventListener('notificationclick', (event) => {
-  // Lascia che OneSignal gestisca i click sulle notifiche
-  if (event.notification.tag && !event.notification.tag.includes('OneSignal')) {
-    console.log('Notification click non-OneSignal:', event);
+self.addEventListener('notificationclick', function(event) {
+  console.log('Notification click:', event);
+
+  // Chiudi la notifica
+  event.notification.close();
+
+  // Gestione del click
+  event.waitUntil(
+    self.clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    }).then(function(clientList) {
+      // Cerca una finestra dell'app già aperta
+      for (let client of clientList) {
+        if (client.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Se non trova una finestra aperta, ne apre una nuova
+      if (self.clients.openWindow) {
+        return self.clients.openWindow('/');
+      }
+    }).catch(function(err) {
+      console.error('Error handling notification click:', err);
+    })
+  );
+});
+
+// Sistema keep-alive
+const KEEP_ALIVE_INTERVAL = 1000 * 60; // 1 minuto
+let keepAliveInterval;
+
+function startKeepAlive() {
+  if (keepAliveInterval) {
+    clearInterval(keepAliveInterval);
   }
+
+  keepAliveInterval = setInterval(() => {
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'KEEP_ALIVE',
+          timestamp: new Date().getTime()
+        });
+      });
+    }).catch(err => {
+      console.error('Keep-alive error:', err);
+    });
+  }, KEEP_ALIVE_INTERVAL);
+}
+
+startKeepAlive();
+
+// Gestione errori generale
+self.addEventListener('error', function(event) {
+  console.error('Service Worker error:', {
+    message: event.message,
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno,
+    error: event.error
+  });
 });
 
-// Gestione errori
-self.addEventListener('error', (event) => {
-  console.error('Service Worker error:', event.error);
+// Gestione promise non gestite
+self.addEventListener('unhandledrejection', function(event) {
+  console.error('Unhandled rejection in Service Worker:', event.reason);
 });
 
-// Gestione errori non gestiti
-self.addEventListener('unhandledrejection', (event) => {
-  console.error('Service Worker unhandled rejection:', event.reason);
+// Utility function per controllare lo stato della rete
+function isOnline() {
+  return self.navigator.onLine;
+}
+
+// Gestione stato della rete
+self.addEventListener('online', function() {
+  console.log('Service Worker: Online');
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'ONLINE',
+        timestamp: new Date().getTime()
+      });
+    });
+  });
 });
+
+self.addEventListener('offline', function() {
+  console.log('Service Worker: Offline');
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'OFFLINE',
+        timestamp: new Date().getTime()
+      });
+    });
+  });
+});
+
+// Funzione di cleanup
+function cleanup() {
+  if (keepAliveInterval) {
+    clearInterval(keepAliveInterval);
+  }
+}
+
+// Gestione terminazione
+self.addEventListener('terminate', function() {
+  cleanup();
+});
+
+// Esporta la versione del service worker per debug
+self.serviceWorkerVersion = CACHE_VERSION;
+
+
+

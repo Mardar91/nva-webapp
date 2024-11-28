@@ -3,79 +3,42 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Home, Pizza, Handshake } from "lucide-react";
 
-// Definizione corretta dei tipi per AudioContext
-declare global {
-  interface Window {
-    webkitAudioContext: typeof AudioContext;
-  }
-}
-
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const audioBufferRef = useRef<AudioBuffer | null>(null);
-  const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
-  const isSafari = useRef(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isInitialized = useRef(false);
 
   useEffect(() => {
-    // Inizializza il contesto audio
-    const initAudio = async () => {
-      try {
-        if (!audioContextRef.current) {
-          const AudioContextClass = (window.AudioContext || window.webkitAudioContext);
-          audioContextRef.current = new AudioContextClass();
-          
-          // Carica il file audio
-          const response = await fetch('https://nonnavittoriaapartments.it/click.mp3');
-          const arrayBuffer = await response.arrayBuffer();
-          audioBufferRef.current = await audioContextRef.current.decodeAudioData(arrayBuffer);
+    if (!isInitialized.current) {
+      audioRef.current = new Audio('/sounds/click.mp3');
+      audioRef.current.preload = 'auto';
+      isInitialized.current = true;
+
+      // Inizializza l'audio con un'interazione utente (per iOS)
+      const initAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play().catch(() => {});
+          document.removeEventListener('touchstart', initAudio);
+          document.removeEventListener('click', initAudio);
         }
+      };
 
-        // Su iOS/Safari, riprova a iniziare il contesto audio se era sospeso
-        if (audioContextRef.current.state === 'suspended') {
-          await audioContextRef.current.resume();
-        }
-      } catch (error) {
-        console.log('Audio initialization error:', error);
-      }
-    };
-
-    // Inizializza l'audio al caricamento e al primo tocco
-    const handleFirstInteraction = () => {
-      initAudio();
-      document.removeEventListener('touchstart', handleFirstInteraction);
-      document.removeEventListener('click', handleFirstInteraction);
-    };
-
-    document.addEventListener('touchstart', handleFirstInteraction);
-    document.addEventListener('click', handleFirstInteraction);
-    initAudio();
+      document.addEventListener('touchstart', initAudio, { once: true });
+      document.addEventListener('click', initAudio, { once: true });
+    }
 
     return () => {
-      document.removeEventListener('touchstart', handleFirstInteraction);
-      document.removeEventListener('click', handleFirstInteraction);
+      if (audioRef.current) {
+        audioRef.current = null;
+      }
     };
   }, []);
 
-  const playSound = async () => {
-    try {
-      if (audioContextRef.current && audioBufferRef.current) {
-        if (audioContextRef.current.state === 'suspended') {
-          await audioContextRef.current.resume();
-        }
-        
-        const source = audioContextRef.current.createBufferSource();
-        source.buffer = audioBufferRef.current;
-        source.connect(audioContextRef.current.destination);
-        source.start(0);
-      }
-    } catch (error) {
-      console.log('Playback error:', error);
-    }
-  };
-
   const handleNavClick = () => {
-    playSound();
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    }
   };
   
   const getButtonClass = (path: string) =>

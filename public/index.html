@@ -4,25 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
     <title>Nonna Vittoria Apartments</title>
+    
     <!-- Meta tag per PWA -->
     <meta name="description" content="Nonna Vittoria Apartments - Il tuo soggiorno in Puglia" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" /> <!-- Cambiato da black-translucent a default -->
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
+    
     <!-- Manifest e icone -->
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
+    
     <!-- Apple touch icons migliorati -->
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />
     <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png" />
+    
     <!-- Meta tag per gestire il redirect -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-touch-startup-image" content="/icons/splash.png" />
+    
     <!-- OneSignal Scripts -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
@@ -33,6 +39,7 @@
         });
       });
     </script>
+    
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -45,16 +52,19 @@
         -webkit-tap-highlight-color: transparent;
         background-color: #ffffff;
       }
+
       /* Applica il tema blu solo per VipTicketHero in standalone */
       @media all and (display-mode: standalone) {
         .vipHeroContainer.extended-blue-bg {
           padding-top: env(safe-area-inset-top);
         }
+
         /* Fix per la barra di stato iOS */
         body {
           padding-top: env(safe-area-inset-top);
         }
       }
+
       /* Fix per iOS PWA */
       @supports (-webkit-touch-callout: none) {
         body {
@@ -76,6 +86,7 @@
           if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
             // Prova ad aprire l'app
             window.location.href = window.location.href;
+            
             // Se dopo 1 secondo siamo ancora qui, probabilmente l'app non è aperta
             setTimeout(() => {
               if (!document.hidden) {
@@ -85,16 +96,19 @@
           }
         }
       }
+      
       // Ascolta l'evento di installazione completata
       window.addEventListener('appinstalled', (evt) => {
         localStorage.setItem('pwa-installed', 'true');
         console.log('PWA installata con successo');
       });
+
       // Fix per il viewport su iOS
       const setViewportHeight = () => {
         const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', ${vh}px);
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
       };
+
       window.addEventListener('resize', setViewportHeight);
       window.addEventListener('orientationchange', setViewportHeight);
       setViewportHeight();
@@ -105,3 +119,5 @@
     <noscript>JavaScript deve essere abilitato per utilizzare questa app.</noscript>
   </body>
 </html>
+
+

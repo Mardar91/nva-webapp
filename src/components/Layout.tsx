@@ -1,10 +1,31 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Home, Pizza, Handshake } from "lucide-react";
 
+// Audio instance
+const navSound = new Audio('https://nonnavittoriaapartments.it/click.mp3');
+navSound.preload = 'auto';
+
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
+  const audioEnabled = useRef(true);
+
+  // Funzione per gestire il click con suono
+  const handleNavClick = () => {
+    try {
+      if (audioEnabled.current) {
+        navSound.currentTime = 0; // Reset audio to start
+        navSound.play().catch(() => {
+          // Se la riproduzione fallisce, disabilitiamo l'audio per le navigazioni future
+          audioEnabled.current = false;
+        });
+      }
+    } catch (error) {
+      // In caso di errori, disabilitiamo l'audio
+      audioEnabled.current = false;
+    }
+  };
   
   const getButtonClass = (path: string) =>
     location.pathname === path
@@ -45,7 +66,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         }}
       >
         <div className="flex justify-center space-x-4">
-          <Link to="/">
+          <Link to="/" onClick={handleNavClick}>
             <Button 
               variant="ghost" 
               className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"
@@ -56,7 +77,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </div>
             </Button>
           </Link>
-          <Link to="/restaurants">
+          <Link to="/restaurants" onClick={handleNavClick}>
             <Button 
               variant="ghost"
               className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"
@@ -67,7 +88,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </div>
             </Button>
           </Link>
-          <Link to="/partners">
+          <Link to="/partners" onClick={handleNavClick}>
             <Button 
               variant="ghost"
               className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"

@@ -3,64 +3,76 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Home, Pizza, Handshake } from "lucide-react";
 
-// Audio instance con gestione lazy loading
-const createAudio = () => {
-  const audio = new Audio('https://nonnavittoriaapartments.it/click.mp3');
-  audio.preload = 'auto';
-  return audio;
-};
+// Definizione del tipo per il contesto audio
+type AudioContextType = typeof window !== 'undefined' ? 
+  (window.AudioContext || window.webkitAudioContext) : null;
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const audioEnabled = useRef(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioBufferRef = useRef<AudioBuffer | null>(null);
   const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
+  const isSafari = useRef(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
 
   useEffect(() => {
-    // Inizializza l'audio solo al primo tocco dell'utente per iOS
-    const initAudio = () => {
-      if (!audioRef.current) {
-        audioRef.current = createAudio();
-        // Prova a riprodurre un suono silenzioso per sbloccare l'audio su iOS
-        if (isIOS.current) {
-          audioRef.current.volume = 0;
-          audioRef.current.play().then(() => {
-            if (audioRef.current) audioRef.current.volume = 1;
-          }).catch(() => {
-            audioEnabled.current = false;
-          });
+    // Inizializza il contesto audio
+    const initAudio = async () => {
+      try {
+        if (!audioContextRef.current) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          audioContextRef.current = new AudioContextClass();
+          
+          // Carica il file audio
+          const response = await fetch('https://nonnavittoriaapartments.it/click.mp3');
+          const arrayBuffer = await response.arrayBuffer();
+          audioBufferRef.current = await audioContextRef.current.decodeAudioData(arrayBuffer);
         }
+
+        // Su iOS/Safari, riprova a iniziare il contesto audio se era sospeso
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+        }
+      } catch (error) {
+        console.log('Audio initialization error:', error);
       }
     };
 
-    // Aggiungi listener per il primo tocco
-    document.addEventListener('touchstart', initAudio, { once: true });
-    document.addEventListener('click', initAudio, { once: true });
+    // Inizializza l'audio al caricamento e al primo tocco
+    const handleFirstInteraction = () => {
+      initAudio();
+      document.removeEventListener('touchstart', handleFirstInteraction);
+      document.removeEventListener('click', handleFirstInteraction);
+    };
+
+    document.addEventListener('touchstart', handleFirstInteraction);
+    document.addEventListener('click', handleFirstInteraction);
+    initAudio();
 
     return () => {
-      document.removeEventListener('touchstart', initAudio);
-      document.removeEventListener('click', initAudio);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+      document.removeEventListener('click', handleFirstInteraction);
     };
   }, []);
 
-  // Funzione per gestire il click con suono
-  const handleNavClick = () => {
+  const playSound = async () => {
     try {
-      if (audioEnabled.current && audioRef.current) {
-        audioRef.current.currentTime = 0;
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Se la riproduzione fallisce, ricrea l'istanza audio
-            audioRef.current = createAudio();
-            audioEnabled.current = true;
-          });
+      if (audioContextRef.current && audioBufferRef.current) {
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
         }
+        
+        const source = audioContextRef.current.createBufferSource();
+        source.buffer = audioBufferRef.current;
+        source.connect(audioContextRef.current.destination);
+        source.start(0);
       }
     } catch (error) {
-      console.log('Audio playback error:', error);
-      audioEnabled.current = false;
+      console.log('Playback error:', error);
     }
+  };
+
+  const handleNavClick = () => {
+    playSound();
   };
   
   const getButtonClass = (path: string) =>

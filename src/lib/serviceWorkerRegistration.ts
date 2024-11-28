@@ -1,70 +1,84 @@
 // src/lib/serviceWorkerRegistration.ts
 
+const ONESIGNAL_SW_PATH = '/OneSignalSDKWorker.js';
+const APP_SW_PATH = '/serviceworker.js';
+
 export function register() {
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
+    const registerServiceWorker = async () => {
       try {
-        // Prima verifica se esiste già una registrazione di OneSignal
-        const existingRegistrations = await navigator.serviceWorker.getRegistrations();
-        const oneSignalRegistration = existingRegistrations.find(reg => 
-          reg.scope.includes('OneSignal') || reg.active?.scriptURL.includes('OneSignal')
-        );
-
-        // Se non c'è una registrazione OneSignal, procedi con la registrazione del tuo SW
-        if (!oneSignalRegistration) {
-          const registration = await navigator.serviceWorker.register('/serviceworker.js');
-
-          // Controllo automatico ogni 24 ore
-          setInterval(() => {
-            registration.update();
-          }, 1000 * 60 * 60 * 24); // 24 ore
-
-          // Gestione aggiornamenti
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Verifica l'ultima notifica mostrata
-                  const lastUpdatePrompt = localStorage.getItem('lastUpdatePrompt');
-                  const now = Date.now();
-                  
-                  // Se sono passate 24 ore dall'ultima notifica
-                  if (!lastUpdatePrompt || (now - parseInt(lastUpdatePrompt)) > 86400000) {
-                    // Salva il timestamp prima di mostrare la notifica
-                    localStorage.setItem('lastUpdatePrompt', now.toString());
-                    
-                    // Mostra la notifica di aggiornamento
-                    if (window.confirm('Nuova versione disponibile! Vuoi aggiornare?')) {
-                      window.location.reload();
-                    }
-                  }
-                }
-              });
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error during service worker registration:', error);
-      }
-    });
-
-    // Aggiornamento quando l'app torna in primo piano
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        navigator.serviceWorker.ready.then(registration => {
-          // Verifica che non sia una registrazione OneSignal
-          if (!registration.active?.scriptURL.includes('OneSignal')) {
-            const lastUpdate = localStorage.getItem('lastServiceWorkerUpdate');
-            const now = Date.now();
-            
-            // Verifica se sono passate 24 ore dall'ultimo aggiornamento
-            if (!lastUpdate || (now - parseInt(lastUpdate)) > 86400000) {
-              registration.update();
-              localStorage.setItem('lastServiceWorkerUpdate', now.toString());
-            }
+        // Aspetta che OneSignal sia completamente inizializzato
+        await new Promise(resolve => {
+          if (window.OneSignal?.initialized) {
+            resolve(true);
+          } else {
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            window.OneSignalDeferred.push(function() {
+              resolve(true);
+            });
           }
         });
+
+        // Registra il service worker dell'app
+        const registration = await navigator.serviceWorker.register(APP_SW_PATH);
+        
+        // Imposta l'intervallo di aggiornamento
+        const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // 24 ore
+        setInterval(() => registration.update(), UPDATE_INTERVAL);
+
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (!newWorker) return;
+
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              const now = Date.now();
+              const lastUpdatePrompt = localStorage.getItem('lastUpdatePrompt');
+              
+              if (!lastUpdatePrompt || (now - parseInt(lastUpdatePrompt)) > UPDATE_INTERVAL) {
+                localStorage.setItem('lastUpdatePrompt', now.toString());
+                
+                if (window.confirm('Nuova versione disponibile! Vuoi aggiornare?')) {
+                  window.location.reload();
+                }
+              }
+            }
+          });
+        });
+
+        return registration;
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+        throw error;
+      }
+    };
+
+    // Registra all'avvio
+    window.addEventListener('load', registerServiceWorker);
+
+    // Gestisci gli aggiornamenti quando l'app torna in primo piano
+    let visibilityTimeout: NodeJS.Timeout;
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        // Cancella eventuali timeout pendenti
+        if (visibilityTimeout) clearTimeout(visibilityTimeout);
+        
+        // Aggiungi un piccolo delay per evitare conflitti con OneSignal
+        visibilityTimeout = setTimeout(() => {
+          const lastUpdate = localStorage.getItem('lastServiceWorkerUpdate');
+          const now = Date.now();
+          
+          if (!lastUpdate || (now - parseInt(lastUpdate)) > 24 * 60 * 60 * 1000) {
+            navigator.serviceWorker.ready
+              .then(registration => {
+                if (!registration.active?.scriptURL.includes('OneSignal')) {
+                  registration.update();
+                  localStorage.setItem('lastServiceWorkerUpdate', now.toString());
+                }
+              })
+              .catch(console.error);
+          }
+        }, 1000); // 1 secondo di delay
       }
     });
   }
@@ -72,16 +86,19 @@ export function register() {
 
 export function unregister() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-      registrations.forEach(registration => {
-        // Unregister solo il service worker non-OneSignal
-        if (!registration.active?.scriptURL.includes('OneSignal')) {
-          registration.unregister()
-            .catch(error => {
-              console.error('Error unregistering service worker:', error);
-            });
-        }
+    navigator.serviceWorker.getRegistrations()
+      .then(registrations => {
+        registrations.forEach(registration => {
+          if (!registration.active?.scriptURL.includes('OneSignal')) {
+            registration.unregister()
+              .catch(error => {
+                console.error('Error unregistering service worker:', error);
+              });
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error getting service worker registrations:', error);
       });
-    });
   }
 }

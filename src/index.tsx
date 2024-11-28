@@ -25,6 +25,7 @@ const isPWAInstalled = () => {
          isInStandaloneMode() ||
          window.matchMedia('(display-mode: standalone)').matches;
 };
+
 // PWA installation and redirection handling
 if (typeof window !== 'undefined') {
   // Store original URL
@@ -43,8 +44,7 @@ if (typeof window !== 'undefined') {
       }
     }
   };
-
-  // iOS specific handlers
+// iOS specific handlers
   if (isIOS()) {
     window.addEventListener('load', () => {
       if ((window.navigator as any).standalone) {
@@ -90,7 +90,8 @@ if (typeof window !== 'undefined') {
     const installBanner = document.createElement('div');
     installBanner.id = 'install-banner';
     installBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg flex flex-col z-50';
-installBanner.innerHTML = `
+    
+    installBanner.innerHTML = `
       <div class="flex flex-col w-full">
         <div class="text-[#1e3a8a] font-bold text-xl mb-2">
           Install Nonna Vittoria Apartments
@@ -108,7 +109,7 @@ installBanner.innerHTML = `
         </button>
       </div>
     `;
-    document.body.appendChild(installBanner);
+document.body.appendChild(installBanner);
     
     const installButton = document.getElementById('install-button');
     const skipButton = document.getElementById('skip-install');
@@ -134,7 +135,8 @@ installBanner.innerHTML = `
       });
     }
   });
-// iOS banner
+
+  // iOS banner
   if (isIOS() && !isInStandaloneMode()) {
     const iosBanner = document.createElement('div');
     iosBanner.id = 'ios-install-banner';
@@ -167,7 +169,7 @@ installBanner.innerHTML = `
         iosBanner.remove();
         setTimeout(() => {
           window.dispatchEvent(new Event('load'));
-        }, 24 * 60 * 60 * 1000); // Mostra di nuovo dopo 24 ore
+        }, 24 * 60 * 60 * 1000);
       });
     }
   }
@@ -208,6 +210,3 @@ if (rootElement) {
 } else {
   console.error("Root element not found in DOM");
 }
-
-
-

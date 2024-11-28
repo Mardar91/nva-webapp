@@ -1,5 +1,15 @@
 // src/lib/serviceWorkerRegistration.ts
 
+// Definizione dei tipi per OneSignal
+declare global {
+  interface Window {
+    OneSignal?: {
+      initialized?: boolean;
+    };
+    OneSignalDeferred?: Array<() => void>;
+  }
+}
+
 const ONESIGNAL_SW_PATH = '/OneSignalSDKWorker.js';
 const APP_SW_PATH = '/serviceworker.js';
 
@@ -8,13 +18,13 @@ export function register() {
     const registerServiceWorker = async () => {
       try {
         // Aspetta che OneSignal sia completamente inizializzato
-        await new Promise(resolve => {
+        await new Promise<void>((resolve) => {
           if (window.OneSignal?.initialized) {
-            resolve(true);
+            resolve();
           } else {
             window.OneSignalDeferred = window.OneSignalDeferred || [];
-            window.OneSignalDeferred.push(function() {
-              resolve(true);
+            window.OneSignalDeferred.push(() => {
+              resolve();
             });
           }
         });
@@ -57,7 +67,7 @@ export function register() {
     window.addEventListener('load', registerServiceWorker);
 
     // Gestisci gli aggiornamenti quando l'app torna in primo piano
-    let visibilityTimeout: NodeJS.Timeout;
+    let visibilityTimeout: ReturnType<typeof setTimeout>;
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         // Cancella eventuali timeout pendenti

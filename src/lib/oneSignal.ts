@@ -16,10 +16,12 @@ export const initOneSignal = async () => {
 
     console.log("OneSignal initialized successfully!");
 
-    // Mostra il prompt per abilitare le notifiche
-    const isSubscribed = await OneSignal.isPushNotificationsEnabled();
-    if (!isSubscribed) {
-      await OneSignal.showSlidedownPrompt();
+    // Verifica lo stato delle notifiche
+    const subscriptionStatus = await OneSignal.User.isSubscribed();
+    console.log("Stato sottoscrizione notifiche:", subscriptionStatus);
+
+    if (!subscriptionStatus) {
+      await OneSignal.Slidedown.open();
     }
   } catch (error) {
     console.error("Errore durante l'inizializzazione di OneSignal:", error);

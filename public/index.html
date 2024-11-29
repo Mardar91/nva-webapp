@@ -54,22 +54,30 @@
     <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" href="/splash/9.7__iPad_Pro__7.9__iPad_mini__9.7__iPad_Air__9.7__iPad_portrait.png" />
     <link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2)" href="/splash/8.3__iPad_Mini_portrait.png" />
 
-    <!-- Scripts esterni -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <!-- Script per OneSignal -->
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
-          serviceWorkerPath: "/OneSignalSDKWorker.js",
-          notifyButton: {
-            enable: false,
-          },
-        });
-      });
-    </script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
+    });
+  });
+</script>
 
+<script>
+  // Previene il redirect infinito durante l'installazione
+  if (window.location.search.includes('pwa=true')) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  // Gestione standalone mode
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    // Siamo già in modalità standalone/PWA
+    console.log('App in modalità standalone');
+  }
+</script>
+    
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 

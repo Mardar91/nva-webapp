@@ -51,16 +51,19 @@ export const initOneSignal = async () => {
       }
     });
 
-    // Mostro il prompt delle notifiche
-    OneSignal.showSlidedownPrompt();
-    
+    // Verifica se il prompt può essere mostrato
+    const canShowPrompt = await OneSignal.isPushNotificationsEnabled();
+    if (!canShowPrompt) {
+      await OneSignal.showSlidedownPrompt();
+    }
+
     // Gestione degli eventi di sottoscrizione
-    OneSignal.on('subscriptionChange', function(isSubscribed) {
+    OneSignal.on('subscriptionChange', (isSubscribed) => {
       console.log("Stato sottoscrizione OneSignal:", isSubscribed);
     });
 
     // Gestione degli eventi di visualizzazione notifiche
-    OneSignal.on('notificationDisplay', function(event) {
+    OneSignal.on('notificationDisplay', (event) => {
       console.log("Notifica OneSignal visualizzata:", event);
     });
 
@@ -83,7 +86,7 @@ export const requestNotificationPermission = async () => {
 // Helper per ottenere lo stato del permesso notifiche
 export const getNotificationPermissionStatus = async () => {
   try {
-    const permission = await OneSignal.Notifications.permission;
+    const permission = await OneSignal.getNotificationPermission();
     return permission;
   } catch (error) {
     console.error('Errore lettura stato permesso notifiche:', error);
@@ -94,7 +97,7 @@ export const getNotificationPermissionStatus = async () => {
 // Helper per impostare un ID utente esterno
 export const setExternalUserId = async (externalUserId: string) => {
   try {
-    await OneSignal.login(externalUserId);
+    await OneSignal.setExternalUserId(externalUserId);
   } catch (error) {
     console.error('Errore impostazione ID utente esterno:', error);
   }

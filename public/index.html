@@ -12,7 +12,7 @@
     
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" /> <!-- Cambiato da black-translucent a default -->
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
     
     <!-- Manifest e icone -->
@@ -36,12 +36,6 @@
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
-          serviceWorkerPath: "/OneSignalSDKWorker.js",
-          serviceWorkerUpdaterPath: "/OneSignalSDKWorker.js",
-          allowLocalhostAsSecureOrigin: true,
-          notifyButton: {
-            enable: false
-          }
         });
       });
     </script>
@@ -125,5 +119,3 @@
     <noscript>JavaScript deve essere abilitato per utilizzare questa app.</noscript>
   </body>
 </html>
-
-

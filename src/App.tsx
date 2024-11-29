@@ -82,6 +82,16 @@ const App: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isPWAInstalled, setIsPWAInstalled] = useState(false);
 
+  // Effetto per rimuovere i parametri PWA
+  useEffect(() => {
+    if (window.location.search.includes('pwa=')) {
+      const newUrl = window.location.pathname + 
+                    window.location.search.replace(/[?&]pwa=[^&]+/, '') +
+                    window.location.hash;
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, []);
+
   useEffect(() => {
     // Funzione per aggiornare il colore della barra di stato
     const updateStatusBarColor = () => {
@@ -154,15 +164,6 @@ const App: React.FC = () => {
       document.removeEventListener('visibilitychange', handleServiceWorkerUpdate);
       darkModeMediaQuery.removeListener(updateStatusBarColor);
     };
-  }, []);
-
-  // Prevenzione redirect infinito
-  useEffect(() => {
-    const currentUrl = new URL(window.location.href);
-    if (currentUrl.searchParams.has('pwa')) {
-      currentUrl.searchParams.delete('pwa');
-      window.history.replaceState({}, '', currentUrl.toString());
-    }
   }, []);
 
   return (

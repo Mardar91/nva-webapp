@@ -17,6 +17,8 @@
   "rewrites": [
     { "source": "/taxi", "destination": "/" },
     { "source": "/shop", "destination": "/" },
-    { "source": "/(.*)", "destination": "/$1" }
+    { "source": "/(.*)", "destination": "/$1" },
+     "source": "/:path*/pwa=:value",
+      "destination": "/:path*"
   ]
 }

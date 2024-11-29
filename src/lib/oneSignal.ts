@@ -11,19 +11,11 @@ export const initOneSignal = async () => {
         enable: true,
         position: "bottom-right",
       },
+      // Per test in localhost
       allowLocalhostAsSecureOrigin: process.env.NODE_ENV === "development",
     });
 
     console.log("OneSignal initialized successfully!");
-
-    // Verifica lo stato delle notifiche push
-    const isPushEnabled = await OneSignal.Notifications.isPushNotificationsEnabled();
-    console.log("Notifiche push abilitate:", isPushEnabled);
-
-    if (!isPushEnabled) {
-      // Mostra il prompt
-      await OneSignal.Slidedown.open();
-    }
   } catch (error) {
     console.error("Errore durante l'inizializzazione di OneSignal:", error);
   }

@@ -13,13 +13,10 @@ const urlsToCache = [
 
 // Helper per verificare se una richiesta dovrebbe essere cachata
 const shouldCache = (request) => {
-  // Non cachare richieste OneSignal o analytics
-  if (request.url.includes('OneSignal') || 
-      request.url.includes('onesignal') ||
-      request.url.includes('analytics')) {
+  // Non cachare richieste analytics
+  if (request.url.includes('analytics')) {
     return false;
   }
-
   return request.method === 'GET';
 };
 
@@ -45,7 +42,7 @@ self.addEventListener('activate', (event) => {
       .then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (cacheName !== CACHE_NAME && !cacheName.includes('OneSignal')) {
+            if (cacheName !== CACHE_NAME) {
               return caches.delete(cacheName);
             }
           })
@@ -57,12 +54,6 @@ self.addEventListener('activate', (event) => {
 
 // Fetch
 self.addEventListener('fetch', (event) => {
-  // Non intercettare richieste OneSignal
-  if (event.request.url.includes('OneSignal') || 
-      event.request.url.includes('onesignal')) {
-    return;
-  }
-
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -73,7 +64,7 @@ self.addEventListener('fetch', (event) => {
 
         // Clone the request
         const fetchRequest = event.request.clone();
-
+        
         return fetch(fetchRequest)
           .then(response => {
             // Check if valid response

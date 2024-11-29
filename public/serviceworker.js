@@ -8,7 +8,7 @@ const urlsToCache = [
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
-  '/offline.html'
+  '/offline.html'  // Assicurati di avere questa pagina
 ];
 
 // Helper per verificare se una richiesta dovrebbe essere cachata
@@ -19,6 +19,7 @@ const shouldCache = (request) => {
       request.url.includes('analytics')) {
     return false;
   }
+
   return request.method === 'GET';
 };
 
@@ -56,13 +57,12 @@ self.addEventListener('activate', (event) => {
 
 // Fetch
 self.addEventListener('fetch', (event) => {
-  // Se è una richiesta OneSignal, non intercettarla e lasciarla passare
+  // Non intercettare richieste OneSignal
   if (event.request.url.includes('OneSignal') || 
       event.request.url.includes('onesignal')) {
     return;
   }
 
-  // Per tutte le altre richieste, applica la logica di caching
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -100,18 +100,4 @@ self.addEventListener('fetch', (event) => {
           });
       })
   );
-});
-
-// Gestione messaggi da OneSignal
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'ONESIGNAL_SDK_MESSAGE') {
-    return; // Lascia che OneSignal gestisca i suoi messaggi
-  }
-});
-
-// Gestione notifiche push
-self.addEventListener('push', (event) => {
-  if (event.data && event.data.text().includes('OneSignal')) {
-    return; // Lascia che OneSignal gestisca le sue notifiche push
-  }
 });

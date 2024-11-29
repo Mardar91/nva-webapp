@@ -1,121 +1,213 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
     <title>Nonna Vittoria Apartments</title>
     
-    <!-- Meta tag per PWA -->
+    <!-- Meta tags principali -->
     <meta name="description" content="Nonna Vittoria Apartments - Il tuo soggiorno in Puglia" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    
+    <!-- Tema e colori -->
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
     
-    <!-- PWA support per iOS migliorato -->
+    <!-- PWA meta tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Nonna Vittoria Apartments" />
+    
+    <!-- iOS meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" /> <!-- Cambiato da black-translucent a default -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Nonna Vittoria Apartments" />
     
-    <!-- Manifest e icone -->
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
+    <!-- Prevenzione caching versione PWA -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     
-    <!-- Apple touch icons migliorati -->
+    <!-- Manifest e icone base -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
+    <!-- Icone per iOS ottimizzate -->
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />
     <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png" />
-    
-    <!-- Meta tag per gestire il redirect -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-touch-startup-image" content="/icons/splash.png" />
-    
-    <!-- OneSignal Scripts -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="/splash/iPhone_14_Pro_Max_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" href="/splash/iPhone_14_Pro_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="/splash/iPhone_14_Plus__iPhone_13_Pro_Max__iPhone_12_Pro_Max_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/splash/iPhone_14__iPhone_13_Pro__iPhone_13__iPhone_12_Pro__iPhone_12_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/splash/iPhone_13_mini__iPhone_12_mini__iPhone_11_Pro__iPhone_XS__iPhone_X_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" href="/splash/iPhone_11_Pro_Max__iPhone_XS_Max_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="/splash/iPhone_11__iPhone_XR_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="/splash/iPhone_8_Plus__iPhone_7_Plus__iPhone_6s_Plus__iPhone_6_Plus_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/splash/iPhone_8__iPhone_7__iPhone_6s__iPhone_6__4.7__iPhone_SE_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="/splash/4__iPhone_SE__iPod_touch_5th_generation_and_later_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" href="/splash/12.9__iPad_Pro_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" href="/splash/11__iPad_Pro__10.5__iPad_Pro_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2)" href="/splash/10.9__iPad_Air_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" href="/splash/10.5__iPad_Air_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2)" href="/splash/10.2__iPad_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" href="/splash/9.7__iPad_Pro__7.9__iPad_mini__9.7__iPad_Air__9.7__iPad_portrait.png" />
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2)" href="/splash/8.3__iPad_Mini_portrait.png" />
+
+    <!-- Scripts esterni -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <!-- Script per OneSignal -->
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
+          serviceWorkerPath: "/OneSignalSDKWorker.js",
+          notifyButton: {
+            enable: false,
+          },
         });
       });
     </script>
-    
+
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Stili base e fix per PWA -->
     <style>
-      /* Stili base per il corpo della pagina */
+      /* Reset e stili base */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      :root {
+        --vh: 1vh;
+        --safe-area-inset-top: env(safe-area-inset-top);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom);
+      }
+
+      html {
+        height: 100%;
+        height: -webkit-fill-available;
+        overflow: hidden;
+      }
+
       body {
         margin: 0;
         padding: 0;
+        height: 100vh;
+        height: calc(var(--vh, 1vh) * 100);
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        -webkit-tap-highlight-color: transparent;
         background-color: #ffffff;
+        overscroll-behavior-y: none;
+        padding-top: var(--safe-area-inset-top);
+        padding-bottom: var(--safe-area-inset-bottom);
       }
 
-      /* Applica il tema blu solo per VipTicketHero in standalone */
+      /* Fix per modalità standalone */
       @media all and (display-mode: standalone) {
-        .vipHeroContainer.extended-blue-bg {
-          padding-top: env(safe-area-inset-top);
+        body {
+          padding-top: var(--safe-area-inset-top);
         }
 
-        /* Fix per la barra di stato iOS */
-        body {
-          padding-top: env(safe-area-inset-top);
+        .vipHeroContainer.extended-blue-bg {
+          padding-top: var(--safe-area-inset-top);
         }
       }
 
-      /* Fix per iOS PWA */
+      /* Dark mode */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1a1a1a;
+          color: #ffffff;
+        }
+      }
+
+      /* Fix per iOS */
       @supports (-webkit-touch-callout: none) {
         body {
           min-height: -webkit-fill-available;
         }
-      }
-    </style>
-    <!-- Script per gestire il redirect -->
-    <script>
-      // Controlla se l'app è in modalità standalone
-      if (window.matchMedia('(display-mode: standalone)').matches || 
-          window.navigator.standalone === true) {
-        // L'app è già aperta in modalità standalone
-        console.log('App aperta in modalità standalone');
-      } else {
-        // Controlla se l'app è stata installata
-        if (localStorage.getItem('pwa-installed') === 'true') {
-          // Se siamo su iOS
-          if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            // Prova ad aprire l'app
-            window.location.href = window.location.href;
-            
-            // Se dopo 1 secondo siamo ancora qui, probabilmente l'app non è aperta
-            setTimeout(() => {
-              if (!document.hidden) {
-                console.log('Impossibile aprire l\'app installata');
-              }
-            }, 1000);
-          }
+
+        .ios-safe-area-top {
+          padding-top: var(--safe-area-inset-top);
+        }
+
+        .ios-safe-area-bottom {
+          padding-bottom: var(--safe-area-inset-bottom);
         }
       }
-      
-      // Ascolta l'evento di installazione completata
-      window.addEventListener('appinstalled', (evt) => {
+
+      /* Stili per lo scrolling */
+      .scroll-container {
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: none;
+      }
+
+      /* Fix per l'effetto "rubber band" su iOS */
+      .prevent-overscroll {
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+
+    <!-- Script per la gestione della PWA -->
+    <script>
+      // Utility per gestire l'altezza viewport su mobile
+      function setViewportHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      }
+
+      // Handler per l'installazione della PWA
+      let deferredPrompt;
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        console.log('PWA installabile');
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredPrompt = null;
         localStorage.setItem('pwa-installed', 'true');
         console.log('PWA installata con successo');
       });
 
-      // Fix per il viewport su iOS
-      const setViewportHeight = () => {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      };
-
+      // Gestione dimensioni viewport
       window.addEventListener('resize', setViewportHeight);
-      window.addEventListener('orientationchange', setViewportHeight);
-      setViewportHeight();
+      window.addEventListener('orientationchange', () => {
+        setTimeout(setViewportHeight, 100);
+      });
+
+      // Inizializzazione
+      document.addEventListener('DOMContentLoaded', () => {
+        setViewportHeight();
+        
+        // Controllo stato PWA
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true) {
+          document.body.classList.add('standalone-mode');
+        }
+      });
+
+      // Gestione versione PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/serviceworker.js')
+          .then(registration => {
+            console.log('Service Worker registrato');
+          })
+          .catch(error => {
+            console.error('Errore registrazione Service Worker:', error);
+          });
+      }
     </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <noscript>JavaScript deve essere abilitato per utilizzare questa app.</noscript>
-  </body>
-</html>

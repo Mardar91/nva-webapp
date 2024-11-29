@@ -5,7 +5,6 @@ import {
   Routes,
   Route,
   Navigate,
-  useLocation,
 } from "react-router-dom";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 import Home from "./pages/Home";
@@ -16,14 +15,8 @@ import CheckIn from "./pages/CheckIn";
 import Partners from "./pages/Partners";
 import Layout from "./components/Layout";
 
-// Interfacce
 interface ExternalRedirectProps {
   to: string;
-}
-
-interface IframeViewProps {
-  src: string;
-  title: string;
 }
 
 interface BeforeInstallPromptEvent extends Event {
@@ -31,10 +24,8 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-// Componente per la gestione dei redirect esterni
 const ExternalRedirect: React.FC<ExternalRedirectProps> = ({ to }) => {
   React.useEffect(() => {
-    // Pulisce l'URL dai parametri PWA prima del redirect
     const cleanUrl = new URL(to);
     cleanUrl.searchParams.delete('source');
     cleanUrl.searchParams.delete('pwa');
@@ -43,13 +34,12 @@ const ExternalRedirect: React.FC<ExternalRedirectProps> = ({ to }) => {
   return null;
 };
 
-// Componente per la visualizzazione degli iframe
-const IframeView: React.FC<IframeViewProps> = ({ src, title }) => {
+const IframeView: React.FC<{ src: string; title: string }> = ({
+  src,
+  title,
+}) => {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    const safeAreaBottom = getComputedStyle(document.documentElement)
-      .getPropertyValue('--safe-area-inset-bottom');
-    
     return () => {
       document.body.style.overflow = 'auto';
     };
@@ -57,7 +47,7 @@ const IframeView: React.FC<IframeViewProps> = ({ src, title }) => {
 
   return (
     <div 
-      className="iframe-container prevent-overscroll" 
+      className="iframe-container" 
       style={{
         position: 'fixed',
         top: 'var(--safe-area-inset-top, 0px)',
@@ -87,27 +77,13 @@ const IframeView: React.FC<IframeViewProps> = ({ src, title }) => {
     </div>
   );
 };
+
 const App: React.FC = () => {
-  // Stati per la gestione PWA
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isPWAInstalled, setIsPWAInstalled] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Controlla se l'app è in modalità standalone o PWA
-    const checkStandalone = () => {
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                          (window.navigator as any).standalone === true;
-      setIsStandalone(isStandalone);
-
-      // Se siamo in modalità standalone, l'app è installata
-      if (isStandalone) {
-        setIsPWAInstalled(true);
-        localStorage.setItem('pwa-installed', 'true');
-      }
-    };
-
-    // Gestione colore barra di stato
+    // Funzione per aggiornare il colore della barra di stato
     const updateStatusBarColor = () => {
       const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -120,35 +96,41 @@ const App: React.FC = () => {
       }
     };
 
-    // Gestione installazione PWA
+    // Controllo modalità standalone/PWA
+    const checkInstallState = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                          (window.navigator as any).standalone === true;
+      if (isStandalone) {
+        setIsPWAInstalled(true);
+        localStorage.setItem('pwa-installed', 'true');
+      }
+    };
+
+    // Event listeners per PWA
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
-    // Gestione completamento installazione
     const handleAppInstalled = () => {
       setDeferredPrompt(null);
       setIsPWAInstalled(true);
       localStorage.setItem('pwa-installed', 'true');
-      console.log('PWA installata con successo');
     };
 
-    // Gestione aggiornamento Service Worker
+    // Service Worker update handler
     const handleServiceWorkerUpdate = () => {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(registration => {
-          registration.update().catch(error => {
-            console.error('Errore aggiornamento Service Worker:', error);
-          });
+          registration.update();
         });
       }
     };
 
     // Inizializzazione
-    checkStandalone();
+    checkInstallState();
     updateStatusBarColor();
-
+    
     // Event listeners
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     darkModeMediaQuery.addListener(updateStatusBarColor);
@@ -162,18 +144,7 @@ const App: React.FC = () => {
     });
 
     // Registrazione Service Worker
-    serviceWorkerRegistration.register({
-      onUpdate: (registration) => {
-        // Notifica l'utente dell'aggiornamento disponibile
-        const shouldUpdate = window.confirm(
-          'È disponibile una nuova versione. Vuoi aggiornare?'
-        );
-        if (shouldUpdate && registration.waiting) {
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-          window.location.reload();
-        }
-      },
-    });
+    serviceWorkerRegistration.register();
 
     // Cleanup
     return () => {

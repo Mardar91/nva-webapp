@@ -19,6 +19,7 @@ const shouldCache = (request) => {
       request.url.includes('analytics')) {
     return false;
   }
+
   return request.method === 'GET';
 };
 
@@ -59,7 +60,6 @@ self.addEventListener('fetch', (event) => {
   // Non intercettare richieste OneSignal
   if (event.request.url.includes('OneSignal') || 
       event.request.url.includes('onesignal')) {
-    event.respondWith(fetch(event.request)); // Esplicitamente facciamo il fetch della richiesta originale
     return;
   }
 

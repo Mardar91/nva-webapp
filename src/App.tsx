@@ -1,4 +1,10 @@
-gate,
+import React, { useEffect } from "react";
+import "./styles.css";
+import {
+ BrowserRouter as Router,
+ Routes,
+ Route,
+ Navigate,
 } from "react-router-dom";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 import Home from "./pages/Home";

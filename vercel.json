@@ -1,5 +1,4 @@
 {
-  "version": 2,
   "headers": [
     {
       "source": "/serviceworker.js",
@@ -13,43 +12,11 @@
           "value": "/"
         }
       ]
-    },
-    {
-      "source": "/manifest.json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        }
-      ]
     }
   ],
   "rewrites": [
-    {
-      "source": "/taxi",
-      "destination": "/"
-    },
-    {
-      "source": "/shop",
-      "destination": "/"
-    },
-    {
-      "source": "/:path*/pwa=:value",
-      "destination": "/:path*"
-    },
-    {
-      "source": "/:path*\\?pwa=:value",
-      "destination": "/:path*"
-    },
-    {
-      "source": "/:path*\\?source=:value",
-      "destination": "/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/$1"
-    }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+    { "source": "/taxi", "destination": "/" },
+    { "source": "/shop", "destination": "/" },
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
 }

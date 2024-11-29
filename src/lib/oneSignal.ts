@@ -51,9 +51,11 @@ export const initOneSignal = async () => {
       }
     });
 
-    // Verifica se il prompt può essere mostrato
-    const canShowPrompt = await OneSignal.isPushNotificationsEnabled();
-    if (!canShowPrompt) {
+    // Verifica se le notifiche push sono abilitate
+    const permission = await OneSignal.getNotificationPermission();
+    console.log("Stato permesso notifiche:", permission);
+
+    if (permission === "default" || permission === "denied") {
       await OneSignal.showSlidedownPrompt();
     }
 
@@ -69,36 +71,5 @@ export const initOneSignal = async () => {
 
   } catch (error) {
     console.error('Errore inizializzazione OneSignal:', error);
-  }
-};
-
-// Helper per richiedere il permesso delle notifiche
-export const requestNotificationPermission = async () => {
-  try {
-    const result = await OneSignal.Notifications.requestPermission();
-    return result;
-  } catch (error) {
-    console.error('Errore richiesta permesso notifiche:', error);
-    return false;
-  }
-};
-
-// Helper per ottenere lo stato del permesso notifiche
-export const getNotificationPermissionStatus = async () => {
-  try {
-    const permission = await OneSignal.getNotificationPermission();
-    return permission;
-  } catch (error) {
-    console.error('Errore lettura stato permesso notifiche:', error);
-    return false;
-  }
-};
-
-// Helper per impostare un ID utente esterno
-export const setExternalUserId = async (externalUserId: string) => {
-  try {
-    await OneSignal.setExternalUserId(externalUserId);
-  } catch (error) {
-    console.error('Errore impostazione ID utente esterno:', error);
   }
 };

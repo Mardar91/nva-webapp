@@ -28,6 +28,16 @@ const checkForUpdates = async () => {
   return false;
 };
 
+// Service Worker update handler
+const handleServiceWorkerUpdate = async (registration: ServiceWorkerRegistration) => {
+  if (registration.waiting) {
+    // Nuovo service worker in attesa
+    await clearCache();
+    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    window.location.reload();
+  }
+};
+
 // Utility functions for PWA detection and platform checking
 const isIOS = () => {
   if (typeof window !== 'undefined') {

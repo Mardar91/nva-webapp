@@ -14,7 +14,7 @@
       ]
     },
     {
-      "source": "/push/onesignal/(.*)",
+      "source": "/push/onesignal/OneSignalSDKWorker.js",
       "headers": [
         {
           "key": "Service-Worker-Allowed",

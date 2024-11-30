@@ -17,8 +17,10 @@ const urlsToCache = [
 
 // Helper per verificare se una richiesta dovrebbe essere cachata
 const shouldCache = (request) => {
-  // Non cachare richieste analytics
-  if (request.url.includes('analytics')) {
+  // Non cachare richieste analytics e OneSignal
+  if (request.url.includes('analytics') || 
+      request.url.includes('OneSignal') || 
+      request.url.includes('/push/onesignal/')) {
     return false;
   }
   return request.method === 'GET';
@@ -58,6 +60,11 @@ self.addEventListener('activate', (event) => {
 
 // Fetch
 self.addEventListener('fetch', (event) => {
+  // Ignora le richieste OneSignal
+  if (event.request.url.includes('/push/onesignal/')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {

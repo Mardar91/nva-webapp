@@ -1,15 +1,32 @@
 import OneSignal from 'react-onesignal';
 
-// Debug Listeners
-export const addOneSignalListeners = () => {
-  OneSignal.Notifications.addEventListener('permissionChange', (permission) => {
-    console.log('Permission status changed:', permission);
-  });
+export const initOneSignal = async () => {
+  try {
+    await OneSignal.Slidedown.promptPush({
+      text: {
+        actionMessage: "Vuoi ricevere notifiche su offerte e promozioni?",
+        acceptButton: "SI, GRAZIE",
+        cancelButton: "NO, GRAZIE"
+      },
+      delay: {
+        pageViews: 1,
+        timeDelay: 5
+      }
+    });
 
-  // Log permission status
-  OneSignal.Notifications.permission.then(permission => {
+    console.log('OneSignal Prompt Configured');
+
+    // Debug Listeners
+    OneSignal.Notifications.addEventListener('permissionChange', (permission) => {
+      console.log('Permission status changed:', permission);
+    });
+
+    // Log initial permission
+    const permission = await OneSignal.Notifications.permission;
     console.log('Current permission status:', permission);
-  });
+  } catch (error) {
+    console.error('Errore configurazione OneSignal:', error);
+  }
 };
 
 // Helper per richiedere il permesso delle notifiche

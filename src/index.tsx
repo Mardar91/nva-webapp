@@ -177,7 +177,7 @@ if (typeof window !== 'undefined') {
 
 // Service Worker registration
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-  serviceWorkerRegistration.register('/pwa-worker.js');  // Aggiornato il path del service worker
+  serviceWorkerRegistration.register();   // Aggiornato il path del service worker
 
   // Update service worker on online event
   window.addEventListener('online', () => {

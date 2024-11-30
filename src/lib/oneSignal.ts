@@ -42,7 +42,7 @@ export const initOneSignal = async () => {
     });
 
     OneSignal.User.PushSubscription.addEventListener('change', (subscription) => {
-      console.log('Push subscription state:', subscription.current.optedIn);
+      console.log('Push subscription state:', subscription.current?.optedIn);
       console.log('Full subscription data:', subscription);
     });
 
@@ -50,7 +50,8 @@ export const initOneSignal = async () => {
     const permission = await OneSignal.Notifications.permission;
     console.log('Current permission status:', permission);
 
-    const isPushEnabled = await OneSignal.User.PushSubscription.getPushSubscription();
+    // Alternative method to check subscription status
+    const isPushEnabled = await OneSignal.User.PushSubscription.isSubscribed();
     console.log('Push subscription details:', isPushEnabled);
   } catch (error) {
     console.error('Errore inizializzazione OneSignal:', error);
@@ -84,9 +85,9 @@ export const isPushNotificationsEnabled = async () => {
 // Helper per verificare lo stato completo delle sottoscrizioni
 export const getSubscriptionState = async () => {
   try {
-    const subscription = await OneSignal.User.PushSubscription.getPushSubscription();
-    console.log('Complete subscription state:', subscription);
-    return subscription;
+    const isSubscribed = await OneSignal.User.PushSubscription.isSubscribed();
+    console.log('Subscription state:', isSubscribed);
+    return isSubscribed;
   } catch (error) {
     console.error('Errore verifica stato sottoscrizione:', error);
     return null;

@@ -13,35 +13,9 @@ export function register() {
           }
         });
 
-      // Poi registriamo il nuovo PWA worker
+      // Registriamo il PWA worker
       navigator.serviceWorker
         .register('/pwa-worker.js')
-        .then(registration => {
-          // Gestione aggiornamenti
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Verifica l'ultima notifica mostrata
-                  const lastUpdatePrompt = localStorage.getItem('lastUpdatePrompt');
-                  const now = Date.now();
-                  
-                  // Se sono passate 24 ore dall'ultima notifica
-                  if (!lastUpdatePrompt || (now - parseInt(lastUpdatePrompt)) > 86400000) {
-                    // Salva il timestamp prima di mostrare la notifica
-                    localStorage.setItem('lastUpdatePrompt', now.toString());
-                    
-                    // Mostra la notifica di aggiornamento
-                    if (window.confirm('Nuova versione disponibile! Vuoi aggiornare?')) {
-                      window.location.reload();
-                    }
-                  }
-                }
-              });
-            }
-          });
-        })
         .catch(error => {
           console.error('Error during service worker registration:', error);
         });
@@ -51,14 +25,7 @@ export function register() {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         navigator.serviceWorker.ready.then(registration => {
-          const lastUpdate = localStorage.getItem('lastServiceWorkerUpdate');
-          const now = Date.now();
-          
-          // Verifica se sono passate 24 ore dall'ultimo aggiornamento
-          if (!lastUpdate || (now - parseInt(lastUpdate)) > 86400000) {
-            registration.update();
-            localStorage.setItem('lastServiceWorkerUpdate', now.toString());
-          }
+          registration.update();
         });
       }
     });

@@ -5,7 +5,7 @@ import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
 // Versioning
-const APP_VERSION = '1.0.0'; // Incrementa questa versione quando rilasci aggiornamenti
+const APP_VERSION = '1.0.1'; // Incrementa questa versione quando rilasci aggiornamenti
 
 // Cache management functions
 const clearCache = async () => {

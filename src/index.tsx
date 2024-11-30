@@ -285,23 +285,29 @@ if (typeof window !== 'undefined') {
 
 // Service Worker registration con gestione aggiornamenti
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-  serviceWorkerRegistration.register().then(registration => {
-    registration.addEventListener('updatefound', () => {
-      const newWorker = registration.installing;
-      if (newWorker) {
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            handleServiceWorkerUpdate(registration);
-          }
-        });
-      }
+  if ('serviceWorker' in navigator) {
+    // Registra il service worker e gestisci gli aggiornamenti
+    navigator.serviceWorker.ready.then(registration => {
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              handleServiceWorkerUpdate(registration);
+            }
+          });
+        }
+      });
     });
-  });
 
-  // Listener per il messaggio SKIP_WAITING
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    window.location.reload();
-  });
+    // Listener per il messaggio SKIP_WAITING
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  }
+
+  // Registra il service worker
+  serviceWorkerRegistration.register();
 
   // Update service worker on online event
   window.addEventListener('online', async () => {

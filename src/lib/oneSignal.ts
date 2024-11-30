@@ -34,7 +34,6 @@ export const initOneSignal = async () => {
         url: "https://nva.vercel.app"
       }
     });
-
     console.log('OneSignal Initialized');
 
     // Debug Listeners
@@ -43,7 +42,7 @@ export const initOneSignal = async () => {
     });
 
     OneSignal.User.PushSubscription.addEventListener('change', (subscription) => {
-      console.log('Push subscription state:', subscription.optedIn);
+      console.log('Push subscription state:', subscription.current.optedIn);
       console.log('Full subscription data:', subscription);
     });
 
@@ -53,7 +52,6 @@ export const initOneSignal = async () => {
 
     const isPushEnabled = await OneSignal.User.PushSubscription.getPushSubscription();
     console.log('Push subscription details:', isPushEnabled);
-
   } catch (error) {
     console.error('Errore inizializzazione OneSignal:', error);
   }

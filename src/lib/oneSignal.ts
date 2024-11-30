@@ -6,25 +6,7 @@ export const initOneSignal = async () => {
       appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
       allowLocalhostAsSecureOrigin: process.env.NODE_ENV === 'development',
       notifyButton: {
-        enable: true,
-        size: 'medium',
-        theme: 'default',
-        position: 'bottom-right',
-        showCredit: false,
-        text: {
-          'tip.state.unsubscribed': 'Ricevi notifiche',
-          'tip.state.subscribed': 'Notifiche abilitate',
-          'tip.state.blocked': 'Notifiche bloccate',
-          'message.prenotify': 'Clicca per ricevere notifiche',
-          'message.action.subscribed': 'Grazie per aver attivato le notifiche!',
-          'message.action.resubscribed': 'Notifiche riattivate',
-          'message.action.unsubscribed': 'Non riceverai più notifiche',
-          'dialog.main.title': 'Gestisci Notifiche',
-          'dialog.main.button.subscribe': 'ATTIVA',
-          'dialog.main.button.unsubscribe': 'DISATTIVA',
-          'dialog.blocked.title': 'Sblocca Notifiche',
-          'dialog.blocked.message': 'Segui le istruzioni per abilitare le notifiche'
-        }
+        enable: false // Disabilita la Notification Bell
       },
       promptOptions: {
         slidedown: {

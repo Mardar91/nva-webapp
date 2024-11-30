@@ -17,11 +17,6 @@ export function register() {
       navigator.serviceWorker
         .register('/pwa-worker.js')
         .then(registration => {
-          // Controllo automatico ogni 24 ore
-          setInterval(() => {
-            registration.update();
-          }, 1000 * 60 * 60 * 24); // 24 ore
-
           // Gestione aggiornamenti
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
@@ -49,13 +44,6 @@ export function register() {
         })
         .catch(error => {
           console.error('Error during service worker registration:', error);
-        });
-
-      // Registrazione del service worker di OneSignal
-      navigator.serviceWorker
-        .register('/OneSignalSDKWorker.js')
-        .catch(error => {
-          console.error('Error during OneSignal service worker registration:', error);
         });
     });
 

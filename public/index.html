@@ -28,6 +28,16 @@
     <!-- Meta tag per gestire il redirect -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-touch-startup-image" content="/icons/splash.png" />
+
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "b2d0db38-3e2a-490b-b5fa-e7de458d06ff",
+    });
+  });
+</script>
     
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>

@@ -3,8 +3,20 @@
 export function register() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
+      // Prima rimuoviamo eventuali vecchi service worker
       navigator.serviceWorker
-        .register('/serviceworker.js')
+        .getRegistrations()
+        .then(function(registrations) {
+          for(let registration of registrations) {
+            if(registration.active && registration.active.scriptURL.includes('serviceworker.js')) {
+              registration.unregister();
+            }
+          }
+        });
+
+      // Poi registriamo il nuovo PWA worker
+      navigator.serviceWorker
+        .register('/pwa-worker.js')
         .then(registration => {
           // Controllo automatico ogni 24 ore
           setInterval(() => {
@@ -38,6 +50,13 @@ export function register() {
         })
         .catch(error => {
           console.error('Error during service worker registration:', error);
+        });
+
+      // Registrazione del service worker di OneSignal
+      navigator.serviceWorker
+        .register('/OneSignalSDKWorker.js')
+        .catch(error => {
+          console.error('Error during OneSignal service worker registration:', error);
         });
     });
 

@@ -13,13 +13,22 @@ const isIOS = () => {
   return false;
 };
 
+// Helper per controllare se siamo già stati reindirizzati
+const hasRedirectParam = () => {
+  if (typeof window === 'undefined') return false;
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.has('pwa-redirected');
+};
+
 const isInStandaloneMode = () => 
   typeof window !== 'undefined' && 
   (window.matchMedia('(display-mode: standalone)').matches || 
    ('standalone' in window.navigator && (window.navigator as any).standalone));
 
+// Funzione modificata per prevenire loop di reindirizzamento
 const isPWAInstalled = () => {
   if (typeof window === 'undefined') return false;
+  if (hasRedirectParam()) return false; // Previene reindirizzamenti multipli
   
   return localStorage.getItem('pwa-installed') === 'true' || 
          isInStandaloneMode() ||
@@ -31,16 +40,21 @@ if (typeof window !== 'undefined') {
   // Store original URL
   const originalUrl = window.location.href;
   
+  // Funzione modificata per gestire il reindirizzamento in modo sicuro
   const attemptPWARedirect = () => {
     if (!isInStandaloneMode() && isPWAInstalled()) {
       const pwaUrl = new URL(originalUrl);
-      pwaUrl.searchParams.set('pwa', 'true');
+      pwaUrl.searchParams.set('pwa-redirected', 'true'); // Nuovo parametro per prevenire loop
       pwaUrl.searchParams.set('t', Date.now().toString());
       
+      // Controllo aggiuntivo per evitare reindirizzamenti non necessari
       if (isIOS()) {
         window.location.href = pwaUrl.toString();
       } else {
-        window.location.replace(pwaUrl.toString());
+        // Per Android, reindirizza solo se non è già stato fatto
+        if (!hasRedirectParam()) {
+          window.location.replace(pwaUrl.toString());
+        }
       }
     }
   };
@@ -57,6 +71,7 @@ if (typeof window !== 'undefined') {
         if ((window.navigator as any).standalone) {
           localStorage.setItem('pwa-installed', 'true');
         }
+        // Il reindirizzamento verrà tentato solo se necessario grazie alle nuove verifiche
         attemptPWARedirect();
       }
     });
@@ -66,17 +81,19 @@ if (typeof window !== 'undefined') {
   window.addEventListener('appinstalled', (evt) => {
     localStorage.setItem('pwa-installed', 'true');
     console.log('PWA installed successfully');
+    // Il reindirizzamento verrà gestito in modo sicuro
     attemptPWARedirect();
   });
 
   window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
     if (evt.matches) {
       localStorage.setItem('pwa-installed', 'true');
+      // Il reindirizzamento verrà gestito in modo sicuro
       attemptPWARedirect();
     }
   });
 
-  // Initial redirect attempt
+  // Initial redirect attempt - ora più sicuro grazie alle nuove verifiche
   window.addEventListener('load', attemptPWARedirect);
 
   // Install banners
@@ -136,6 +153,7 @@ if (typeof window !== 'undefined') {
       });
     }
   });
+
   // iOS banner
   if (isIOS() && !isInStandaloneMode()) {
     const iosBanner = document.createElement('div');
@@ -177,7 +195,7 @@ if (typeof window !== 'undefined') {
 
 // Service Worker registration
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-  serviceWorkerRegistration.register();   // Aggiornato il path del service worker
+  serviceWorkerRegistration.register();
 
   // Update service worker on online event
   window.addEventListener('online', () => {

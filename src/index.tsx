@@ -5,9 +5,9 @@ import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
 // Versioning
-const APP_VERSION = '1.0.1'; // Incrementa questa versione quando rilasci aggiornamenti
+const APP_VERSION = '1.1.1';
 
-// Cache management functions
+// Cache management functions rimangono invariate
 const clearCache = async () => {
   if ('caches' in window) {
     const cacheKeys = await caches.keys();
@@ -28,17 +28,16 @@ const checkForUpdates = async () => {
   return false;
 };
 
-// Service Worker update handler
+// Service Worker update handler rimane invariato
 const handleServiceWorkerUpdate = async (registration: ServiceWorkerRegistration) => {
   if (registration.waiting) {
-    // Nuovo service worker in attesa
     await clearCache();
     registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     window.location.reload();
   }
 };
 
-// Utility functions for PWA detection and platform checking
+// Utility functions ottimizzate per una migliore rilevazione
 const isIOS = () => {
   if (typeof window !== 'undefined') {
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -47,252 +46,128 @@ const isIOS = () => {
   return false;
 };
 
-// Helper per controllare se siamo già stati reindirizzati
+// Migliorata la logica del parametro redirect
 const hasRedirectParam = () => {
   if (typeof window === 'undefined') return false;
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.has('pwa-redirected');
+  // Verifica sia il parametro che il timestamp per evitare loop
+  return urlParams.has('pwa-redirect') && 
+         (Date.now() - Number(urlParams.get('t') || 0)) < 5000; // 5 secondi di validità
 };
 
-// Funzione migliorata per il rilevamento della modalità standalone
+// Migliorata la rilevazione standalone
 const isInStandaloneMode = () => 
   typeof window !== 'undefined' && 
   (window.matchMedia('(display-mode: standalone)').matches || 
    window.matchMedia('(display-mode: fullscreen)').matches || 
    window.matchMedia('(display-mode: minimal-ui)').matches || 
-   ('standalone' in window.navigator && (window.navigator as any).standalone));
+   (isIOS() && (window.navigator as any).standalone));
 
-// Funzione per verificare se l'app è effettivamente installata
+// Migliorata la verifica dell'installazione
 const checkActualInstallation = async () => {
+  // Prima verifica la modalità standalone
+  if (isInStandaloneMode()) {
+    return true;
+  }
+
+  // Poi verifica le related apps
   if ('getInstalledRelatedApps' in navigator) {
     try {
-      // @ts-ignore - L'API getInstalledRelatedApps non è ancora in TypeScript
+      // @ts-ignore
       const relatedApps = await navigator.getInstalledRelatedApps();
-      return relatedApps.length > 0;
+      if (relatedApps.length > 0) {
+        return true;
+      }
     } catch (e) {
       console.log('GetInstalledRelatedApps check failed:', e);
-      return localStorage.getItem('pwa-installed') === 'true';
     }
   }
+
+  // Infine verifica il localStorage
   return localStorage.getItem('pwa-installed') === 'true';
 };
 
-// Funzione migliorata per verificare l'installazione
-const isPWAInstalled = () => {
+// Ottimizzata la verifica dell'installazione
+const isPWAInstalled = async () => {
   if (typeof window === 'undefined') return false;
   if (hasRedirectParam()) return false;
   
-  const isInstalledInStorage = localStorage.getItem('pwa-installed') === 'true';
-  const isInPWAMode = window.matchMedia('(display-mode: standalone)').matches || 
-                      window.matchMedia('(display-mode: fullscreen)').matches || 
-                      window.matchMedia('(display-mode: minimal-ui)').matches;
-  
-  return isInstalledInStorage || isInPWAMode;
+  return await checkActualInstallation();
 };
+
 // PWA installation and redirection handling
 if (typeof window !== 'undefined') {
-  // Store original URL
   const originalUrl = window.location.href;
   
-  // Funzione migliorata per il reindirizzamento
+  // Ottimizzata la funzione di redirect
   const attemptPWARedirect = async () => {
-    // Verifica aggiornamenti prima del reindirizzamento
-    const hasUpdate = await checkForUpdates();
-    if (hasUpdate) {
-      window.location.reload();
+    // Non eseguire il redirect se siamo già in modalità standalone
+    if (isInStandaloneMode()) {
       return;
     }
-    
-    // Verifica se l'app è effettivamente installata
-    const isActuallyInstalled = await checkActualInstallation();
-    
-    if (!isInStandaloneMode() && isPWAInstalled() && isActuallyInstalled) {
-      const pwaUrl = new URL(originalUrl);
-      // Rimuovi eventuali parametri esistenti
-      pwaUrl.search = '';
-      // Aggiungi i nuovi parametri
-      pwaUrl.searchParams.set('pwa-redirected', 'true');
-      pwaUrl.searchParams.set('t', Date.now().toString());
-      pwaUrl.searchParams.set('source', 'browser');
-      
-      // Forza il reindirizzamento per entrambe le piattaforme
-      if (isIOS()) {
+
+    // Verifica installazione con delay per assicurare completamento
+    const isInstalled = await isPWAInstalled();
+    if (!isInstalled) {
+      return;
+    }
+
+    // Costruzione URL ottimizzata
+    const pwaUrl = new URL(originalUrl);
+    pwaUrl.search = '';
+    pwaUrl.searchParams.set('pwa-redirect', 'true');
+    pwaUrl.searchParams.set('t', Date.now().toString());
+
+    // Gestione piattaforma-specifica
+    if (isIOS()) {
+      // Delay maggiore per iOS per assicurare corretta installazione
+      setTimeout(() => {
         window.location.href = pwaUrl.toString();
-      } else {
-        if (!hasRedirectParam()) {
-          try {
-            window.location.replace(pwaUrl.toString());
-          } catch (e) {
-            window.location.href = pwaUrl.toString();
-          }
+      }, 1500);
+    } else {
+      if (!hasRedirectParam()) {
+        try {
+          window.location.replace(pwaUrl.toString());
+        } catch (e) {
+          window.location.href = pwaUrl.toString();
         }
       }
     }
   };
 
-  // Gestione aggiornamenti del service worker
-  const handleServiceWorkerUpdate = async (registration: ServiceWorkerRegistration) => {
-    if (registration.waiting) {
-      // Nuovo service worker in attesa
-      await clearCache();
-      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-      window.location.reload();
-    }
-  };
+  // Event listeners ottimizzati
+  window.addEventListener('appinstalled', async () => {
+    localStorage.setItem('pwa-installed', 'true');
+    localStorage.setItem('app-version', APP_VERSION);
+    console.log('PWA installed successfully');
+    // Delay aumentato per assicurare completamento installazione
+    setTimeout(async () => {
+      await attemptPWARedirect();
+    }, 2000);
+  });
 
-  // iOS specific handlers con gestione aggiornamenti
+  // iOS specific handlers ottimizzati
   if (isIOS()) {
     window.addEventListener('load', async () => {
       if ((window.navigator as any).standalone) {
         localStorage.setItem('pwa-installed', 'true');
       }
-      await checkForUpdates();
     });
 
+    // Gestione visibility change solo per iOS
     document.addEventListener('visibilitychange', async () => {
       if (document.visibilityState === 'visible') {
-        const hasUpdate = await checkForUpdates();
-        if (hasUpdate) {
-          window.location.reload();
-          return;
-        }
-        
         if ((window.navigator as any).standalone) {
           localStorage.setItem('pwa-installed', 'true');
         }
-        attemptPWARedirect();
+        // Delay per iOS
+        setTimeout(async () => {
+          await attemptPWARedirect();
+        }, 1000);
       }
     });
   }
-
-  // Installation tracking migliorato con gestione aggiornamenti
-  window.addEventListener('appinstalled', async (evt) => {
-    localStorage.setItem('pwa-installed', 'true');
-    localStorage.setItem('app-version', APP_VERSION);
-    console.log('PWA installed successfully');
-    setTimeout(async () => {
-      await attemptPWARedirect();
-    }, 1000);
-  });
-
-  // Gestione display mode
-  window.matchMedia('(display-mode: standalone)').addEventListener('change', async (evt) => {
-    if (evt.matches) {
-      localStorage.setItem('pwa-installed', 'true');
-      await checkForUpdates();
-      await attemptPWARedirect();
-    }
-  });
-
-  // Controllo iniziale e tentativo di reindirizzamento
-  window.addEventListener('load', async () => {
-    const hasUpdate = await checkForUpdates();
-    if (hasUpdate) {
-      window.location.reload();
-      return;
-    }
-    
-    const isActuallyInstalled = await checkActualInstallation();
-    if (isActuallyInstalled) {
-      await attemptPWARedirect();
-    }
-  });
-  // Install banners
-  let deferredPrompt: any;
-
-  // Android/Chrome banner
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    
-    const installBanner = document.createElement('div');
-    installBanner.id = 'install-banner';
-    installBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg flex flex-col z-50';
-    
-    installBanner.innerHTML = `
-      <div class="flex flex-col w-full">
-        <div class="text-[#1e3a8a] font-bold text-xl mb-2">
-          Install Nonna Vittoria Apartments
-        </div>
-        <div class="text-gray-600 mb-4">
-          Get faster access to bookings and special offers
-        </div>
-      </div>
-      <div class="flex gap-3 w-full">
-        <button id="skip-install" class="flex-1 px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
-          Not now
-        </button>
-        <button id="install-button" class="flex-1 px-6 py-2.5 rounded-lg bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 transition-colors">
-          Install
-        </button>
-      </div>
-    `;
-
-    document.body.appendChild(installBanner);
-    
-    const installButton = document.getElementById('install-button');
-    const skipButton = document.getElementById('skip-install');
-
-    if (skipButton) {
-      skipButton.addEventListener('click', () => {
-        installBanner.remove();
-      });
-    }
-    
-    if (installButton) {
-      installButton.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log(`User response to install prompt: ${outcome}`);
-          deferredPrompt = null;
-          if (outcome === 'accepted') {
-            localStorage.setItem('pwa-installed', 'true');
-            localStorage.setItem('app-version', APP_VERSION);
-            installBanner.remove();
-          }
-        }
-      });
-    }
-  });
-
-  // iOS banner
-  if (isIOS() && !isInStandaloneMode()) {
-    const iosBanner = document.createElement('div');
-    iosBanner.id = 'ios-install-banner';
-    iosBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg z-50';
-    
-    iosBanner.innerHTML = `
-      <div class="flex flex-col items-center">
-        <div class="text-[#1e3a8a] font-bold text-xl mb-4 text-center">
-          Install Nonna Vittoria Apartments
-        </div>
-        <div class="flex items-center gap-2 mb-3">
-          <div class="text-gray-600">1. Tap the Share button</div>
-          <svg class="w-6 h-6 text-[#1e3a8a]" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L12 15M12 2L8 5.5M12 2L16 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 10H5C3.89543 10 3 10.8954 3 12V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V12C21 10.8954 20.1046 10 19 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="text-gray-600 mb-4">2. Choose "Add to Home screen"</div>
-        <button id="close-ios-banner" class="px-6 py-2.5 rounded-lg bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 transition-colors">
-          Close
-        </button>
-      </div>
-    `;
-    
-    document.body.appendChild(iosBanner);
-    
-    const closeButton = document.getElementById('close-ios-banner');
-    if (closeButton) {
-      closeButton.addEventListener('click', () => {
-        iosBanner.remove();
-        localStorage.setItem('banner-closed', Date.now().toString());
-      });
-    }
-  }
 }
-
 // Service Worker registration con gestione aggiornamenti
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
   if ('serviceWorker' in navigator) {
@@ -334,6 +209,101 @@ if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
       registration.update();
     }
   });
+}
+
+// Install banners
+let deferredPrompt: any;
+
+// Android/Chrome banner
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  const installBanner = document.createElement('div');
+  installBanner.id = 'install-banner';
+  installBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg flex flex-col z-50';
+  
+  installBanner.innerHTML = `
+    <div class="flex flex-col w-full">
+      <div class="text-[#1e3a8a] font-bold text-xl mb-2">
+        Install Nonna Vittoria Apartments
+      </div>
+      <div class="text-gray-600 mb-4">
+        Get faster access to bookings and special offers
+      </div>
+    </div>
+    <div class="flex gap-3 w-full">
+      <button id="skip-install" class="flex-1 px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+        Not now
+      </button>
+      <button id="install-button" class="flex-1 px-6 py-2.5 rounded-lg bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 transition-colors">
+        Install
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(installBanner);
+  
+  const installButton = document.getElementById('install-button');
+  const skipButton = document.getElementById('skip-install');
+
+  if (skipButton) {
+    skipButton.addEventListener('click', () => {
+      installBanner.remove();
+    });
+  }
+  
+  if (installButton) {
+    installButton.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
+        deferredPrompt = null;
+        if (outcome === 'accepted') {
+          localStorage.setItem('pwa-installed', 'true');
+          localStorage.setItem('app-version', APP_VERSION);
+          installBanner.remove();
+        }
+      }
+    });
+  }
+});
+
+// iOS banner
+if (isIOS() && !isInStandaloneMode()) {
+  const iosBanner = document.createElement('div');
+  iosBanner.id = 'ios-install-banner';
+  iosBanner.className = 'fixed bottom-4 left-4 right-4 bg-white p-6 rounded-xl shadow-lg z-50';
+  
+  iosBanner.innerHTML = `
+    <div class="flex flex-col items-center">
+      <div class="text-[#1e3a8a] font-bold text-xl mb-4 text-center">
+        Install Nonna Vittoria Apartments
+      </div>
+      <div class="flex items-center gap-2 mb-3">
+        <div class="text-gray-600">1. Tap the Share button</div>
+        <svg class="w-6 h-6 text-[#1e3a8a]" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L12 15M12 2L8 5.5M12 2L16 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 10H5C3.89543 10 3 10.8954 3 12V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V12C21 10.8954 20.1046 10 19 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="text-gray-600 mb-4">2. Choose "Add to Home screen"</div>
+      <button id="close-ios-banner" class="px-6 py-2.5 rounded-lg bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 transition-colors">
+        Close
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(iosBanner);
+  
+  const closeButton = document.getElementById('close-ios-banner');
+  if (closeButton) {
+    closeButton.addEventListener('click', () => {
+      iosBanner.remove();
+      localStorage.setItem('banner-closed', Date.now().toString());
+    });
+  }
 }
 
 // App rendering

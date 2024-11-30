@@ -5,9 +5,8 @@ export const initOneSignal = async () => {
     await OneSignal.init({
       appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
       allowLocalhostAsSecureOrigin: process.env.NODE_ENV === 'development',
-      serviceWorkerPath: '/OneSignalSDKWorker.js',
       notifyButton: {
-        enable: false
+        enable: false // Disabilita la Notification Bell
       },
       promptOptions: {
         slidedown: {
@@ -16,9 +15,9 @@ export const initOneSignal = async () => {
               type: "push",
               autoPrompt: true,
               text: {
-                actionMessage: "Vuoi ricevere notifiche su offerte e promozioni?",
-                acceptButton: "SI, GRAZIE",
-                cancelButton: "NO, GRAZIE"
+                actionMessage: "Do you want to stay updated?",
+                acceptButton: "YES, THANK YOU",
+                cancelButton: "LATER"
               },
               delay: {
                 pageViews: 1,
@@ -27,17 +26,13 @@ export const initOneSignal = async () => {
             }
           ]
         }
-      },
-      welcomeNotification: {
-        title: "Benvenuto!",
-        message: "Grazie per esserti iscritto alle notifiche di Nonna Vittoria Apartments!",
-        url: "https://nva.vercel.app"
       }
     });
   } catch (error) {
     console.error('Errore inizializzazione OneSignal:', error);
   }
 };
+
 // Helper per richiedere il permesso delle notifiche
 export const requestPermission = async () => {
   try {
@@ -47,6 +42,7 @@ export const requestPermission = async () => {
     return false;
   }
 };
+
 // Helper per verificare se le notifiche sono abilitate
 export const isPushNotificationsEnabled = async () => {
   try {

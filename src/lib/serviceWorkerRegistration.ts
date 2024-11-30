@@ -13,7 +13,7 @@ export function register() {
           }
         });
 
-      // Poi registriamo il nuovo PWA worker
+      // Registriamo il PWA worker
       navigator.serviceWorker
         .register('/pwa-worker.js')
         .then(registration => {
@@ -51,9 +51,11 @@ export function register() {
           console.error('Error during service worker registration:', error);
         });
 
-      // Registrazione del service worker di OneSignal
+      // Registrazione del service worker di OneSignal con il nuovo path
       navigator.serviceWorker
-        .register('/OneSignalSDKWorker.js')
+        .register('/push/onesignal/OneSignalSDKWorker.js', {
+          scope: '/push/onesignal/'
+        })
         .catch(error => {
           console.error('Error during OneSignal service worker registration:', error);
         });

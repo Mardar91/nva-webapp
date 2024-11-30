@@ -20,19 +20,43 @@ const hasRedirectParam = () => {
   return urlParams.has('pwa-redirected');
 };
 
+// Funzione migliorata per il rilevamento della modalità standalone
 const isInStandaloneMode = () => 
   typeof window !== 'undefined' && 
   (window.matchMedia('(display-mode: standalone)').matches || 
+   window.matchMedia('(display-mode: fullscreen)').matches || 
+   window.matchMedia('(display-mode: minimal-ui)').matches || 
    ('standalone' in window.navigator && (window.navigator as any).standalone));
 
-// Funzione modificata per prevenire loop di reindirizzamento
+// Funzione per verificare se l'app è effettivamente installata
+const checkActualInstallation = async () => {
+  if ('getInstalledRelatedApps' in navigator) {
+    try {
+      // @ts-ignore - L'API getInstalledRelatedApps non è ancora in TypeScript
+      const relatedApps = await navigator.getInstalledRelatedApps();
+      return relatedApps.length > 0;
+    } catch (e) {
+      console.log('GetInstalledRelatedApps check failed:', e);
+      // Fallback al metodo tradizionale
+      return localStorage.getItem('pwa-installed') === 'true';
+    }
+  }
+  return localStorage.getItem('pwa-installed') === 'true';
+};
+
+// Funzione migliorata per verificare l'installazione
 const isPWAInstalled = () => {
   if (typeof window === 'undefined') return false;
-  if (hasRedirectParam()) return false; // Previene reindirizzamenti multipli
+  if (hasRedirectParam()) return false;
   
-  return localStorage.getItem('pwa-installed') === 'true' || 
-         isInStandaloneMode() ||
-         window.matchMedia('(display-mode: standalone)').matches;
+  // Controlla prima localStorage
+  const isInstalledInStorage = localStorage.getItem('pwa-installed') === 'true';
+  // Poi controlla le modalità di visualizzazione
+  const isInPWAMode = window.matchMedia('(display-mode: standalone)').matches || 
+                      window.matchMedia('(display-mode: fullscreen)').matches || 
+                      window.matchMedia('(display-mode: minimal-ui)').matches;
+  
+  return isInstalledInStorage || isInPWAMode;
 };
 
 // PWA installation and redirection handling
@@ -40,20 +64,30 @@ if (typeof window !== 'undefined') {
   // Store original URL
   const originalUrl = window.location.href;
   
-  // Funzione modificata per gestire il reindirizzamento in modo sicuro
-  const attemptPWARedirect = () => {
-    if (!isInStandaloneMode() && isPWAInstalled()) {
+  // Funzione migliorata per il reindirizzamento
+  const attemptPWARedirect = async () => {
+    // Verifica se l'app è effettivamente installata
+    const isActuallyInstalled = await checkActualInstallation();
+    
+    if (!isInStandaloneMode() && isPWAInstalled() && isActuallyInstalled) {
       const pwaUrl = new URL(originalUrl);
-      pwaUrl.searchParams.set('pwa-redirected', 'true'); // Nuovo parametro per prevenire loop
+      // Rimuovi eventuali parametri esistenti
+      pwaUrl.search = '';
+      // Aggiungi i nuovi parametri
+      pwaUrl.searchParams.set('pwa-redirected', 'true');
       pwaUrl.searchParams.set('t', Date.now().toString());
+      pwaUrl.searchParams.set('source', 'browser');
       
-      // Controllo aggiuntivo per evitare reindirizzamenti non necessari
+      // Forza il reindirizzamento per entrambe le piattaforme
       if (isIOS()) {
         window.location.href = pwaUrl.toString();
       } else {
-        // Per Android, reindirizza solo se non è già stato fatto
         if (!hasRedirectParam()) {
-          window.location.replace(pwaUrl.toString());
+          try {
+            window.location.replace(pwaUrl.toString());
+          } catch (e) {
+            window.location.href = pwaUrl.toString();
+          }
         }
       }
     }
@@ -71,30 +105,35 @@ if (typeof window !== 'undefined') {
         if ((window.navigator as any).standalone) {
           localStorage.setItem('pwa-installed', 'true');
         }
-        // Il reindirizzamento verrà tentato solo se necessario grazie alle nuove verifiche
         attemptPWARedirect();
       }
     });
   }
 
-  // Installation tracking
-  window.addEventListener('appinstalled', (evt) => {
+  // Installation tracking migliorato
+  window.addEventListener('appinstalled', async (evt) => {
     localStorage.setItem('pwa-installed', 'true');
     console.log('PWA installed successfully');
-    // Il reindirizzamento verrà gestito in modo sicuro
-    attemptPWARedirect();
+    // Attendi un momento per assicurarsi che l'installazione sia completata
+    setTimeout(async () => {
+      await attemptPWARedirect();
+    }, 1000);
   });
 
-  window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
+  window.matchMedia('(display-mode: standalone)').addEventListener('change', async (evt) => {
     if (evt.matches) {
       localStorage.setItem('pwa-installed', 'true');
-      // Il reindirizzamento verrà gestito in modo sicuro
-      attemptPWARedirect();
+      await attemptPWARedirect();
     }
   });
 
-  // Initial redirect attempt - ora più sicuro grazie alle nuove verifiche
-  window.addEventListener('load', attemptPWARedirect);
+  // Initial redirect attempt - ora con verifica dell'installazione
+  window.addEventListener('load', async () => {
+    const isActuallyInstalled = await checkActualInstallation();
+    if (isActuallyInstalled) {
+      await attemptPWARedirect();
+    }
+  });
 
   // Install banners
   let deferredPrompt: any;

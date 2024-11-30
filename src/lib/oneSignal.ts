@@ -34,62 +34,25 @@ export const initOneSignal = async () => {
         url: "https://nva.vercel.app"
       }
     });
-    console.log('OneSignal Initialized');
-
-    // Debug Listeners
-    OneSignal.Notifications.addEventListener('permissionChange', (permission) => {
-      console.log('Permission status changed:', permission);
-    });
-
-    OneSignal.User.PushSubscription.addEventListener('change', (subscription) => {
-      console.log('Push subscription state:', subscription.current?.optedIn);
-      console.log('Full subscription data:', subscription);
-    });
-
-    // Debug Subscription Status
-    const permission = await OneSignal.Notifications.permission;
-    console.log('Current permission status:', permission);
-
-    // Alternative method to check subscription status
-    const isPushEnabled = await OneSignal.User.PushSubscription.isSubscribed();
-    console.log('Push subscription details:', isPushEnabled);
   } catch (error) {
     console.error('Errore inizializzazione OneSignal:', error);
   }
 };
-
 // Helper per richiedere il permesso delle notifiche
 export const requestPermission = async () => {
   try {
-    const permission = await OneSignal.Notifications.requestPermission();
-    console.log('Permission request result:', permission);
-    return permission;
+    return await OneSignal.Notifications.requestPermission();
   } catch (error) {
     console.error('Errore richiesta permesso:', error);
     return false;
   }
 };
-
 // Helper per verificare se le notifiche sono abilitate
 export const isPushNotificationsEnabled = async () => {
   try {
-    const permission = await OneSignal.Notifications.permission;
-    console.log('Current push notification status:', permission);
-    return permission;
+    return await OneSignal.Notifications.permission;
   } catch (error) {
     console.error('Errore verifica stato notifiche:', error);
     return false;
-  }
-};
-
-// Helper per verificare lo stato completo delle sottoscrizioni
-export const getSubscriptionState = async () => {
-  try {
-    const isSubscribed = await OneSignal.User.PushSubscription.isSubscribed();
-    console.log('Subscription state:', isSubscribed);
-    return isSubscribed;
-  } catch (error) {
-    console.error('Errore verifica stato sottoscrizione:', error);
-    return null;
   }
 };

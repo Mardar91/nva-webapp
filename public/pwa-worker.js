@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'nva-cache-v5';
+const CACHE_VERSION = 'nva-cache-v6';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Risorse essenziali da cachare per l'app shell

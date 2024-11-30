@@ -44,7 +44,7 @@ if (typeof window !== 'undefined') {
       }
     }
   };
-// iOS specific handlers
+  // iOS specific handlers
   if (isIOS()) {
     window.addEventListener('load', () => {
       if ((window.navigator as any).standalone) {
@@ -109,7 +109,8 @@ if (typeof window !== 'undefined') {
         </button>
       </div>
     `;
-document.body.appendChild(installBanner);
+
+    document.body.appendChild(installBanner);
     
     const installButton = document.getElementById('install-button');
     const skipButton = document.getElementById('skip-install');
@@ -135,7 +136,6 @@ document.body.appendChild(installBanner);
       });
     }
   });
-
   // iOS banner
   if (isIOS() && !isInStandaloneMode()) {
     const iosBanner = document.createElement('div');
@@ -177,7 +177,7 @@ document.body.appendChild(installBanner);
 
 // Service Worker registration
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-  serviceWorkerRegistration.register();
+  serviceWorkerRegistration.register('/pwa-worker.js');  // Aggiornato il path del service worker
 
   // Update service worker on online event
   window.addEventListener('online', () => {

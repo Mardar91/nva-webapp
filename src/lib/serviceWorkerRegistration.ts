@@ -2,18 +2,7 @@
 export function register() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      // Prima rimuoviamo eventuali vecchi service worker
-      navigator.serviceWorker
-        .getRegistrations()
-        .then(function(registrations) {
-          for(let registration of registrations) {
-            if(registration.active && registration.active.scriptURL.includes('serviceworker.js')) {
-              registration.unregister();
-            }
-          }
-        });
-
-      // Poi registriamo il nuovo PWA worker
+      // Registrazione del PWA worker
       navigator.serviceWorker
         .register('/pwa-worker.js')
         .then(registration => {

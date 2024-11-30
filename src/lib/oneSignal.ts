@@ -3,15 +3,12 @@ import OneSignal from 'react-onesignal';
 export const initOneSignal = async () => {
   try {
     await OneSignal.Slidedown.promptPush({
-      text: {
-        actionMessage: "Vuoi ricevere notifiche su offerte e promozioni?",
-        acceptButton: "SI, GRAZIE",
-        cancelButton: "NO, GRAZIE"
-      },
-      delay: {
-        pageViews: 1,
-        timeDelay: 5
-      }
+      autoPrompt: true,
+      message: "Vuoi ricevere notifiche su offerte e promozioni?",
+      acceptButtonText: "SI, GRAZIE",
+      cancelButtonText: "NO, GRAZIE",
+      pageViews: 1,
+      timeDelay: 5
     });
 
     console.log('OneSignal Prompt Configured');

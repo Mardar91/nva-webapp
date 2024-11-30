@@ -7,17 +7,15 @@ export function register() {
         .getRegistrations()
         .then(function(registrations) {
           for(let registration of registrations) {
-            if(registration.active && 
-               (registration.active.scriptURL.includes('serviceworker.js') || 
-                registration.active.scriptURL.includes('pwa-worker.js'))) {
+            if(registration.active && registration.active.scriptURL.includes('serviceworker.js')) {
               registration.unregister();
             }
           }
         });
 
-      // Registriamo solo il OneSignal worker che includerà anche il PWA worker
+      // Poi registriamo il nuovo PWA worker
       navigator.serviceWorker
-        .register('/OneSignalSDKWorker.js')
+        .register('/pwa-worker.js')
         .then(registration => {
           // Controllo automatico ogni 24 ore
           setInterval(() => {
@@ -50,24 +48,31 @@ export function register() {
           });
         })
         .catch(error => {
-          console.error('Error during OneSignal worker registration:', error);
+          console.error('Error during service worker registration:', error);
         });
 
-      // Aggiornamento quando l'app torna in primo piano
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          navigator.serviceWorker.ready.then(registration => {
-            const lastUpdate = localStorage.getItem('lastServiceWorkerUpdate');
-            const now = Date.now();
-            
-            // Verifica se sono passate 24 ore dall'ultimo aggiornamento
-            if (!lastUpdate || (now - parseInt(lastUpdate)) > 86400000) {
-              registration.update();
-              localStorage.setItem('lastServiceWorkerUpdate', now.toString());
-            }
-          });
-        }
-      });
+      // Registrazione del service worker di OneSignal
+      navigator.serviceWorker
+        .register('/OneSignalSDKWorker.js')
+        .catch(error => {
+          console.error('Error during OneSignal service worker registration:', error);
+        });
+    });
+
+    // Aggiornamento quando l'app torna in primo piano
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        navigator.serviceWorker.ready.then(registration => {
+          const lastUpdate = localStorage.getItem('lastServiceWorkerUpdate');
+          const now = Date.now();
+          
+          // Verifica se sono passate 24 ore dall'ultimo aggiornamento
+          if (!lastUpdate || (now - parseInt(lastUpdate)) > 86400000) {
+            registration.update();
+            localStorage.setItem('lastServiceWorkerUpdate', now.toString());
+          }
+        });
+      }
     });
   }
 }

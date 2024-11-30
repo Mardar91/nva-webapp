@@ -5,7 +5,6 @@ export const initOneSignal = async () => {
     await OneSignal.init({
       appId: "8d05cb31-99c9-4dd2-a2a9-8e7fb838fb8a",
       allowLocalhostAsSecureOrigin: process.env.NODE_ENV === 'development',
-      serviceWorkerPath: '/OneSignalSDKWorker.js',
       notifyButton: {
         enable: false
       },
@@ -42,17 +41,9 @@ export const initOneSignal = async () => {
       console.log('Permission status changed:', permission);
     });
 
-    OneSignal.User.PushSubscription.addEventListener('change', (event) => {
-      console.log('Push subscription changed:', event);
-      console.log('Full subscription data:', event);
-    });
-
-    // Debug Subscription Status
+    // Log initial permission
     const permission = await OneSignal.Notifications.permission;
     console.log('Current permission status:', permission);
-
-    const pushSubscription = await OneSignal.User.PushSubscription.getPushSubscription();
-    console.log('Push subscription details:', pushSubscription);
 
   } catch (error) {
     console.error('Errore inizializzazione OneSignal:', error);
@@ -80,17 +71,5 @@ export const isPushNotificationsEnabled = async () => {
   } catch (error) {
     console.error('Errore verifica stato notifiche:', error);
     return false;
-  }
-};
-
-// Helper per verificare lo stato completo delle sottoscrizioni
-export const getSubscriptionState = async () => {
-  try {
-    const subscription = await OneSignal.User.PushSubscription.getPushSubscription();
-    console.log('Complete subscription state:', subscription);
-    return subscription;
-  } catch (error) {
-    console.error('Errore verifica stato sottoscrizione:', error);
-    return null;
   }
 };

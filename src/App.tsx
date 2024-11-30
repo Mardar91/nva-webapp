@@ -7,6 +7,7 @@ import {
  Navigate,
 } from "react-router-dom";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
+import { initOneSignal } from './lib/oneSignal';
 import Home from "./pages/Home";
 import Restaurants from "./pages/Restaurants";
 import Explore from "./pages/Explore";
@@ -69,6 +70,10 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
 
 const App: React.FC = () => {
  useEffect(() => {
+  // Inizializza OneSignal solo lato client
+    if (typeof window !== 'undefined') {
+      initOneSignal();
+    }
    // Funzione per aggiornare il colore della barra di stato
    const updateStatusBarColor = () => {
      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');

@@ -107,15 +107,16 @@ const App: React.FC = () => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const isInTaxiRoute = window.location.pathname === '/taxi';
-    const path = window.location.pathname;
-
+    
+    // Colore iniziale sempre blu in light mode, dark in dark mode
     if (themeColor) {
       if (isInTaxiRoute) {
         const taxiColor = darkModeMediaQuery.matches ? '#1a1a1a' : '#fbbf24';
         themeColor.setAttribute('content', taxiColor);
       } else {
-        const mainColor = darkModeMediaQuery.matches ? '#1a1a1a' : (path === '/' ? '#ffffff' : '#1e3a8a');
-        themeColor.setAttribute('content', mainColor);
+        // Durante lo splash screen, manteniamo il blu in light mode
+        const initialColor = darkModeMediaQuery.matches ? '#1a1a1a' : '#1e3a8a';
+        themeColor.setAttribute('content', initialColor);
       }
     }
 
@@ -145,6 +146,7 @@ const App: React.FC = () => {
             if (darkModeMediaQuery.matches) {
               color = '#1a1a1a';
             } else {
+              // Dopo lo splash screen, passa a bianco per la Home
               color = currentPath === '/' ? '#ffffff' : '#ffffff';
             }
             

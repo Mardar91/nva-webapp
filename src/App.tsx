@@ -115,7 +115,8 @@ const App: React.FC = () => {
         const taxiColor = darkModeMediaQuery.matches ? '#1a1a1a' : '#fbbf24';
         themeColor.setAttribute('content', taxiColor);
       } else {
-        themeColor.setAttribute('content', '#1e3a8a');
+        const mainColor = darkModeMediaQuery.matches ? '#1a1a1a' : '#1e3a8a';
+        themeColor.setAttribute('content', mainColor);
       }
     }
 

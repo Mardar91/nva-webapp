@@ -5,6 +5,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 import Home from "./pages/Home";
@@ -73,6 +74,17 @@ const App: React.FC = () => {
   useEffect(() => {
     // Gestione splash screen
     const splashScreen = document.getElementById('splash-screen');
+    
+    // Se siamo nella rotta /taxi, nascondi immediatamente lo splash screen
+    if (window.location.pathname === '/taxi') {
+      if (splashScreen) {
+        splashScreen.style.display = 'none';
+      }
+      setLoading(false);
+      return;
+    }
+
+    // Per tutte le altre rotte, mantieni il comportamento originale
     const timer = setTimeout(() => {
       if (splashScreen) {
         splashScreen.classList.add('fade-out');

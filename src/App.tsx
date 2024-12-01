@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
+import { useStatusBarColor } from './hooks/useStatusBarColor';
 import Home from "./pages/Home";
 import Restaurants from "./pages/Restaurants";
 import Explore from "./pages/Explore";
@@ -31,22 +32,8 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
   title,
 }) => {
   useEffect(() => {
-    // Salva il colore corrente
-    const themeColor = document.querySelector('meta[name="theme-color"]');
-    const originalColor = themeColor?.getAttribute('content');
-
-    // Imposta il colore bianco per la barra di stato
-    if (themeColor) {
-      themeColor.setAttribute('content', '#ffffff');
-    }
-
     document.body.style.overflow = 'hidden';
-    
     return () => {
-      // Ripristina il colore originale quando il componente viene smontato
-      if (themeColor && originalColor) {
-        themeColor.setAttribute('content', originalColor);
-      }
       document.body.style.overflow = 'auto';
     };
   }, []);
@@ -83,6 +70,7 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const { updateStatusBarColor } = useStatusBarColor();
 
   useEffect(() => {
     // Gestione splash screen
@@ -114,34 +102,12 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Funzione per aggiornare il colore della barra di stato
-    const updateStatusBarColor = () => {
-      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const themeColor = document.querySelector('meta[name="theme-color"]');
-      
-      if (themeColor) {
-        themeColor.setAttribute(
-          'content',
-          darkModeMediaQuery.matches ? '#1e3a8a' : '#1e3a8a'
-        );
-      }
-    };
-
-    // Esegui subito
+    // Inizializza il colore della barra di stato
     updateStatusBarColor();
-
-    // Ascolta i cambiamenti del tema
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    darkModeMediaQuery.addListener(updateStatusBarColor);
-
+    
     // Service Worker registration
     serviceWorkerRegistration.register();
-
-    // Cleanup
-    return () => {
-      darkModeMediaQuery.removeListener(updateStatusBarColor);
-    };
-  }, []);
+  }, [updateStatusBarColor]);
 
   if (loading) {
     return null;

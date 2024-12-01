@@ -9,14 +9,25 @@ const VipTicketHero = () => {
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     if (themeColor) {
+      // In modalità light, mantiene il blu mentre il componente è visibile
       themeColor.setAttribute('content', darkModeMediaQuery.matches ? '#1a1a1a' : '#1e3a8a');
     }
+
+    // Listener per i cambiamenti del tema
+    const handleColorSchemeChange = (e: MediaQueryListEvent) => {
+      if (themeColor) {
+        themeColor.setAttribute('content', e.matches ? '#1a1a1a' : '#1e3a8a');
+      }
+    };
+
+    darkModeMediaQuery.addListener(handleColorSchemeChange);
 
     // Ripristina il colore originale quando il componente viene smontato
     return () => {
       if (themeColor) {
         themeColor.setAttribute('content', darkModeMediaQuery.matches ? '#1a1a1a' : '#ffffff');
       }
+      darkModeMediaQuery.removeListener(handleColorSchemeChange);
     };
   }, []);
 

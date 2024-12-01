@@ -147,14 +147,14 @@
       document.addEventListener('DOMContentLoaded', () => {
         const themeColor = document.querySelector('meta[name="theme-color"]');
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        let isDarkMode = darkModeMediaQuery.matches;
         
         const updateStatusBarColor = () => {
           if (themeColor) {
-            if (isDarkMode) {
-              themeColor.setAttribute('content', '#1a1a1a');
-            } else {
-              themeColor.setAttribute('content', '#ffffff');
+            // Se non siamo nella splash screen (primi 2.5 secondi)
+            if (Date.now() - window.performance.timing.navigationStart > 2500) {
+              themeColor.setAttribute('content', 
+                darkModeMediaQuery.matches ? '#1a1a1a' : '#ffffff'
+              );
             }
           }
         };
@@ -162,29 +162,19 @@
         // All'avvio, imposta la barra di stato blu per la splash screen
         themeColor.setAttribute('content', '#1e3a8a');
 
-        // Controlla se siamo nella rotta /taxi
-        if (window.location.pathname === '/taxi') {
-          // Nascondi immediatamente lo splash screen
-          document.getElementById('splash-screen').classList.add('fade-out');
+        // Dopo la splash screen, imposta il colore corretto
+        setTimeout(() => {
           updateStatusBarColor();
-        } else {
-          // Per le altre rotte, nascondi lo splash screen dopo il tempo standard
-          setTimeout(() => {
-            updateStatusBarColor();
-          }, 2500);
-        }
+        }, 2500);
 
-        // Aggiorna quando cambia il tema del sistema
-        darkModeMediaQuery.addListener((e) => {
-          isDarkMode = e.matches;
+        // Aggiorna il colore quando cambia il tema del sistema
+        darkModeMediaQuery.addEventListener('change', (e) => {
           updateStatusBarColor();
         });
 
-        // Gestisci i cambi di pagina
+        // Osserva i cambiamenti nel DOM e aggiorna di conseguenza
         const observer = new MutationObserver(() => {
-          if (isDarkMode) {
-            themeColor.setAttribute('content', '#1a1a1a');
-          }
+          updateStatusBarColor();
         });
 
         // Osserva i cambiamenti nel DOM

@@ -105,17 +105,23 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Imposta il colore blu per la schermata di caricamento
     const themeColor = document.querySelector('meta[name="theme-color"]');
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const isInTaxiRoute = window.location.pathname === '/taxi';
+
     if (themeColor) {
-      themeColor.setAttribute('content', '#1e3a8a');
+      // Per la rotta taxi, usa giallo in light mode e scuro in dark mode
+      if (isInTaxiRoute) {
+        const taxiColor = darkModeMediaQuery.matches ? '#1a1a1a' : '#fbbf24';
+        themeColor.setAttribute('content', taxiColor);
+      } else {
+        themeColor.setAttribute('content', '#1e3a8a');
+      }
     }
 
-    // Gestione splash screen
     const splashScreen = document.getElementById('splash-screen');
     
-    // Se siamo nella rotta /taxi, nascondi immediatamente lo splash screen
-    if (window.location.pathname === '/taxi') {
+    if (isInTaxiRoute) {
       if (splashScreen) {
         splashScreen.style.display = 'none';
       }
@@ -123,7 +129,6 @@ const App: React.FC = () => {
       return;
     }
 
-    // Per tutte le altre rotte, mantieni il comportamento originale
     const timer = setTimeout(() => {
       if (splashScreen) {
         splashScreen.classList.add('fade-out');
@@ -132,17 +137,14 @@ const App: React.FC = () => {
           if (splashScreen) {
             splashScreen.style.display = 'none';
           }
-          // Aggiorna il colore della barra di stato dopo lo splash screen
-          const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+          
           if (themeColor) {
             const path = window.location.pathname;
             let color;
             
             if (darkModeMediaQuery.matches) {
-              // Tema scuro
               color = path === '/' ? '#1a1a1a' : '#ffffff';
             } else {
-              // Tema chiaro
               color = path === '/' ? '#ffffff' : '#ffffff';
             }
             
@@ -156,12 +158,10 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Service Worker registration
     serviceWorkerRegistration.register();
 
-    // Gestione del tema e colore della barra di stato dopo il caricamento
     const updateStatusBarColor = () => {
-      if (!loading) { // Solo se non è in caricamento
+      if (!loading) {
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         const themeColor = document.querySelector('meta[name="theme-color"]');
         
@@ -170,10 +170,8 @@ const App: React.FC = () => {
           let color;
           
           if (darkModeMediaQuery.matches) {
-            // Tema scuro
             color = path === '/' ? '#1a1a1a' : '#ffffff';
           } else {
-            // Tema chiaro
             color = path === '/' ? '#ffffff' : '#ffffff';
           }
           
@@ -182,7 +180,6 @@ const App: React.FC = () => {
       }
     };
 
-    // Ascolta i cambiamenti del tema
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     darkModeMediaQuery.addListener(updateStatusBarColor);
 

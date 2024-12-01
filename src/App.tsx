@@ -5,7 +5,6 @@ import {
   Routes,
   Route,
   Navigate,
-  useLocation,
 } from "react-router-dom";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 import Home from "./pages/Home";
@@ -32,8 +31,22 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
   title,
 }) => {
   useEffect(() => {
+    // Salva il colore corrente
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    const originalColor = themeColor?.getAttribute('content');
+
+    // Imposta il colore bianco per la barra di stato
+    if (themeColor) {
+      themeColor.setAttribute('content', '#ffffff');
+    }
+
     document.body.style.overflow = 'hidden';
+    
     return () => {
+      // Ripristina il colore originale quando il componente viene smontato
+      if (themeColor && originalColor) {
+        themeColor.setAttribute('content', originalColor);
+      }
       document.body.style.overflow = 'auto';
     };
   }, []);

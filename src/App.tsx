@@ -140,10 +140,10 @@ const App: React.FC = () => {
             
             if (darkModeMediaQuery.matches) {
               // Tema scuro
-              color = path === '/' ? '#1a1a1a' : '#1e3a8a';
+              color = path === '/' ? '#1a1a1a' : '#ffffff';
             } else {
               // Tema chiaro
-              color = path === '/' ? '#ffffff' : '#1e3a8a';
+              color = path === '/' ? '#ffffff' : '#ffffff';
             }
             
             themeColor.setAttribute('content', color);
@@ -171,10 +171,10 @@ const App: React.FC = () => {
           
           if (darkModeMediaQuery.matches) {
             // Tema scuro
-            color = path === '/' ? '#1a1a1a' : '#1e3a8a';
+            color = path === '/' ? '#1a1a1a' : '#ffffff';
           } else {
             // Tema chiaro
-            color = path === '/' ? '#ffffff' : '#1e3a8a';
+            color = path === '/' ? '#ffffff' : '#ffffff';
           }
           
           themeColor.setAttribute('content', color);

@@ -7,8 +7,8 @@
     
     <!-- Meta tag per PWA -->
     <meta name="description" content="Nonna Vittoria Apartments - Il tuo soggiorno in Puglia" />
-    <meta name="theme-color" content="#1e3a8a" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1e3a8a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
     
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -28,7 +28,6 @@
     <!-- Meta tag per gestire il redirect -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-touch-startup-image" content="/icons/splash.png" />
-
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -49,7 +48,13 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-tap-highlight-color: transparent;
-        background-color: #1e3a8a;
+        background-color: #ffffff;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1a1a1a;
+        }
       }
 
       /* Stili per la splash screen */
@@ -69,6 +74,7 @@
 
       #splash-screen.fade-out {
         opacity: 0;
+        pointer-events: none;
       }
 
       #splash-screen img {
@@ -97,7 +103,6 @@
         .vipHeroContainer.extended-blue-bg {
           padding-top: env(safe-area-inset-top);
         }
-
         /* Fix per la barra di stato iOS */
         body {
           padding-top: env(safe-area-inset-top);

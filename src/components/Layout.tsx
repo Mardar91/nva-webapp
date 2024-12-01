@@ -8,27 +8,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
 
-  // Nuovo useEffect per gestire il colore della barra di stato
-  useEffect(() => {
-    const themeColor = document.querySelector('meta[name="theme-color"]');
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-    // Pagine che devono avere la barra blu
-    const blueHeaderPages = ['/restaurants', '/partners'];
-    
-    if (themeColor) {
-      if (blueHeaderPages.includes(location.pathname)) {
-        // Imposta blu per restaurants e partners
-        themeColor.setAttribute('content', '#1e3a8a');
-      } else {
-        // Per altre pagine, usa il colore basato sul tema
-        themeColor.setAttribute('content', 
-          darkModeMediaQuery.matches ? '#1a1a1a' : '#ffffff'
-        );
-      }
-    }
-  }, [location.pathname]);
-
   useEffect(() => {
     // Creiamo un pool di elementi audio per iOS
     if (isIOS.current) {

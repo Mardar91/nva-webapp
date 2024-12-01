@@ -147,7 +147,7 @@ const App: React.FC = () => {
     // Imposta il colore iniziale della status bar
     const initialColor = isInTaxiRoute 
       ? (darkModeMediaQuery.matches ? '#1a1a1a' : '#fbbf24')
-      : (darkModeMediaQuery.matches ? '#1a1a1a' : '#1e3a8a');
+      : (darkModeMediaQuery.matches ? '#1a1a1a' : path === '/' ? '#ffffff' : '#1e3a8a');
     
     updateStatusBarColor(initialColor);
 

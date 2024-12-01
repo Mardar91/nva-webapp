@@ -110,22 +110,16 @@
         }
       }
     </style>
-    <!-- Script per gestire il redirect -->
+    <!-- Script per gestire il redirect e i colori -->
     <script>
       // Controlla se l'app è in modalità standalone
       if (window.matchMedia('(display-mode: standalone)').matches || 
           window.navigator.standalone === true) {
-        // L'app è già aperta in modalità standalone
         console.log('App aperta in modalità standalone');
       } else {
-        // Controlla se l'app è stata installata
         if (localStorage.getItem('pwa-installed') === 'true') {
-          // Se siamo su iOS
           if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            // Prova ad aprire l'app
             window.location.href = window.location.href;
-            
-            // Se dopo 1 secondo siamo ancora qui, probabilmente l'app non è aperta
             setTimeout(() => {
               if (!document.hidden) {
                 console.log('Impossibile aprire l\'app installata');
@@ -135,13 +129,11 @@
         }
       }
       
-      // Ascolta l'evento di installazione completata
       window.addEventListener('appinstalled', (evt) => {
         localStorage.setItem('pwa-installed', 'true');
         console.log('PWA installata con successo');
       });
 
-      // Fix per il viewport su iOS
       const setViewportHeight = () => {
         const vh = window.innerHeight * 0.01;
         document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -151,28 +143,47 @@
       window.addEventListener('orientationchange', setViewportHeight);
       setViewportHeight();
 
-      // Gestione colori barra di stato
+      // Gestione colori barra di stato migliorata
       document.addEventListener('DOMContentLoaded', () => {
         const themeColor = document.querySelector('meta[name="theme-color"]');
-        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        let isDarkMode = darkModeMediaQuery.matches;
         
+        const updateStatusBarColor = () => {
+          if (themeColor) {
+            if (isDarkMode) {
+              themeColor.setAttribute('content', '#1a1a1a');
+            } else {
+              themeColor.setAttribute('content', '#ffffff');
+            }
+          }
+        };
+
         // All'avvio, imposta la barra di stato blu per la splash screen
-        if (themeColor) {
-          themeColor.setAttribute('content', '#1e3a8a');
-        }
+        themeColor.setAttribute('content', '#1e3a8a');
 
-        // Quando la splash screen scompare, aggiorna il colore della barra di stato
+        // Dopo la splash screen, imposta il colore corretto
         setTimeout(() => {
-          if (themeColor) {
-            themeColor.setAttribute('content', isDarkMode ? '#1a1a1a' : '#ffffff');
-          }
-        }, 2500); // Un po' più lungo del tempo della splash screen per sicurezza
+          updateStatusBarColor();
+        }, 2500);
 
-        // Aggiorna anche quando cambia il tema del sistema
-        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
-          if (themeColor) {
-            themeColor.setAttribute('content', e.matches ? '#1a1a1a' : '#ffffff');
+        // Aggiorna quando cambia il tema del sistema
+        darkModeMediaQuery.addListener((e) => {
+          isDarkMode = e.matches;
+          updateStatusBarColor();
+        });
+
+        // Gestisci i cambi di pagina
+        const observer = new MutationObserver(() => {
+          if (isDarkMode) {
+            themeColor.setAttribute('content', '#1a1a1a');
           }
+        });
+
+        // Osserva i cambiamenti nel DOM
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
         });
       });
     </script>

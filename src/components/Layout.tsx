@@ -7,6 +7,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
+  const isSilentRef = useRef(false);
 
   useEffect(() => {
     // Creiamo un pool di elementi audio per iOS
@@ -23,6 +24,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       // Per altri browser, un singolo elemento è sufficiente
       audioRef.current = new Audio('/sounds/click.wav');
       audioRef.current.preload = 'auto';
+
+      // Aggiungiamo il listener per il MediaSession API (Android)
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => {
+          isSilentRef.current = false;
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+          isSilentRef.current = true;
+        });
+      }
     }
 
     // Prova a precaricare l'audio
@@ -45,11 +56,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const handleNavClick = () => {
     if (isIOS.current) {
-      // Su iOS, crea una nuova istanza per ogni click
-      const audio = new Audio('/sounds/click.wav');
-      audio.play().catch(() => {});
-    } else if (audioRef.current) {
-      // Per altri browser, riusa l'istanza esistente
+      // Su iOS, verifica la modalità silenziosa tentando di riprodurre l'audio
+      const tempAudio = new Audio('/sounds/click.wav');
+      tempAudio.volume = 0.01;
+      const playPromise = tempAudio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          // Se la riproduzione ha successo, il dispositivo non è in modalità silenziosa
+          tempAudio.pause();
+          const audio = new Audio('/sounds/click.wav');
+          audio.volume = 1;
+          audio.play().catch(() => {});
+        }).catch(() => {
+          // Se la riproduzione fallisce, il dispositivo è probabilmente in modalità silenziosa
+          isSilentRef.current = true;
+        });
+      }
+    } else if (audioRef.current && !isSilentRef.current) {
+      // Per altri browser, riproduci solo se non in modalità silenziosa
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
     }

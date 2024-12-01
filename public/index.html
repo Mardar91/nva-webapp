@@ -155,31 +155,32 @@
         let isDarkMode = darkModeMediaQuery.matches;
         const splashScreen = document.getElementById('splash-screen');
         
-        // Controlla se è il primo caricamento
+        // Controlla se è il primo caricamento e se NON è una pagina con iframe 
         const isFirstLoad = !localStorage.getItem('app-loaded');
-        
-        if (!isFirstLoad) {
-          // Se non è il primo caricamento, nascondi subito la splash screen
+        const isIframePage = window.location.pathname === '/taxi' || 
+                          window.location.pathname === '/gift-card';
+
+        if (!isFirstLoad || isIframePage) {
+          // Se non è il primo caricamento o è una pagina con iframe,
+          // rimuovi completamente la splash screen e imposta subito i colori
           if (splashScreen) {
-            splashScreen.style.display = 'none';
+            splashScreen.remove();
           }
-          // Imposta subito il colore corretto della barra di stato
           if (themeColor) {
             themeColor.setAttribute('content', isDarkMode ? '#1a1a1a' : '#ffffff');
           }
         } else {
-          // Se è il primo caricamento, mostra la splash screen e gestisci la transizione
+          // Se è il primo caricamento e non è una pagina con iframe,
+          // mostra la splash screen e gestisci la transizione
           localStorage.setItem('app-loaded', 'true');
           
-          // All'avvio, imposta la barra di stato blu per la splash screen
           themeColor.setAttribute('content', '#1e3a8a');
 
-          // Dopo la splash screen, imposta il colore corretto
           setTimeout(() => {
             if (splashScreen) {
               splashScreen.classList.add('fade-out');
               setTimeout(() => {
-                splashScreen.style.display = 'none';
+                splashScreen.remove();
               }, 500);
             }
             updateStatusBarColor();

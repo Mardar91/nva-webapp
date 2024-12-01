@@ -112,6 +112,11 @@
     </style>
     <!-- Script per gestire il redirect e i colori -->
     <script>
+      // Reset localStorage quando l'app viene chiusa
+      window.addEventListener('unload', () => {
+        localStorage.removeItem('app-loaded');
+      });
+
       // Controlla se l'app è in modalità standalone
       if (window.matchMedia('(display-mode: standalone)').matches || 
           window.navigator.standalone === true) {
@@ -148,7 +153,39 @@
         const themeColor = document.querySelector('meta[name="theme-color"]');
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         let isDarkMode = darkModeMediaQuery.matches;
+        const splashScreen = document.getElementById('splash-screen');
         
+        // Controlla se è il primo caricamento
+        const isFirstLoad = !localStorage.getItem('app-loaded');
+        
+        if (!isFirstLoad) {
+          // Se non è il primo caricamento, nascondi subito la splash screen
+          if (splashScreen) {
+            splashScreen.style.display = 'none';
+          }
+          // Imposta subito il colore corretto della barra di stato
+          if (themeColor) {
+            themeColor.setAttribute('content', isDarkMode ? '#1a1a1a' : '#ffffff');
+          }
+        } else {
+          // Se è il primo caricamento, mostra la splash screen e gestisci la transizione
+          localStorage.setItem('app-loaded', 'true');
+          
+          // All'avvio, imposta la barra di stato blu per la splash screen
+          themeColor.setAttribute('content', '#1e3a8a');
+
+          // Dopo la splash screen, imposta il colore corretto
+          setTimeout(() => {
+            if (splashScreen) {
+              splashScreen.classList.add('fade-out');
+              setTimeout(() => {
+                splashScreen.style.display = 'none';
+              }, 500);
+            }
+            updateStatusBarColor();
+          }, 2500);
+        }
+
         const updateStatusBarColor = () => {
           if (themeColor) {
             if (isDarkMode) {
@@ -158,14 +195,6 @@
             }
           }
         };
-
-        // All'avvio, imposta la barra di stato blu per la splash screen
-        themeColor.setAttribute('content', '#1e3a8a');
-
-        // Dopo la splash screen, imposta il colore corretto
-        setTimeout(() => {
-          updateStatusBarColor();
-        }, 2500);
 
         // Aggiorna quando cambia il tema del sistema
         darkModeMediaQuery.addListener((e) => {
@@ -191,7 +220,7 @@
   <body>
     <!-- Splash Screen -->
     <div id="splash-screen">
-      <img src="/icons/logo-512x512.png" alt="Nonna Vittoria Apartments Logo" />
+      <img src="/icons/icon-512x512.png" alt="Nonna Vittoria Apartments Logo" />
     </div>
     <div id="root"></div>
     <noscript>JavaScript deve essere abilitato per utilizzare questa app.</noscript>

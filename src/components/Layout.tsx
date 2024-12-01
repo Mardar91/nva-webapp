@@ -6,13 +6,9 @@ import { Home, Pizza, Handshake } from "lucide-react";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
   const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
 
   useEffect(() => {
-    // Inizializza AudioContext
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    
     // Creiamo un pool di elementi audio per iOS
     if (isIOS.current) {
       audioRef.current = new Audio('/sounds/click.wav');
@@ -43,19 +39,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     return () => {
       document.removeEventListener('touchstart', preloadAudio);
       document.removeEventListener('click', preloadAudio);
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
       audioRef.current = null;
     };
   }, []);
 
   const handleNavClick = () => {
-    if (!audioContextRef.current || audioContextRef.current.state === 'suspended') {
-      // Se l'AudioContext è sospeso, il dispositivo è probabilmente in modalità silenziosa
-      return;
-    }
-
     if (isIOS.current) {
       // Su iOS, crea una nuova istanza per ogni click
       const audio = new Audio('/sounds/click.wav');

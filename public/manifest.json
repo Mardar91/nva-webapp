@@ -34,7 +34,7 @@
       "purpose": "any"
     }
   ],
-  "start_url": "/?source=pwa",
+  "start_url": "/?mode=standalone",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "fullscreen", "minimal-ui"],

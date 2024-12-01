@@ -68,8 +68,8 @@ const MemoryGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
-      <div className="text-center mb-4">
+    <div className="flex flex-col items-center gap-4 p-4 max-w-md mx-auto w-full">
+      <div className="text-center mb-4 w-full">
         <p className="text-lg font-semibold">Moves: {moves}</p>
         {isWon && (
           <div className="mt-4">
@@ -80,16 +80,19 @@ const MemoryGame = () => {
           </div>
         )}
       </div>
-      <div className="memory-game-container">
+      <div className="grid grid-cols-4 gap-4 w-full">
         {cards.map((card, index) => (
           <button
             key={card.id}
             onClick={() => handleCardClick(index)}
-            className={`memory-card ${
-              card.isFlipped || card.isMatched
+            className={`
+              aspect-square w-full rounded-lg flex items-center justify-center text-2xl font-bold
+              transition-all duration-300 ease-in-out transform hover:scale-105
+              ${card.isFlipped || card.isMatched
                 ? "bg-blue-500 text-white"
-                : "bg-gray-200"
-            }`}
+                : "bg-gray-200 hover:bg-gray-300"
+              }
+            `}
             disabled={card.isMatched}
           >
             {(card.isFlipped || card.isMatched) ? card.emoji : "?"}

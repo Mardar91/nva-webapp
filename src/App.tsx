@@ -105,6 +105,12 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Imposta il colore blu per la schermata di caricamento
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) {
+      themeColor.setAttribute('content', '#1e3a8a');
+    }
+
     // Gestione splash screen
     const splashScreen = document.getElementById('splash-screen');
     
@@ -126,6 +132,22 @@ const App: React.FC = () => {
           if (splashScreen) {
             splashScreen.style.display = 'none';
           }
+          // Aggiorna il colore della barra di stato dopo lo splash screen
+          const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+          if (themeColor) {
+            const path = window.location.pathname;
+            let color;
+            
+            if (darkModeMediaQuery.matches) {
+              // Tema scuro
+              color = path === '/' ? '#1a1a1a' : '#1e3a8a';
+            } else {
+              // Tema chiaro
+              color = path === '/' ? '#ffffff' : '#1e3a8a';
+            }
+            
+            themeColor.setAttribute('content', color);
+          }
         }, 500);
       }
     }, 2000);
@@ -137,29 +159,28 @@ const App: React.FC = () => {
     // Service Worker registration
     serviceWorkerRegistration.register();
 
-    // Gestione del tema e colore della barra di stato
+    // Gestione del tema e colore della barra di stato dopo il caricamento
     const updateStatusBarColor = () => {
-      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const themeColor = document.querySelector('meta[name="theme-color"]');
-      
-      if (themeColor) {
-        const path = window.location.pathname;
-        let color;
+      if (!loading) { // Solo se non è in caricamento
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const themeColor = document.querySelector('meta[name="theme-color"]');
         
-        if (darkModeMediaQuery.matches) {
-          // Tema scuro
-          color = path === '/' ? '#1a1a1a' : '#1e3a8a';
-        } else {
-          // Tema chiaro
-          color = path === '/' ? '#ffffff' : '#1e3a8a';
+        if (themeColor) {
+          const path = window.location.pathname;
+          let color;
+          
+          if (darkModeMediaQuery.matches) {
+            // Tema scuro
+            color = path === '/' ? '#1a1a1a' : '#1e3a8a';
+          } else {
+            // Tema chiaro
+            color = path === '/' ? '#ffffff' : '#1e3a8a';
+          }
+          
+          themeColor.setAttribute('content', color);
         }
-        
-        themeColor.setAttribute('content', color);
       }
     };
-
-    // Esegui subito
-    updateStatusBarColor();
 
     // Ascolta i cambiamenti del tema
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -168,7 +189,7 @@ const App: React.FC = () => {
     return () => {
       darkModeMediaQuery.removeListener(updateStatusBarColor);
     };
-  }, []);
+  }, [loading]);
 
   if (loading) {
     return null;

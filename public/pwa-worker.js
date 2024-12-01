@@ -1,7 +1,8 @@
-const CACHE_VERSION = 'nva-cache-v6';
+// Versione della cache e configurazione
+const CACHE_VERSION = 'nva-cache-v7';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
-// Risorse essenziali da cachare per l'app shell
+// Risorse essenziali per l'app shell
 const urlsToCache = [
   '/',
   '/index.html',
@@ -15,53 +16,69 @@ const urlsToCache = [
   '/sounds/click.wav'
 ];
 
-// Helper per verificare se una richiesta dovrebbe essere cachata
+// Migliore gestione delle richieste da cachare
 const shouldCache = (request) => {
-  // Non cachare richieste analytics e OneSignal
-  if (request.url.includes('analytics') || 
-      request.url.includes('OneSignal') || 
-      request.url.includes('/push/onesignal/')) {
-    return false;
-  }
-  return request.method === 'GET';
+  // Verifica se la richiesta è GET
+  if (request.method !== 'GET') return false;
+
+  // Verifica l'URL della richiesta
+  const url = new URL(request.url);
+
+  // Non cachare specifiche richieste
+  const excludePatterns = [
+    'analytics',
+    'OneSignal',
+    '/push/onesignal/',
+    'chrome-extension://'
+  ];
+
+  return !excludePatterns.some(pattern => url.href.includes(pattern));
 };
 
-// Installazione
+// Gestione installazione migliorata
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cache opened');
+    Promise.all([
+      // Pre-cache delle risorse essenziali
+      caches.open(CACHE_NAME).then(cache => {
+        console.log('[Service Worker] Pre-caching app shell');
         return cache.addAll(urlsToCache);
-      })
-      .catch(error => {
-        console.error('Cache initialization failed:', error);
-      })
+      }),
+      // Forza l'attivazione immediata
+      self.skipWaiting()
+    ]).catch(error => {
+      console.error('[Service Worker] Pre-cache failed:', error);
+    })
   );
-  self.skipWaiting();
 });
 
-// Attivazione
+// Gestione attivazione migliorata
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys()
-      .then(cacheNames => {
+    Promise.all([
+      // Pulisci le vecchie cache
+      caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
             if (cacheName !== CACHE_NAME) {
+              console.log('[Service Worker] Removing old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
-      })
-      .then(() => self.clients.claim())
+      }),
+      // Prendi il controllo immediatamente
+      self.clients.claim()
+    ]).then(() => {
+      console.log('[Service Worker] Activated and controlling');
+    })
   );
 });
 
-// Fetch
+// Gestione fetch migliorata
 self.addEventListener('fetch', (event) => {
-  // Ignora le richieste OneSignal
-  if (event.request.url.includes('/push/onesignal/')) {
+  // Ignora le richieste OneSignal e non-GET
+  if (event.request.url.includes('/push/onesignal/') || event.request.method !== 'GET') {
     return;
   }
 
@@ -78,29 +95,49 @@ self.addEventListener('fetch', (event) => {
         
         return fetch(fetchRequest)
           .then(response => {
-            // Check if valid response
+            // Verifica risposta valida
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Clone the response
+            // Cache the response
             if (shouldCache(event.request)) {
               const responseToCache = response.clone();
               caches.open(CACHE_NAME)
                 .then(cache => {
                   cache.put(event.request, responseToCache);
+                })
+                .catch(error => {
+                  console.error('[Service Worker] Cache put failed:', error);
                 });
             }
 
             return response;
           })
-          .catch(() => {
-            // Se la richiesta fallisce e stiamo richiedendo una pagina
+          .catch(error => {
+            console.error('[Service Worker] Fetch failed:', error);
+            // Gestione offline migliorata
             if (event.request.mode === 'navigate') {
-              return caches.match('/offline.html');
+              return caches.match('/offline.html').then(response => {
+                return response || new Response('Offline page not found', {
+                  status: 503,
+                  statusText: 'Service Unavailable'
+                });
+              });
             }
+            return new Response('Network error', {
+              status: 503,
+              statusText: 'Service Unavailable'
+            });
           });
       })
   );
+});
+
+// Gestione messaggi
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 

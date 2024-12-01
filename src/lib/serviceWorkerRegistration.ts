@@ -1,34 +1,42 @@
-// src/lib/serviceWorkerRegistration.ts
 export function register() {
   if ('serviceWorker' in navigator) {
+    // Attendi che la finestra sia completamente caricata
     window.addEventListener('load', () => {
-      // Registrazione del PWA worker
+      const swUrl = '/pwa-worker.js';
+
+      // Registra il PWA worker con scope esplicito
       navigator.serviceWorker
-        .register('/pwa-worker.js')
+        .register(swUrl, {
+          scope: '/',
+          updateViaCache: 'none' // Forza il controllo degli aggiornamenti
+        })
         .then(registration => {
-          // Controllo automatico ogni 24 ore
+          // Controllo immediato per aggiornamenti
+          registration.update();
+
+          // Controllo periodico ogni ora invece che 24 ore per maggiore reattività
           setInterval(() => {
             registration.update();
-          }, 1000 * 60 * 60 * 24); // 24 ore
+          }, 1000 * 60 * 60);
 
-          // Gestione aggiornamenti
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Verifica l'ultima notifica mostrata
-                  const lastUpdatePrompt = localStorage.getItem('lastUpdatePrompt');
-                  const now = Date.now();
-                  
-                  // Se sono passate 24 ore dall'ultima notifica
-                  if (!lastUpdatePrompt || (now - parseInt(lastUpdatePrompt)) > 86400000) {
-                    // Salva il timestamp prima di mostrare la notifica
-                    localStorage.setItem('lastUpdatePrompt', now.toString());
+                if (newWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    // Nuovo service worker disponibile
+                    const lastUpdatePrompt = localStorage.getItem('lastUpdatePrompt');
+                    const now = Date.now();
                     
-                    // Mostra la notifica di aggiornamento
-                    if (window.confirm('Nuova versione disponibile! Vuoi aggiornare?')) {
-                      window.location.reload();
+                    // Ridotto a 1 ora il tempo tra le notifiche
+                    if (!lastUpdatePrompt || (now - parseInt(lastUpdatePrompt)) > 3600000) {
+                      localStorage.setItem('lastUpdatePrompt', now.toString());
+                      
+                      if (window.confirm('Nuova versione disponibile! Vuoi aggiornare?')) {
+                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                        window.location.reload();
+                      }
                     }
                   }
                 }
@@ -37,29 +45,24 @@ export function register() {
           });
         })
         .catch(error => {
-          console.error('Error during service worker registration:', error);
+          console.error('Service worker registration failed:', error);
         });
 
-      // Registrazione del service worker di OneSignal
+      // Registrazione OneSignal
       navigator.serviceWorker
-        .register('/push/onesignal/OneSignalSDKWorker.js')
+        .register('/push/onesignal/OneSignalSDKWorker.js', {
+          scope: '/push/onesignal/'
+        })
         .catch(error => {
-          console.error('Error during OneSignal service worker registration:', error);
+          console.error('OneSignal SW registration failed:', error);
         });
     });
 
-    // Aggiornamento quando l'app torna in primo piano
+    // Aggiornamento più frequente quando l'app torna in primo piano
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         navigator.serviceWorker.ready.then(registration => {
-          const lastUpdate = localStorage.getItem('lastServiceWorkerUpdate');
-          const now = Date.now();
-          
-          // Verifica se sono passate 24 ore dall'ultimo aggiornamento
-          if (!lastUpdate || (now - parseInt(lastUpdate)) > 86400000) {
-            registration.update();
-            localStorage.setItem('lastServiceWorkerUpdate', now.toString());
-          }
+          registration.update();
         });
       }
     });
@@ -73,7 +76,7 @@ export function unregister() {
         registration.unregister();
       })
       .catch(error => {
-        console.error(error.message);
+        console.error('Service worker unregistration failed:', error);
       });
   }
 }

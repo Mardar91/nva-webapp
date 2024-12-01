@@ -19,20 +19,6 @@ interface ExternalRedirectProps {
   to: string;
 }
 
-// Utility function per gestire i colori della status bar
-const updateStatusBarColor = (color: string) => {
-  const themeColor = document.querySelector('meta[name="theme-color"]');
-  if (themeColor) {
-    themeColor.setAttribute('content', color);
-  }
-  
-  // Gestione specifica per Android
-  if ('NavigationBar' in window) {
-    const navigationBar = (window as any).NavigationBar;
-    navigationBar.setColor(color);
-  }
-};
-
 const ExternalRedirect: React.FC<ExternalRedirectProps> = ({ to }) => {
   React.useEffect(() => {
     window.location.href = to;
@@ -80,30 +66,8 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
     </div>
   );
 };
+
 const AppContent: React.FC = () => {
-  useEffect(() => {
-    // Ascolta i cambiamenti del percorso per aggiornare i colori
-    const handleRouteChange = () => {
-      const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const path = window.location.pathname;
-      
-      if (path === '/taxi') {
-        updateStatusBarColor(darkMode ? '#1a1a1a' : '#fbbf24');
-      } else if (path === '/') {
-        updateStatusBarColor(darkMode ? '#1a1a1a' : '#1e3a8a');
-      } else {
-        updateStatusBarColor(darkMode ? '#1a1a1a' : '#ffffff');
-      }
-    };
-
-    handleRouteChange(); // Imposta il colore iniziale
-    window.addEventListener('popstate', handleRouteChange);
-    
-    return () => {
-      window.removeEventListener('popstate', handleRouteChange);
-    };
-  }, []);
-
   return (
     <Layout>
       <Routes>
@@ -136,20 +100,24 @@ const AppContent: React.FC = () => {
     </Layout>
   );
 };
-
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const themeColor = document.querySelector('meta[name="theme-color"]');
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const isInTaxiRoute = window.location.pathname === '/taxi';
+    const path = window.location.pathname;
 
-    // Imposta il colore iniziale della status bar
-    const initialColor = isInTaxiRoute 
-      ? (darkModeMediaQuery.matches ? '#1a1a1a' : '#fbbf24')
-      : (darkModeMediaQuery.matches ? '#1a1a1a' : path === '/' ? '#ffffff' : '#1e3a8a');
-    
-    updateStatusBarColor(initialColor);
+    if (themeColor) {
+      if (isInTaxiRoute) {
+        const taxiColor = darkModeMediaQuery.matches ? '#1a1a1a' : '#fbbf24';
+        themeColor.setAttribute('content', taxiColor);
+      } else {
+        const mainColor = darkModeMediaQuery.matches ? '#1a1a1a' : (path === '/' ? '#ffffff' : '#1e3a8a');
+        themeColor.setAttribute('content', mainColor);
+      }
+    }
 
     const splashScreen = document.getElementById('splash-screen');
     
@@ -170,12 +138,18 @@ const App: React.FC = () => {
             splashScreen.style.display = 'none';
           }
           
-          const path = window.location.pathname;
-          const color = darkModeMediaQuery.matches
-            ? '#1a1a1a'
-            : path === '/' ? '#ffffff' : '#ffffff';
-          
-          updateStatusBarColor(color);
+          if (themeColor) {
+            const currentPath = window.location.pathname;
+            let color;
+            
+            if (darkModeMediaQuery.matches) {
+              color = '#1a1a1a';
+            } else {
+              color = currentPath === '/' ? '#ffffff' : '#ffffff';
+            }
+            
+            themeColor.setAttribute('content', color);
+          }
         }, 500);
       }
     }, 2000);
@@ -186,20 +160,31 @@ const App: React.FC = () => {
   useEffect(() => {
     serviceWorkerRegistration.register();
 
-    const handleColorSchemeChange = (e: MediaQueryListEvent) => {
-      const path = window.location.pathname;
-      const color = e.matches
-        ? '#1a1a1a'
-        : path === '/' ? '#ffffff' : '#ffffff';
-      
-      updateStatusBarColor(color);
+    const updateStatusBarColor = () => {
+      if (!loading) {
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        
+        if (themeColor) {
+          const path = window.location.pathname;
+          let color;
+          
+          if (darkModeMediaQuery.matches) {
+            color = '#1a1a1a';
+          } else {
+            color = path === '/' ? '#ffffff' : '#ffffff';
+          }
+          
+          themeColor.setAttribute('content', color);
+        }
+      }
     };
 
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    darkModeMediaQuery.addEventListener('change', handleColorSchemeChange);
+    darkModeMediaQuery.addListener(updateStatusBarColor);
 
     return () => {
-      darkModeMediaQuery.removeEventListener('change', handleColorSchemeChange);
+      darkModeMediaQuery.removeListener(updateStatusBarColor);
     };
   }, [loading]);
 

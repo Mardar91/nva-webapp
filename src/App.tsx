@@ -108,7 +108,7 @@ const App: React.FC = () => {
     // Imposta il colore blu per la schermata di caricamento
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      themeColor.setAttribute('content', '#ffffff');
+      themeColor.setAttribute('content', '#1e3a8a');
     }
 
     // Gestione splash screen

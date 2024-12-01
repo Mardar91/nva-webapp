@@ -7,8 +7,7 @@
     
     <!-- Meta tag per PWA -->
     <meta name="description" content="Nonna Vittoria Apartments - Il tuo soggiorno in Puglia" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#1e3a8a" />
     
     <!-- PWA support per iOS migliorato -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -28,6 +27,7 @@
     <!-- Meta tag per gestire il redirect -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-touch-startup-image" content="/icons/splash.png" />
+
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -48,13 +48,7 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-tap-highlight-color: transparent;
-        background-color: #ffffff;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        body {
-          background-color: #1a1a1a;
-        }
+        background-color: #1e3a8a;
       }
 
       /* Stili per la splash screen */
@@ -156,6 +150,31 @@
       window.addEventListener('resize', setViewportHeight);
       window.addEventListener('orientationchange', setViewportHeight);
       setViewportHeight();
+
+      // Gestione colori barra di stato
+      document.addEventListener('DOMContentLoaded', () => {
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // All'avvio, imposta la barra di stato blu per la splash screen
+        if (themeColor) {
+          themeColor.setAttribute('content', '#1e3a8a');
+        }
+
+        // Quando la splash screen scompare, aggiorna il colore della barra di stato
+        setTimeout(() => {
+          if (themeColor) {
+            themeColor.setAttribute('content', isDarkMode ? '#1a1a1a' : '#ffffff');
+          }
+        }, 2500); // Un po' più lungo del tempo della splash screen per sicurezza
+
+        // Aggiorna anche quando cambia il tema del sistema
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+          if (themeColor) {
+            themeColor.setAttribute('content', e.matches ? '#1a1a1a' : '#ffffff');
+          }
+        });
+      });
     </script>
   </head>
   <body>

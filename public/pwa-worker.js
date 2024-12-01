@@ -1,5 +1,5 @@
 // Versione della cache e configurazione
-const CACHE_VERSION = 'nva-cache-v7';
+const CACHE_VERSION = 'nva-cache-v8';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Risorse essenziali per l'app shell
@@ -18,13 +18,9 @@ const urlsToCache = [
 
 // Migliore gestione delle richieste da cachare
 const shouldCache = (request) => {
-  // Verifica se la richiesta è GET
   if (request.method !== 'GET') return false;
-
-  // Verifica l'URL della richiesta
   const url = new URL(request.url);
-
-  // Non cachare specifiche richieste
+  
   const excludePatterns = [
     'analytics',
     'OneSignal',
@@ -39,12 +35,10 @@ const shouldCache = (request) => {
 self.addEventListener('install', (event) => {
   event.waitUntil(
     Promise.all([
-      // Pre-cache delle risorse essenziali
       caches.open(CACHE_NAME).then(cache => {
         console.log('[Service Worker] Pre-caching app shell');
         return cache.addAll(urlsToCache);
       }),
-      // Forza l'attivazione immediata
       self.skipWaiting()
     ]).catch(error => {
       console.error('[Service Worker] Pre-cache failed:', error);
@@ -52,11 +46,10 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Gestione attivazione migliorata
+// Gestione attivazione con focus sulla modalità standalone
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     Promise.all([
-      // Pulisci le vecchie cache
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
@@ -68,47 +61,60 @@ self.addEventListener('activate', (event) => {
         );
       }),
       // Prendi il controllo immediatamente
-      self.clients.claim()
+      self.clients.claim(),
+      // Cerca di aprire una finestra client in modalità standalone se non esiste
+      self.clients.matchAll({
+        type: 'window'
+      }).then(clients => {
+        if (clients.length === 0) {
+          // Se non ci sono client aperti, prova ad aprirne uno nuovo
+          if (self.registration.scope) {
+            self.clients.openWindow(self.registration.scope);
+          }
+        }
+      })
     ]).then(() => {
       console.log('[Service Worker] Activated and controlling');
     })
   );
 });
 
-// Gestione fetch migliorata
+// Gestione fetch ottimizzata per la modalità standalone
 self.addEventListener('fetch', (event) => {
-  // Ignora le richieste OneSignal e non-GET
   if (event.request.url.includes('/push/onesignal/') || event.request.method !== 'GET') {
+    return;
+  }
+
+  // Gestione speciale per le richieste di navigazione
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match('/offline.html');
+      })
+    );
     return;
   }
 
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Cache hit - return response
         if (response) {
           return response;
         }
 
-        // Clone the request
         const fetchRequest = event.request.clone();
         
         return fetch(fetchRequest)
           .then(response => {
-            // Verifica risposta valida
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Cache the response
             if (shouldCache(event.request)) {
               const responseToCache = response.clone();
               caches.open(CACHE_NAME)
                 .then(cache => {
                   cache.put(event.request, responseToCache);
-                })
-                .catch(error => {
-                  console.error('[Service Worker] Cache put failed:', error);
                 });
             }
 
@@ -116,14 +122,8 @@ self.addEventListener('fetch', (event) => {
           })
           .catch(error => {
             console.error('[Service Worker] Fetch failed:', error);
-            // Gestione offline migliorata
             if (event.request.mode === 'navigate') {
-              return caches.match('/offline.html').then(response => {
-                return response || new Response('Offline page not found', {
-                  status: 503,
-                  statusText: 'Service Unavailable'
-                });
-              });
+              return caches.match('/offline.html');
             }
             return new Response('Network error', {
               status: 503,
@@ -134,10 +134,14 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Gestione messaggi
+// Gestione messaggi migliorata
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+  
+  // Gestione specifica per la modalità standalone
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage(CACHE_VERSION);
+  }
 });
-

@@ -162,10 +162,17 @@
         // All'avvio, imposta la barra di stato blu per la splash screen
         themeColor.setAttribute('content', '#1e3a8a');
 
-        // Dopo la splash screen, imposta il colore corretto
-        setTimeout(() => {
+        // Controlla se siamo nella rotta /taxi
+        if (window.location.pathname === '/taxi') {
+          // Nascondi immediatamente lo splash screen
+          document.getElementById('splash-screen').classList.add('fade-out');
           updateStatusBarColor();
-        }, 2500);
+        } else {
+          // Per le altre rotte, nascondi lo splash screen dopo il tempo standard
+          setTimeout(() => {
+            updateStatusBarColor();
+          }, 2500);
+        }
 
         // Aggiorna quando cambia il tema del sistema
         darkModeMediaQuery.addListener((e) => {

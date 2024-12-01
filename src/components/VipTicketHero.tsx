@@ -1,18 +1,21 @@
 import React, { useEffect } from "react";
-import { Button } from "../components/ui/button"; 
+import { Button } from "../components/ui/button";
 import { cn } from "../lib/utils";
 
 const VipTicketHero = () => {
   useEffect(() => {
-    // Imposta il colore del tema per la status bar
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', '#1e3a8a');
+    // Aggiorna il colore della barra di stato
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    if (themeColor) {
+      themeColor.setAttribute('content', darkModeMediaQuery.matches ? '#1a1a1a' : '#1e3a8a');
     }
+
     // Ripristina il colore originale quando il componente viene smontato
     return () => {
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', '#ffffff');
+      if (themeColor) {
+        themeColor.setAttribute('content', darkModeMediaQuery.matches ? '#1a1a1a' : '#ffffff');
       }
     };
   }, []);
@@ -38,7 +41,7 @@ const VipTicketHero = () => {
   };
 
   return (
-    <div className="vipHeroContainer extended-blue-bg bg-[#1e3a8a] dark:bg-[#1a1a1a]"> {/* Aggiunto dark:bg-[#1a1a1a] */}
+    <div className="vipHeroContainer extended-blue-bg bg-[#1e3a8a] dark:bg-[#1a1a1a]">
       <h2 className="vipHeroTitle">Get Your Free VIP Ticket!</h2>
       <p className="vipHeroSubtitle">
         Download your digital VIP Ticket to enjoy exclusive 10% discounts at all

@@ -16,14 +16,35 @@ export default async function handler(request: VercelRequest, response: VercelRe
     
     // Calcola la differenza in ore
     const hoursDifference = (checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    
+    console.log('Hours until check-in:', hoursDifference);
 
-    // Se mancano più di 24 ore, schedula la notifica per quando mancheranno esattamente 24 ore
-    // Altrimenti, se mancano tra 24 e 0 ore, invia la notifica immediatamente
-    const sendAfter = hoursDifference > 24 
+    // Se mancano meno di 72 ore (3 giorni), invia la notifica immediatamente
+    // Se mancano più di 72 ore, schedula per quando mancheranno 24 ore
+    const sendAfter = hoursDifference > 72 
       ? new Date(checkInDate.getTime() - (24 * 60 * 60 * 1000)).toISOString()
-      : new Date().toISOString();
+      : undefined; // undefined farà inviare la notifica immediatamente
 
-    console.log('Scheduling notification for:', sendAfter);
+    const notificationPayload = {
+      app_id: process.env.ONESIGNAL_APP_ID,
+      included_segments: ['All'],  // Cambiato da 'Subscribed Users' a 'All'
+      contents: {
+        en: "Check-in online now available! If you haven't done it, go now."
+      },
+      name: "Check-in Reminder",
+      data: {
+        type: "check_in_reminder",
+        checkInDate: date
+      }
+    };
+
+    // Aggiungi send_after solo se è definito
+    if (sendAfter) {
+      console.log('Scheduling notification for future:', sendAfter);
+      Object.assign(notificationPayload, { send_after: sendAfter });
+    } else {
+      console.log('Sending notification immediately');
+    }
 
     const oneSignalResponse = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
@@ -32,19 +53,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        app_id: process.env.ONESIGNAL_APP_ID,
-        included_segments: ['Subscribed Users'],
-        send_after: sendAfter,
-        contents: {
-          en: "Check-in online now available! If you haven't done it, go now."
-        },
-        name: "Check-in Reminder",
-        data: {
-          type: "check_in_reminder",
-          checkInDate: date
-        }
-      })
+      body: JSON.stringify(notificationPayload)
     });
 
     const data = await oneSignalResponse.json();
@@ -57,9 +66,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
     return response.status(200).json({
       success: true,
       message: 'Notification scheduled successfully',
-      scheduledFor: sendAfter,
+      scheduledFor: sendAfter || 'immediate',
       hoursUntilCheckIn: hoursDifference,
-      oneSignalResponse: data
+      oneSignalResponse: data,
+      isImmediate: !sendAfter
     });
 
   } catch (error) {

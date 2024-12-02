@@ -20,6 +20,7 @@ const restaurants = [
     name: "RISTORANTE VAN WESTERHOUT",
     address: "Via Di Vagno 75, 70042 Mola di Bari",
     phone: "+39 366 409 6252",
+    website: "https://www.quandoo.it/place/ristorante-van-westerhout-103289",
     facebook: "https://www.facebook.com/ristorantevanwesterhout/",
   },
   {

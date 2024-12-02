@@ -139,7 +139,8 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    const userId = await OneSignal.getUserId(); // O usa window.OneSignal.getUserId()
+    const deviceState = await OneSignal.getDeviceState();
+    const userId = deviceState?.userId;
 
     if (!userId) {
       console.log('User not subscribed to notifications');

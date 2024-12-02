@@ -18,10 +18,10 @@ const scheduleCheckInNotification = async (checkInDate: Date) => {
     const notificationDate = addDays(checkInDate, -1);
     const now = new Date();
     
-    console.log('Attempting to schedule notification:', {
+    console.log('Scheduling check-in notification:', {
       checkInDate: checkInDate.toISOString(),
       notificationDate: notificationDate.toISOString(),
-      now: now.toISOString()
+      currentTime: now.toISOString()
     });
     
     if (notificationDate < now) {
@@ -36,27 +36,28 @@ const scheduleCheckInNotification = async (checkInDate: Date) => {
       },
       body: JSON.stringify({
         scheduleDate: notificationDate.toISOString(),
-        checkInDate: checkInDate.toISOString(),
-        target_channel: "push",
+        immediate: false
       }),
     });
 
     const responseData = await response.json();
-    console.log('API Response:', responseData);
+    console.log('Notification API response:', responseData);
 
     if (!response.ok) {
-      throw new Error('Failed to schedule notification');
+      throw new Error(`API error: ${JSON.stringify(responseData)}`);
     }
 
-    localStorage.setItem('scheduledNotification', JSON.stringify({
-      checkInDate: checkInDate.toISOString(),
-      notificationDate: notificationDate.toISOString()
-    }));
-
-    console.log('Notification scheduled and saved to localStorage');
+    if (responseData.success) {
+      localStorage.setItem('scheduledNotification', JSON.stringify({
+        checkInDate: checkInDate.toISOString(),
+        notificationDate: notificationDate.toISOString(),
+        notificationId: responseData.data?.id
+      }));
+      console.log('Notification scheduled successfully');
+    }
 
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    console.error('Failed to schedule notification:', error);
   }
 };
 

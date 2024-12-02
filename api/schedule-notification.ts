@@ -10,28 +10,31 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   try {
-    console.log('Attempting to send immediate notification...');
+    const { date, playerId } = request.body;
+
+    if (!playerId) {
+      return response.status(400).json({
+        success: false,
+        message: 'No player ID provided'
+      });
+    }
 
     const notificationPayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
-      included_segments: ['All'],
+      include_player_ids: [playerId], // Invia solo al dispositivo specifico
       contents: {
-        en: "🔔 TEST NOTIFICATION - Check-in online now available!"
+        en: "Check-in online now available! If you haven't done it, go now."
       },
-      name: "Test Check-in Reminder",
+      name: "Check-in Reminder",
       data: {
-        type: "test_check_in_reminder"
+        type: "check_in_reminder",
+        checkInDate: date
       },
-      // Forza l'invio immediato
-      delayed_option: "immediate",
-      // Aggiungi un badge sonoro per attirare l'attenzione
-      ios_sound: "default",
-      android_sound: "default",
       // Aumenta la priorità della notifica
       priority: 10
     };
 
-    console.log('Sending notification with payload:', notificationPayload);
+    console.log('Sending notification to player:', playerId);
 
     const oneSignalResponse = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
@@ -53,17 +56,16 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
     return response.status(200).json({
       success: true,
-      message: 'Test notification sent immediately',
+      message: 'Notification sent to specific device',
       oneSignalResponse: data,
-      isImmediate: true,
-      testMode: true
+      targetDevice: playerId
     });
 
   } catch (error) {
-    console.error('Error sending test notification:', error);
+    console.error('Error sending notification:', error);
     return response.status(500).json({
       success: false,
-      message: 'Failed to send test notification',
+      message: 'Failed to send notification',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }

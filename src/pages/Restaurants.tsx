@@ -20,7 +20,7 @@ const restaurants = [
     name: "RISTORANTE VAN WESTERHOUT",
     address: "Via Di Vagno 75, 70042 Mola di Bari",
     phone: "+39 366 409 6252",
-    facebook: "https://www.facebook.com/",
+    facebook: "https://www.facebook.com/ristorantevanwesterhout/",
   },
   {
     name: "PUGLIAINBOCCA - PIZZERIA & RESTAURANT",

@@ -12,12 +12,15 @@ import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
-// Funzione per inviare la notifica
+// Funzione per programmare la notifica
 const scheduleNotification = async (checkInDate: Date) => {
   try {
+    console.log('Attempting to schedule notification for:', checkInDate);
+    
     const response = await fetch('/api/send-notification', {
       method: 'POST',
       headers: {
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -25,14 +28,16 @@ const scheduleNotification = async (checkInDate: Date) => {
       })
     });
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      throw new Error('Failed to send notification');
+      throw new Error(data.error || 'Failed to schedule notification');
     }
 
-    const data = await response.json();
+    console.log('Notification scheduled successfully:', data);
     return data;
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    console.error('Notification scheduling error:', error);
     throw error;
   }
 };
@@ -187,7 +192,9 @@ const CheckIn = () => {
   const handleConfirm = async () => {
     if (checkInDate) {
       try {
-        await scheduleNotification(checkInDate);
+        const notificationResult = await scheduleNotification(checkInDate);
+        console.log('Notification result:', notificationResult);
+        
         setIsConfirmed(true);
         setShowCalendar(false);
         
@@ -199,8 +206,8 @@ const CheckIn = () => {
           );
         }
       } catch (error) {
-        console.error('Error confirming check-in:', error);
-        alert('There was an error scheduling the notification. Please try again.');
+        console.error('Error during confirmation:', error);
+        alert('Unable to schedule notification. Please try again.');
       }
     }
   };

@@ -25,29 +25,18 @@
           "value": "no-cache, no-store, must-revalidate"
         }
       ]
-    },
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type"
-        }
-      ]
     }
   ],
   "rewrites": [
     { "source": "/taxi", "destination": "/" },
     { "source": "/shop", "destination": "/" },
-    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/api/schedule-notification", "destination": "/api/schedule-notification" },
     { "source": "/(.*)", "destination": "/$1" }
-  ]
+  ],
+  "functions": {
+    "api/schedule-notification.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 }

@@ -20,8 +20,8 @@ const restaurants = [
     name: "RISTORANTE VAN WESTERHOUT",
     address: "Via Di Vagno 75, 70042 Mola di Bari",
     phone: "+39 366 409 6252",
-    website: "https://www.quandoo.it/place/ristorante-van-westerhout-103289",
     facebook: "https://www.facebook.com/ristorantevanwesterhout/",
+    book: "https://www.quandoo.it/place/ristorante-van-westerhout-103289",
   },
   {
     name: "PUGLIAINBOCCA - PIZZERIA & RESTAURANT",
@@ -105,6 +105,15 @@ const RestaurantScreen = () => {
                 onClick={() => Linking.openURL(restaurant.facebook)}
               >
                 Facebook Page
+              </Button>
+            )}
+            {restaurant.book && (
+              <Button
+                variant="link"
+                className="w-full mt-2"
+                onClick={() => Linking.openURL(restaurant.book)}
+              >
+                Book A Table
               </Button>
             )}
             {restaurant.deliveryCode && (

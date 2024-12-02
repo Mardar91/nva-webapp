@@ -11,6 +11,7 @@ import {
 import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
+import OneSignal from 'react-onesignal';
 
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
@@ -46,7 +47,6 @@ const usePersistedCheckIn = () => {
     setIsConfirmed
   };
 };
-
 const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
@@ -83,6 +83,7 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
     </div>
   );
 };
+
 const CheckInButton = ({ date }: { date: Date }) => {
   const [isAvailable, setIsAvailable] = useState(false);
 
@@ -116,7 +117,6 @@ const CheckInButton = ({ date }: { date: Date }) => {
     </div>
   );
 };
-
 const CheckIn = () => {
   const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
   const [showForm, setShowForm] = useState(false);
@@ -138,38 +138,40 @@ const CheckIn = () => {
   };
 
   const scheduleNotification = async (date: Date) => {
-  try {
-    // @ts-ignore - OneSignal types might not be available
-    const playerId = await window.OneSignal.getUserId();
-    
-    if (!playerId) {
-      console.log('User not subscribed to notifications');
-      return; // Non inviare la notifica se l'utente non è iscritto
-    }
+    try {
+      // Ottieni l'ID dell'utente usando react-onesignal
+      const deviceState = await OneSignal.getDeviceState();
+      const userId = deviceState?.userId;
 
-    console.log('Scheduling notification for device:', playerId);
-    
-    const response = await fetch('/api/schedule-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        date: date.toISOString(),
-        playerId: playerId
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to schedule notification');
-    }
+      if (!userId) {
+        console.log('User not subscribed to notifications');
+        return; // Non inviare la notifica se l'utente non è iscritto
+      }
 
-    const data = await response.json();
-    console.log('API Response:', data);
-  } catch (error) {
-    console.error('Error scheduling notification:', error);
-  }
-};
+      console.log('Scheduling notification for device:', userId);
+      
+      const response = await fetch('/api/schedule-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          date: date.toISOString(),
+          playerId: userId
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to schedule notification');
+      }
+
+      const data = await response.json();
+      console.log('API Response:', data);
+    } catch (error) {
+      console.error('Error scheduling notification:', error);
+    }
+  };
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
@@ -197,14 +199,12 @@ const CheckIn = () => {
       setIsConfirmed(true);
       setShowCalendar(false);
 
-      // Calcola i giorni rimanenti
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const daysUntilCheckIn = differenceInDays(checkInDate, today);
-
-      // Se mancano più di 3 giorni, schedula la notifica per il giorno prima che sia disponibile il check-in
-      if (daysUntilCheckIn > 3) {
+      try {
+        // Schedule notification
         await scheduleNotification(checkInDate);
+      } catch (error) {
+        console.error('Error in handleConfirm:', error);
+        // Non blocchiamo il flusso del check-in se la notifica fallisce
       }
 
       if (validateDate(checkInDate)) {
@@ -221,7 +221,7 @@ const CheckIn = () => {
   const disabledDays = {
     before: new Date(),
   };
-if (showForm) {
+  if (showForm) {
     return (
       <div className="iframe-container" style={{
         position: 'fixed',

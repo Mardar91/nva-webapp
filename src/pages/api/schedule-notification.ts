@@ -1,19 +1,19 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 interface NotificationBody {
   checkInDate: string;
 }
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+  request: VercelRequest,
+  response: VercelResponse
 ) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+  if (request.method !== 'POST') {
+    return response.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
-    const { checkInDate } = req.body as NotificationBody;
+    const { checkInDate } = request.body as NotificationBody;
     
     // Calcola la data per la notifica (1 giorno prima del check-in)
     const notificationDate = new Date(checkInDate);
@@ -22,7 +22,7 @@ export default async function handler(
     // Formatta la data per OneSignal
     const sendAfter = notificationDate.toISOString();
 
-    const response = await fetch('https://api.onesignal.com/notifications', {
+    const oneSignalResponse = await fetch('https://api.onesignal.com/notifications', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
@@ -43,16 +43,16 @@ export default async function handler(
       })
     });
 
-    const data = await response.json();
+    const data = await oneSignalResponse.json();
 
-    if (!response.ok) {
+    if (!oneSignalResponse.ok) {
       throw new Error(data.errors?.[0] || 'Failed to schedule notification');
     }
 
-    return res.status(200).json(data);
+    return response.status(200).json(data);
   } catch (error) {
     console.error('Error scheduling notification:', error);
-    return res.status(500).json({ 
+    return response.status(500).json({ 
       message: 'Error scheduling notification',
       error: error instanceof Error ? error.message : 'Unknown error'
     });

@@ -14,50 +14,63 @@ import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-
 
 // Funzione per pianificare la notifica aggiornata
 const scheduleCheckInNotification = async (checkInDate: Date) => {
+  console.log('scheduleCheckInNotification started with date:', checkInDate); // Log 1
+  
   try {
     const notificationDate = addDays(checkInDate, -1);
     const now = new Date();
     
-    console.log('Scheduling check-in notification:', {
-      checkInDate: checkInDate.toISOString(),
+    console.log('Calculated dates:', {
+      now: now.toISOString(),
       notificationDate: notificationDate.toISOString(),
-      currentTime: now.toISOString()
-    });
+      checkInDate: checkInDate.toISOString()
+    }); // Log 2
     
     if (notificationDate < now) {
-      console.log('Notification date is in the past, skipping');
+      console.log('Notification date is in the past, skipping scheduling');
       return;
     }
 
-    const response = await fetch('/api/send-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        scheduleDate: notificationDate.toISOString(),
-        immediate: false
-      }),
-    });
+    console.log('Preparing to send POST request'); // Log 3
+    
+    const requestBody = {
+      scheduleDate: notificationDate.toISOString(),
+      immediate: false
+    };
+    console.log('Request body:', requestBody); // Log 4
 
-    const responseData = await response.json();
-    console.log('Notification API response:', responseData);
+    try {
+      const response = await fetch('/api/send-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+      
+      console.log('Fetch response status:', response.status); // Log 5
+      const responseData = await response.json();
+      console.log('Response data:', responseData); // Log 6
 
-    if (!response.ok) {
-      throw new Error(`API error: ${JSON.stringify(responseData)}`);
-    }
+      if (!response.ok) {
+        throw new Error(`API error: ${JSON.stringify(responseData)}`);
+      }
 
-    if (responseData.success) {
+      console.log('Successfully scheduled notification'); // Log 7
+
       localStorage.setItem('scheduledNotification', JSON.stringify({
         checkInDate: checkInDate.toISOString(),
-        notificationDate: notificationDate.toISOString(),
-        notificationId: responseData.data?.id
+        notificationDate: notificationDate.toISOString()
       }));
-      console.log('Notification scheduled successfully');
+      
+    } catch (fetchError) {
+      console.error('Fetch operation failed:', fetchError); // Log 8
+      throw fetchError;
     }
 
   } catch (error) {
-    console.error('Failed to schedule notification:', error);
+    console.error('Error in scheduleCheckInNotification:', error); // Log 9
+    throw error;
   }
 };
 

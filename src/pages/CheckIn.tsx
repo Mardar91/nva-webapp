@@ -254,25 +254,36 @@ const CheckIn = () => {
   };
 
   const handleConfirm = () => {
-    if (checkInDate) {
-      setIsConfirmed(true);
-      setShowCalendar(false);
+  console.log('handleConfirm started'); // Log 1
+  
+  if (checkInDate) {
+    console.log('checkInDate is present:', checkInDate); // Log 2
+    setIsConfirmed(true);
+    setShowCalendar(false);
+    
+    const daysUntilCheckIn = differenceInDays(checkInDate, new Date());
+    console.log('Days until check-in:', daysUntilCheckIn); // Log 3
+    
+    if (daysUntilCheckIn <= 3) {
+      console.log('Setting showForm to true'); // Log 4
+      setShowForm(true);
       
-      const daysUntilCheckIn = differenceInDays(checkInDate, new Date());
-      
-      if (daysUntilCheckIn <= 3) {
-        setShowForm(true);
-        // Pianifica notifica se manca più di 1 giorno
-        if (daysUntilCheckIn > 1) {
-          scheduleCheckInNotification(checkInDate);
-        }
-      } else {
-        alert(
-          "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
-        );
+      if (daysUntilCheckIn > 1) {
+        console.log('Attempting to schedule notification for future date'); // Log 5
+        scheduleCheckInNotification(checkInDate)
+          .then(() => console.log('Notification scheduling completed')) // Log 6
+          .catch(err => console.error('Error in notification scheduling:', err)); // Log 7
       }
+    } else {
+      console.log('Showing alert for date too far in future'); // Log 8
+      alert(
+        "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
+      );
     }
-  };
+  } else {
+    console.log('No checkInDate present'); // Log 9
+  }
+};
   const disabledDays = {
     before: new Date(),
   };

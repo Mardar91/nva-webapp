@@ -1,42 +1,33 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-interface NotificationBody {
-  checkInDate: string;
-}
-
 export default async function handler(
   request: VercelRequest,
   response: VercelResponse
 ) {
   // Abilita CORS
-  response.setHeader('Access-Control-Allow-Credentials', 'true');
   response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  response.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  // Gestisce la richiesta OPTIONS per il preflight CORS
   if (request.method === 'OPTIONS') {
-    response.status(200).end();
-    return;
+    return response.status(200).end();
   }
 
   if (request.method !== 'POST') {
-    return response.status(405).json({ message: 'Method not allowed' });
+    return response.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { checkInDate } = request.body as NotificationBody;
-    
+    const { checkInDate } = request.body;
+
     // Calcola la data per la notifica (1 giorno prima del check-in)
     const notificationDate = new Date(checkInDate);
     notificationDate.setDate(notificationDate.getDate() - 1);
     
-    // Formatta la data per OneSignal
     const sendAfter = notificationDate.toISOString();
 
-    const oneSignalResponse = await fetch('https://api.onesignal.com/notifications', {
+    const oneSignalResponse = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
@@ -57,18 +48,19 @@ export default async function handler(
       })
     });
 
-    const data = await oneSignalResponse.json();
+    const responseData = await oneSignalResponse.json();
 
     if (!oneSignalResponse.ok) {
-      throw new Error(data.errors?.[0] || 'Failed to schedule notification');
+      console.error('OneSignal API Error:', responseData);
+      return response.status(500).json({ error: 'Failed to schedule notification', details: responseData });
     }
 
-    return response.status(200).json(data);
+    return response.status(200).json(responseData);
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    console.error('Server error:', error);
     return response.status(500).json({ 
-      message: 'Error scheduling notification',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Internal server error', 
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 }

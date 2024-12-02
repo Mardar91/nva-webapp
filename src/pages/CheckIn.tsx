@@ -12,6 +12,29 @@ import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
+// Funzione per programmare la notifica
+const scheduleNotification = async (checkInDate: Date) => {
+  try {
+    const response = await fetch('/api/send-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        checkInDate: checkInDate.toISOString(),
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to schedule notification');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error scheduling notification:', error);
+  }
+};
+
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
   const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
@@ -46,7 +69,6 @@ const usePersistedCheckIn = () => {
     setIsConfirmed
   };
 };
-
 const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
@@ -118,7 +140,6 @@ const CheckInButton = ({ date }: { date: Date }) => {
     </div>
   );
 };
-
 const CheckIn = () => {
   const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
   const [showForm, setShowForm] = useState(false);
@@ -160,10 +181,14 @@ const CheckIn = () => {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (checkInDate) {
       setIsConfirmed(true);
       setShowCalendar(false);
+      
+      // Schedule notification
+      await scheduleNotification(checkInDate);
+
       if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {

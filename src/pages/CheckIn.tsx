@@ -12,14 +12,20 @@ import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
-// Funzione per pianificare la notifica
+// Funzione per pianificare la notifica aggiornata
 const scheduleCheckInNotification = async (checkInDate: Date) => {
   try {
-    const notificationDate = addDays(checkInDate, -1); // 1 giorno prima
+    const notificationDate = addDays(checkInDate, -1);
     const now = new Date();
     
-    // Se la data di notifica è nel passato, non pianificare
+    console.log('Attempting to schedule notification:', {
+      checkInDate: checkInDate.toISOString(),
+      notificationDate: notificationDate.toISOString(),
+      now: now.toISOString()
+    });
+    
     if (notificationDate < now) {
+      console.log('Notification date is in the past, skipping');
       return;
     }
 
@@ -31,19 +37,23 @@ const scheduleCheckInNotification = async (checkInDate: Date) => {
       body: JSON.stringify({
         scheduleDate: notificationDate.toISOString(),
         checkInDate: checkInDate.toISOString(),
-        target_channel: "push", // Aggiunto come da documentazione
+        target_channel: "push",
       }),
     });
+
+    const responseData = await response.json();
+    console.log('API Response:', responseData);
 
     if (!response.ok) {
       throw new Error('Failed to schedule notification');
     }
 
-    // Salva la pianificazione nel localStorage
     localStorage.setItem('scheduledNotification', JSON.stringify({
       checkInDate: checkInDate.toISOString(),
       notificationDate: notificationDate.toISOString()
     }));
+
+    console.log('Notification scheduled and saved to localStorage');
 
   } catch (error) {
     console.error('Error scheduling notification:', error);
@@ -52,30 +62,40 @@ const scheduleCheckInNotification = async (checkInDate: Date) => {
 
 // Funzione per verificare le notifiche pianificate
 const checkScheduledNotifications = () => {
-  const scheduledData = localStorage.getItem('scheduledNotification');
-  if (scheduledData) {
-    const { checkInDate, notificationDate } = JSON.parse(scheduledData);
-    const now = new Date();
-    const notifDate = new Date(notificationDate);
-    
-    if (now >= notifDate) {
-      fetch('/api/send-notification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          immediate: true,
-          checkInDate,
-          target_channel: "push"
-        }),
-      }).catch(console.error);
+  try {
+    const scheduledData = localStorage.getItem('scheduledNotification');
+    if (scheduledData) {
+      const { checkInDate, notificationDate } = JSON.parse(scheduledData);
+      const now = new Date();
+      const notifDate = new Date(notificationDate);
       
-      localStorage.removeItem('scheduledNotification');
+      console.log('Checking scheduled notification:', {
+        now: now.toISOString(),
+        scheduledFor: notifDate.toISOString()
+      });
+      
+      if (now >= notifDate) {
+        console.log('Triggering immediate notification');
+        fetch('/api/send-notification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            immediate: true,
+            checkInDate,
+            target_channel: "push"
+          }),
+        }).catch(console.error);
+        
+        localStorage.removeItem('scheduledNotification');
+        console.log('Removed scheduled notification from localStorage');
+      }
     }
+  } catch (error) {
+    console.error('Error checking scheduled notifications:', error);
   }
 };
-
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
   const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
@@ -147,7 +167,6 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
     </div>
   );
 };
-
 const CheckInButton = ({ date }: { date: Date }) => {
   const [isAvailable, setIsAvailable] = useState(false);
 
@@ -253,7 +272,6 @@ const CheckIn = () => {
       }
     }
   };
-
   const disabledDays = {
     before: new Date(),
   };

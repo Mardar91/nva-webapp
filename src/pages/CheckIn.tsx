@@ -139,26 +139,35 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    console.log('Testing API connection...', date);
+    // @ts-ignore - OneSignal types might not be available
+    const playerId = await window.OneSignal.getUserId();
+    
+    if (!playerId) {
+      console.log('User not subscribed to notifications');
+      return; // Non inviare la notifica se l'utente non è iscritto
+    }
+
+    console.log('Scheduling notification for device:', playerId);
+    
     const response = await fetch('/api/schedule-notification', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ date: date.toISOString() })
+      body: JSON.stringify({
+        date: date.toISOString(),
+        playerId: playerId
+      })
     });
     
     if (!response.ok) {
-      const text = await response.text();
-      console.error('API Error Response:', text);
-      throw new Error(`API returned ${response.status}`);
+      throw new Error('Failed to schedule notification');
     }
-    
+
     const data = await response.json();
     console.log('API Response:', data);
-    
   } catch (error) {
-    console.error('API Test Error:', error);
+    console.error('Error scheduling notification:', error);
   }
 };
 

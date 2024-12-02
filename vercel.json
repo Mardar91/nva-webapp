@@ -30,6 +30,7 @@
   "rewrites": [
     { "source": "/taxi", "destination": "/" },
     { "source": "/shop", "destination": "/" },
+    { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }

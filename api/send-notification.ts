@@ -1,13 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Interfaccia per il corpo della richiesta
 interface RequestBody {
   checkInDate: string;
 }
 
-// Funzione per inviare la notifica tramite OneSignal
-async function sendOneSignalNotification(scheduledTime: string) {
+async function sendOneSignalNotification() {
   const response = await fetch('https://onesignal.com/api/v1/notifications', {
     method: 'POST',
     headers: {
@@ -22,39 +20,43 @@ async function sendOneSignalNotification(scheduledTime: string) {
       },
       name: "Check-in Reminder",
       url: "https://nva.vercel.app/check-in",
-      send_after: scheduledTime,
+      // Rimuoviamo send_after per inviare subito
     })
   });
 
   return response.json();
 }
 
-// Handler principale dell'endpoint
 export async function POST(request: NextRequest) {
   try {
     const body: RequestBody = await request.json();
     const checkInDate = new Date(body.checkInDate);
+    const today = new Date();
     
-    // Calcola la data per l'invio della notifica (1 giorno prima)
-    const notificationDate = new Date(checkInDate);
-    notificationDate.setDate(notificationDate.getDate() - 1);
-    notificationDate.setHours(10, 0, 0, 0); // Imposta l'orario alle 10:00
+    // Calcola la differenza in giorni
+    const diffTime = checkInDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    // Formatta la data per OneSignal
-    const scheduledTime = notificationDate.toISOString();
-
-    // Invia la notifica
-    const result = await sendOneSignalNotification(scheduledTime);
+    // Se manca esattamente 1 giorno, invia la notifica
+    if (diffDays === 1) {
+      const result = await sendOneSignalNotification();
+      return NextResponse.json({
+        success: true,
+        message: "Notification sent immediately",
+        result
+      });
+    }
 
     return NextResponse.json({
       success: true,
-      scheduledTime,
-      result
+      message: "No notification needed yet",
+      daysUntilCheckIn: diffDays
     });
+    
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    console.error('Error sending notification:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to schedule notification' },
+      { success: false, error: 'Failed to send notification' },
       { status: 500 }
     );
   }

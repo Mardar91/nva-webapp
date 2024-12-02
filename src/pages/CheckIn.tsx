@@ -8,108 +8,10 @@ import {
   CardTitle,
   CardFooter,
 } from "../components/ui/card";
-import { format, differenceInDays, addDays } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
-// Funzione per pianificare la notifica aggiornata
-const scheduleCheckInNotification = async (checkInDate: Date) => {
-  console.log('scheduleCheckInNotification started with date:', checkInDate); // Log 1
-  
-  try {
-    const notificationDate = addDays(checkInDate, -1);
-    const now = new Date();
-    
-    console.log('Calculated dates:', {
-      now: now.toISOString(),
-      notificationDate: notificationDate.toISOString(),
-      checkInDate: checkInDate.toISOString()
-    }); // Log 2
-    
-    if (notificationDate < now) {
-      console.log('Notification date is in the past, skipping scheduling');
-      return;
-    }
-
-    console.log('Preparing to send POST request'); // Log 3
-    
-    const requestBody = {
-      scheduleDate: notificationDate.toISOString(),
-      immediate: false
-    };
-    console.log('Request body:', requestBody); // Log 4
-
-    try {
-      const response = await fetch('/api/send-notification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
-      
-      console.log('Fetch response status:', response.status); // Log 5
-      const responseData = await response.json();
-      console.log('Response data:', responseData); // Log 6
-
-      if (!response.ok) {
-        throw new Error(`API error: ${JSON.stringify(responseData)}`);
-      }
-
-      console.log('Successfully scheduled notification'); // Log 7
-
-      localStorage.setItem('scheduledNotification', JSON.stringify({
-        checkInDate: checkInDate.toISOString(),
-        notificationDate: notificationDate.toISOString()
-      }));
-      
-    } catch (fetchError) {
-      console.error('Fetch operation failed:', fetchError); // Log 8
-      throw fetchError;
-    }
-
-  } catch (error) {
-    console.error('Error in scheduleCheckInNotification:', error); // Log 9
-    throw error;
-  }
-};
-
-// Funzione per verificare le notifiche pianificate
-const checkScheduledNotifications = () => {
-  try {
-    const scheduledData = localStorage.getItem('scheduledNotification');
-    if (scheduledData) {
-      const { checkInDate, notificationDate } = JSON.parse(scheduledData);
-      const now = new Date();
-      const notifDate = new Date(notificationDate);
-      
-      console.log('Checking scheduled notification:', {
-        now: now.toISOString(),
-        scheduledFor: notifDate.toISOString()
-      });
-      
-      if (now >= notifDate) {
-        console.log('Triggering immediate notification');
-        fetch('/api/send-notification', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            immediate: true,
-            checkInDate,
-            target_channel: "push"
-          }),
-        }).catch(console.error);
-        
-        localStorage.removeItem('scheduledNotification');
-        console.log('Removed scheduled notification from localStorage');
-      }
-    }
-  } catch (error) {
-    console.error('Error checking scheduled notifications:', error);
-  }
-};
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
   const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
@@ -222,16 +124,6 @@ const CheckIn = () => {
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
   useEffect(() => {
-    // Controlla all'avvio
-    checkScheduledNotifications();
-    
-    // Controlla ogni ora
-    const interval = setInterval(checkScheduledNotifications, 1000 * 60 * 60);
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
     if (checkInDate) {
       setDateSelected(true);
     }
@@ -243,6 +135,29 @@ const CheckIn = () => {
     const diffTime = selectedDate.getTime() - currentDate.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays >= 0 && diffDays <= 3;
+  };
+
+  const scheduleNotification = async (date: Date) => {
+    try {
+      const response = await fetch('/api/schedule-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          checkInDate: date.toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to schedule notification');
+      }
+
+      console.log('Notification scheduled successfully');
+    } catch (error) {
+      console.error('Error scheduling notification:', error);
+      // Non blocchiamo il flusso del check-in se la notifica fallisce
+    }
   };
 
   const handleDateSelect = (newDate: Date | undefined) => {
@@ -266,42 +181,36 @@ const CheckIn = () => {
     }
   };
 
-  const handleConfirm = () => {
-  console.log('handleConfirm started'); // Log 1
-  
-  if (checkInDate) {
-    console.log('checkInDate is present:', checkInDate); // Log 2
-    setIsConfirmed(true);
-    setShowCalendar(false);
-    
-    const daysUntilCheckIn = differenceInDays(checkInDate, new Date());
-    console.log('Days until check-in:', daysUntilCheckIn); // Log 3
-    
-    if (daysUntilCheckIn <= 3) {
-      console.log('Setting showForm to true'); // Log 4
-      setShowForm(true);
-      
-      if (daysUntilCheckIn > 1) {
-        console.log('Attempting to schedule notification for future date'); // Log 5
-        scheduleCheckInNotification(checkInDate)
-          .then(() => console.log('Notification scheduling completed')) // Log 6
-          .catch(err => console.error('Error in notification scheduling:', err)); // Log 7
+  const handleConfirm = async () => {
+    if (checkInDate) {
+      setIsConfirmed(true);
+      setShowCalendar(false);
+
+      // Calcola i giorni rimanenti
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const daysUntilCheckIn = differenceInDays(checkInDate, today);
+
+      // Se mancano più di 3 giorni, schedula la notifica per il giorno prima che sia disponibile il check-in
+      if (daysUntilCheckIn > 3) {
+        await scheduleNotification(checkInDate);
       }
-    } else {
-      console.log('Showing alert for date too far in future'); // Log 8
-      alert(
-        "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
-      );
+
+      if (validateDate(checkInDate)) {
+        setShowForm(true);
+      } else {
+        alert(
+          "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
+        );
+      }
     }
-  } else {
-    console.log('No checkInDate present'); // Log 9
-  }
-};
+  };
+
+  // Configurazione per disabilitare le date passate
   const disabledDays = {
     before: new Date(),
   };
-
-  if (showForm) {
+if (showForm) {
     return (
       <div className="iframe-container" style={{
         position: 'fixed',
@@ -427,3 +336,4 @@ const CheckIn = () => {
 };
 
 export default CheckIn;
+

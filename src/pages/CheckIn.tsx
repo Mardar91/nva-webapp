@@ -139,10 +139,20 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    console.log('Testing API connection...');
+    console.log('Testing API connection...', date);
     const response = await fetch('/api/schedule-notification', {
-      method: 'GET'  // Temporaneamente cambiato a GET per test
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ date: date.toISOString() })
     });
+    
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('API Error Response:', text);
+      throw new Error(`API returned ${response.status}`);
+    }
     
     const data = await response.json();
     console.log('API Response:', data);

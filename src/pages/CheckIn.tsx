@@ -138,40 +138,37 @@ const CheckIn = () => {
   };
 
   const scheduleNotification = async (date: Date) => {
-    try {
-      // Ottieni l'ID dell'utente usando react-onesignal
-      const deviceState = await OneSignal.getDeviceState();
-      const userId = deviceState?.userId;
+  try {
+    const userId = await OneSignal.getUserId(); // O usa window.OneSignal.getUserId()
 
-      if (!userId) {
-        console.log('User not subscribed to notifications');
-        return; // Non inviare la notifica se l'utente non è iscritto
-      }
-
-      console.log('Scheduling notification for device:', userId);
-      
-      const response = await fetch('/api/schedule-notification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          date: date.toISOString(),
-          playerId: userId
-        })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to schedule notification');
-      }
-
-      const data = await response.json();
-      console.log('API Response:', data);
-    } catch (error) {
-      console.error('Error scheduling notification:', error);
+    if (!userId) {
+      console.log('User not subscribed to notifications');
+      return;
     }
-  };
+
+    console.log('Scheduling notification for device:', userId);
+    const response = await fetch('/api/schedule-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        date: date.toISOString(),
+        playerId: userId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to schedule notification');
+    }
+
+    const data = await response.json();
+    console.log('API Response:', data);
+  } catch (error) {
+    console.error('Error scheduling notification:', error);
+  }
+};
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {

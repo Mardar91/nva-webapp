@@ -139,29 +139,16 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    console.log('Scheduling notification for:', date);
-    
+    console.log('Testing API connection...');
     const response = await fetch('/api/schedule-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        checkInDate: date.toISOString(),
-      }),
+      method: 'GET'  // Temporaneamente cambiato a GET per test
     });
-
+    
     const data = await response.json();
-
-    if (!response.ok) {
-      console.error('API response error:', data);
-      throw new Error(data.error || 'Failed to schedule notification');
-    }
-
-    console.log('Notification scheduled successfully:', data);
+    console.log('API Response:', data);
+    
   } catch (error) {
-    console.error('Error scheduling notification:', error);
-    // Non blocchiamo il flusso del check-in se la notifica fallisce
+    console.error('API Test Error:', error);
   }
 };
 

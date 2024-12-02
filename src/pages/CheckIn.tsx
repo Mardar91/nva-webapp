@@ -12,36 +12,6 @@ import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
-// Funzione per programmare la notifica
-const scheduleNotification = async (checkInDate: Date) => {
-  try {
-    console.log('Attempting to schedule notification for:', checkInDate);
-    
-    const response = await fetch('/api/send-notification', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        checkInDate: checkInDate.toISOString()
-      })
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to schedule notification');
-    }
-
-    console.log('Notification scheduled successfully:', data);
-    return data;
-  } catch (error) {
-    console.error('Notification scheduling error:', error);
-    throw error;
-  }
-};
-
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
   const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
@@ -126,6 +96,7 @@ const CheckInButton = ({ date }: { date: Date }) => {
     };
 
     checkAvailability();
+    // Controlla ogni giorno se il check-in diventa disponibile
     const interval = setInterval(checkAvailability, 1000 * 60 * 60 * 24);
 
     return () => clearInterval(interval);
@@ -189,29 +160,21 @@ const CheckIn = () => {
     }
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (checkInDate) {
-      try {
-        const notificationResult = await scheduleNotification(checkInDate);
-        console.log('Notification result:', notificationResult);
-        
-        setIsConfirmed(true);
-        setShowCalendar(false);
-        
-        if (validateDate(checkInDate)) {
-          setShowForm(true);
-        } else {
-          alert(
-            "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
-          );
-        }
-      } catch (error) {
-        console.error('Error during confirmation:', error);
-        alert('Unable to schedule notification. Please try again.');
+      setIsConfirmed(true);
+      setShowCalendar(false);
+      if (validateDate(checkInDate)) {
+        setShowForm(true);
+      } else {
+        alert(
+          "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
+        );
       }
     }
   };
 
+  // Configurazione per disabilitare le date passate
   const disabledDays = {
     before: new Date(),
   };

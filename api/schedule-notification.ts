@@ -10,41 +10,28 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   try {
-    const { date } = request.body;
-    const checkInDate = new Date(date);
-    const now = new Date();
-    
-    // Calcola la differenza in ore
-    const hoursDifference = (checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-    
-    console.log('Hours until check-in:', hoursDifference);
-
-    // Se mancano meno di 72 ore (3 giorni), invia la notifica immediatamente
-    // Se mancano più di 72 ore, schedula per quando mancheranno 24 ore
-    const sendAfter = hoursDifference > 72 
-      ? new Date(checkInDate.getTime() - (24 * 60 * 60 * 1000)).toISOString()
-      : undefined; // undefined farà inviare la notifica immediatamente
+    console.log('Attempting to send immediate notification...');
 
     const notificationPayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
-      included_segments: ['All'],  // Cambiato da 'Subscribed Users' a 'All'
+      included_segments: ['All'],
       contents: {
-        en: "Check-in online now available! If you haven't done it, go now."
+        en: "🔔 TEST NOTIFICATION - Check-in online now available!"
       },
-      name: "Check-in Reminder",
+      name: "Test Check-in Reminder",
       data: {
-        type: "check_in_reminder",
-        checkInDate: date
-      }
+        type: "test_check_in_reminder"
+      },
+      // Forza l'invio immediato
+      delayed_option: "immediate",
+      // Aggiungi un badge sonoro per attirare l'attenzione
+      ios_sound: "default",
+      android_sound: "default",
+      // Aumenta la priorità della notifica
+      priority: 10
     };
 
-    // Aggiungi send_after solo se è definito
-    if (sendAfter) {
-      console.log('Scheduling notification for future:', sendAfter);
-      Object.assign(notificationPayload, { send_after: sendAfter });
-    } else {
-      console.log('Sending notification immediately');
-    }
+    console.log('Sending notification with payload:', notificationPayload);
 
     const oneSignalResponse = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
@@ -60,23 +47,23 @@ export default async function handler(request: VercelRequest, response: VercelRe
     console.log('OneSignal API Response:', data);
 
     if (!oneSignalResponse.ok) {
-      throw new Error(data.errors?.[0] || 'Failed to schedule notification');
+      console.error('OneSignal error:', data);
+      throw new Error(data.errors?.[0] || 'Failed to send notification');
     }
 
     return response.status(200).json({
       success: true,
-      message: 'Notification scheduled successfully',
-      scheduledFor: sendAfter || 'immediate',
-      hoursUntilCheckIn: hoursDifference,
+      message: 'Test notification sent immediately',
       oneSignalResponse: data,
-      isImmediate: !sendAfter
+      isImmediate: true,
+      testMode: true
     });
 
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    console.error('Error sending test notification:', error);
     return response.status(500).json({
       success: false,
-      message: 'Failed to schedule notification',
+      message: 'Failed to send test notification',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }

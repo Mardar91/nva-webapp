@@ -138,27 +138,32 @@ const CheckIn = () => {
   };
 
   const scheduleNotification = async (date: Date) => {
-    try {
-      const response = await fetch('/api/schedule-notification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          checkInDate: date.toISOString(),
-        }),
-      });
+  try {
+    console.log('Scheduling notification for:', date);
+    
+    const response = await fetch('/api/schedule-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        checkInDate: date.toISOString(),
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to schedule notification');
-      }
+    const data = await response.json();
 
-      console.log('Notification scheduled successfully');
-    } catch (error) {
-      console.error('Error scheduling notification:', error);
-      // Non blocchiamo il flusso del check-in se la notifica fallisce
+    if (!response.ok) {
+      console.error('API response error:', data);
+      throw new Error(data.error || 'Failed to schedule notification');
     }
-  };
+
+    console.log('Notification scheduled successfully:', data);
+  } catch (error) {
+    console.error('Error scheduling notification:', error);
+    // Non blocchiamo il flusso del check-in se la notifica fallisce
+  }
+};
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {

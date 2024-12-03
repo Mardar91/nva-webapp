@@ -139,9 +139,18 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    // Ottenere lo stato del dispositivo
+    // Accedere a window.OneSignal
+    const OneSignal = (window as any).OneSignal;
+
+    // Verifica se OneSignal è disponibile
+    if (!OneSignal) {
+      console.error('OneSignal is not initialized or not available.');
+      return;
+    }
+
+    // Recupera lo stato del dispositivo
     const deviceState = await OneSignal.getDeviceState();
-    const userId = deviceState?.userId;  // Ottenere l'ID dell'utente dal dispositivo
+    const userId = deviceState?.userId;
 
     if (!userId) {
       console.log('User not subscribed to notifications');
@@ -157,7 +166,7 @@ const CheckIn = () => {
       },
       body: JSON.stringify({
         date: date.toISOString(),
-        playerId: userId,  // Usa userId qui
+        playerId: userId,
       }),
     });
 

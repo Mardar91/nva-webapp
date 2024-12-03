@@ -12,7 +12,12 @@ import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
-// Custom hook per gestire il salvataggio della data e dello stato di conferma
+declare global {
+  interface Window {
+    OneSignal: any;
+  }
+}
+
 const usePersistedCheckIn = () => {
   const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
     const saved = localStorage.getItem('check-in-date');
@@ -96,7 +101,6 @@ const CheckInButton = ({ date }: { date: Date }) => {
     };
 
     checkAvailability();
-    // Controlla ogni giorno se il check-in diventa disponibile
     const interval = setInterval(checkAvailability, 1000 * 60 * 60 * 24);
 
     return () => clearInterval(interval);
@@ -120,10 +124,29 @@ const CheckInButton = ({ date }: { date: Date }) => {
 };
 
 const CheckIn = () => {
+  const [deviceId, setDeviceId] = useState<string | null>(null);
   const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
+
+  useEffect(() => {
+    const getDeviceId = async () => {
+      try {
+        if (typeof window !== 'undefined' && window.OneSignal) {
+          const deviceState = await window.OneSignal.getDeviceState();
+          if (deviceState?.userId) {
+            setDeviceId(deviceState.userId);
+            console.log('Device ID:', deviceState.userId);
+          }
+        }
+      } catch (error) {
+        console.error('Error getting device ID:', error);
+      }
+    };
+
+    getDeviceId();
+  }, []);
 
   useEffect(() => {
     if (checkInDate) {
@@ -140,29 +163,32 @@ const CheckIn = () => {
   };
 
   const scheduleNotification = async (date: Date) => {
-  try {
-    console.log('Testing API connection...', date);
-    const response = await fetch('/api/schedule-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ date: date.toISOString() })
-    });
-    
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('API Error Response:', text);
-      throw new Error(`API returned ${response.status}`);
+    try {
+      console.log('Scheduling notification...', { date, deviceId });
+      const response = await fetch('/api/schedule-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          date: date.toISOString(),
+          deviceId: deviceId
+        })
+      });
+      
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('API Error Response:', text);
+        throw new Error(`API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+    } catch (error) {
+      console.error('API Test Error:', error);
     }
-    
-    const data = await response.json();
-    console.log('API Response:', data);
-    
-  } catch (error) {
-    console.error('API Test Error:', error);
-  }
-};
+  };
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
@@ -189,7 +215,9 @@ const CheckIn = () => {
     if (checkInDate) {
       setIsConfirmed(true);
       setShowCalendar(false);
-      await scheduleNotification(checkInDate);
+      if (deviceId) {
+        await scheduleNotification(checkInDate);
+      }
       if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {
@@ -200,7 +228,6 @@ const CheckIn = () => {
     }
   };
 
-  // Configurazione per disabilitare le date passate
   const disabledDays = {
     before: new Date(),
   };

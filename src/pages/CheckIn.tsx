@@ -124,34 +124,36 @@ const CheckInButton = ({ date }: { date: Date }) => {
 };
 
 const CheckIn = () => {
-  const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [playerId, setPlayerId] = useState<string | null>(null);
   const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
   useEffect(() => {
-  const getDeviceId = () => {
     if (typeof window !== 'undefined' && window.OneSignal) {
       window.OneSignal.push(() => {
-        window.OneSignal.isPushNotificationsEnabled().then((isEnabled: boolean) => {
-          if (isEnabled) {
-            window.OneSignal.push(() => {
-              window.OneSignal.getPlayerId().then((id: string) => {
-                setDeviceId(id);
-                console.log('Device ID:', id);
+        window.OneSignal.on('subscriptionChange', function (isSubscribed: boolean) {
+          if (isSubscribed) {
+            window.OneSignal.push(function() {
+              window.OneSignal.getUserId().then(function(userId: string) {
+                console.log('Player ID:', userId);
+                setPlayerId(userId);
               });
             });
-          } else {
-            console.log('Push notifications are not enabled');
+          }
+        });
+
+        // Try to get existing player ID if already subscribed
+        window.OneSignal.getUserId().then(function(userId: string) {
+          if (userId) {
+            console.log('Existing Player ID:', userId);
+            setPlayerId(userId);
           }
         });
       });
     }
-  };
-
-  getDeviceId();
-}, []);;
+  }, []);
 
   useEffect(() => {
     if (checkInDate) {
@@ -168,37 +170,32 @@ const CheckIn = () => {
   };
 
   const scheduleNotification = async (date: Date) => {
-  if (!deviceId) {
-    console.error('No device ID available');
-    return;
-  }
-
-  try {
-    console.log('Scheduling notification for device:', deviceId);
-    const response = await fetch('/api/schedule-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ 
-        date: date.toISOString(),
-        deviceId: deviceId
-      })
-    });
-    
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('API Error Response:', text);
-      throw new Error(`API returned ${response.status}`);
+    try {
+      console.log('Scheduling notification...', { date, playerId });
+      const response = await fetch('/api/schedule-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          date: date.toISOString(),
+          playerId: playerId 
+        })
+      });
+      
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('API Error Response:', text);
+        throw new Error(`API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+    } catch (error) {
+      console.error('API Test Error:', error);
     }
-    
-    const data = await response.json();
-    console.log('API Response:', data);
-    
-  } catch (error) {
-    console.error('API Test Error:', error);
-  }
-};
+  };
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
@@ -222,21 +219,19 @@ const CheckIn = () => {
   };
 
   const handleConfirm = async () => {
-  if (checkInDate) {
-    setIsConfirmed(true);
-    setShowCalendar(false);
-    if (deviceId) {
+    if (checkInDate) {
+      setIsConfirmed(true);
+      setShowCalendar(false);
       await scheduleNotification(checkInDate);
+      if (validateDate(checkInDate)) {
+        setShowForm(true);
+      } else {
+        alert(
+          "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
+        );
+      }
     }
-    if (validateDate(checkInDate)) {
-      setShowForm(true);
-    } else {
-      alert(
-        "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
-      );
-    }
-  }
-};
+  };
 
   const disabledDays = {
     before: new Date(),

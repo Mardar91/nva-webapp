@@ -139,15 +139,15 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    // Ottieni l'ID usando il nuovo User Model
-    const subscriptionId = await OneSignal.User.PushSubscription.getId();
+    // Ottieni l'ID del dispositivo
+    const deviceSubscription = await OneSignal.getUserId();
     
-    if (!subscriptionId) {
+    if (!deviceSubscription) {
       console.log('User not subscribed to notifications');
       return;
     }
 
-    console.log('Scheduling notification for device:', subscriptionId);
+    console.log('Scheduling notification for device:', deviceSubscription);
     
     const response = await fetch('/api/schedule-notification', {
       method: 'POST',
@@ -156,7 +156,7 @@ const CheckIn = () => {
       },
       body: JSON.stringify({
         date: date.toISOString(),
-        subscriptionId: subscriptionId // Usiamo subscriptionId invece di playerId
+        subscriptionId: deviceSubscription
       })
     });
     

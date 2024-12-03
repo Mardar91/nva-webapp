@@ -10,37 +10,37 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   try {
-    const { date, subscriptionId } = request.body;
+    const { date, pushToken } = request.body;
 
-    if (!subscriptionId) {
+    if (!pushToken) {
       return response.status(400).json({
         success: false,
-        message: 'No subscription ID provided'
+        message: 'No push token provided'
       });
     }
 
     const notificationPayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
-      include_subscription_ids: [subscriptionId], // Usiamo il nuovo formato
+      include_player_ids: [pushToken],
       contents: {
         en: "Check-in online now available! If you haven't done it, go now."
       },
-      name: "Check-in Reminder",
+      headings: {
+        en: "Check-in Reminder"
+      },
       data: {
         type: "check_in_reminder",
         checkInDate: date
-      },
-      target_channel: "push"
+      }
     };
 
-    console.log('Sending notification to subscription:', subscriptionId);
+    console.log('Sending notification payload:', notificationPayload);
 
     const oneSignalResponse = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(notificationPayload)
     });
@@ -55,9 +55,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
     return response.status(200).json({
       success: true,
-      message: 'Notification sent to specific device',
-      oneSignalResponse: data,
-      targetSubscription: subscriptionId
+      message: 'Notification scheduled successfully',
+      oneSignalResponse: data
     });
 
   } catch (error) {

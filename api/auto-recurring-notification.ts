@@ -10,75 +10,103 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   try {
-    console.log('Sending immediate notification and scheduling next...');
+    console.log('Setting up notifications chain...');
 
-    const uuid = crypto.randomUUID();
-
-    const notificationPayload = {
+    // Invia notifica immediata
+    const immediateUuid = crypto.randomUUID();
+    const immediatePayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
       included_segments: ['All'],
       contents: {
-        en: "🔔 TEST NOTIFICATION - Auto-recurring test!"
+        en: "🔔 TEST NOTIFICATION - Now!"
       },
-      name: "Auto-Recurring Test Notification",
+      name: "Immediate Test Notification",
       data: {
-        type: "auto_recurring_test"
+        type: "recurring_test"
       },
-      // Manteniamo l'invio immediato come nel vecchio codice
       delayed_option: "immediate",
-      idempotency_key: uuid,
+      idempotency_key: immediateUuid,
       priority: 10,
       ios_sound: "default",
       android_sound: "default"
     };
 
-    console.log('Sending notification with payload:', notificationPayload);
-
-    const oneSignalResponse = await fetch('https://onesignal.com/api/v1/notifications', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+    // Programma la prossima notifica per 5 minuti dopo
+    const scheduledUuid = crypto.randomUUID();
+    const nextNotificationTime = new Date(Date.now() + 5 * 60 * 1000);
+    const scheduledPayload = {
+      app_id: process.env.ONESIGNAL_APP_ID,
+      included_segments: ['All'],
+      contents: {
+        en: "🔔 TEST NOTIFICATION - Scheduled!"
       },
-      body: JSON.stringify(notificationPayload)
-    });
+      name: "Scheduled Test Notification",
+      data: {
+        type: "recurring_test"
+      },
+      send_after: nextNotificationTime.toISOString(),
+      idempotency_key: scheduledUuid,
+      priority: 10,
+      ios_sound: "default",
+      android_sound: "default",
+      // Aggiungi un webhook per chiamare nuovamente questo endpoint
+      web_buttons: [{
+        id: "next-notification",
+        url: "https://nva.vercel.app/api/auto-recurring-notification",
+        text: "Next"
+      }]
+    };
 
-    const data = await oneSignalResponse.json();
-    console.log('OneSignal API Response:', data);
+    // Invia entrambe le notifiche a OneSignal
+    const [immediateResponse, scheduledResponse] = await Promise.all([
+      fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(immediatePayload)
+      }),
+      fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(scheduledPayload)
+      })
+    ]);
 
-    if (!oneSignalResponse.ok) {
-      console.error('OneSignal error:', data);
-      throw new Error(data.errors?.[0] || 'Failed to send notification');
+    const [immediateData, scheduledData] = await Promise.all([
+      immediateResponse.json(),
+      scheduledResponse.json()
+    ]);
+
+    if (!immediateResponse.ok || !scheduledResponse.ok) {
+      throw new Error('Failed to send notifications');
     }
-
-    // Programma la prossima notifica tra 5 minuti
-    setTimeout(async () => {
-      try {
-        await fetch('https://nva.vercel.app/api/auto-recurring-notification', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-      } catch (error) {
-        console.error('Error scheduling next notification:', error);
-      }
-    }, 5 * 60 * 1000); // 5 minuti in millisecondi
 
     return response.status(200).json({
       success: true,
-      message: 'Notification sent and next one scheduled',
-      oneSignalResponse: data,
-      nextScheduledIn: '5 minutes',
-      idempotencyKey: uuid
+      message: 'Notifications chain setup successfully',
+      immediate: {
+        id: immediateData.id,
+        idempotencyKey: immediateUuid
+      },
+      scheduled: {
+        id: scheduledData.id,
+        idempotencyKey: scheduledUuid,
+        scheduledFor: nextNotificationTime
+      }
     });
 
   } catch (error) {
-    console.error('Error in auto-recurring notification:', error);
+    console.error('Error in notification chain:', error);
     return response.status(500).json({
       success: false,
-      message: 'Failed to send and schedule notification',
+      message: 'Failed to setup notification chain',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }

@@ -11,6 +11,7 @@ import {
 import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
+
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
   const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
@@ -21,9 +22,11 @@ const usePersistedCheckIn = () => {
     }
     return null;
   });
+
   const [isConfirmed, setIsConfirmed] = useState<boolean>(() => {
     return localStorage.getItem('check-in-confirmed') === 'true';
   });
+
   useEffect(() => {
     if (checkInDate) {
       localStorage.setItem('check-in-date', checkInDate.toISOString());
@@ -31,9 +34,11 @@ const usePersistedCheckIn = () => {
       localStorage.removeItem('check-in-date');
     }
   }, [checkInDate]);
+
   useEffect(() => {
     localStorage.setItem('check-in-confirmed', isConfirmed.toString());
   }, [isConfirmed]);
+
   return {
     checkInDate,
     setCheckInDate,
@@ -41,8 +46,10 @@ const usePersistedCheckIn = () => {
     setIsConfirmed
   };
 };
+
 const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
+
   useEffect(() => {
     const calculateDaysLeft = () => {
       const today = new Date();
@@ -50,13 +57,17 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
       const days = differenceInDays(checkInDate, today);
       setDaysLeft(days >= 0 ? days : null);
     };
+
     calculateDaysLeft();
     const interval = setInterval(calculateDaysLeft, 1000 * 60 * 60 * 24);
+
     return () => clearInterval(interval);
   }, [checkInDate]);
+
   if (daysLeft === null) {
     return null;
   }
+
   return (
     <div className="flex justify-center">
       <div 
@@ -66,14 +77,16 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
         <span className="text-[#059669] font-semibold">
           {daysLeft === 0 
             ? "Your stay at Nonna Vittoria Apartments starts today!" 
-            : Your stay at Nonna Vittoria Apartments in just ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}}
+            : `Your stay at Nonna Vittoria Apartments in just ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}`}
         </span>
       </div>
     </div>
   );
 };
+
 const CheckInButton = ({ date }: { date: Date }) => {
   const [isAvailable, setIsAvailable] = useState(false);
+
   useEffect(() => {
     const checkAvailability = () => {
       const today = new Date();
@@ -81,14 +94,18 @@ const CheckInButton = ({ date }: { date: Date }) => {
       const days = differenceInDays(date, today);
       setIsAvailable(days >= 0 && days <= 3);
     };
+
     checkAvailability();
     // Controlla ogni giorno se il check-in diventa disponibile
     const interval = setInterval(checkAvailability, 1000 * 60 * 60 * 24);
+
     return () => clearInterval(interval);
   }, [date]);
+
   if (!isAvailable) {
     return null;
   }
+
   return (
     <div className="flex justify-center mt-4 mb-4">
       <Button
@@ -101,16 +118,19 @@ const CheckInButton = ({ date }: { date: Date }) => {
     </div>
   );
 };
+
 const CheckIn = () => {
   const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
+
   useEffect(() => {
     if (checkInDate) {
       setDateSelected(true);
     }
   }, [checkInDate]);
+
   const validateDate = (selectedDate: Date) => {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
@@ -118,27 +138,7 @@ const CheckIn = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays >= 0 && diffDays <= 3;
   };
-  const scheduleNotification = async (date: Date) => {
-  try {
-    console.log('Testing API connection...', date);
-    const response = await fetch('/api/schedule-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ date: date.toISOString() })
-    });
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('API Error Response:', text);
-      throw new Error(API returned ${response.status});
-    }
-    const data = await response.json();
-    console.log('API Response:', data);
-  } catch (error) {
-    console.error('API Test Error:', error);
-  }
-};
+
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
       const today = new Date();
@@ -159,11 +159,11 @@ const CheckIn = () => {
       setIsConfirmed(false);
     }
   };
-  const handleConfirm = async () => {
+
+  const handleConfirm = () => {
     if (checkInDate) {
       setIsConfirmed(true);
       setShowCalendar(false);
-      await scheduleNotification(checkInDate);
       if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {
@@ -173,10 +173,12 @@ const CheckIn = () => {
       }
     }
   };
+
   // Configurazione per disabilitare le date passate
   const disabledDays = {
     before: new Date(),
   };
+
   if (showForm) {
     return (
       <div className="iframe-container" style={{
@@ -206,6 +208,7 @@ const CheckIn = () => {
       </div>
     );
   }
+
   return (
     <div className="container mx-auto px-4 py-8 pb-24">
       {isConfirmed && checkInDate && (
@@ -231,6 +234,7 @@ const CheckIn = () => {
           </div>
         </>
       )}
+
       {(!isConfirmed || showCalendar) && (
         <Card className={cn("mb-6", isConfirmed ? "mt-4" : "")}>
           <CardHeader>
@@ -240,7 +244,7 @@ const CheckIn = () => {
           </CardHeader>
           <CardContent>
             <style>
-              {
+              {`
                 .rdp-day_selected { 
                   background-color: #1e3a8a !important;
                   color: white !important;
@@ -274,7 +278,7 @@ const CheckIn = () => {
                   background-color: #f3f4f6 !important;
                   cursor: not-allowed !important;
                 }
-              }
+              `}
             </style>
             <Calendar
               mode="single"
@@ -299,4 +303,5 @@ const CheckIn = () => {
     </div>
   );
 };
+
 export default CheckIn;

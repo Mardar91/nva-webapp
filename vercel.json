@@ -30,11 +30,11 @@
   "rewrites": [
     { "source": "/taxi", "destination": "/" },
     { "source": "/shop", "destination": "/" },
-    { "source": "/api/schedule-notification", "destination": "/api/schedule-notification" },
+    { "source": "/api/auto-recurring-notification", "destination": "/api/auto-recurring-notification" },
     { "source": "/(.*)", "destination": "/$1" }
   ],
   "functions": {
-    "api/schedule-notification.ts": {
+    "api/auto-recurring-notification.ts": {
       "memory": 1024,
       "maxDuration": 10
     }

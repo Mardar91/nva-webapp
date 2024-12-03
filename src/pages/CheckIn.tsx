@@ -134,14 +134,16 @@ const CheckIn = () => {
   const getDeviceId = () => {
     if (typeof window !== 'undefined' && window.OneSignal) {
       window.OneSignal.push(() => {
-        window.OneSignal.getSubscription().then((isSubscribed: boolean) => {
-          if (isSubscribed) {
+        window.OneSignal.isPushNotificationsEnabled().then((isEnabled: boolean) => {
+          if (isEnabled) {
             window.OneSignal.push(() => {
-              window.OneSignal.getId().then((id: string) => {
+              window.OneSignal.getPlayerId().then((id: string) => {
                 setDeviceId(id);
                 console.log('Device ID:', id);
               });
             });
+          } else {
+            console.log('Push notifications are not enabled');
           }
         });
       });
@@ -149,7 +151,7 @@ const CheckIn = () => {
   };
 
   getDeviceId();
-}, []);
+}, []);;
 
   useEffect(() => {
     if (checkInDate) {

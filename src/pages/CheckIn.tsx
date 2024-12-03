@@ -83,7 +83,6 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
     </div>
   );
 };
-
 const CheckInButton = ({ date }: { date: Date }) => {
   const [isAvailable, setIsAvailable] = useState(false);
 
@@ -96,7 +95,6 @@ const CheckInButton = ({ date }: { date: Date }) => {
     };
 
     checkAvailability();
-    // Controlla ogni giorno se il check-in diventa disponibile
     const interval = setInterval(checkAvailability, 1000 * 60 * 60 * 24);
 
     return () => clearInterval(interval);
@@ -185,10 +183,21 @@ const CheckIn = () => {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (checkInDate) {
       setIsConfirmed(true);
       setShowCalendar(false);
+
+      // Calcola i giorni rimanenti
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const daysUntilCheckIn = differenceInDays(checkInDate, today);
+
+      // Se mancano più di 3 giorni, schedula la notifica per il giorno prima che sia disponibile il check-in
+      if (daysUntilCheckIn > 3) {
+        await scheduleNotification(checkInDate);
+      }
+
       if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {
@@ -203,7 +212,6 @@ const CheckIn = () => {
   const disabledDays = {
     before: new Date(),
   };
-
   if (showForm) {
     return (
       <div className="iframe-container" style={{

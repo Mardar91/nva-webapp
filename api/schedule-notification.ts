@@ -10,18 +10,18 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   try {
-    const { date, playerId } = request.body;
+    const { date, subscriptionId } = request.body;
 
-    if (!playerId) {
+    if (!subscriptionId) {
       return response.status(400).json({
         success: false,
-        message: 'No player ID provided'
+        message: 'No subscription ID provided'
       });
     }
 
     const notificationPayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
-      include_player_ids: [playerId], // Invia solo al dispositivo specifico
+      include_subscription_ids: [subscriptionId], // Usiamo il nuovo formato
       contents: {
         en: "Check-in online now available! If you haven't done it, go now."
       },
@@ -30,11 +30,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
         type: "check_in_reminder",
         checkInDate: date
       },
-      // Aumenta la priorità della notifica
-      priority: 10
+      target_channel: "push"
     };
 
-    console.log('Sending notification to player:', playerId);
+    console.log('Sending notification to subscription:', subscriptionId);
 
     const oneSignalResponse = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
@@ -58,7 +57,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       success: true,
       message: 'Notification sent to specific device',
       oneSignalResponse: data,
-      targetDevice: playerId
+      targetSubscription: subscriptionId
     });
 
   } catch (error) {

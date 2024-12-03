@@ -11,7 +11,6 @@ import {
 import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
-import OneSignal from 'react-onesignal';
 
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
@@ -47,6 +46,7 @@ const usePersistedCheckIn = () => {
     setIsConfirmed
   };
 };
+
 const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
@@ -96,6 +96,7 @@ const CheckInButton = ({ date }: { date: Date }) => {
     };
 
     checkAvailability();
+    // Controlla ogni giorno se il check-in diventa disponibile
     const interval = setInterval(checkAvailability, 1000 * 60 * 60 * 24);
 
     return () => clearInterval(interval);
@@ -117,6 +118,7 @@ const CheckInButton = ({ date }: { date: Date }) => {
     </div>
   );
 };
+
 const CheckIn = () => {
   const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
   const [showForm, setShowForm] = useState(false);
@@ -183,19 +185,10 @@ const CheckIn = () => {
     }
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (checkInDate) {
       setIsConfirmed(true);
       setShowCalendar(false);
-
-      try {
-        // Schedule notification
-        await scheduleNotification(checkInDate);
-      } catch (error) {
-        console.error('Error in handleConfirm:', error);
-        // Non blocchiamo il flusso del check-in se la notifica fallisce
-      }
-
       if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {
@@ -210,6 +203,7 @@ const CheckIn = () => {
   const disabledDays = {
     before: new Date(),
   };
+
   if (showForm) {
     return (
       <div className="iframe-container" style={{

@@ -139,45 +139,26 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    // Prima controlla se OneSignal è inizializzato e se le notifiche sono permesse
-    const notificationPermission = await OneSignal.Notifications.permission;
-    
-    if (!notificationPermission) {
-      // Se l'utente non ha ancora dato il permesso, chiediamolo
-      await OneSignal.Notifications.requestPermission();
-    }
-
-    // Ottieni l'ID del dispositivo usando il metodo corretto di react-onesignal
-    const deviceState = await OneSignal.getSubscription();
-    const pushToken = deviceState?.token;
-    
-    if (!pushToken) {
-      console.log('User not subscribed to notifications');
-      return;
-    }
-
-    console.log('Scheduling notification for device:', pushToken);
-    
+    console.log('Testing API connection...', date);
     const response = await fetch('/api/schedule-notification', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        date: date.toISOString(),
-        pushToken: pushToken
-      })
+      body: JSON.stringify({ date: date.toISOString() })
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to schedule notification');
+      const text = await response.text();
+      console.error('API Error Response:', text);
+      throw new Error(`API returned ${response.status}`);
     }
-
+    
     const data = await response.json();
     console.log('API Response:', data);
+    
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    console.error('API Test Error:', error);
   }
 };
 

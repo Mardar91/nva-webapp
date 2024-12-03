@@ -131,17 +131,20 @@ const CheckIn = () => {
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
   useEffect(() => {
-  const getDeviceId = async () => {
-    try {
-      if (typeof window !== 'undefined' && window.OneSignal) {
-        const userId = await window.OneSignal.getUserId();
-        if (userId) {
-          setDeviceId(userId);
-          console.log('Device ID:', userId);
-        }
-      }
-    } catch (error) {
-      console.error('Error getting device ID:', error);
+  const getDeviceId = () => {
+    if (typeof window !== 'undefined' && window.OneSignal) {
+      window.OneSignal.push(() => {
+        window.OneSignal.getSubscription().then((isSubscribed: boolean) => {
+          if (isSubscribed) {
+            window.OneSignal.push(() => {
+              window.OneSignal.getId().then((id: string) => {
+                setDeviceId(id);
+                console.log('Device ID:', id);
+              });
+            });
+          }
+        });
+      });
     }
   };
 

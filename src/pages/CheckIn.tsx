@@ -139,26 +139,16 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    // Accedere a window.OneSignal
-    const OneSignal = (window as any).OneSignal;
-
-    // Verifica se OneSignal è disponibile
-    if (!OneSignal) {
-      console.error('OneSignal is not initialized or not available.');
-      return;
-    }
-
-    // Recupera lo stato del dispositivo
-    const deviceState = await OneSignal.getDeviceState();
-    const userId = deviceState?.userId;
-
-    if (!userId) {
+    // Ottieni l'ID usando il nuovo User Model
+    const subscriptionId = await OneSignal.User.PushSubscription.getId();
+    
+    if (!subscriptionId) {
       console.log('User not subscribed to notifications');
       return;
     }
 
-    console.log('Scheduling notification for device:', userId);
-
+    console.log('Scheduling notification for device:', subscriptionId);
+    
     const response = await fetch('/api/schedule-notification', {
       method: 'POST',
       headers: {
@@ -166,10 +156,10 @@ const CheckIn = () => {
       },
       body: JSON.stringify({
         date: date.toISOString(),
-        playerId: userId,
-      }),
+        subscriptionId: subscriptionId // Usiamo subscriptionId invece di playerId
+      })
     });
-
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to schedule notification');

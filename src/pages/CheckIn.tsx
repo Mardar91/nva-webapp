@@ -185,10 +185,11 @@ const CheckIn = () => {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (checkInDate) {
       setIsConfirmed(true);
       setShowCalendar(false);
+      await scheduleNotification(checkInDate);
       if (validateDate(checkInDate)) {
         setShowForm(true);
       } else {

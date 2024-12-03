@@ -10,24 +10,30 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   try {
-    console.log('Attempting to send immediate notification...');
+    const { deviceId } = request.body;
+    
+    if (!deviceId) {
+      return response.status(400).json({
+        success: false,
+        message: 'Device ID is required'
+      });
+    }
 
+    console.log('Attempting to send notification to device:', deviceId);
+    
     const notificationPayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
-      included_segments: ['All'],
+      include_subscription_ids: [deviceId], // Invia solo al dispositivo specifico
       contents: {
-        en: "🔔 TEST NOTIFICATION - Check-in online now available!"
+        en: "🔔 Check-in online now available!"
       },
-      name: "Test Check-in Reminder",
+      name: "Check-in Reminder",
       data: {
-        type: "test_check_in_reminder"
+        type: "check_in_reminder"
       },
-      // Forza l'invio immediato
       delayed_option: "immediate",
-      // Aggiungi un badge sonoro per attirare l'attenzione
       ios_sound: "default",
       android_sound: "default",
-      // Aumenta la priorità della notifica
       priority: 10
     };
 
@@ -53,17 +59,15 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
     return response.status(200).json({
       success: true,
-      message: 'Test notification sent immediately',
-      oneSignalResponse: data,
-      isImmediate: true,
-      testMode: true
+      message: 'Notification sent to specific device',
+      oneSignalResponse: data
     });
 
   } catch (error) {
-    console.error('Error sending test notification:', error);
+    console.error('Error sending notification:', error);
     return response.status(500).json({
       success: false,
-      message: 'Failed to send test notification',
+      message: 'Failed to send notification',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }

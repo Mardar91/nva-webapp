@@ -1,7 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const FIVE_MINUTES = 5 * 60; // in secondi
-
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -12,11 +10,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   try {
-    console.log('Setting up auto-recurring notification...');
+    console.log('Sending immediate notification and scheduling next...');
 
     const uuid = crypto.randomUUID();
-    const currentTime = new Date();
-    const sendAfter = new Date(currentTime.getTime() + 5 * 60 * 1000).toISOString();
 
     const notificationPayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
@@ -26,22 +22,14 @@ export default async function handler(request: VercelRequest, response: VercelRe
       },
       name: "Auto-Recurring Test Notification",
       data: {
-        type: "auto_recurring_test",
-        schedule_next: true // Flag per indicare di programmare la prossima notifica
+        type: "auto_recurring_test"
       },
-      send_after: sendAfter,
-      delayed_option: "timezone",
+      // Manteniamo l'invio immediato come nel vecchio codice
+      delayed_option: "immediate",
       idempotency_key: uuid,
-      ttl: FIVE_MINUTES,
       priority: 10,
       ios_sound: "default",
-      android_sound: "default",
-      // Aggiungiamo un web_buttons per programmare la prossima notifica
-      web_buttons: [{
-        id: "schedule-next",
-        url: `${process.env.VERCEL_URL}/api/auto-recurring-notification`,
-        text: "Schedule Next"
-      }]
+      android_sound: "default"
     };
 
     console.log('Sending notification with payload:', notificationPayload);
@@ -64,10 +52,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
       throw new Error(data.errors?.[0] || 'Failed to send notification');
     }
 
-    // Programma automaticamente la prossima notifica
+    // Programma la prossima notifica tra 5 minuti
     setTimeout(async () => {
       try {
-        await fetch(`${process.env.VERCEL_URL}/api/auto-recurring-notification`, {
+        await fetch('https://nva.vercel.app/api/auto-recurring-notification', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -76,13 +64,13 @@ export default async function handler(request: VercelRequest, response: VercelRe
       } catch (error) {
         console.error('Error scheduling next notification:', error);
       }
-    }, 4.5 * 60 * 1000); // Programma 30 secondi prima della scadenza
+    }, 5 * 60 * 1000); // 5 minuti in millisecondi
 
     return response.status(200).json({
       success: true,
-      message: 'Auto-recurring notification scheduled successfully',
+      message: 'Notification sent and next one scheduled',
       oneSignalResponse: data,
-      nextDelivery: sendAfter,
+      nextScheduledIn: '5 minutes',
       idempotencyKey: uuid
     });
 
@@ -90,7 +78,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
     console.error('Error in auto-recurring notification:', error);
     return response.status(500).json({
       success: false,
-      message: 'Failed to setup auto-recurring notification',
+      message: 'Failed to send and schedule notification',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }

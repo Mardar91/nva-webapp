@@ -139,15 +139,24 @@ const CheckIn = () => {
 
   const scheduleNotification = async (date: Date) => {
   try {
-    // Ottieni l'ID del dispositivo
-    const deviceSubscription = await OneSignal.getUserId();
+    // Prima controlla se OneSignal è inizializzato e se le notifiche sono permesse
+    const notificationPermission = await OneSignal.Notifications.permission;
     
-    if (!deviceSubscription) {
+    if (!notificationPermission) {
+      // Se l'utente non ha ancora dato il permesso, chiediamolo
+      await OneSignal.Notifications.requestPermission();
+    }
+
+    // Ottieni l'ID del dispositivo usando il metodo corretto di react-onesignal
+    const deviceState = await OneSignal.getSubscription();
+    const pushToken = deviceState?.token;
+    
+    if (!pushToken) {
       console.log('User not subscribed to notifications');
       return;
     }
 
-    console.log('Scheduling notification for device:', deviceSubscription);
+    console.log('Scheduling notification for device:', pushToken);
     
     const response = await fetch('/api/schedule-notification', {
       method: 'POST',
@@ -156,7 +165,7 @@ const CheckIn = () => {
       },
       body: JSON.stringify({
         date: date.toISOString(),
-        subscriptionId: deviceSubscription
+        pushToken: pushToken
       })
     });
     

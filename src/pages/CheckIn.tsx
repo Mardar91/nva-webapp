@@ -131,22 +131,22 @@ const CheckIn = () => {
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
   useEffect(() => {
-    const getDeviceId = async () => {
-      try {
-        if (typeof window !== 'undefined' && window.OneSignal) {
-          const deviceState = await window.OneSignal.getDeviceState();
-          if (deviceState?.userId) {
-            setDeviceId(deviceState.userId);
-            console.log('Device ID:', deviceState.userId);
-          }
+  const getDeviceId = async () => {
+    try {
+      if (typeof window !== 'undefined' && window.OneSignal) {
+        const userId = await window.OneSignal.getUserId();
+        if (userId) {
+          setDeviceId(userId);
+          console.log('Device ID:', userId);
         }
-      } catch (error) {
-        console.error('Error getting device ID:', error);
       }
-    };
+    } catch (error) {
+      console.error('Error getting device ID:', error);
+    }
+  };
 
-    getDeviceId();
-  }, []);
+  getDeviceId();
+}, []);
 
   useEffect(() => {
     if (checkInDate) {
@@ -163,32 +163,37 @@ const CheckIn = () => {
   };
 
   const scheduleNotification = async (date: Date) => {
-    try {
-      console.log('Scheduling notification...', { date, deviceId });
-      const response = await fetch('/api/schedule-notification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          date: date.toISOString(),
-          deviceId: deviceId
-        })
-      });
-      
-      if (!response.ok) {
-        const text = await response.text();
-        console.error('API Error Response:', text);
-        throw new Error(`API returned ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('API Response:', data);
-      
-    } catch (error) {
-      console.error('API Test Error:', error);
+  if (!deviceId) {
+    console.error('No device ID available');
+    return;
+  }
+
+  try {
+    console.log('Scheduling notification for device:', deviceId);
+    const response = await fetch('/api/schedule-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        date: date.toISOString(),
+        deviceId: deviceId
+      })
+    });
+    
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('API Error Response:', text);
+      throw new Error(`API returned ${response.status}`);
     }
-  };
+    
+    const data = await response.json();
+    console.log('API Response:', data);
+    
+  } catch (error) {
+    console.error('API Test Error:', error);
+  }
+};
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
@@ -212,21 +217,21 @@ const CheckIn = () => {
   };
 
   const handleConfirm = async () => {
-    if (checkInDate) {
-      setIsConfirmed(true);
-      setShowCalendar(false);
-      if (deviceId) {
-        await scheduleNotification(checkInDate);
-      }
-      if (validateDate(checkInDate)) {
-        setShowForm(true);
-      } else {
-        alert(
-          "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
-        );
-      }
+  if (checkInDate) {
+    setIsConfirmed(true);
+    setShowCalendar(false);
+    if (deviceId) {
+      await scheduleNotification(checkInDate);
     }
-  };
+    if (validateDate(checkInDate)) {
+      setShowForm(true);
+    } else {
+      alert(
+        "Check-in is only available 3 days before your stay date. Please try again closer to your stay date."
+      );
+    }
+  }
+};
 
   const disabledDays = {
     before: new Date(),

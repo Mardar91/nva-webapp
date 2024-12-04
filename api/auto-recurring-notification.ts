@@ -111,6 +111,10 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
 async function scheduleNotifications(startYear: number) {
   const scheduledNotifications = [];
   
+  console.log(`Starting to schedule notifications from year ${startYear}`);
+  console.log(`OneSignal App ID: ${process.env.ONESIGNAL_APP_ID ? 'Present' : 'Missing'}`);
+  console.log(`OneSignal REST API Key: ${process.env.ONESIGNAL_REST_API_KEY ? 'Present' : 'Missing'}`);
+  
   for (let year = startYear; year <= startYear + 5; year++) {
     for (const notification of ALL_NOTIFICATIONS) {
       const notificationDate = new Date(
@@ -121,7 +125,10 @@ async function scheduleNotifications(startYear: number) {
         notification.minute
       );
 
+      console.log(`Processing notification for date: ${notificationDate.toISOString()}`);
+
       if (year === startYear && notificationDate.getTime() <= Date.now()) {
+        console.log(`Skipping past date for: ${notification.title}`);
         continue;
       }
 
@@ -148,32 +155,47 @@ async function scheduleNotifications(startYear: number) {
         android_sound: "default"
       };
 
-      const notificationResponse = await fetch('https://onesignal.com/api/v1/notifications', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(notificationPayload)
-      });
+      try {
+        console.log(`Sending request to OneSignal for: ${notification.title}`);
+        console.log('Payload:', JSON.stringify(notificationPayload, null, 2));
 
-      const responseData = await notificationResponse.json();
+        const notificationResponse = await fetch('https://onesignal.com/api/v1/notifications', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(notificationPayload)
+        });
 
-      if (!notificationResponse.ok) {
-        console.error(`Failed to schedule notification for ${notificationDate.toISOString()}:`, responseData);
-        continue;
+        const responseData = await notificationResponse.json();
+        console.log('OneSignal Response:', {
+          status: notificationResponse.status,
+          statusText: notificationResponse.statusText,
+          data: responseData
+        });
+
+        if (!notificationResponse.ok) {
+          console.error('OneSignal error:', responseData);
+          continue;
+        }
+
+        scheduledNotifications.push({
+          title: notification.title,
+          scheduledFor: notificationDate,
+          year: year,
+          response: responseData
+        });
+
+        console.log(`Successfully scheduled notification for: ${notification.title}`);
+      } catch (error) {
+        console.error(`Error scheduling notification for ${notification.title}:`, error);
       }
-
-      scheduledNotifications.push({
-        title: notification.title,
-        scheduledFor: notificationDate,
-        year: year,
-        response: responseData
-      });
     }
   }
 
+  console.log(`Completed scheduling. Total notifications scheduled: ${scheduledNotifications.length}`);
   return scheduledNotifications;
 }
 

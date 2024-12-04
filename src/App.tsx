@@ -77,6 +77,7 @@ const AppContent: React.FC = () => {
         <Route path="/book" element={<BookNow />} />
         <Route path="/check-in" element={<CheckIn />} />
         <Route path="/partners" element={<Partners />} />
+        <Route path="/privatesettings/private" element={<PrivateSettings />} />
         <Route
           path="/taxi"
           element={

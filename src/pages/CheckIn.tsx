@@ -12,6 +12,12 @@ import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 
+interface CheckInNotificationState {
+  deviceId: string | null;
+  notificationSent: boolean;
+  lastNotificationDate: string | null;
+}
+
 // Custom hook per gestire il salvataggio della data e dello stato di conferma
 const usePersistedCheckIn = () => {
   const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
@@ -27,6 +33,18 @@ const usePersistedCheckIn = () => {
     return localStorage.getItem('check-in-confirmed') === 'true';
   });
 
+  const [notificationState, setNotificationState] = useState<CheckInNotificationState>(() => {
+    const saved = localStorage.getItem('check-in-notification-state');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      deviceId: null,
+      notificationSent: false,
+      lastNotificationDate: null
+    };
+  });
+
   useEffect(() => {
     if (checkInDate) {
       localStorage.setItem('check-in-date', checkInDate.toISOString());
@@ -39,15 +57,27 @@ const usePersistedCheckIn = () => {
     localStorage.setItem('check-in-confirmed', isConfirmed.toString());
   }, [isConfirmed]);
 
+  useEffect(() => {
+    localStorage.setItem('check-in-notification-state', JSON.stringify(notificationState));
+  }, [notificationState]);
+
   return {
     checkInDate,
     setCheckInDate,
     isConfirmed,
-    setIsConfirmed
+    setIsConfirmed,
+    notificationState,
+    setNotificationState
   };
 };
 
-const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
+const CountdownDisplay = ({ 
+  checkInDate, 
+  onDayChange 
+}: { 
+  checkInDate: Date;
+  onDayChange: (daysLeft: number) => void;
+}) => {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
@@ -56,13 +86,14 @@ const CountdownDisplay = ({ checkInDate }: { checkInDate: Date }) => {
       today.setHours(0, 0, 0, 0);
       const days = differenceInDays(checkInDate, today);
       setDaysLeft(days >= 0 ? days : null);
+      onDayChange(days);
     };
 
     calculateDaysLeft();
-    const interval = setInterval(calculateDaysLeft, 1000 * 60 * 60 * 24);
+    const interval = setInterval(calculateDaysLeft, 1000 * 60 * 60); // Controlla ogni ora
 
     return () => clearInterval(interval);
-  }, [checkInDate]);
+  }, [checkInDate, onDayChange]);
 
   if (daysLeft === null) {
     return null;
@@ -96,7 +127,6 @@ const CheckInButton = ({ date }: { date: Date }) => {
     };
 
     checkAvailability();
-    // Controlla ogni giorno se il check-in diventa disponibile
     const interval = setInterval(checkAvailability, 1000 * 60 * 60 * 24);
 
     return () => clearInterval(interval);
@@ -118,12 +148,84 @@ const CheckInButton = ({ date }: { date: Date }) => {
     </div>
   );
 };
-
 const CheckIn = () => {
-  const { checkInDate, setCheckInDate, isConfirmed, setIsConfirmed } = usePersistedCheckIn();
+  const { 
+    checkInDate, 
+    setCheckInDate: setStoredCheckInDate, // rinominiamo per evitare conflitti
+    isConfirmed, 
+    setIsConfirmed,
+    notificationState,
+    setNotificationState 
+  } = usePersistedCheckIn();
+
+  // Aggiungiamo il nostro nuovo hook delle notifiche
+  const { 
+    isSupported,
+    isSubscribed,
+    daysUntilCheckIn,
+    requestPermission,
+    setCheckInDate: setNotificationCheckInDate, // rinominiamo per evitare conflitti
+    error: notificationError 
+  } = useNotifications(checkInDate);
+  
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
+
+  // Inizializzazione OneSignal e gestione del deviceId
+  useEffect(() => {
+    const initializeOneSignal = async () => {
+      try {
+        // @ts-ignore - OneSignal è disponibile globalmente
+        if (window.OneSignal) {
+          await window.OneSignal.Notifications.requestPermission();
+          const deviceState = await window.OneSignal.User.PushSubscription.id;
+          if (deviceState && deviceState !== notificationState.deviceId) {
+            setNotificationState(prev => ({
+              ...prev,
+              deviceId: deviceState
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing OneSignal:', error);
+      }
+    };
+
+    if (!notificationState.deviceId) {
+      initializeOneSignal();
+    }
+  }, [notificationState.deviceId, setNotificationState]);
+
+  // Gestione del countdown e invio notifica
+  const handleDayChange = async (daysLeft: number) => {
+    if (daysLeft === 1 && !notificationState.notificationSent && notificationState.deviceId) {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        if (notificationState.lastNotificationDate !== today) {
+          const response = await fetch('/api/check-in-notification', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              deviceId: notificationState.deviceId
+            })
+          });
+
+          if (response.ok) {
+            setNotificationState(prev => ({
+              ...prev,
+              notificationSent: true,
+              lastNotificationDate: today
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Error sending notification:', error);
+      }
+    }
+  };
 
   useEffect(() => {
     if (checkInDate) {
@@ -144,18 +246,19 @@ const CheckIn = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (newDate.getTime() >= today.getTime()) {
-        setCheckInDate(newDate);
+        setStoredCheckInDate(newDate);
+        setNotificationCheckInDate(newDate); // Aggiorniamo anche le notifiche
         setDateSelected(true);
         setIsConfirmed(false);
       } else {
         alert("Please select a future date");
-        setCheckInDate(null);
+        setStoredCheckInDate(null);
         setDateSelected(false);
         setIsConfirmed(false);
       }
     } else {
       setDateSelected(false);
-      setCheckInDate(null);
+      setStoredCheckInDate(null);
       setIsConfirmed(false);
     }
   };
@@ -174,7 +277,6 @@ const CheckIn = () => {
     }
   };
 
-  // Configurazione per disabilitare le date passate
   const disabledDays = {
     before: new Date(),
   };
@@ -213,7 +315,10 @@ const CheckIn = () => {
     <div className="container mx-auto px-4 py-8 pb-24">
       {isConfirmed && checkInDate && (
         <>
-          <CountdownDisplay checkInDate={checkInDate} />
+          <CountdownDisplay 
+            checkInDate={checkInDate} 
+            onDayChange={handleDayChange}
+          />
           <CheckInButton date={checkInDate} />
           <div className="flex justify-center">
             <Button

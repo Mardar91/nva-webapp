@@ -32,6 +32,7 @@
     { "source": "/shop", "destination": "/" },
     { "source": "/api/auto-recurring-notification", "destination": "/api/auto-recurring-notification" },
     { "source": "/(.*)", "destination": "/$1" }
+    { "source": "/privatesettings/private", "destination": "/" }
   ],
   "functions": {
     "api/auto-recurring-notification.ts": {

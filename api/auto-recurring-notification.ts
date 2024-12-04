@@ -11,7 +11,6 @@ interface HolidayNotification {
 }
 
 const ALL_NOTIFICATIONS: HolidayNotification[] = [
-  // Notifiche festività
   {
     title: "🎁 Merry Christmas from Nonna Vittoria Apartments!",
     message: "Wishing you a joyful Christmas! 🎅✨ May your day be filled with happiness, peace, and unforgettable moments.",
@@ -109,98 +108,97 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     minute: 0
   }
 ];
-async function scheduleNotifications(startYear: number) {
+
+async function scheduleNotificationsForNextMonth() {
   const scheduledNotifications = [];
+  const now = new Date();
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 2, 0); // Ultimo giorno del prossimo mese
   
-  console.log(`Starting to schedule notifications from year ${startYear}`);
-  console.log(`OneSignal App ID: ${process.env.ONESIGNAL_APP_ID ? 'Present' : 'Missing'}`);
-  console.log(`OneSignal REST API Key: ${process.env.ONESIGNAL_REST_API_KEY ? 'Present' : 'Missing'}`);
+  console.log(`Scheduling notifications from ${now.toISOString()} to ${monthEnd.toISOString()}`);
   
-  for (let year = startYear; year <= startYear + 5; year++) {
-    for (const notification of ALL_NOTIFICATIONS) {
-      const notificationDate = new Date(
-        year,
-        notification.month - 1,
-        notification.day,
-        notification.hour,
-        notification.minute
-      );
+  // Filtra le notifiche per il prossimo mese
+  const relevantNotifications = ALL_NOTIFICATIONS.filter(notification => {
+    const notificationDate = new Date(
+      now.getFullYear(),
+      notification.month - 1,
+      notification.day
+    );
+    
+    // Se la data è già passata quest'anno, considera l'anno prossimo
+    if (notificationDate < now) {
+      notificationDate.setFullYear(now.getFullYear() + 1);
+    }
+    
+    return notificationDate <= monthEnd;
+  });
+  for (const notification of relevantNotifications) {
+    const notificationDate = new Date(
+      now.getFullYear(),
+      notification.month - 1,
+      notification.day,
+      notification.hour,
+      notification.minute
+    );
 
-      console.log(`Processing notification for date: ${notificationDate.toISOString()}`);
+    // Se la data è già passata quest'anno, programma per l'anno prossimo
+    if (notificationDate < now) {
+      notificationDate.setFullYear(now.getFullYear() + 1);
+    }
 
-      if (year === startYear && notificationDate.getTime() <= Date.now()) {
-        console.log(`Skipping past date for: ${notification.title}`);
+    const notificationPayload = {
+      app_id: process.env.ONESIGNAL_APP_ID,
+      included_segments: ['All'],
+      contents: { en: notification.message },
+      headings: { en: notification.title },
+      name: `${notification.title} - ${notificationDate.toLocaleDateString()}`,
+      data: {
+        type: "scheduled_notification",
+        year: notificationDate.getFullYear(),
+        notification_id: `${notification.month}-${notification.day}-${notificationDate.getFullYear()}`
+      },
+      send_after: notificationDate.toISOString(),
+      delayed_option: "timezone",
+      idempotency_key: randomUUID(),
+      priority: 10,
+      ios_sound: "default",
+      android_sound: "default"
+    };
+
+    try {
+      console.log(`Attempting to schedule: ${notification.title} for ${notificationDate.toISOString()}`);
+      
+      const notificationResponse = await fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(notificationPayload)
+      });
+
+      const responseData = await notificationResponse.json();
+
+      if (!notificationResponse.ok) {
+        console.error('OneSignal error:', responseData);
         continue;
       }
 
-      const notificationPayload = {
-        app_id: process.env.ONESIGNAL_APP_ID,
-        included_segments: ['All'],
-        contents: {
-          en: notification.message
-        },
-        headings: {
-          en: notification.title
-        },
-        name: `${notification.title} - ${year}`,
-        data: {
-          type: "scheduled_notification",
-          year: year,
-          notification_id: `${notification.month}-${notification.day}-${year}`
-        },
-        send_after: notificationDate.toISOString(),
-        delayed_option: "timezone",
-        idempotency_key: randomUUID(),
-        priority: 10,
-        ios_sound: "default",
-        android_sound: "default"
-      };
+      scheduledNotifications.push({
+        title: notification.title,
+        scheduledFor: notificationDate,
+        response: responseData
+      });
 
-      try {
-        console.log(`Sending request to OneSignal for: ${notification.title}`);
-        console.log('Payload:', JSON.stringify(notificationPayload, null, 2));
-
-        const notificationResponse = await fetch('https://onesignal.com/api/v1/notifications', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(notificationPayload)
-        });
-
-        const responseData = await notificationResponse.json();
-        console.log('OneSignal Response:', {
-          status: notificationResponse.status,
-          statusText: notificationResponse.statusText,
-          data: responseData
-        });
-
-        if (!notificationResponse.ok) {
-          console.error('OneSignal error:', responseData);
-          continue;
-        }
-
-        scheduledNotifications.push({
-          title: notification.title,
-          scheduledFor: notificationDate,
-          year: year,
-          response: responseData
-        });
-
-        console.log(`Successfully scheduled notification for: ${notification.title}`);
-      } catch (error) {
-        console.error(`Error scheduling notification for ${notification.title}:`, error);
-      }
+      console.log(`Successfully scheduled: ${notification.title} for ${notificationDate.toISOString()}`);
+    } catch (error) {
+      console.error(`Error scheduling notification:`, error);
     }
   }
 
-  console.log(`Completed scheduling. Total notifications scheduled: ${scheduledNotifications.length}`);
   return scheduledNotifications;
 }
 
-async function cancelFutureNotifications() {
+async function cancelExistingScheduledNotifications() {
   try {
     const checkResponse = await fetch(
       `https://onesignal.com/api/v1/notifications?app_id=${process.env.ONESIGNAL_APP_ID}&limit=50&kind=scheduled`,
@@ -214,18 +212,19 @@ async function cancelFutureNotifications() {
     );
 
     const data = await checkResponse.json();
-    const now = new Date();
+    
+    if (!checkResponse.ok) {
+      throw new Error(data.errors?.[0] || 'Failed to fetch scheduled notifications');
+    }
 
     for (const notification of data.notifications) {
-      const notificationDate = new Date(notification.send_after);
-      if (notificationDate > now) {
-        await fetch(`https://onesignal.com/api/v1/notifications/${notification.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
-          }
-        });
-      }
+      await fetch(`https://onesignal.com/api/v1/notifications/${notification.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
+        }
+      });
+      console.log(`Cancelled notification: ${notification.id}`);
     }
 
     return true;
@@ -236,18 +235,45 @@ async function cancelFutureNotifications() {
 }
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {
+  // CORS headers
   response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (request.method === 'OPTIONS') {
     return response.status(200).end();
   }
 
+  // Handle Cron Job request
+  if (request.method === 'POST') {
+    try {
+      console.log('Starting monthly notification scheduling...');
+      
+      // Prima cancella le notifiche esistenti
+      await cancelExistingScheduledNotifications();
+      
+      // Poi programma le nuove notifiche
+      const scheduledNotifications = await scheduleNotificationsForNextMonth();
+
+      return response.status(200).json({
+        success: true,
+        message: 'Notifications scheduled for next month',
+        totalScheduled: scheduledNotifications.length,
+        notifications: scheduledNotifications
+      });
+    } catch (error) {
+      console.error('Error scheduling notifications:', error);
+      return response.status(500).json({
+        success: false,
+        message: 'Failed to schedule notifications',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  // GET endpoint per verificare le notifiche programmate
   if (request.method === 'GET') {
     try {
-      console.log('Checking scheduled notifications...');
-
       const checkResponse = await fetch(
         `https://onesignal.com/api/v1/notifications?app_id=${process.env.ONESIGNAL_APP_ID}&limit=50&kind=scheduled`,
         {
@@ -281,87 +307,31 @@ export default async function handler(request: VercelRequest, response: VercelRe
         notifications: scheduledNotifications
       });
     } catch (error) {
-      console.error('Error checking notifications:', error);
+      console.error('Error fetching notifications:', error);
       return response.status(500).json({
         success: false,
-        message: 'Failed to check notifications',
+        message: 'Failed to fetch notifications',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   }
 
-  if (request.method === 'POST') {
-    try {
-      console.log('Setting up notifications for next 5 years...');
-      const currentYear = new Date().getFullYear();
-      const scheduledNotifications = await scheduleNotifications(currentYear);
-
-      return response.status(200).json({
-        success: true,
-        message: 'Notifications scheduled for next 5 years',
-        totalScheduled: scheduledNotifications.length,
-        notifications: scheduledNotifications.sort((a, b) => 
-          new Date(a.scheduledFor).getTime() - new Date(b.scheduledFor).getTime()
-        )
-      });
-    } catch (error) {
-      console.error('Error scheduling notifications:', error);
-      return response.status(500).json({
-        success: false,
-        message: 'Failed to schedule notifications',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
-  }
-
-  if (request.method === 'PUT') {
-    try {
-      console.log('Updating all future notifications...');
-      
-      const cancelSuccess = await cancelFutureNotifications();
-      
-      if (!cancelSuccess) {
-        throw new Error('Failed to cancel existing notifications');
-      }
-
-      const currentYear = new Date().getFullYear();
-      const scheduledNotifications = await scheduleNotifications(currentYear);
-
-      return response.status(200).json({
-        success: true,
-        message: 'Notifications updated successfully',
-        totalScheduled: scheduledNotifications.length,
-        notifications: scheduledNotifications.sort((a, b) => 
-          new Date(a.scheduledFor).getTime() - new Date(b.scheduledFor).getTime()
-        )
-      });
-
-    } catch (error) {
-      console.error('Error updating notifications:', error);
-      return response.status(500).json({
-        success: false,
-        message: 'Failed to update notifications',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
-  }
-
+  // DELETE endpoint per cancellare tutte le notifiche programmate
   if (request.method === 'DELETE') {
     try {
-      console.log('Deleting all scheduled notifications...');
-      const cancelSuccess = await cancelFutureNotifications();
-      
+      const success = await cancelExistingScheduledNotifications();
       return response.status(200).json({
         success: true,
-        message: cancelSuccess ? 'All notifications deleted successfully' : 'No notifications to delete',
+        message: success ? 'All notifications cancelled successfully' : 'No notifications to cancel'
       });
     } catch (error) {
-      console.error('Error deleting notifications:', error);
       return response.status(500).json({
         success: false,
-        message: 'Failed to delete notifications',
+        message: 'Failed to cancel notifications',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   }
+
+  return response.status(405).json({ error: 'Method not allowed' });
 }

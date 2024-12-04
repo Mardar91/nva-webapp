@@ -43,8 +43,7 @@
   "crons": [
     {
       "path": "/api/auto-recurring-notification",
-      "schedule": "0 0 1 * *",
-      "httpMethod": "POST"
+      "schedule": "0 0 1 * *"
     }
   ]
 }

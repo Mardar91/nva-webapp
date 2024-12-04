@@ -54,11 +54,13 @@ type NotificationEventType =
 // Tipi per i listener degli eventi
 type NotificationEventListener = (event: NotificationEvent) => void;
 
-// Interfaccia per gli eventi delle notifiche
+// Interfaccia corretta per gli eventi delle notifiche
 interface NotificationEvent {
-  notification: NotificationPayload;
-  result?: NotificationClickResult;
-  permission?: boolean;
+  notification: {
+    display: () => void;
+    url?: string;
+    [key: string]: any;
+  };
 }
 
 // Interfaccia per il payload delle notifiche

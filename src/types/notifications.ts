@@ -60,8 +60,20 @@ export interface NotificationsType {
   setDefaultTitle: (title: string) => Promise<void>;
   isPushSupported: () => boolean;
   requestPermission: () => Promise<boolean>;
-  addEventListener: (event: string, listener: (event: NotificationEvent) => void) => void;
-  removeEventListener: (event: string, listener: (event: NotificationEvent) => void) => void;
+  addEventListener: {
+    (event: 'permissionChange', listener: (permission: boolean) => void): void;
+    (event: 'click', listener: (event: NotificationEvent) => void): void;
+    (event: 'foregroundWillDisplay', listener: (event: NotificationEvent) => void): void;
+    (event: 'dismiss', listener: (event: NotificationEvent) => void): void;
+    (event: 'permissionPromptDisplay', listener: () => void): void;
+  };
+  removeEventListener: {
+    (event: 'permissionChange', listener: (permission: boolean) => void): void;
+    (event: 'click', listener: (event: NotificationEvent) => void): void;
+    (event: 'foregroundWillDisplay', listener: (event: NotificationEvent) => void): void;
+    (event: 'dismiss', listener: (event: NotificationEvent) => void): void;
+    (event: 'permissionPromptDisplay', listener: () => void): void;
+  };
 }
 
 // Interfaccia per le notifiche di check-in

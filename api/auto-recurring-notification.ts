@@ -149,7 +149,7 @@ async function scheduleNotifications(startYear: number) {
         },
         send_after: notificationDate.toISOString(),
         delayed_option: "timezone",
-        idempotency_key: `${notification.month}-${notification.day}-${year}-${crypto.randomUUID()}`,
+        idempotency_key: randomUUID(),
         priority: 10,
         ios_sound: "default",
         android_sound: "default"

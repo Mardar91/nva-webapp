@@ -66,10 +66,10 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
         
         // Configura i listener per gli eventi OneSignal
         if (isOneSignalAvailable()) {
-          window.OneSignal.Notifications.addEventListener('permissionChange', (permission) => {
-            setHasNotificationPermission(permission);
-          });
-        }
+  window.OneSignal.Notifications.addEventListener('permissionChange', (permission: boolean) => {
+    setHasNotificationPermission(permission);
+  });
+}
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to initialize notifications');
       }

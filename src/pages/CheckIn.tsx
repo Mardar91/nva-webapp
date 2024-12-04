@@ -11,6 +11,7 @@ import {
 import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
+import { useNotifications } from '../hooks/useNotifications';
 
 interface CheckInNotificationState {
   deviceId: string | null;

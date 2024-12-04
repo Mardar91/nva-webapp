@@ -131,6 +131,7 @@ async function scheduleNotificationsForNextMonth() {
     
     return notificationDate <= monthEnd;
   });
+
   for (const notification of relevantNotifications) {
     const notificationDate = new Date(
       now.getFullYear(),
@@ -244,10 +245,14 @@ export default async function handler(request: VercelRequest, response: VercelRe
     return response.status(200).end();
   }
 
-  // Handle Cron Job request
-  if (request.method === 'POST') {
+  // Verifica se la richiesta viene dal cron di Vercel
+  const isVercelCron = request.headers['user-agent']?.includes('vercel-cron');
+
+  // Se è una richiesta GET dal cron di Vercel, trattala come POST
+  if (isVercelCron || request.method === 'POST') {
     try {
       console.log('Starting monthly notification scheduling...');
+      console.log('Request from:', isVercelCron ? 'Vercel Cron' : 'Manual POST');
       
       // Prima cancella le notifiche esistenti
       await cancelExistingScheduledNotifications();
@@ -271,8 +276,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
     }
   }
 
-  // GET endpoint per verificare le notifiche programmate
-  if (request.method === 'GET') {
+  // GET endpoint per verificare le notifiche programmate (solo per richieste non-cron)
+  if (request.method === 'GET' && !isVercelCron) {
     try {
       const checkResponse = await fetch(
         `https://onesignal.com/api/v1/notifications?app_id=${process.env.ONESIGNAL_APP_ID}&limit=50&kind=scheduled`,
@@ -307,7 +312,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
         notifications: scheduledNotifications
       });
     } catch (error) {
-      console.error('Error fetching notifications:', error);
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch notifications',

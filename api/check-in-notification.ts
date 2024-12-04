@@ -14,12 +14,12 @@ async function sendCheckInNotification(deviceId: string) {
       app_id: process.env.ONESIGNAL_APP_ID,
       include_player_ids: [deviceId], // Invia solo al dispositivo specifico
       contents: { 
-        en: "Check-in online now available! Please do it now if you haven't" 
+        en: "Please make sure to check in online before your arrival if you haven’t already! 🏡 After completing your check-in, you’ll receive your personal access code for the apartment. 🔑" 
       },
       headings: { 
-        en: "Check-in Reminder" 
+        en: "✨ Check-in Online Now Available!" 
       },
-      url: "https://nva.vercel.app/checkin",
+      url: "https://nva.vercel.app/check-in",
       name: `Check-in Reminder - ${new Date().toLocaleDateString()}`,
       data: {
         type: "check_in_notification",

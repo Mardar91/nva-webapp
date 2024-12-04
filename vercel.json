@@ -38,6 +38,10 @@
     "api/auto-recurring-notification.ts": {
       "memory": 1024,
       "maxDuration": 10
+    },
+    "api/check-in-notification.ts": {
+      "memory": 1024,
+      "maxDuration": 10
     }
   },
   "crons": [

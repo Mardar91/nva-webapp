@@ -107,31 +107,31 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Configura i gestori degli eventi OneSignal
-    if (typeof window !== 'undefined' && window.OneSignal) {
-      window.OneSignalDeferred.push(function(OneSignal) {
-        // Gestione click sulle notifiche
-        OneSignal.Notifications.addEventListener('click', function(event) {
-          const { url } = event.notification;
-          if (url) {
-            window.location.href = url;
-          }
-        });
-
-        // Gestione notifiche in primo piano
-        OneSignal.Notifications.addEventListener('foregroundWillDisplay', function(event) {
-          event.preventDefault();
-          setTimeout(() => {
-            event.notification.display();
-          }, 500);
-        });
-
-        // Gestione cambi di permesso
-        OneSignal.Notifications.addEventListener('permissionChange', function(permission) {
-          console.log('Notification permission changed:', permission);
-        });
+  // Configura i gestori degli eventi OneSignal
+  if (typeof window !== 'undefined' && window.OneSignal) {
+    window.OneSignalDeferred.push(function(OneSignal) {
+      // Gestione click sulle notifiche
+      OneSignal.Notifications.addEventListener('click', function(event) {
+        const { url } = event.notification;
+        if (url) {
+          window.location.href = url;
+        }
       });
-    }
+
+      // Gestione notifiche in primo piano - versione corretta
+      OneSignal.Notifications.addEventListener('foregroundWillDisplay', function(event) {
+        // Mostra direttamente la notifica dopo un breve ritardo
+        setTimeout(() => {
+          event.notification.display();
+        }, 500);
+      });
+
+      // Gestione cambi di permesso
+      OneSignal.Notifications.addEventListener('permissionChange', function(permission) {
+        console.log('Notification permission changed:', permission);
+      });
+    });
+  }
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');

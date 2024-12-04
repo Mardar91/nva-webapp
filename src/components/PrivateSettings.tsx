@@ -21,7 +21,7 @@ const PrivateSettings = () => {
     }
   };
 
-  const handleApiCall = async (method: 'GET' | 'POST' | 'PUT') => {
+  const handleApiCall = async (method: 'GET' | 'POST' | 'PUT' | 'DELETE') => {
     setLoading(true);
     setApiResponse(null);
     setError('');
@@ -93,6 +93,7 @@ const PrivateSettings = () => {
               <Button 
                 onClick={() => handleApiCall('GET')}
                 disabled={loading}
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 Verifica Notifiche
               </Button>
@@ -109,6 +110,13 @@ const PrivateSettings = () => {
                 className="bg-yellow-600 hover:bg-yellow-700"
               >
                 Aggiorna Notifiche
+              </Button>
+              <Button 
+                onClick={() => handleApiCall('DELETE')}
+                disabled={loading}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Cancella Tutte le Notifiche
               </Button>
             </div>
 

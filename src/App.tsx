@@ -102,21 +102,46 @@ const AppContent: React.FC = () => {
     </Layout>
   );
 };
+
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Configura i gestori degli eventi OneSignal
+    if (typeof window !== 'undefined' && window.OneSignal) {
+      window.OneSignalDeferred.push(function(OneSignal) {
+        // Gestione click sulle notifiche
+        OneSignal.Notifications.addEventListener('click', function(event) {
+          const { url } = event.notification;
+          if (url) {
+            window.location.href = url;
+          }
+        });
+
+        // Gestione notifiche in primo piano
+        OneSignal.Notifications.addEventListener('foregroundWillDisplay', function(event) {
+          event.preventDefault();
+          setTimeout(() => {
+            event.notification.display();
+          }, 500);
+        });
+
+        // Gestione cambi di permesso
+        OneSignal.Notifications.addEventListener('permissionChange', function(permission) {
+          console.log('Notification permission changed:', permission);
+        });
+      });
+    }
+
     const themeColor = document.querySelector('meta[name="theme-color"]');
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const isInTaxiRoute = window.location.pathname === '/taxi';
     
-    // Colore iniziale sempre blu in light mode, dark in dark mode
     if (themeColor) {
       if (isInTaxiRoute) {
         const taxiColor = darkModeMediaQuery.matches ? '#1a1a1a' : '#fbbf24';
         themeColor.setAttribute('content', taxiColor);
       } else {
-        // Durante lo splash screen, manteniamo il blu in light mode
         const initialColor = darkModeMediaQuery.matches ? '#1a1a1a' : '#1e3a8a';
         themeColor.setAttribute('content', initialColor);
       }
@@ -148,7 +173,6 @@ const App: React.FC = () => {
             if (darkModeMediaQuery.matches) {
               color = '#1a1a1a';
             } else {
-              // Dopo lo splash screen, passa a bianco per la Home
               color = currentPath === '/' ? '#ffffff' : '#ffffff';
             }
             

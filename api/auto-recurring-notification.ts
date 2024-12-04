@@ -27,10 +27,9 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     hour: 0,
     minute: 1
   },
-  // Notifiche mensili
   {
     title: "Love is in the Air 💕",
-    message: "elebrate Valentine’s Day in Mola di Bari with a romantic stay at Nonna Vittoria Apartments. Unforgettable moments await!",
+    message: "Celebrate Valentine's Day in Mola di Bari with a romantic stay at Nonna Vittoria Apartments. Unforgettable moments await!",
     month: 2,
     day: 2,
     hour: 15,
@@ -70,7 +69,7 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
   },
   {
     title: "Polpo Festival 🐙",
-    message: "Don’t miss the famous Octopus Festival in Mola di Bari in July! Book your stay now for this delicious event.",
+    message: "Don't miss the famous Octopus Festival in Mola di Bari in July! Book your stay now for this delicious event.",
     month: 7,
     day: 2,
     hour: 14,
@@ -86,7 +85,7 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
   },
   {
     title: "Sacred & Profane ✨",
-    message: "Join the Patronal Feast of Maria SS. Addolorata and explore Mola di Bari’s historical treasures this September.",
+    message: "Join the Patronal Feast of Maria SS. Addolorata and explore Mola di Bari's historical treasures this September.",
     month: 9,
     day: 1,
     hour: 12,
@@ -94,7 +93,7 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
   },
   {
     title: "Fall into Puglia 🍂 & Halloween Fun 🎃",
-    message: "Autumn is the perfect time to explore Mola di Bari’s rich history and warm hospitality.",
+    message: "Autumn is the perfect time to explore Mola di Bari's rich history and warm hospitality.",
     month: 10,
     day: 15,
     hour: 17,
@@ -109,12 +108,9 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     minute: 0
   }
 ];
-
-// Funzione per programmare le notifiche
 async function scheduleNotifications(startYear: number) {
   const scheduledNotifications = [];
   
-  // Programma notifiche per i prossimi 5 anni
   for (let year = startYear; year <= startYear + 5; year++) {
     for (const notification of ALL_NOTIFICATIONS) {
       const notificationDate = new Date(
@@ -125,7 +121,6 @@ async function scheduleNotifications(startYear: number) {
         notification.minute
       );
 
-      // Salta le date già passate per l'anno corrente
       if (year === startYear && notificationDate.getTime() <= Date.now()) {
         continue;
       }
@@ -153,7 +148,6 @@ async function scheduleNotifications(startYear: number) {
         android_sound: "default"
       };
 
-      // Invia la richiesta a OneSignal
       const notificationResponse = await fetch('https://onesignal.com/api/v1/notifications', {
         method: 'POST',
         headers: {
@@ -183,10 +177,8 @@ async function scheduleNotifications(startYear: number) {
   return scheduledNotifications;
 }
 
-// Funzione per cancellare le notifiche future
 async function cancelFutureNotifications() {
   try {
-    // Ottiene tutte le notifiche programmate
     const checkResponse = await fetch(
       `https://onesignal.com/api/v1/notifications?app_id=${process.env.ONESIGNAL_APP_ID}&limit=50&kind=scheduled`,
       {
@@ -201,7 +193,6 @@ async function cancelFutureNotifications() {
     const data = await checkResponse.json();
     const now = new Date();
 
-    // Filtra e cancella solo le notifiche future
     for (const notification of data.notifications) {
       const notificationDate = new Date(notification.send_after);
       if (notificationDate > now) {
@@ -223,14 +214,13 @@ async function cancelFutureNotifications() {
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (request.method === 'OPTIONS') {
     return response.status(200).end();
   }
 
-  // Gestisce la richiesta GET per controllare lo stato delle notifiche
   if (request.method === 'GET') {
     try {
       console.log('Checking scheduled notifications...');
@@ -277,7 +267,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
     }
   }
 
-  // Gestisce la richiesta POST per programmare nuove notifiche
   if (request.method === 'POST') {
     try {
       console.log('Setting up notifications for next 5 years...');
@@ -302,19 +291,16 @@ export default async function handler(request: VercelRequest, response: VercelRe
     }
   }
 
-  // Gestisce la richiesta PUT per aggiornare le notifiche
   if (request.method === 'PUT') {
     try {
       console.log('Updating all future notifications...');
       
-      // Prima cancella tutte le notifiche future
       const cancelSuccess = await cancelFutureNotifications();
       
       if (!cancelSuccess) {
         throw new Error('Failed to cancel existing notifications');
       }
 
-      // Poi programma le nuove notifiche
       const currentYear = new Date().getFullYear();
       const scheduledNotifications = await scheduleNotifications(currentYear);
 
@@ -332,6 +318,25 @@ export default async function handler(request: VercelRequest, response: VercelRe
       return response.status(500).json({
         success: false,
         message: 'Failed to update notifications',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  if (request.method === 'DELETE') {
+    try {
+      console.log('Deleting all scheduled notifications...');
+      const cancelSuccess = await cancelFutureNotifications();
+      
+      return response.status(200).json({
+        success: true,
+        message: cancelSuccess ? 'All notifications deleted successfully' : 'No notifications to delete',
+      });
+    } catch (error) {
+      console.error('Error deleting notifications:', error);
+      return response.status(500).json({
+        success: false,
+        message: 'Failed to delete notifications',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }

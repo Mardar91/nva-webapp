@@ -34,37 +34,14 @@
       "purpose": "any"
     }
   ],
-  "start_url": "/?mode=standalone",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#1e3a8a",
-  "android_package_name": "app.nonnavittoriaapartments.twa",
-  "iarc_rating_id": "",
-  "protocol_handlers": [
-    {
-      "protocol": "https",
-      "url": "/?url=%s"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshots/1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "platform": "wide",
-      "label": "Homescreen of Nonna Vittoria Apartments"
-    }
-  ],
-  "prefer_related_applications": false,
-  "categories": ["travel", "lifestyle"],
-  "theme_colors": {
-    "status_bar": "#1e3a8a",
-    "navigation_bar": "#ffffff",
-    "navigation_bar_dark": "#1a1a1a"
-  },
+  "android_package_name": "app.vercel.nva.twa",
   "shortcuts": [
     {
       "name": "Book Now",
@@ -79,31 +56,17 @@
       ]
     }
   ],
-  "id": "nva-webapp-1",
-  "serviceworker": {
-    "src": "/pwa-worker.js",
-    "scope": "/",
-    "use_cache": true,
-    "update_via_cache": "none"
-  },
-  "launch_handler": {
-    "client_mode": ["focus-existing", "auto"]
-  },
-  "handle_links": "preferred",
+  "prefer_related_applications": false,
   "related_applications": [],
-  "dir": "ltr",
-  "lang": "it",
-  "share_target": {
-    "action": "/share-target",
-    "method": "GET",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
+  "categories": ["travel", "lifestyle"],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
   },
-  "capture_links": "existing-client-navigate",
-  "edge_side_panel": {
-    "preferred_width": 400
-  }
+  "handle_links": "auto",
+  "scope_extensions": [
+    {
+      "origin": "https://nva.vercel.app"
+    }
+  ],
+  "capture_links": "new-client"
 }

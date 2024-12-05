@@ -5,9 +5,22 @@ import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
 // Versioning
-const APP_VERSION = '1.2.4';
+const APP_VERSION = '1.2.5';
 
-// Cache management functions rimangono invariate
+// Definizione del tipo BeforeInstallPromptEvent
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+
+// Dichiarazione della variabile deferredPrompt
+let deferredPrompt: BeforeInstallPromptEvent | null = null;
+
+// Cache management functions
 const clearCache = async () => {
   if ('caches' in window) {
     const cacheKeys = await caches.keys();
@@ -28,7 +41,7 @@ const checkForUpdates = async () => {
   return false;
 };
 
-// Service Worker update handler rimane invariato
+// Service Worker update handler
 const handleServiceWorkerUpdate = async (registration: ServiceWorkerRegistration) => {
   if (registration.waiting) {
     await clearCache();
@@ -37,7 +50,7 @@ const handleServiceWorkerUpdate = async (registration: ServiceWorkerRegistration
   }
 };
 
-// Utility functions ottimizzate per una migliore rilevazione
+// Utility functions
 const isIOS = () => {
   if (typeof window !== 'undefined') {
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -146,9 +159,9 @@ if (typeof window !== 'undefined') {
   };
 
   // Event listeners con gestione overlay
-  window.addEventListener('beforeinstallprompt', (e) => {
+  window.addEventListener('beforeinstallprompt', (e: Event) => {
     e.preventDefault();
-    deferredPrompt = e;
+    deferredPrompt = e as BeforeInstallPromptEvent;
     
     // Crea l'overlay scuro
     const overlay = createDarkOverlay();
@@ -255,9 +268,39 @@ if (typeof window !== 'undefined') {
       });
     }
   }
+
+  // Event listener per l'installazione completata
+  window.addEventListener('appinstalled', async () => {
+    localStorage.setItem('pwa-installed', 'true');
+    localStorage.setItem('app-version', APP_VERSION);
+    console.log('PWA installed successfully');
+    setTimeout(async () => {
+      await attemptPWARedirect();
+    }, 2000);
+  });
+
+  // iOS specific handlers
+  if (isIOS()) {
+    window.addEventListener('load', async () => {
+      if ((window.navigator as any).standalone) {
+        localStorage.setItem('pwa-installed', 'true');
+      }
+    });
+
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState === 'visible') {
+        if ((window.navigator as any).standalone) {
+          localStorage.setItem('pwa-installed', 'true');
+        }
+        setTimeout(async () => {
+          await attemptPWARedirect();
+        }, 1000);
+      }
+    });
+  }
 }
 
-// Service Worker registration e gestione aggiornamenti
+// Service Worker registration
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then(registration => {

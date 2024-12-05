@@ -37,6 +37,7 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
       headings: { 
         en: "✨ Check-in Online Now Available!" 
       },
+      url: "https://nva.vercel.app/check-in",
       name: `Check-in Reminder - ${notificationDate.toLocaleDateString()}`,
       data: {
         type: "check_in_notification",

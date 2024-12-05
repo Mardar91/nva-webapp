@@ -158,7 +158,7 @@ async function scheduleNotificationsForNextMonth() {
         notification_id: `${notification.month}-${notification.day}-${notificationDate.getFullYear()}`
       },
       send_after: notificationDate.toISOString(),
-      delayed_option: "timezone",
+      timezone: "Europe/Rome",
       idempotency_key: randomUUID(),
       priority: 10,
       ios_sound: "default",

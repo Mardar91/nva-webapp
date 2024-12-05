@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import RomanticWeekModal from "./RomanticWeekModal";
 
 const SpecialOffers = () => {
   const navigate = useNavigate();
+  const [isRomanticWeekOpen, setIsRomanticWeekOpen] = useState(false);
 
   return (
     <div className="px-4">
@@ -25,7 +27,11 @@ const SpecialOffers = () => {
         </p>
       </div>
       {/* Seconda Card: Romantic Week */}
-      <div className="card">
+      <div 
+        className="card"
+        onClick={() => setIsRomanticWeekOpen(true)}
+        style={{ cursor: "pointer" }}
+      >
         <div className="cardHeader">
           <h3 className="cardTitle">ROMANTIC WEEK</h3>
           <div className="discountBadge">
@@ -37,6 +43,11 @@ const SpecialOffers = () => {
           valid during high season).
         </p>
       </div>
+
+      <RomanticWeekModal 
+        isOpen={isRomanticWeekOpen}
+        onClose={() => setIsRomanticWeekOpen(false)}
+      />
     </div>
   );
 };

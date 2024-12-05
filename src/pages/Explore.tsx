@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Calendar, MapPin, Building2, TreePalm, Ship, Buildings } from "lucide-react";
+import { Calendar, MapPin, building-2, TreePalm, Ship, Buildings } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Event {

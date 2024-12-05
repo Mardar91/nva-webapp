@@ -15,8 +15,8 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     title: "🎁 Merry Christmas from Nonna Vittoria Apartments!",
     message: "Wishing you a joyful Christmas! 🎅✨ May your day be filled with happiness, peace, and unforgettable moments.",
     month: 12,
-    day: 5,
-    hour: 16,
+    day: 6,
+    hour: 10,
     minute: 35
   },
   {

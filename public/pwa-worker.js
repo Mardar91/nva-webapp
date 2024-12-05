@@ -1,5 +1,5 @@
 // Versione della cache e configurazione
-const CACHE_VERSION = 'nva-cache-v9';
+const CACHE_VERSION = 'nva-cache-v10';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Risorse essenziali per l'app shell

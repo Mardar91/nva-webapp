@@ -48,10 +48,6 @@
     {
       "path": "/api/auto-recurring-notification",
       "schedule": "0 0 1 * *"
-    },
-    {
-      "path": "/api/check-in-notification",
-      "schedule": "0 0 * * *"
     }
   ]
 }

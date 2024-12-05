@@ -11,13 +11,16 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
   try {
     console.log('Starting sendCheckInNotification with:', { deviceId, checkInDate });
 
-    // Calcola quando inviare la notifica
+    // Calcola quando inviare la notifica considerando il timezone italiano
     const checkInDateTime = new Date(checkInDate);
     const notificationDate = new Date(checkInDateTime);
     notificationDate.setDate(notificationDate.getDate() - 1);
     
     // Se è dopo le 9:00, invia la notifica subito
     const now = new Date();
+    const italianOffset = 60; // UTC+1 in minuti
+    now.setMinutes(now.getMinutes() + italianOffset);
+
     if (now.getHours() >= 9) {
       // Imposta la notifica per un minuto dopo
       const sendAfter = new Date(now.getTime() + 60000);
@@ -46,6 +49,7 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
         notification_id: `checkin-${randomUUID()}`
       },
       send_after: notificationDate.toISOString(),
+      timezone: "Europe/Rome",
       priority: 10,
       ttl: 259200, // 3 days in seconds
       ios_sound: "default",
@@ -154,22 +158,24 @@ export default async function handler(request: VercelRequest, response: VercelRe
         });
       }
 
-      // Calcola le date per la verifica
+      // Calcola le date per la verifica, considerando il timezone italiano
       const now = new Date();
-      const checkInDay = new Date(dateObj);
-      checkInDay.setHours(0, 0, 0, 0);
-      
-      const today = new Date(now);
-      today.setHours(0, 0, 0, 0);
+      const italianOffset = 60; // UTC+1 in minuti
+      now.setMinutes(now.getMinutes() + italianOffset);
 
-      // Verifica che la data di check-in sia almeno domani
-      const minDate = new Date(today);
-      minDate.setDate(minDate.getDate() + 1);
-      if (checkInDay < minDate) {
-        console.error('Check-in date must be at least tomorrow');
+      const checkInDateTime = new Date(dateObj);
+      checkInDateTime.setMinutes(checkInDateTime.getMinutes() + italianOffset);
+
+      // Rimuovi l'orario per confrontare solo le date
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const checkInDay = new Date(checkInDateTime.getFullYear(), checkInDateTime.getMonth(), checkInDateTime.getDate());
+
+      // Verifica che la data di check-in non sia nel passato
+      if (checkInDay < today) {
+        console.error('Check-in date cannot be in the past');
         return response.status(400).json({
           success: false,
-          message: 'Check-in date must be at least tomorrow'
+          message: 'Check-in date cannot be in the past'
         });
       }
 

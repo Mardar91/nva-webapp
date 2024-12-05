@@ -34,7 +34,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.1.8",
-    "lucide-react": "0.460.0",
+    "lucide-react": "0.468.0",
     "react": "^18.2.0",
     "react-animated-css": "1.2.1",
     "react-day-picker": "^8.10.1",

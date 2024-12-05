@@ -43,7 +43,7 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
         notification_id: `checkin-${randomUUID()}`
       },
       send_after: notificationDate.toISOString(),
-      delayed_option: "timezone",
+      timezone: "Europe/Rome",
       idempotency_key: randomUUID(),
       priority: 10,
       ios_sound: "default",

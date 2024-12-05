@@ -53,7 +53,14 @@
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#1e3a8a",
+  "prefer_related_applications": false,
   "android_package_name": "app.vercel.nva.twa",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://nva.vercel.app/manifest.json"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Book Now",
@@ -68,17 +75,21 @@
       ]
     }
   ],
-  "prefer_related_applications": false,
-  "related_applications": [],
   "categories": ["travel", "lifestyle"],
+  "protocol_handlers": [
+    {
+      "protocol": "web+nva",
+      "url": "/?url=%s"
+    }
+  ],
   "launch_handler": {
     "client_mode": ["navigate-existing", "auto"]
   },
-  "handle_links": "auto",
-  "scope_extensions": [
-    {
-      "origin": "https://nva.vercel.app"
-    }
-  ],
-  "capture_links": "new-client"
+  "handle_links": "preferred",
+  "capture_links": "existing-client-navigate",
+  "intent_filters": {
+    "scope_url_scheme": "https",
+    "scope_url_host": "nva.vercel.app",
+    "scope_url_path": "/"
+  }
 }

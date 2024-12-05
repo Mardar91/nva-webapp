@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
+import { X } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -24,27 +25,22 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Funzione per calcolare il checkout (6 notti dopo il checkin)
   const calculateCheckout = (checkIn: Date) => {
     const checkout = new Date(checkIn);
     checkout.setDate(checkout.getDate() + 6);
     return checkout;
   };
 
-  // Funzione per verificare se una data è selezionabile
   const isDateSelectable = (date: Date) => {
-    const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
 
-    // Prima periodo: 2 gennaio - 15 aprile
     const isInFirstPeriod = 
       (month === 1 && day >= 2) || 
       (month === 2) || 
       (month === 3) || 
       (month === 4 && day <= 15);
 
-    // Secondo periodo: 15 settembre - 15 dicembre
     const isInSecondPeriod = 
       (month === 9 && day >= 15) || 
       (month === 10) || 
@@ -90,9 +86,7 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
         throw new Error('Failed to send request');
       }
 
-      // Successo
       onClose();
-      // Qui puoi aggiungere una notifica di successo se lo desideri
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -102,82 +96,51 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:p-6 w-[95vw] sm:max-w-[600px]">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none"
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </button>
+
         {step === 1 ? (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center mb-4">
-                ROMANTIC WEEK OFFER
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
+                ✨ ROMANTIC WEEK OFFER
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 text-left">
-              <p className="text-lg mb-6">
-                Treat yourself to a memorable escape with our exclusive Romantic Week package:
+            <div className="mt-4 space-y-4">
+              <p className="text-base sm:text-lg">
+                🌟 Treat yourself to a memorable escape with our exclusive Romantic Week package:
               </p>
 
-              <div className="space-y-3">
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p><strong>6-night stay</strong> in one of our superior apartments for two.</p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p><strong>Early check-in</strong> from 12:00 PM for a relaxed arrival.</p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p>A <strong>welcome bottle</strong> of wine or Prosecco to start your stay in style.</p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p>A <strong>VIP ticket</strong> with a 10% discount on services and partner locations.</p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p><strong>Late check-out</strong> until 11:00 AM for a leisurely departure.</p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p><strong>12 premium coffee pads</strong> included for your morning indulgence.</p>
-                </div>
+              <div className="space-y-2">
+                <p>🌙 <strong>6-night stay</strong> in our superior apartments for two</p>
+                <p>⏰ <strong>Early check-in</strong> from 12:00 PM</p>
+                <p>🍷 <strong>Welcome bottle</strong> of wine or Prosecco</p>
+                <p>🎫 <strong>VIP ticket</strong> with 10% discount</p>
+                <p>🕐 <strong>Late check-out</strong> until 11:00 AM</p>
+                <p>☕️ <strong>12 premium coffee pads</strong> included</p>
               </div>
 
-              <div className="mt-6">
-                <h3 className="font-bold text-lg mb-3">Superior Apartment Features</h3>
-                <div className="space-y-3">
-                  <div className="flex items-start space-x-2">
-                    <span className="text-blue-600">•</span>
-                    <p><strong>Washing machine and dryer</strong> (private or shared in the building)</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-blue-600">•</span>
-                    <p><strong>Air conditioning</strong> for your comfort</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-blue-600">•</span>
-                    <p><strong>Smart TV (42")</strong> with satellite channels and Alexa integration</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-blue-600">•</span>
-                    <p>Fully equipped <strong>kitchen</strong> with a fridge and freezer</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-blue-600">•</span>
-                    <p><strong>High-speed WiFi</strong> for seamless connectivity</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-blue-600">•</span>
-                    <p><strong>Hair dryer</strong> and complimentary toiletries for added convenience</p>
-                  </div>
-                </div>
+              <div className="mt-4">
+                <h3 className="font-bold text-lg mb-2">🏠 Apartment Features</h3>
+                <p className="text-sm leading-relaxed">
+                  Includes: <strong>Washing machine</strong> • <strong>Air conditioning</strong> • 
+                  <strong>42" Smart TV</strong> • <strong>Full kitchen</strong> • 
+                  <strong>High-speed WiFi</strong> • <strong>Hair dryer & toiletries</strong>
+                </p>
               </div>
 
-              <div className="mt-6 flex justify-center">
+              <div className="pt-4 flex justify-center">
                 <Button 
-                  onClick={() => setStep(2)} 
-                  className="w-full max-w-sm bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => setStep(2)}
+                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  REQUEST TO BOOK
+                  📅 REQUEST TO BOOK
                 </Button>
               </div>
             </div>
@@ -185,12 +148,12 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center mb-4">
-                Book Your Romantic Week
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
+                📝 Book Your Romantic Week
               </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
               <div className="space-y-2">
                 <label className="block text-sm font-medium">Check-in Date</label>
                 <DatePicker

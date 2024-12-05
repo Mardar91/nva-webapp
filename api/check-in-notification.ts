@@ -16,14 +16,17 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
     const notificationDate = new Date(checkInDateTime);
     notificationDate.setDate(notificationDate.getDate() - 1);
     
-    // Se è dopo le 9:00, invia la notifica subito, altrimenti programma per le 9:00
+    // Se è dopo le 9:00, invia la notifica subito
     const now = new Date();
     if (now.getHours() >= 9) {
-      // Se è già passato le 9:00, invia la notifica dopo 1 minuto
-      notificationDate.setTime(now.getTime() + 60000);
+      // Imposta la notifica per un minuto dopo
+      const sendAfter = new Date(now.getTime() + 60000);
+      console.log('Setting immediate notification for:', sendAfter.toISOString());
+      notificationDate.setTime(sendAfter.getTime());
     } else {
-      // Altrimenti programma per le 9:00
+      // Imposta per le 9:00 del giorno di notifica
       notificationDate.setHours(9, 0, 0, 0);
+      console.log('Setting scheduled notification for 9AM:', notificationDate.toISOString());
     }
 
     console.log('Calculated notification date:', notificationDate.toISOString());
@@ -43,11 +46,11 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
         notification_id: `checkin-${randomUUID()}`
       },
       send_after: notificationDate.toISOString(),
-      delayed_option: "timezone",
-      idempotency_key: randomUUID(),
       priority: 10,
+      ttl: 259200, // 3 days in seconds
       ios_sound: "default",
-      android_sound: "default"
+      android_sound: "default",
+      idempotency_key: randomUUID()
     };
 
     console.log('Sending notification payload to OneSignal:', notificationPayload);
@@ -151,13 +154,22 @@ export default async function handler(request: VercelRequest, response: VercelRe
         });
       }
 
-      // Verifica che la data di check-in sia nel futuro
+      // Calcola le date per la verifica
       const now = new Date();
-      if (dateObj <= now) {
-        console.error('Check-in date must be in the future');
+      const checkInDay = new Date(dateObj);
+      checkInDay.setHours(0, 0, 0, 0);
+      
+      const today = new Date(now);
+      today.setHours(0, 0, 0, 0);
+
+      // Verifica che la data di check-in sia almeno domani
+      const minDate = new Date(today);
+      minDate.setDate(minDate.getDate() + 1);
+      if (checkInDay < minDate) {
+        console.error('Check-in date must be at least tomorrow');
         return response.status(400).json({
           success: false,
-          message: 'Check-in date must be in the future'
+          message: 'Check-in date must be at least tomorrow'
         });
       }
 

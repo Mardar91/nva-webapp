@@ -110,10 +110,24 @@
         .pulse {
             animation: pulse 2s infinite ease-in-out;
         }
+
+        /* Stile per il messaggio di stato */
+        .status-message {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            color: #4b5563;
+            min-height: 1.25rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .status-message {
+                color: #9ca3af;
+            }
+        }
     </style>
 </head>
 <body>
-    <img src="/icons/logo-512x512.png" alt="Nonna Vittoria Apartments" class="logo">
+    <img src="/icons/icon-192x192.png" alt="Nonna Vittoria Apartments" class="logo">
     <div class="offline-icon pulse">📡</div>
     <h1>No Internet Connection</h1>
     <p>
@@ -122,9 +136,10 @@
     </p>
     <button 
         class="retry-button" 
-        onclick="window.location.reload()">
+        onclick="checkNetworkAndRedirect()">
         Try Again
     </button>
+    <div class="status-message" id="statusMessage"></div>
 
     <script>
         // Gestione delle safe areas per iOS PWA standalone
@@ -135,18 +150,59 @@
             }
         }
 
-        // Controlla la connessione e aggiorna l'UI
-        function checkConnection() {
-            if (navigator.onLine) {
-                document.querySelector('.offline-icon').textContent = '🔄';
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+        function updateStatusMessage(message) {
+            const statusElement = document.getElementById('statusMessage');
+            if (statusElement) {
+                statusElement.textContent = message;
             }
         }
 
+        async function checkNetworkAndRedirect() {
+            // Disabilita il pulsante durante il controllo
+            const button = document.querySelector('.retry-button');
+            button.disabled = true;
+            button.style.opacity = '0.7';
+            
+            updateStatusMessage('Checking connection...');
+
+            // Verifica la connessione
+            if (!navigator.onLine) {
+                updateStatusMessage('Still offline. Please check your connection.');
+                button.disabled = false;
+                button.style.opacity = '1';
+                return;
+            }
+
+            try {
+                // Prova a fare una richiesta di rete per verificare la connettività reale
+                const response = await fetch('/', {
+                    method: 'HEAD',
+                    cache: 'no-store'
+                });
+
+                if (response.ok) {
+                    updateStatusMessage('Connection restored! Redirecting...');
+                    // Reindirizza alla home page
+                    window.location.href = '/';
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) {
+                updateStatusMessage('Connection error. Please try again.');
+                button.disabled = false;
+                button.style.opacity = '1';
+            }
+        }
+
+        // Gestione dell'evento online
+        window.addEventListener('online', () => {
+            updateStatusMessage('Connection detected! Try again.');
+            const button = document.querySelector('.retry-button');
+            button.disabled = false;
+            button.style.opacity = '1';
+        });
+
         // Event listeners
-        window.addEventListener('online', checkConnection);
         window.addEventListener('resize', updateSafeAreas);
         document.addEventListener('DOMContentLoaded', updateSafeAreas);
     </script>

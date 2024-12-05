@@ -1,5 +1,5 @@
 // Versione della cache e configurazione
-const CACHE_VERSION = 'nva-cache-v12';
+const CACHE_VERSION = 'nva-cache-v13';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Risorse essenziali per l'app shell
@@ -85,49 +85,45 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Gestione speciale per le richieste di navigazione
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match('/offline.html');
-      })
-    );
-    return;
-  }
-
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-
-        const fetchRequest = event.request.clone();
-        
-        return fetch(fetchRequest)
-          .then(response => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+    // Prima proviamo a fare il fetch della risorsa online
+    fetch(event.request)
+      .catch(() => {
+        // Se il fetch fallisce, controlliamo prima nella cache
+        return caches.match(event.request)
+          .then(cachedResponse => {
+            // Se abbiamo una risposta nella cache, la restituiamo
+            if (cachedResponse) {
+              return cachedResponse;
             }
 
-            if (shouldCache(event.request)) {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME)
-                .then(cache => {
-                  cache.put(event.request, responseToCache);
+            // Se è una richiesta di navigazione e non abbiamo nulla nella cache, 
+            // restituiamo la pagina offline
+            if (event.request.mode === 'navigate') {
+              return caches.match('/offline.html')
+                .then(offlineResponse => {
+                  // Se anche offline.html non è disponibile, restituiamo un messaggio di errore
+                  if (!offlineResponse) {
+                    return new Response('Offline page not found', {
+                      status: 503,
+                      statusText: 'Service Unavailable',
+                      headers: new Headers({
+                        'Content-Type': 'text/plain'
+                      })
+                    });
+                  }
+                  return offlineResponse;
                 });
             }
 
-            return response;
-          })
-          .catch(error => {
-            console.error('[Service Worker] Fetch failed:', error);
-            if (event.request.mode === 'navigate') {
-              return caches.match('/offline.html');
-            }
+            // Per altre richieste che non sono di navigazione, 
+            // restituiamo una risposta di errore
             return new Response('Network error', {
               status: 503,
-              statusText: 'Service Unavailable'
+              statusText: 'Service Unavailable',
+              headers: new Headers({
+                'Content-Type': 'text/plain'
+              })
             });
           });
       })

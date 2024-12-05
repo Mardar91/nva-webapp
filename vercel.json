@@ -51,7 +51,7 @@
     },
     {
       "path": "/api/check-in-notification",
-      "schedule": "0 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }

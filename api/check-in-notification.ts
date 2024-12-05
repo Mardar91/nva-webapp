@@ -11,21 +11,22 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
   try {
     console.log('Starting sendCheckInNotification with:', { deviceId, checkInDate });
 
-    // Calcola quando inviare la notifica (un giorno prima del check-in alle 9:00)
-    const notificationDate = new Date(checkInDate);
+    // Calcola quando inviare la notifica
+    const checkInDateTime = new Date(checkInDate);
+    const notificationDate = new Date(checkInDateTime);
     notificationDate.setDate(notificationDate.getDate() - 1);
-    notificationDate.setHours(9, 0, 0, 0);
+    
+    // Se è dopo le 9:00, invia la notifica subito, altrimenti programma per le 9:00
+    const now = new Date();
+    if (now.getHours() >= 9) {
+      // Se è già passato le 9:00, invia la notifica dopo 1 minuto
+      notificationDate.setTime(now.getTime() + 60000);
+    } else {
+      // Altrimenti programma per le 9:00
+      notificationDate.setHours(9, 0, 0, 0);
+    }
 
     console.log('Calculated notification date:', notificationDate.toISOString());
-
-    // Se la data di notifica è già passata, non programmare la notifica
-    if (notificationDate < new Date()) {
-      console.log('Notification date has already passed');
-      return {
-        success: false,
-        error: 'Notification date has already passed'
-      };
-    }
 
     const notificationPayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
@@ -147,6 +148,16 @@ export default async function handler(request: VercelRequest, response: VercelRe
         return response.status(400).json({
           success: false,
           message: 'Invalid check-in date format'
+        });
+      }
+
+      // Verifica che la data di check-in sia nel futuro
+      const now = new Date();
+      if (dateObj <= now) {
+        console.error('Check-in date must be in the future');
+        return response.status(400).json({
+          success: false,
+          message: 'Check-in date must be in the future'
         });
       }
 

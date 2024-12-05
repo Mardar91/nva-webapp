@@ -39,6 +39,7 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
   );
   const [hasNotificationPermission, setHasNotificationPermission] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastNotificationSent, setLastNotificationSent] = useState<string | null>(null);
 
   // Verifica il supporto delle notifiche
   useEffect(() => {
@@ -66,10 +67,10 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
         
         // Configura i listener per gli eventi OneSignal
         if (isOneSignalAvailable()) {
-  window.OneSignal.Notifications.addEventListener('permissionChange', (permission: boolean) => {
-    setHasNotificationPermission(permission);
-  });
-}
+          window.OneSignal.Notifications.addEventListener('permissionChange', (permission: boolean) => {
+            setHasNotificationPermission(permission);
+          });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to initialize notifications');
       }
@@ -87,9 +88,19 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
         const { shouldSend, daysUntilCheckIn } = calculateNotificationTiming(checkInDate);
         setDaysUntilCheckIn(daysUntilCheckIn);
 
-        // Se è il momento giusto e siamo sottoscritti, invia la notifica
-        if (shouldSend && isSubscribed && deviceId) {
-          checkAndSendNotification();
+        // Impedisce l'invio di notifiche duplicate nello stesso giorno
+        const today = new Date().toISOString().split('T')[0];
+        if (shouldSend && isSubscribed && deviceId && lastNotificationSent !== today) {
+          checkAndSendNotification().then(success => {
+            if (success) {
+              setLastNotificationSent(today);
+              setNotificationState(prev => ({
+                ...prev,
+                notificationSent: true,
+                lastNotificationDate: today
+              }));
+            }
+          });
         }
       };
 
@@ -100,7 +111,7 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
       
       return () => clearInterval(intervalId);
     }
-  }, [checkInDate, isSubscribed, deviceId]);
+  }, [checkInDate, isSubscribed, deviceId, lastNotificationSent]);
 
   // Richiedi i permessi per le notifiche
   const requestPermission = useCallback(async () => {
@@ -124,14 +135,23 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
       const { daysUntilCheckIn: days } = calculateNotificationTiming(date);
       setDaysUntilCheckIn(days);
 
-      // Se manca un giorno e siamo sottoscritti, verifica se inviare la notifica
-      if (days === 1 && isSubscribed && deviceId) {
-        await checkAndSendNotification();
+      // Verifica se è già stata inviata una notifica oggi
+      const today = new Date().toISOString().split('T')[0];
+      if (days === 1 && isSubscribed && deviceId && lastNotificationSent !== today) {
+        const success = await checkAndSendNotification();
+        if (success) {
+          setLastNotificationSent(today);
+          setNotificationState(prev => ({
+            ...prev,
+            notificationSent: true,
+            lastNotificationDate: today
+          }));
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to set check-in date');
     }
-  }, [isSubscribed, deviceId]);
+  }, [isSubscribed, deviceId, lastNotificationSent]);
 
   return {
     isSupported,

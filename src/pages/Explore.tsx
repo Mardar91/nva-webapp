@@ -2,31 +2,57 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Building2, Palm, Ship, Buildings } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Event {
   id: string;
   title: string;
-  date: Date;
+  startDate: Date;
+  endDate?: Date;
   city: string;
   description: string;
 }
+
+// Badge Component for Current Events
+const CurrentEventBadge = () => (
+  <div className="absolute -top-2 -right-2">
+    <div className="relative">
+      <div className="absolute inset-0 animate-ping rounded-full bg-green-400 opacity-25"></div>
+      <div className="relative rounded-full bg-green-500 px-2 py-1 text-xs text-white">
+        Today
+      </div>
+    </div>
+  </div>
+);
 
 // Componente EventCard
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
-  }).format(event.date);
+  }).format(event.startDate);
+
+  const isCurrentEvent = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const eventStart = new Date(event.startDate);
+    eventStart.setHours(0, 0, 0, 0);
+    const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
+    eventEnd.setHours(23, 59, 59, 999);
+    
+    return today >= eventStart && today <= eventEnd;
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      className="relative"
     >
       <Card className="hover:shadow-lg transition-shadow duration-200">
+        {isCurrentEvent() && <CurrentEventBadge />}
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
             <div>
@@ -51,23 +77,24 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
 
 // Componente CityButton
 const CityButton: React.FC<{ 
-  city: string; 
+  city: string;
+  icon: React.ReactNode;
   onClick: () => void;
   delay: number;
-}> = ({ city, onClick, delay }) => {
+}> = ({ city, icon, onClick, delay }) => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay }}
     >
-      <Button 
+      <button 
         onClick={onClick}
-        className="w-full bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-[#1e3a8a] dark:text-[#60A5FA] border border-gray-200 dark:border-gray-700 h-24 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
-        variant="ghost"
+        className="heroButton"
       >
-        <span className="text-lg font-semibold">{city}</span>
-      </Button>
+        <span className="heroIcon">{icon}</span>
+        <span className="heroText">{city}</span>
+      </button>
     </motion.div>
   );
 };
@@ -75,89 +102,107 @@ const CityButton: React.FC<{
 const Explore: React.FC = () => {
   const navigate = useNavigate();
 
+  const scrollToRef = React.useRef<HTMLDivElement>(null);
+  
+  const handleScrollToCities = () => {
+    scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   // Eventi di esempio
   const events: Event[] = [
     {
       id: '1',
       title: 'La Sagra del Polpo',
-      date: new Date(2024, 6, 3),
+      startDate: new Date(),
       city: 'Mola di Bari',
       description: 'Traditional octopus festival'
     },
     {
       id: '2',
       title: 'San Michele',
-      date: new Date(2024, 6, 4),
+      startDate: new Date(new Date().setDate(new Date().getDate() + 1)),
       city: 'Polignano a Mare',
       description: 'Religious celebration'
     },
     {
       id: '3',
       title: 'La Festa del Mare',
-      date: new Date(2024, 6, 15),
+      startDate: new Date(new Date().setDate(new Date().getDate() + 12)),
       city: 'Monopoli',
       description: 'Sea festival'
     },
     {
       id: '4',
       title: 'Giro in Ruota',
-      date: new Date(2024, 7, 3),
+      startDate: new Date(new Date().setDate(new Date().getDate() + 31)),
       city: 'Bari',
       description: 'Ferris wheel event'
     }
   ];
 
   const cities = [
-    { name: 'Mola di Bari', path: '/cities/mola-di-bari' },
-    { name: 'Polignano a Mare', path: '/cities/polignano-a-mare' },
-    { name: 'Monopoli', path: '/cities/monopoli' },
-    { name: 'Bari', path: '/cities/bari' }
+    { name: 'Mola di Bari', path: '/cities/mola-di-bari', icon: <Building2 size={32} color="#60A5FA" /> },
+    { name: 'Polignano a Mare', path: '/cities/polignano-a-mare', icon: <Palm size={32} color="#60A5FA" /> },
+    { name: 'Monopoli', path: '/cities/monopoli', icon: <Ship size={32} color="#60A5FA" /> },
+    { name: 'Bari', path: '/cities/bari', icon: <Buildings size={32} color="#60A5FA" /> }
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="flex-grow overflow-y-auto">
       {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-12"
-      >
-        <h1 className="text-3xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-4">
-          Explore Puglia
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300 text-lg">
-          Discover magnificent cultural cities and unforgettable events in the surroundings.
-        </p>
-      </motion.div>
-
-      {/* Upcoming Events Section */}
-      <section className="mb-12">
-        <motion.h2
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6"
+      <div className="bg-[#1e3a8a] dark:bg-gray-900 text-white py-16 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-3xl mx-auto"
         >
-          Upcoming Events
-        </motion.h2>
-        <div className="grid gap-4">
-          {events.map((event, index) => (
-            <EventCard key={event.id} event={event} />
+          <h1 className="text-3xl font-bold mb-4">
+            Explore Puglia
+          </h1>
+          <p className="text-gray-200 text-lg mb-8">
+            Discover magnificent cultural cities and unforgettable events in the surroundings.
+          </p>
+          <Button 
+            onClick={handleScrollToCities}
+            variant="outline" 
+            className="bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
+          >
+            Go to Cities
+          </Button>
+        </motion.div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        {/* Upcoming Events Section */}
+        <section className="mb-12">
+          <motion.h2
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6"
+          >
+            Upcoming Events
+          </motion.h2>
+          <div className="grid gap-4">
+            {events.map((event, index) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </section>
+
+        {/* Cities Grid */}
+        <div ref={scrollToRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {cities.map((city, index) => (
+            <CityButton
+              key={city.name}
+              city={city.name}
+              icon={city.icon}
+              onClick={() => navigate(city.path)}
+              delay={0.1 * index}
+            />
           ))}
         </div>
-      </section>
-
-      {/* Cities Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {cities.map((city, index) => (
-          <CityButton
-            key={city.name}
-            city={city.name}
-            onClick={() => navigate(city.path)}
-            delay={0.1 * index}
-          />
-        ))}
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
 // Versioning
-const APP_VERSION = '1.2.5';
+const APP_VERSION = '1.2.6';
 
 // Definizione del tipo BeforeInstallPromptEvent
 interface BeforeInstallPromptEvent extends Event {
@@ -59,6 +59,14 @@ const isIOS = () => {
   return false;
 };
 
+const isAndroid = () => {
+  if (typeof window !== 'undefined') {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /android/.test(userAgent);
+  }
+  return false;
+};
+
 const hasRedirectParam = () => {
   if (typeof window === 'undefined') return false;
   const urlParams = new URLSearchParams(window.location.search);
@@ -66,14 +74,12 @@ const hasRedirectParam = () => {
          (Date.now() - Number(urlParams.get('t') || 0)) < 5000;
 };
 
-// Migliorata la funzione isInStandaloneMode per includere il riferimento android-app
 const isInStandaloneMode = () => 
   typeof window !== 'undefined' && 
   (window.matchMedia('(display-mode: standalone)').matches || 
    window.matchMedia('(display-mode: fullscreen)').matches || 
    window.matchMedia('(display-mode: minimal-ui)').matches || 
-   (isIOS() && (window.navigator as any).standalone) ||
-   document.referrer.includes('android-app://'));
+   (isIOS() && (window.navigator as any).standalone));
 
 const checkActualInstallation = async () => {
   if (isInStandaloneMode()) {
@@ -101,6 +107,12 @@ const isPWAInstalled = async () => {
   
   return await checkActualInstallation();
 };
+
+const createIntentUrl = (url: string) => {
+  const intentUrl = new URL(url);
+  intentUrl.searchParams.set('source', 'pwa');
+  return `intent://${intentUrl.host}${intentUrl.pathname}${intentUrl.search}#Intent;scheme=https;package=app.vercel.nva.twa;end`;
+};
 // Funzione per creare l'overlay scuro
 const createDarkOverlay = () => {
   const overlay = document.createElement('div');
@@ -117,7 +129,6 @@ const createDarkOverlay = () => {
   
   document.body.appendChild(overlay);
   
-  // Forza il reflow per attivare la transizione
   setTimeout(() => {
     overlay.style.opacity = '1';
   }, 10);
@@ -139,6 +150,18 @@ if (typeof window !== 'undefined') {
       return;
     }
 
+    if (isAndroid()) {
+      // Prova prima l'intent URL
+      const intentUrl = createIntentUrl(originalUrl);
+      try {
+        window.location.href = intentUrl;
+        return;
+      } catch (e) {
+        console.error('Intent redirect failed:', e);
+      }
+    }
+
+    // Fallback al metodo precedente se l'intent non funziona
     const pwaUrl = new URL(originalUrl);
     pwaUrl.search = '';
     pwaUrl.searchParams.set('pwa-redirect', 'true');
@@ -164,7 +187,6 @@ if (typeof window !== 'undefined') {
     e.preventDefault();
     deferredPrompt = e as BeforeInstallPromptEvent;
     
-    // Crea l'overlay scuro
     const overlay = createDarkOverlay();
     
     const installBanner = document.createElement('div');

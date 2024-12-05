@@ -77,7 +77,7 @@ const CountdownDisplay = ({
   onDayChange 
 }: { 
   checkInDate: Date;
-  onDayChange: (daysLeft: number) => void;
+  onDayChange: (daysLeft: number, date: Date) => void;
 }) => {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
@@ -87,11 +87,11 @@ const CountdownDisplay = ({
       today.setHours(0, 0, 0, 0);
       const days = differenceInDays(checkInDate, today);
       setDaysLeft(days >= 0 ? days : null);
-      onDayChange(days);
+      onDayChange(days, checkInDate);
     };
 
     calculateDaysLeft();
-    const interval = setInterval(calculateDaysLeft, 1000 * 60 * 60); // Controlla ogni ora
+    const interval = setInterval(calculateDaysLeft, 1000 * 60 * 60);
 
     return () => clearInterval(interval);
   }, [checkInDate, onDayChange]);
@@ -115,7 +115,6 @@ const CountdownDisplay = ({
     </div>
   );
 };
-
 const CheckInButton = ({ date }: { date: Date }) => {
   const [isAvailable, setIsAvailable] = useState(false);
 
@@ -149,23 +148,23 @@ const CheckInButton = ({ date }: { date: Date }) => {
     </div>
   );
 };
+
 const CheckIn = () => {
   const { 
     checkInDate, 
-    setCheckInDate: setStoredCheckInDate, // rinominiamo per evitare conflitti
+    setCheckInDate: setStoredCheckInDate,
     isConfirmed, 
     setIsConfirmed,
     notificationState,
     setNotificationState 
   } = usePersistedCheckIn();
 
-  // Aggiungiamo il nostro nuovo hook delle notifiche
   const { 
     isSupported,
     isSubscribed,
-    daysUntilCheckIn,
+    deviceId,
     requestPermission,
-    setCheckInDate: setNotificationCheckInDate, // rinominiamo per evitare conflitti
+    setCheckInDate: setNotificationCheckInDate,
     error: notificationError 
   } = useNotifications(checkInDate);
   
@@ -173,70 +172,45 @@ const CheckIn = () => {
   const [dateSelected, setDateSelected] = useState(false);
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
-  // Inizializzazione OneSignal e gestione del deviceId
-  useEffect(() => {
-    const initializeOneSignal = async () => {
+  // Gestione del countdown e invio notifica
+  const handleDayChange = async (daysLeft: number, date: Date) => {
+    if (daysLeft === 1 && !notificationState.notificationSent && notificationState.deviceId) {
       try {
-        // @ts-ignore - OneSignal è disponibile globalmente
-        if (window.OneSignal) {
-          await window.OneSignal.Notifications.requestPermission();
-          const deviceState = await window.OneSignal.User.PushSubscription.id;
-          if (deviceState && deviceState !== notificationState.deviceId) {
+        const today = new Date().toISOString().split('T')[0];
+        const lastAttempt = sessionStorage.getItem('lastNotificationAttempt');
+        const now = Date.now();
+        
+        if (lastAttempt && now - parseInt(lastAttempt) < 5000) {
+          return;
+        }
+        
+        sessionStorage.setItem('lastNotificationAttempt', now.toString());
+
+        if (notificationState.lastNotificationDate !== today) {
+          const response = await fetch('/api/check-in-notification', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              deviceId: notificationState.deviceId,
+              checkInDate: date.toISOString()
+            })
+          });
+
+          if (response.ok) {
             setNotificationState(prev => ({
               ...prev,
-              deviceId: deviceState
+              notificationSent: true,
+              lastNotificationDate: today
             }));
           }
         }
       } catch (error) {
-        console.error('Error initializing OneSignal:', error);
+        console.error('Error sending notification:', error);
       }
-    };
-
-    if (!notificationState.deviceId) {
-      initializeOneSignal();
     }
-  }, [notificationState.deviceId, setNotificationState]);
-
-  // Gestione del countdown e invio notifica
-  const handleDayChange = async (daysLeft: number) => {
-  if (daysLeft === 1 && !notificationState.notificationSent && notificationState.deviceId) {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      const lastAttempt = sessionStorage.getItem('lastNotificationAttempt');
-      const now = Date.now();
-      
-      if (lastAttempt && now - parseInt(lastAttempt) < 5000) {
-        return;
-      }
-      
-      sessionStorage.setItem('lastNotificationAttempt', now.toString());
-
-      if (notificationState.lastNotificationDate !== today) {
-        const response = await fetch('/api/check-in-notification', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            deviceId: notificationState.deviceId,
-            checkInDate: checkInDate.toISOString() // Aggiungiamo la data del check-in
-          })
-        });
-
-        if (response.ok) {
-          setNotificationState(prev => ({
-            ...prev,
-            notificationSent: true,
-            lastNotificationDate: today
-          }));
-        }
-      }
-    } catch (error) {
-      console.error('Error sending notification:', error);
-    }
-  }
-};
+  };
 
   useEffect(() => {
     if (checkInDate) {
@@ -258,7 +232,7 @@ const CheckIn = () => {
       today.setHours(0, 0, 0, 0);
       if (newDate.getTime() >= today.getTime()) {
         setStoredCheckInDate(newDate);
-        setNotificationCheckInDate(newDate); // Aggiorniamo anche le notifiche
+        setNotificationCheckInDate(newDate);
         setDateSelected(true);
         setIsConfirmed(false);
       } else {

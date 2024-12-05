@@ -66,12 +66,14 @@ const hasRedirectParam = () => {
          (Date.now() - Number(urlParams.get('t') || 0)) < 5000;
 };
 
+// Migliorata la funzione isInStandaloneMode per includere il riferimento android-app
 const isInStandaloneMode = () => 
   typeof window !== 'undefined' && 
   (window.matchMedia('(display-mode: standalone)').matches || 
    window.matchMedia('(display-mode: fullscreen)').matches || 
    window.matchMedia('(display-mode: minimal-ui)').matches || 
-   (isIOS() && (window.navigator as any).standalone));
+   (isIOS() && (window.navigator as any).standalone) ||
+   document.referrer.includes('android-app://'));
 
 const checkActualInstallation = async () => {
   if (isInStandaloneMode()) {
@@ -99,7 +101,6 @@ const isPWAInstalled = async () => {
   
   return await checkActualInstallation();
 };
-
 // Funzione per creare l'overlay scuro
 const createDarkOverlay = () => {
   const overlay = document.createElement('div');
@@ -350,3 +351,5 @@ if (rootElement) {
 } else {
   console.error("Root element not found in DOM");
 }
+
+export default {};

@@ -174,58 +174,61 @@ const CheckIn = () => {
 
   // Gestione del countdown e invio notifica
   const handleDayChange = async (daysLeft: number, date: Date) => {
-    console.log('handleDayChange called with:', { daysLeft, deviceId, date });
-    
-    if (daysLeft === 1 && !notificationState.notificationSent && deviceId) {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const lastAttempt = sessionStorage.getItem('lastNotificationAttempt');
-        const now = Date.now();
-        
-        if (lastAttempt && now - parseInt(lastAttempt) < 5000) {
-          console.log('Skipping notification - too soon since last attempt');
-          return;
-        }
-        
-        sessionStorage.setItem('lastNotificationAttempt', now.toString());
-
-        if (notificationState.lastNotificationDate !== today) {
-          console.log('Sending notification request with:', {
-            deviceId,
-            checkInDate: date.toISOString()
-          });
-
-          const response = await fetch('/api/check-in-notification', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              deviceId: deviceId,
-              checkInDate: date.toISOString()
-            })
-          });
-
-          const responseData = await response.json();
-          console.log('Notification API response:', responseData);
-
-          if (response.ok) {
-            console.log('Notification sent successfully');
-            setNotificationState(prev => ({
-              ...prev,
-              deviceId: deviceId,
-              notificationSent: true,
-              lastNotificationDate: today
-            }));
-          } else {
-            console.error('Failed to send notification:', responseData);
-          }
-        }
-      } catch (error) {
-        console.error('Error sending notification:', error);
+  console.log('handleDayChange called with:', { daysLeft, date });
+  
+  // Modifichiamo questa condizione per includere anche il giorno successivo
+  if ((daysLeft === 1 || daysLeft === 0) && !notificationState.notificationSent && deviceId) {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const lastAttempt = sessionStorage.getItem('lastNotificationAttempt');
+      const now = Date.now();
+      
+      if (lastAttempt && now - parseInt(lastAttempt) < 5000) {
+        console.log('Skipping due to recent attempt');
+        return;
       }
+      
+      sessionStorage.setItem('lastNotificationAttempt', now.toString());
+
+      if (notificationState.lastNotificationDate !== today) {
+        console.log('Sending notification request for date:', date.toISOString());
+        
+        const response = await fetch('/api/check-in-notification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            deviceId: deviceId,
+            checkInDate: date.toISOString()
+          })
+        });
+
+        const responseData = await response.json();
+        console.log('API Response:', responseData);
+
+        if (response.ok) {
+          setNotificationState(prev => ({
+            ...prev,
+            deviceId: deviceId,
+            notificationSent: true,
+            lastNotificationDate: today
+          }));
+        } else {
+          console.error('Failed to send notification:', responseData);
+        }
+      }
+    } catch (error) {
+      console.error('Error sending notification:', error);
     }
-  };
+  } else {
+    console.log('Notification not sent because:', { 
+      daysLeft, 
+      notificationSent: notificationState.notificationSent,
+      hasDeviceId: !!deviceId 
+    });
+  }
+};
 
   useEffect(() => {
     if (checkInDate) {

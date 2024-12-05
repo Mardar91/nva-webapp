@@ -5,7 +5,7 @@ import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
 // Versioning
-const APP_VERSION = '1.1.2';
+const APP_VERSION = '1.2.2';
 
 // Cache management functions rimangono invariate
 const clearCache = async () => {

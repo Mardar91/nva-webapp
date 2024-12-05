@@ -203,12 +203,10 @@ const CheckIn = () => {
   if (daysLeft === 1 && !notificationState.notificationSent && notificationState.deviceId) {
     try {
       const today = new Date().toISOString().split('T')[0];
-      // Verifichiamo se è già stata inviata una notifica negli ultimi 5 secondi
       const lastAttempt = sessionStorage.getItem('lastNotificationAttempt');
       const now = Date.now();
       
       if (lastAttempt && now - parseInt(lastAttempt) < 5000) {
-        // Skip se è passato meno di 5 secondi dall'ultimo tentativo
         return;
       }
       
@@ -221,7 +219,8 @@ const CheckIn = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            deviceId: notificationState.deviceId
+            deviceId: notificationState.deviceId,
+            checkInDate: checkInDate.toISOString() // Aggiungiamo la data del check-in
           })
         });
 

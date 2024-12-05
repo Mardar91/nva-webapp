@@ -11,25 +11,19 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
   try {
     console.log('Starting sendCheckInNotification with:', { deviceId, checkInDate });
 
-    // Calcola quando inviare la notifica considerando il timezone italiano
+    // Calcola quando inviare la notifica
     const checkInDateTime = new Date(checkInDate);
     const notificationDate = new Date(checkInDateTime);
     notificationDate.setDate(notificationDate.getDate() - 1);
     
-    // Se è dopo le 9:00, invia la notifica subito
+    // Se è dopo le 9:00, invia la notifica subito, altrimenti programma per le 9:00
     const now = new Date();
-    const italianOffset = 60; // UTC+1 in minuti
-    now.setMinutes(now.getMinutes() + italianOffset);
-
     if (now.getHours() >= 9) {
-      // Imposta la notifica per un minuto dopo
-      const sendAfter = new Date(now.getTime() + 60000);
-      console.log('Setting immediate notification for:', sendAfter.toISOString());
-      notificationDate.setTime(sendAfter.getTime());
+      // Se è già passato le 9:00, invia la notifica dopo 1 minuto
+      notificationDate.setTime(now.getTime() + 60000);
     } else {
-      // Imposta per le 9:00 del giorno di notifica
+      // Altrimenti programma per le 9:00
       notificationDate.setHours(9, 0, 0, 0);
-      console.log('Setting scheduled notification for 9AM:', notificationDate.toISOString());
     }
 
     console.log('Calculated notification date:', notificationDate.toISOString());
@@ -49,12 +43,11 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
         notification_id: `checkin-${randomUUID()}`
       },
       send_after: notificationDate.toISOString(),
-      timezone: "Europe/Rome",
+      delayed_option: "timezone",
+      idempotency_key: randomUUID(),
       priority: 10,
-      ttl: 259200, // 3 days in seconds
       ios_sound: "default",
-      android_sound: "default",
-      idempotency_key: randomUUID()
+      android_sound: "default"
     };
 
     console.log('Sending notification payload to OneSignal:', notificationPayload);
@@ -158,24 +151,13 @@ export default async function handler(request: VercelRequest, response: VercelRe
         });
       }
 
-      // Calcola le date per la verifica, considerando il timezone italiano
+      // Verifica che la data di check-in sia nel futuro
       const now = new Date();
-      const italianOffset = 60; // UTC+1 in minuti
-      now.setMinutes(now.getMinutes() + italianOffset);
-
-      const checkInDateTime = new Date(dateObj);
-      checkInDateTime.setMinutes(checkInDateTime.getMinutes() + italianOffset);
-
-      // Rimuovi l'orario per confrontare solo le date
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const checkInDay = new Date(checkInDateTime.getFullYear(), checkInDateTime.getMonth(), checkInDateTime.getDate());
-
-      // Verifica che la data di check-in non sia nel passato
-      if (checkInDay < today) {
-        console.error('Check-in date cannot be in the past');
+      if (dateObj <= now) {
+        console.error('Check-in date must be in the future');
         return response.status(400).json({
           success: false,
-          message: 'Check-in date cannot be in the past'
+          message: 'Check-in date must be in the future'
         });
       }
 

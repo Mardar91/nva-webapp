@@ -39,7 +39,6 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
   );
   const [hasNotificationPermission, setHasNotificationPermission] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastNotificationSent, setLastNotificationSent] = useState<string | null>(null);
 
   // Verifica il supporto delle notifiche
   useEffect(() => {
@@ -87,21 +86,6 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
       const updateCountdown = () => {
         const { shouldSend, daysUntilCheckIn } = calculateNotificationTiming(checkInDate);
         setDaysUntilCheckIn(daysUntilCheckIn);
-
-        // Impedisce l'invio di notifiche duplicate nello stesso giorno
-        const today = new Date().toISOString().split('T')[0];
-        if (shouldSend && isSubscribed && deviceId && lastNotificationSent !== today) {
-          checkAndSendNotification().then(success => {
-            if (success) {
-              setLastNotificationSent(today);
-              setNotificationState(prev => ({
-                ...prev,
-                notificationSent: true,
-                lastNotificationDate: today
-              }));
-            }
-          });
-        }
       };
 
       updateCountdown();
@@ -111,7 +95,7 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
       
       return () => clearInterval(intervalId);
     }
-  }, [checkInDate, isSubscribed, deviceId, lastNotificationSent]);
+  }, [checkInDate]);
 
   // Richiedi i permessi per le notifiche
   const requestPermission = useCallback(async () => {
@@ -134,24 +118,10 @@ export const useNotifications = (checkInDate?: Date | null): UseNotificationsRet
       
       const { daysUntilCheckIn: days } = calculateNotificationTiming(date);
       setDaysUntilCheckIn(days);
-
-      // Verifica se è già stata inviata una notifica oggi
-      const today = new Date().toISOString().split('T')[0];
-      if (days === 1 && isSubscribed && deviceId && lastNotificationSent !== today) {
-        const success = await checkAndSendNotification();
-        if (success) {
-          setLastNotificationSent(today);
-          setNotificationState(prev => ({
-            ...prev,
-            notificationSent: true,
-            lastNotificationDate: today
-          }));
-        }
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to set check-in date');
     }
-  }, [isSubscribed, deviceId, lastNotificationSent]);
+  }, []);
 
   return {
     isSupported,

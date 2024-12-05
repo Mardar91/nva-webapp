@@ -177,7 +177,7 @@ if (typeof window !== 'undefined') {
           Install Nonna Vittoria Apartments
         </div>
         <div class="text-gray-600 mb-4">
-          Get faster access to bookings and special offers
+          For the best experience and quicker access to check-in
         </div>
       </div>
       <div class="flex gap-3 w-full">

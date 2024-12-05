@@ -238,7 +238,7 @@ async function cancelExistingScheduledNotifications() {
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   // CORS headers
   response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  response.setHeader('Access-Control-Allow-Methods', 'POST, DELETE, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (request.method === 'OPTIONS') {

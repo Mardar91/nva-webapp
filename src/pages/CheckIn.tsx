@@ -199,40 +199,44 @@ const CheckIn = () => {
   }, [notificationState.deviceId, setNotificationState]);
 
   // Gestione del countdown e invio notifica
-  const handleDayChange = async (daysLeft: number) => {
-    if (daysLeft === 1 && !notificationState.notificationSent && notificationState.deviceId) {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        if (notificationState.lastNotificationDate !== today) {
-          const response = await fetch('/api/check-in-notification', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              deviceId: notificationState.deviceId
-            })
-          });
+const handleDayChange = async (daysLeft: number) => {
+  // Verifichiamo che sia il momento giusto per inviare la notifica e che non sia già stata inviata
+  if (daysLeft === 1 && notificationState.deviceId) {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Controlliamo se non abbiamo già inviato una notifica oggi
+      if (!notificationState.notificationSent || notificationState.lastNotificationDate !== today) {
+        const response = await fetch('/api/check-in-notification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            deviceId: notificationState.deviceId
+          })
+        });
 
-          if (response.ok) {
-            setNotificationState(prev => ({
-              ...prev,
-              notificationSent: true,
-              lastNotificationDate: today
-            }));
-          }
+        // Aggiorniamo lo stato solo se la richiesta ha avuto successo
+        if (response.ok) {
+          setNotificationState(prev => ({
+            ...prev,
+            notificationSent: true,
+            lastNotificationDate: today
+          }));
         }
-      } catch (error) {
-        console.error('Error sending notification:', error);
       }
+    } catch (error) {
+      console.error('Error sending notification:', error);
     }
-  };
+  }
+};
 
-  useEffect(() => {
-    if (checkInDate) {
-      setDateSelected(true);
-    }
-  }, [checkInDate]);
+useEffect(() => {
+  if (checkInDate) {
+    setDateSelected(true);
+  }
+}, [checkInDate]);
 
   const validateDate = (selectedDate: Date) => {
     const currentDate = new Date();

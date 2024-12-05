@@ -48,7 +48,7 @@
     {
       "path": "/api/auto-recurring-notification",
       "schedule": "0 0 1 * *",
-      "method": "POST"  // Aggiungiamo questa riga
+      "method": "POST"
     }
   ]
 }

@@ -15,14 +15,12 @@ interface Event {
 }
 
 const CurrentEventBadge = () => (
-  <div className="absolute top-4 right-4">
-    <div className="flex items-center gap-1">
-      <span className="relative flex h-3 w-3">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-      </span>
-      <span className="text-xs font-medium text-green-600">Live</span>
-    </div>
+  <div className="flex items-center gap-1.5 mt-2">
+    <span className="relative flex h-2.5 w-2.5">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+    </span>
+    <span className="text-xs font-medium text-green-600">Today</span>
   </div>
 );
 
@@ -53,7 +51,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="font-semibold text-lg text-[#1e3a8a] dark:text-[#60A5FA] pr-8">
+              <h3 className="font-semibold text-lg text-[#1e3a8a] dark:text-[#60A5FA]">
                 {event.title}
               </h3>
               <div className="flex items-center mt-2 text-gray-600 dark:text-gray-300">
@@ -61,12 +59,14 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <span className="text-sm">{event.city}</span>
               </div>
             </div>
-            <div className="flex items-center">
-              <Calendar className="w-4 h-4 mr-1 text-[#1e3a8a] dark:text-[#60A5FA]" />
-              <span className="text-sm font-medium">{formattedDate}</span>
+            <div className="flex flex-col items-end">
+              <div className="flex items-center">
+                <Calendar className="w-4 h-4 mr-1 text-[#1e3a8a] dark:text-[#60A5FA]" />
+                <span className="text-sm font-medium">{formattedDate}</span>
+              </div>
+              {isCurrentEvent() && <CurrentEventBadge />}
             </div>
           </div>
-          {isCurrentEvent() && <CurrentEventBadge />}
         </CardContent>
       </Card>
     </motion.div>

@@ -144,7 +144,7 @@ const Explore: React.FC = () => {
     { name: 'Mola di Bari', path: '/cities/mola-di-bari', icon: <Building2 size={32} color="#60A5FA" /> },
     { name: 'Polignano a Mare', path: '/cities/polignano-a-mare', icon: <TreePalm size={32} color="#60A5FA" /> },
     { name: 'Monopoli', path: '/cities/monopoli', icon: <Ship size={32} color="#60A5FA" /> },
-    { name: 'Bari', path: '/cities/bari', icon: <building size={32} color="#60A5FA" /> }
+    { name: 'Bari', path: '/cities/bari', icon: <Building size={32} color="#60A5FA" /> }
   ];
 
   return (

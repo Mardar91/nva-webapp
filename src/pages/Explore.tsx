@@ -1,9 +1,56 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Calendar, MapPin, Building2, TreePalm, Ship, Church } from "lucide-react";
 import { motion } from "framer-motion";
+
+// Aggiung stili per il luccichio del pulsante
+const shimmerStyles = `
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer {
+    0% { left: -100% }
+    100% { left: 200% }
+  }
+  
+  .live-badge {
+    position: relative;
+  }
+  .live-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 9999px;
+    background-color: #22c55e;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+`;
 
 interface Event {
   id: string;
@@ -18,15 +65,17 @@ interface Event {
 const CurrentEventBadge = () => (
   <div className="absolute -top-2 -right-2">
     <div className="relative">
-      <div className="absolute inset-0 animate-ping rounded-full bg-green-400 opacity-25"></div>
-      <div className="relative rounded-full bg-green-500 px-2 py-1 text-xs text-white">
-        Today
-      </div>
+      <span className="flex h-6 w-6">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-6 w-6 bg-green-500 justify-center items-center text-white text-xs">
+          Live
+        </span>
+      </span>
     </div>
   </div>
 );
 
-// Componente EventCard
+// EventCard Component rimane lo stesso ma miglioriamo il check per l'evento corrente
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -34,14 +83,11 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   }).format(event.startDate);
 
   const isCurrentEvent = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const eventStart = new Date(event.startDate);
-    eventStart.setHours(0, 0, 0, 0);
-    const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
-    eventEnd.setHours(23, 59, 59, 999);
+    const now = new Date();
+    const start = new Date(event.startDate);
+    const end = event.endDate ? new Date(event.endDate) : start;
     
-    return today >= eventStart && today <= eventEnd;
+    return now >= start && now <= end;
   };
 
   return (
@@ -75,7 +121,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   );
 };
 
-// Componente CityButton
+// City Button Component
 const CityButton: React.FC<{ 
   city: string;
   icon: React.ReactNode;
@@ -87,10 +133,11 @@ const CityButton: React.FC<{
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay }}
+      className="w-full"
     >
       <button 
         onClick={onClick}
-        className="heroButton"
+        className="heroButton w-full"
       >
         <span className="heroIcon">{icon}</span>
         <span className="heroText">{city}</span>
@@ -101,9 +148,22 @@ const CityButton: React.FC<{
 
 const Explore: React.FC = () => {
   const navigate = useNavigate();
-
   const scrollToRef = React.useRef<HTMLDivElement>(null);
   
+  useEffect(() => {
+    // Aggiorna il colore della status bar
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) {
+      themeColor.setAttribute('content', '#1e3a8a');
+    }
+    
+    return () => {
+      if (themeColor) {
+        themeColor.setAttribute('content', '#ffffff');
+      }
+    };
+  }, []);
+
   const handleScrollToCities = () => {
     scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -149,6 +209,9 @@ const Explore: React.FC = () => {
 
   return (
     <div className="flex-grow overflow-y-auto">
+      {/* Aggiungiamo gli stili per il luccichio */}
+      <style>{shimmerStyles}</style>
+      
       {/* Hero Section */}
       <div className="bg-[#1e3a8a] dark:bg-gray-900 text-white py-16 px-4">
         <motion.div
@@ -166,7 +229,7 @@ const Explore: React.FC = () => {
           <Button 
             onClick={handleScrollToCities}
             variant="outline" 
-            className="bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
+            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
           >
             Go to Cities
           </Button>
@@ -191,18 +254,28 @@ const Explore: React.FC = () => {
           </div>
         </section>
 
-        {/* Cities Grid */}
-        <div ref={scrollToRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {cities.map((city, index) => (
-            <CityButton
-              key={city.name}
-              city={city.name}
-              icon={city.icon}
-              onClick={() => navigate(city.path)}
-              delay={0.1 * index}
-            />
-          ))}
-        </div>
+        {/* Cities Section */}
+        <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+          <motion.h2
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6 text-center"
+          >
+            Cities
+          </motion.h2>
+          <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+            {cities.map((city, index) => (
+              <CityButton
+                key={city.name}
+                city={city.name}
+                icon={city.icon}
+                onClick={() => navigate(city.path)}
+                delay={0.1 * index}
+              />
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );

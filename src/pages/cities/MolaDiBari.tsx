@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, ArrowLeft } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 
 interface Event {
   id: string;
@@ -108,11 +109,15 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
 );
 
 const MolaDiBari: React.FC = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
       themeColor.setAttribute('content', '#0d9488'); // Teal-600
     }
+    // Assicuriamoci di scrollare all'inizio della pagina quando il componente viene montato
+    window.scrollTo(0, 0);
     return () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
@@ -128,13 +133,33 @@ const MolaDiBari: React.FC = () => {
       city: 'Mola di Bari',
       description: 'Traditional octopus festival'
     },
-    // Add more events specific to Mola di Bari
+    {
+      id: '2',
+      title: 'Festa del Mare',
+      startDate: new Date(new Date().setDate(new Date().getDate() + 5)),
+      city: 'Mola di Bari',
+      description: 'Traditional sea celebration'
+    },
+    {
+      id: '3',
+      title: 'Festa Patronale',
+      startDate: new Date(new Date().setDate(new Date().getDate() + 15)),
+      city: 'Mola di Bari',
+      description: 'Patron saint celebration'
+    },
+    {
+      id: '4',
+      title: 'Christmas Market',
+      startDate: new Date(new Date().setDate(new Date().getDate() + 20)),
+      city: 'Mola di Bari',
+      description: 'Traditional Christmas market'
+    }
   ];
 
   const attractions: Attraction[] = [
     { name: 'Lungomare', icon: '🌅' },
     { name: 'Chiesa Matrice', icon: '⛪' },
-    { name: 'Castello', icon: '🏰' },
+    { name: 'Castello Angioino', icon: '🏰' },
     { name: 'Piazza XX Settembre', icon: '⛲' },
     { name: 'Chiesa Maddalena', icon: '🕍' },
     { name: 'Palazzo Roberti', icon: '🏛️' },
@@ -150,6 +175,40 @@ const MolaDiBari: React.FC = () => {
 
   return (
     <div className="flex-grow overflow-y-auto">
+      <style>{`
+        .shimmer {
+          position: relative;
+          overflow: hidden;
+        }
+        .shimmer::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 50%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+          );
+          animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+          0% { left: -100% }
+          100% { left: 200% }
+        }
+      `}</style>
+
+      {/* Back Button */}
+      <button
+        onClick={() => navigate('/explore')}
+        className="fixed top-4 left-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
+      >
+        <ArrowLeft className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+      </button>
+
       {/* Hero Section */}
       <div className="bg-teal-600 dark:bg-teal-900 text-white py-16 px-4">
         <motion.div

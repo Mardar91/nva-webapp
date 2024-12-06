@@ -22,12 +22,20 @@ const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
   <AnimatePresence>
     {show && (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="fixed top-16 right-4 bg-white/90 dark:bg-gray-800/90 px-4 py-2 rounded-lg shadow-lg"
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
       >
-        <span className="text-sm font-medium">Go to the next city</span>
+        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+        <motion.div
+          animate={{ x: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="ml-2"
+        >
+          →
+        </motion.div>
       </motion.div>
     )}
   </AnimatePresence>
@@ -40,25 +48,32 @@ interface NextCityButtonProps {
 const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
-
-  const handleMouseEnter = () => {
+  
+  useEffect(() => {
     setShowToast(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowToast(false);
-  };
+    const timer = setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>
       <NextCityToast show={showToast} />
       <button
         onClick={() => navigate(nextCityPath)}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className="fixed top-4 right-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all group"
+        onMouseEnter={() => setShowToast(true)}
+        onMouseLeave={() => setShowToast(false)}
+        className="fixed top-4 right-4 z-50 bg-rose-800 text-white p-3 rounded-full shadow-lg hover:bg-rose-700 transition-all group"
       >
-        <ArrowRight className="h-6 w-6 text-rose-800 dark:text-rose-400 group-hover:scale-110 transition-transform" />
+        <div className="relative flex items-center justify-center">
+          <ArrowRight className="h-5 w-5 group-hover:scale-110 transition-transform" />
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-white"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </div>
       </button>
     </>
   );

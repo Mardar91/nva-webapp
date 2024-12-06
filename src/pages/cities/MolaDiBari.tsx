@@ -119,7 +119,7 @@ const MolaDiBari: React.FC = () => {
   useEffect(() => {
     // Imposta lo scroll a 0 all'inizio
     window.scrollTo(0, 0);
-    mainRef.current?.scrollIntoView({ behavior: 'instant' });
+    mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {

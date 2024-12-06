@@ -181,13 +181,15 @@ const PoliganoAMare: React.FC = () => {
   const location = useLocation();
   const mainRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+   useEffect(() => {
     window.scrollTo(0, 0);
     mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      themeColor.setAttribute('content', '#1d4ed8'); // blue-700
+      // Cambiamo questi colori per matchare esattamente il colore di Bari
+      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      themeColor.setAttribute('content', isDarkMode ? '#1d4ed8' : '#1d4ed8'); 
     }
     return () => {
       if (themeColor) {

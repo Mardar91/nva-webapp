@@ -90,12 +90,14 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
 const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
   <Dialog>
     <DialogTrigger>
-      <button className="serviceButton">
-        <span className="text-2xl mb-2">{attraction.icon}</span>
-        <span className="serviceText text-teal-700 dark:text-teal-400">
-          {attraction.name}
-        </span>
-      </button>
+      <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
+        <div className="h-full flex flex-col items-center justify-center gap-2">
+          <span className="text-3xl">{attraction.icon}</span>
+          <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
+            {attraction.name}
+          </span>
+        </div>
+      </div>
     </DialogTrigger>
     <DialogContent>
       <DialogHeader>
@@ -112,12 +114,15 @@ const MolaDiBari: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fix per lo scroll iniziale
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      themeColor.setAttribute('content', '#0d9488'); // Teal-600
+      themeColor.setAttribute('content', '#0d9488');
     }
-    // Assicuriamoci di scrollare all'inizio della pagina quando il componente viene montato
-    window.scrollTo(0, 0);
     return () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
@@ -174,7 +179,7 @@ const MolaDiBari: React.FC = () => {
   };
 
   return (
-    <div className="flex-grow overflow-y-auto">
+    <div className="flex-grow">
       <style>{`
         .shimmer {
           position: relative;
@@ -261,7 +266,7 @@ const MolaDiBari: React.FC = () => {
           >
             Explore the City
           </motion.h2>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {attractions.map((attraction) => (
               <AttractionButton key={attraction.name} attraction={attraction} />
             ))}

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Calendar, MapPin, ArrowLeft } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react"; // Aggiunto useState
+import { motion, AnimatePresence } from "framer-motion"; // Aggiunto AnimatePresence
+import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react"; // Aggiunto ArrowRight
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -12,6 +12,64 @@ import {
   DialogTrigger,
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
+
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+      >
+        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+        <motion.div
+          animate={{ x: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="ml-2"
+        >
+          →
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
+const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
+  const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+  
+  // Mostra il tutorial automaticamente
+  useEffect(() => {
+    setShowToast(true);
+    const timer = setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      <NextCityToast show={showToast} />
+      <button
+        onClick={() => navigate(nextCityPath)}
+        onMouseEnter={() => setShowToast(true)}
+        onMouseLeave={() => setShowToast(false)}
+        className="fixed top-4 right-4 z-50 bg-teal-800 text-white p-3 rounded-full shadow-lg hover:bg-teal-700 transition-all group"
+      >
+        <div className="relative flex items-center justify-center">
+          <ArrowRight className="h-5 w-5 group-hover:scale-110 transition-transform" />
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-white"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </div>
+      </button>
+    </>
+  );
+};
 
 interface Event {
   id: string;

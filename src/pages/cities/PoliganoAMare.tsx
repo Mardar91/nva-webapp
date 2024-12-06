@@ -187,7 +187,7 @@ const PoliganoAMare: React.FC = () => {
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      themeColor.setAttribute('content', '#1e40af'); // blue-700
+      themeColor.setAttribute('content', '#1d4ed8'); // blue-700
     }
     return () => {
       if (themeColor) {

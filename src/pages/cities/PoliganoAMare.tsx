@@ -187,9 +187,9 @@ const PoliganoAMare: React.FC = () => {
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      // Cambiamo questi colori per matchare esattamente il colore di Bari
+      
       const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor.setAttribute('content', isDarkMode ? '#1d4ed8' : '#1d4ed8'); 
+      themeColor.setAttribute('content', isDarkMode ? '#3662e1' : '#3662e1'); 
     }
     return () => {
       if (themeColor) {

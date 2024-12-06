@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react"; // Aggiunto useState
-import { motion, AnimatePresence } from "framer-motion"; // Aggiunto AnimatePresence
-import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react"; // Aggiunto ArrowRight
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -13,6 +13,11 @@ import {
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 
+// Next City Components
+interface NextCityToastProps {
+  show: boolean;
+}
+
 const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
   <AnimatePresence>
     {show && (
@@ -21,7 +26,7 @@ const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 50 }}
         transition={{ duration: 0.5 }}
-        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+        className="fixed top-4 right-16 z-50 bg-teal-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
       >
         <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
         <motion.div
@@ -36,11 +41,14 @@ const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
   </AnimatePresence>
 );
 
+interface NextCityButtonProps {
+  nextCityPath: string;
+}
+
 const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
   
-  // Mostra il tutorial automaticamente
   useEffect(() => {
     setShowToast(true);
     const timer = setTimeout(() => {
@@ -56,7 +64,7 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
         onClick={() => navigate(nextCityPath)}
         onMouseEnter={() => setShowToast(true)}
         onMouseLeave={() => setShowToast(false)}
-        className="fixed top-4 right-4 z-50 bg-teal-800 text-white p-3 rounded-full shadow-lg hover:bg-teal-700 transition-all group"
+        className="fixed top-4 right-4 z-50 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700 transition-all group"
       >
         <div className="relative flex items-center justify-center">
           <ArrowRight className="h-5 w-5 group-hover:scale-110 transition-transform" />
@@ -173,26 +181,23 @@ const MolaDiBari: React.FC = () => {
   const location = useLocation();
   const mainRef = useRef<HTMLDivElement>(null);
 
-  // Gestione dello scroll all'inizio della pagina
   useEffect(() => {
-    // Imposta lo scroll a 0 all'inizio
     window.scrollTo(0, 0);
     mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      themeColor.setAttribute('content', '#0d9488');
+      themeColor.setAttribute('content', '#0d9488'); // teal-600
     }
     return () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
       }
     };
-  }, [location]); // Dipendenza da location per resettare lo scroll quando cambia la route
+  }, [location]);
 
   const handleBackClick = () => {
     navigate('/explore');
-    // Lo scroll verrà gestito nella pagina di destinazione
   };
 
   const molaEvents: Event[] = [
@@ -278,6 +283,9 @@ const MolaDiBari: React.FC = () => {
       >
         <ArrowLeft className="h-6 w-6 text-teal-600 dark:text-teal-400" />
       </button>
+
+      {/* Next City Button */}
+      <NextCityButton nextCityPath="/cities/polignano-a-mare" />
 
       {/* Hero Section */}
       <div className="bg-teal-600 dark:bg-teal-900 text-white py-16 px-4">

@@ -187,8 +187,9 @@ const Bari: React.FC = () => {
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
+      // Cambiamo questi colori per matchare esattamente il colore di Bari
       const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor.setAttribute('content', isDarkMode ? '#991b1b' : '#9b1c1c'); // rose-800
+      themeColor.setAttribute('content', isDarkMode ? '#be123c' : '#be123c'); // rose-800
     }
     return () => {
       if (themeColor) {

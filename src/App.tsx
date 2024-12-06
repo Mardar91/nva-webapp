@@ -18,6 +18,7 @@ import PrivateSettings from "./components/PrivateSettings";
 import MolaDiBari from "./pages/cities/MolaDiBari";
 import PoliganoAMare from "./pages/cities/PoliganoAMare";
 import Monopoli from "./pages/cities/Monopoli";
+import Bari from "./pages/cities/Bari";
 
 interface ExternalRedirectProps {
   to: string;
@@ -85,6 +86,7 @@ const AppContent: React.FC = () => {
         <Route path="/cities/mola-di-bari" element={<MolaDiBari />} />
         <Route path="/cities/polignano-a-mare" element={<PoliganoAMare />} />
         <Route path="/cities/monopoli" element={<Monopoli />} />
+        <Route path="/cities/bari" element={<Bari />} />
         <Route
           path="/taxi"
           element={

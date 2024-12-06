@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Calendar, MapPin, ArrowLeft } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -12,6 +12,72 @@ import {
   DialogTrigger,
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
+
+// Next City Components
+interface NextCityToastProps {
+  show: boolean;
+}
+
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-4 right-16 z-50 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+      >
+        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+        <motion.div
+          animate={{ x: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="ml-2"
+        >
+          →
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
+interface NextCityButtonProps {
+  nextCityPath: string;
+}
+
+const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
+  const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+  
+  useEffect(() => {
+    setShowToast(true);
+    const timer = setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      <NextCityToast show={showToast} />
+      <button
+        onClick={() => navigate(nextCityPath)}
+        onMouseEnter={() => setShowToast(true)}
+        onMouseLeave={() => setShowToast(false)}
+        className="fixed top-4 right-4 z-50 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all group"
+      >
+        <div className="relative flex items-center justify-center">
+          <ArrowRight className="h-5 w-5 group-hover:scale-110 transition-transform" />
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-white"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </div>
+      </button>
+    </>
+  );
+};
 
 interface Event {
   id: string;
@@ -116,21 +182,19 @@ const PoliganoAMare: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-  window.scrollTo(0, 0);
-  mainRef.current?.scrollIntoView({ behavior: 'auto' });
+    window.scrollTo(0, 0);
+    mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
-  const themeColor = document.querySelector('meta[name="theme-color"]');
-  if (themeColor) {
-    // Usiamo lo stesso blu della hero section
-    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    themeColor.setAttribute('content', isDarkMode ? '#1e3a91' : '#1d4ed8'); // blue-900 : blue-700
-  }
-  return () => {
+    const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      themeColor.setAttribute('content', '#ffffff');
+      themeColor.setAttribute('content', '#1d4ed8'); // blue-700
     }
-  };
-}, [location]);
+    return () => {
+      if (themeColor) {
+        themeColor.setAttribute('content', '#ffffff');
+      }
+    };
+  }, [location]);
 
   const handleBackClick = () => {
     navigate('/explore');
@@ -146,7 +210,7 @@ const PoliganoAMare: React.FC = () => {
     },
     {
       id: '2',
-      title: 'Festival of the Sea',
+      title: 'Festival del Mare',
       startDate: new Date(new Date().setDate(new Date().getDate() + 7)),
       city: 'Polignano a Mare',
       description: 'Traditional maritime celebration'
@@ -220,8 +284,11 @@ const PoliganoAMare: React.FC = () => {
         <ArrowLeft className="h-6 w-6 text-blue-600 dark:text-blue-400" />
       </button>
 
+      {/* Next City Button */}
+      <NextCityButton nextCityPath="/cities/monopoli" />
+
       {/* Hero Section */}
-      <div className="bg-blue-700 dark:bg-blue-900 text-white py-16 px-4">
+      <div className="bg-blue-600 dark:bg-blue-900 text-white py-16 px-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -237,7 +304,7 @@ const PoliganoAMare: React.FC = () => {
           <Button 
             onClick={handleExploreClick}
             variant="outline" 
-            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-blue-700 transition-colors"
+            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-blue-600 transition-colors"
           >
             Explore the City
           </Button>

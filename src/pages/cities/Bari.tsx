@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Calendar, MapPin, ArrowLeft } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -12,6 +12,57 @@ import {
   DialogTrigger,
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
+
+// Next City Components
+interface NextCityToastProps {
+  show: boolean;
+}
+
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="fixed top-16 right-4 bg-white/90 dark:bg-gray-800/90 px-4 py-2 rounded-lg shadow-lg"
+      >
+        <span className="text-sm font-medium">Go to the next city</span>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
+interface NextCityButtonProps {
+  nextCityPath: string;
+}
+
+const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
+  const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+
+  const handleMouseEnter = () => {
+    setShowToast(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowToast(false);
+  };
+
+  return (
+    <>
+      <NextCityToast show={showToast} />
+      <button
+        onClick={() => navigate(nextCityPath)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="fixed top-4 right-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all group"
+      >
+        <ArrowRight className="h-6 w-6 text-rose-800 dark:text-rose-400 group-hover:scale-110 transition-transform" />
+      </button>
+    </>
+  );
+};
 
 interface Event {
   id: string;
@@ -222,6 +273,9 @@ const Bari: React.FC = () => {
       >
         <ArrowLeft className="h-6 w-6 text-rose-800 dark:text-rose-400" />
       </button>
+
+      {/* Next City Button */}
+      <NextCityButton nextCityPath="/cities/mola-di-bari" />
 
       {/* Hero Section */}
       <div className="bg-rose-800 dark:bg-rose-900 text-white py-16 px-4">

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, ArrowLeft } from "lucide-react";
 import { Button } from "../../components/ui/button";
@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../components/ui/dialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface Event {
   id: string;
@@ -112,12 +112,14 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
 
 const MolaDiBari: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const mainRef = useRef<HTMLDivElement>(null);
 
+  // Gestione dello scroll all'inizio della pagina
   useEffect(() => {
-    // Fix per lo scroll iniziale
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 0);
+    // Imposta lo scroll a 0 all'inizio
+    window.scrollTo(0, 0);
+    mainRef.current?.scrollIntoView({ behavior: 'instant' });
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
@@ -128,7 +130,12 @@ const MolaDiBari: React.FC = () => {
         themeColor.setAttribute('content', '#ffffff');
       }
     };
-  }, []);
+  }, [location]); // Dipendenza da location per resettare lo scroll quando cambia la route
+
+  const handleBackClick = () => {
+    navigate('/explore');
+    // Lo scroll verrà gestito nella pagina di destinazione
+  };
 
   const molaEvents: Event[] = [
     {
@@ -172,14 +179,14 @@ const MolaDiBari: React.FC = () => {
     { name: 'Centro Storico', icon: '🏘️' }
   ];
 
-  const scrollToRef = React.useRef<HTMLDivElement>(null);
+  const scrollToRef = useRef<HTMLDivElement>(null);
   
   const handleExploreClick = () => {
     scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div className="flex-grow">
+    <div className="flex-grow" ref={mainRef}>
       <style>{`
         .shimmer {
           position: relative;
@@ -208,7 +215,7 @@ const MolaDiBari: React.FC = () => {
 
       {/* Back Button */}
       <button
-        onClick={() => navigate('/explore')}
+        onClick={handleBackClick}
         className="fixed top-4 left-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
       >
         <ArrowLeft className="h-6 w-6 text-teal-600 dark:text-teal-400" />
@@ -220,7 +227,7 @@ const MolaDiBari: React.FC = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto"
+          className="text-center max-w-3xl mx-auto pt-8"
         >
           <h1 className="text-3xl font-bold mb-4">
             Mola di Bari

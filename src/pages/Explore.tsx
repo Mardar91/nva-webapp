@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Calendar, MapPin, building2, TreePalm, Ship, building } from "lucide-react";
+import { Calendar, MapPin, Building2, TreePalm, Ship, building } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Event {
@@ -141,7 +141,7 @@ const Explore: React.FC = () => {
   ];
 
   const cities = [
-    { name: 'Mola di Bari', path: '/cities/mola-di-bari', icon: <building2 size={32} color="#60A5FA" /> },
+    { name: 'Mola di Bari', path: '/cities/mola-di-bari', icon: <Building2 size={32} color="#60A5FA" /> },
     { name: 'Polignano a Mare', path: '/cities/polignano-a-mare', icon: <TreePalm size={32} color="#60A5FA" /> },
     { name: 'Monopoli', path: '/cities/monopoli', icon: <Ship size={32} color="#60A5FA" /> },
     { name: 'Bari', path: '/cities/bari', icon: <building size={32} color="#60A5FA" /> }

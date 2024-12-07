@@ -1,9 +1,83 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "../components/ui/card";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Calendar, MapPin, Building2, TreePalm, Ship, Church } from "lucide-react";
-import { motion } from "framer-motion";
+import { Card, CardContent } from "../components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import { useNavigate, useLocation } from "react-router-dom";
+
+// Next City Components
+interface NextCityToastProps {
+  show: boolean;
+}
+
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+      >
+        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+        <motion.div
+          animate={{ x: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="ml-2"
+        >
+          →
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
+interface NextCityButtonProps {
+  nextCityPath: string;
+}
+
+const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
+  const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+  
+  useEffect(() => {
+    setShowToast(true);
+    const timer = setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      <NextCityToast show={showToast} />
+      <button
+        onClick={() => navigate(nextCityPath)}
+        onMouseEnter={() => setShowToast(true)}
+        onMouseLeave={() => setShowToast(false)}
+        className="fixed top-4 right-4 z-50 bg-rose-800 text-white p-3 rounded-full shadow-lg hover:bg-rose-700 transition-all group"
+      >
+        <div className="relative flex items-center justify-center">
+          <ArrowRight className="h-5 w-5 group-hover:scale-110 transition-transform" />
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-white"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </div>
+      </button>
+    </>
+  );
+};
 
 interface Event {
   id: string;
@@ -12,6 +86,12 @@ interface Event {
   endDate?: Date;
   city: string;
   description: string;
+}
+
+interface Attraction {
+  name: string;
+  icon: React.ReactNode;
+  description?: string;
 }
 
 const CurrentEventBadge = () => (
@@ -23,7 +103,6 @@ const CurrentEventBadge = () => (
     <span className="text-xs font-medium text-green-600">Today</span>
   </div>
 );
-
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -97,7 +176,7 @@ const CityButton: React.FC<{
 
 const Explore: React.FC = () => {
   const navigate = useNavigate();
-  const scrollToRef = React.useRef<HTMLDivElement>(null);
+  const scrollToRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -110,10 +189,6 @@ const Explore: React.FC = () => {
       }
     };
   }, []);
-
-  const handleScrollToCities = () => {
-    scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   const events: Event[] = [
     {
@@ -154,33 +229,16 @@ const Explore: React.FC = () => {
   ];
 
   return (
-    <div className="flex-grow overflow-y-auto">
-      <style>{`
-        .shimmer {
-          position: relative;
-          overflow: hidden;
-        }
-        .shimmer::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 50%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.3),
-            transparent
-          );
-          animation: shimmer 3s infinite;
-        }
-        @keyframes shimmer {
-          0% { left: -100% }
-          100% { left: 200% }
-        }
-      `}</style>
-      
+    <div 
+      className="giftCardSection overflow-y-auto pb-24" 
+      style={{
+        height: 'calc(100vh - 88px)',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'none',
+        position: 'relative',
+        zIndex: 1
+      }}
+    >
       <div className="bg-[#1e3a8a] dark:bg-gray-900 text-white py-16 px-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -195,7 +253,7 @@ const Explore: React.FC = () => {
             Discover magnificent cultural cities and unforgettable events in the surroundings.
           </p>
           <Button 
-            onClick={handleScrollToCities}
+            onClick={() => scrollToRef.current?.scrollIntoView({ behavior: 'smooth' })}
             variant="outline" 
             className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
           >

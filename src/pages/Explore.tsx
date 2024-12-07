@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
+import { 
+  Calendar, 
+  MapPin, 
+  ArrowLeft, 
+  ArrowRight,
+  Building2,
+  TreePalm,
+  Ship,
+  Church
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import {

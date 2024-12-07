@@ -112,6 +112,8 @@ const CurrentEventBadge = () => (
     <span className="text-xs font-medium text-green-600">Today</span>
   </div>
 );
+
+// EventCard component remains the same as before...
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -160,7 +162,6 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     </motion.div>
   );
 };
-
 const CityButton: React.FC<{ 
   city: string;
   icon: React.ReactNode;
@@ -248,12 +249,47 @@ const Explore: React.FC = () => {
         zIndex: 1
       }}
     >
-      <div className="bg-[#1e3a8a] dark:bg-gray-900 text-white py-16 px-4">
+      <style>{`
+        .shimmer-button {
+          position: relative;
+          overflow: hidden;
+        }
+        .shimmer-button::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 200%;
+          height: 100%;
+          background: linear-gradient(
+            115deg,
+            transparent 0%,
+            transparent 40%,
+            rgba(255, 255, 255, 0.3) 50%,
+            transparent 60%,
+            transparent 100%
+          );
+          animation: shimmer 3s infinite linear;
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(50%); }
+        }
+      `}</style>
+
+      <div 
+        className="bg-[#1e3a8a] dark:bg-gray-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
+        style={{
+          paddingTop: '4rem',
+          paddingBottom: '4rem',
+          marginBottom: '2rem'
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto"
+          className="text-center max-w-3xl mx-auto px-4"
         >
           <h1 className="text-3xl font-bold mb-4">
             Explore Puglia
@@ -264,14 +300,14 @@ const Explore: React.FC = () => {
           <Button 
             onClick={() => scrollToRef.current?.scrollIntoView({ behavior: 'smooth' })}
             variant="outline" 
-            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
+            className="shimmer-button bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
           >
             Go to Cities
           </Button>
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pb-8">
         <section className="mb-12">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
@@ -282,7 +318,7 @@ const Explore: React.FC = () => {
             Upcoming Events
           </motion.h2>
           <div className="grid gap-4">
-            {events.map((event, index) => (
+            {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>

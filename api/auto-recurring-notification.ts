@@ -15,7 +15,7 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     title: "🎁 Merry Christmas from Nonna Vittoria Apartments!",
     message: "Wishing you a joyful Christmas! 🎅✨ May your day be filled with happiness, peace, and unforgettable moments.",
     month: 12,
-    day: 7,
+    day: 8,
     hour: 9,
     minute: 35
   },
@@ -59,7 +59,7 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     hour: 12,
     minute: 0
   },
-  {
+{
     title: "Summer Vibes 🌞",
     message: "Kick off your summer at Mola di Bari. Relax by the sea and immerse yourself in the local culture!",
     month: 6,
@@ -115,8 +115,7 @@ async function scheduleNotificationsForNextMonth() {
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 2, 0); // Ultimo giorno del prossimo mese
   
   console.log(`Scheduling notifications from ${now.toISOString()} to ${monthEnd.toISOString()}`);
-  
-  // Filtra le notifiche per il prossimo mese
+// Filtra le notifiche per il prossimo mese
   const relevantNotifications = ALL_NOTIFICATIONS.filter(notification => {
     const notificationDate = new Date(
       now.getFullYear(),
@@ -167,8 +166,7 @@ async function scheduleNotificationsForNextMonth() {
 
     try {
       console.log(`Attempting to schedule: ${notification.title} for ${notificationDate.toISOString()}`);
-      
-      const notificationResponse = await fetch('https://onesignal.com/api/v1/notifications', {
+const notificationResponse = await fetch('https://onesignal.com/api/v1/notifications', {
         method: 'POST',
         headers: {
           'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
@@ -234,25 +232,29 @@ async function cancelExistingScheduledNotifications() {
     return false;
   }
 }
-
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   // CORS headers
   response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'POST, DELETE, OPTIONS');
+  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (request.method === 'OPTIONS') {
     return response.status(200).end();
   }
 
-  // Verifica se la richiesta viene dal cron di Vercel
-  const isVercelCron = request.headers['user-agent']?.includes('vercel-cron');
+  // Identifica se la richiesta viene dal cron di Vercel
+  const isVercelCron = request.headers['x-vercel-cron'] === '1' || 
+                      request.headers['user-agent']?.includes('vercel-cron');
 
-  // Se è una richiesta GET dal cron di Vercel, trattala come POST
-  if (isVercelCron || request.method === 'POST') {
+  // Log per debugging
+  console.log('Request headers:', request.headers);
+  console.log('Is Vercel Cron?', isVercelCron);
+  console.log('Request method:', request.method);
+
+  // Gestisci sia GET che POST per il cron e le richieste manuali
+  if ((request.method === 'GET' && isVercelCron) || request.method === 'POST') {
     try {
-      console.log('Starting monthly notification scheduling...');
-      console.log('Request from:', isVercelCron ? 'Vercel Cron' : 'Manual POST');
+      console.log(`Processing ${request.method} request from ${isVercelCron ? 'cron job' : 'manual trigger'}`);
       
       // Prima cancella le notifiche esistenti
       await cancelExistingScheduledNotifications();
@@ -262,16 +264,20 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
       return response.status(200).json({
         success: true,
-        message: 'Notifications scheduled for next month',
+        message: `Notifications scheduled via ${isVercelCron ? 'cron job' : 'manual request'}`,
         totalScheduled: scheduledNotifications.length,
-        notifications: scheduledNotifications
+        notifications: scheduledNotifications,
+        trigger: isVercelCron ? 'cron-get' : 'manual-post',
+        timestamp: new Date().toISOString()
       });
     } catch (error) {
       console.error('Error scheduling notifications:', error);
       return response.status(500).json({
         success: false,
-        message: 'Failed to schedule notifications',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        message: `Failed to schedule notifications via ${isVercelCron ? 'cron job' : 'manual request'}`,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        trigger: isVercelCron ? 'cron-get' : 'manual-post',
+        timestamp: new Date().toISOString()
       });
     }
   }
@@ -309,13 +315,17 @@ export default async function handler(request: VercelRequest, response: VercelRe
       return response.status(200).json({
         success: true,
         totalCount: data.total_count,
-        notifications: scheduledNotifications
+        notifications: scheduledNotifications,
+        trigger: 'manual-get',
+        timestamp: new Date().toISOString()
       });
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch notifications',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        trigger: 'manual-get',
+        timestamp: new Date().toISOString()
       });
     }
   }
@@ -326,16 +336,22 @@ export default async function handler(request: VercelRequest, response: VercelRe
       const success = await cancelExistingScheduledNotifications();
       return response.status(200).json({
         success: true,
-        message: success ? 'All notifications cancelled successfully' : 'No notifications to cancel'
+        message: success ? 'All notifications cancelled successfully' : 'No notifications to cancel',
+        timestamp: new Date().toISOString()
       });
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to cancel notifications',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
       });
     }
   }
 
-  return response.status(405).json({ error: 'Method not allowed' });
+  return response.status(405).json({ 
+    error: 'Method not allowed',
+    timestamp: new Date().toISOString() 
+  });
 }
+

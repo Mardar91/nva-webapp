@@ -186,7 +186,7 @@ const Monopoli: React.FC = () => {
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      themeColor.setAttribute('content', '#4338ca'); // indigo-600
+      themeColor.setAttribute('content', '#4f46e5'); // indigo-600
     }
     return () => {
       if (themeColor) {

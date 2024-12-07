@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Calendar, MapPin, ArrowLeft } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -12,6 +12,72 @@ import {
   DialogTrigger,
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
+
+// Next City Components
+interface NextCityToastProps {
+  show: boolean;
+}
+
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-4 right-16 z-50 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+      >
+        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+        <motion.div
+          animate={{ x: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="ml-2"
+        >
+          →
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
+interface NextCityButtonProps {
+  nextCityPath: string;
+}
+
+const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
+  const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+  
+  useEffect(() => {
+    setShowToast(true);
+    const timer = setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      <NextCityToast show={showToast} />
+      <button
+        onClick={() => navigate(nextCityPath)}
+        onMouseEnter={() => setShowToast(true)}
+        onMouseLeave={() => setShowToast(false)}
+        className="fixed top-4 right-4 z-50 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all group"
+      >
+        <div className="relative flex items-center justify-center">
+          <ArrowRight className="h-5 w-5 group-hover:scale-110 transition-transform" />
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-white"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </div>
+      </button>
+    </>
+  );
+};
 
 interface Event {
   id: string;
@@ -37,7 +103,6 @@ const CurrentEventBadge = () => (
     <span className="text-xs font-medium text-green-600">Today</span>
   </div>
 );
-
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -121,8 +186,7 @@ const Monopoli: React.FC = () => {
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor.setAttribute('content', isDarkMode ? '#4338ca' : '#4f46e5'); // indigo-700
+      themeColor.setAttribute('content', '#4338ca'); // indigo-600
     }
     return () => {
       if (themeColor) {
@@ -218,6 +282,9 @@ const Monopoli: React.FC = () => {
       >
         <ArrowLeft className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
       </button>
+
+      {/* Next City Button */}
+      <NextCityButton nextCityPath="/cities/bari" />
 
       {/* Hero Section */}
       <div className="bg-indigo-600 dark:bg-indigo-900 text-white py-16 px-4">

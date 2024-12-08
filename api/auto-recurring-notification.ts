@@ -15,7 +15,7 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     title: "🎁 Merry Christmas from Nonna Vittoria Apartments!",
     message: "Wishing you a joyful Christmas! 🎅✨ May your day be filled with happiness, peace, and unforgettable moments.",
     month: 12,
-    day: 8,
+    day: 25,
     hour: 9,
     minute: 35
   },
@@ -23,8 +23,8 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     title: "🎉 Happy New Year! 🥂",
     message: "Discover Puglia this new year with Nonna Vittoria Apartments. Wishing you joy and prosperity!",
     month: 1,
-    day: 1,
-    hour: 0,
+    day: 2,
+    hour: 10,
     minute: 1
   },
   {
@@ -55,7 +55,7 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     title: "May Magic 🌺",
     message: "Enjoy sunny walks and local events in Mola di Bari. Discover the magic of May with Nonna Vittoria Apartments.",
     month: 5,
-    day: 1,
+    day: 3,
     hour: 12,
     minute: 0
   },
@@ -87,7 +87,7 @@ const ALL_NOTIFICATIONS: HolidayNotification[] = [
     title: "Sacred & Profane ✨",
     message: "Join the Patronal Feast of Maria SS. Addolorata and explore Mola di Bari's historical treasures this September.",
     month: 9,
-    day: 1,
+    day: 2,
     hour: 12,
     minute: 0
   },

@@ -278,17 +278,16 @@ const Monopoli: React.FC = () => {
           height: 100%;
           background: linear-gradient(
             90deg,
-            transparent 0%,
+            transparent,
             transparent 40%,
-            rgba(255, 255, 255, 0.3) 50%,
-            transparent 60%,
-            transparent 100%
+            rgba(255, 255, 255, 0.3),
+            transparent
           );
-          animation: shimmer 3s infinite linear;
+          animation: shimmer 3s infinite;
         }
         @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(50%); }
+          0% { left: -100% }
+          100% { left: 200% }
         }
       `}</style>
 

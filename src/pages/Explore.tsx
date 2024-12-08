@@ -8,7 +8,11 @@ import {
   Building2,
   TreePalm,
   Ship,
-  Church
+  Church,
+  PenLine,
+  Map,
+  DollarSign,
+  Cloud
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -21,6 +25,23 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+
+// Interfaces
+interface Note {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+}
+
+interface CurrencyOption {
+  code: string;
+  name: string;
+  symbol: string;
+  flag?: string;
+}
 
 // Next City Components
 interface NextCityToastProps {
@@ -87,7 +108,6 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
     </>
   );
 };
-
 interface Event {
   id: string;
   title: string;
@@ -113,7 +133,6 @@ const CurrentEventBadge = () => (
   </div>
 );
 
-// EventCard component remains the same as before...
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -162,6 +181,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     </motion.div>
   );
 };
+
 const CityButton: React.FC<{ 
   city: string;
   icon: React.ReactNode;
@@ -184,9 +204,247 @@ const CityButton: React.FC<{
   </motion.div>
 );
 
+// Nuovi componenti per le Utilities
+const NotesDialog: React.FC = () => {
+  const [notes, setNotes] = useState<Note[]>(() => {
+    const savedNotes = localStorage.getItem('travel-notes');
+    return savedNotes ? JSON.parse(savedNotes) : [];
+  });
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
+  const saveNote = () => {
+    if (!title.trim() || !content.trim()) return;
+    
+    const newNote = {
+      id: Date.now().toString(),
+      title,
+      content,
+      date: new Date().toISOString()
+    };
+    
+    const updatedNotes = [newNote, ...notes];
+    setNotes(updatedNotes);
+    localStorage.setItem('travel-notes', JSON.stringify(updatedNotes));
+    
+    setTitle('');
+    setContent('');
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <PenLine size={24} className="text-[#60A5FA] mb-1" />
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Notes</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Travel Notes</DialogTitle>
+          <DialogDescription>Add and manage your travel notes</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Input
+              placeholder="Note title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="mb-2"
+            />
+            <Textarea
+              placeholder="Write your note here..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="min-h-[100px]"
+            />
+            <Button 
+              onClick={saveNote}
+              className="mt-2 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white"
+            >
+              Save Note
+            </Button>
+          </div>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {notes.map((note) => (
+              <Card key={note.id}>
+                <CardContent className="p-4">
+                  <h4 className="font-semibold text-[#1e3a8a] dark:text-[#60A5FA]">{note.title}</h4>
+                  <p className="text-gray-600 dark:text-gray-300 mt-1">{note.content}</p>
+                  <div className="text-xs text-gray-400 mt-2">
+                    {new Date(note.date).toLocaleDateString()}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+// Maps Dialog Component
+const MapsDialog: React.FC = () => (
+  <Dialog>
+    <DialogTrigger asChild>
+      <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+        <Map size={24} className="text-[#60A5FA] mb-1" />
+        <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Maps</span>
+      </button>
+    </DialogTrigger>
+    <DialogContent className="max-w-4xl h-[80vh]">
+      <DialogHeader>
+        <DialogTitle>Interactive Map</DialogTitle>
+      </DialogHeader>
+      <div className="relative w-full h-full">
+        <iframe 
+          src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"
+          className="absolute w-full h-[calc(100%-2rem)] rounded-lg"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+        />
+      </div>
+    </DialogContent>
+  </Dialog>
+);
+
+// Currency Converter Component
+const CurrencyConverter: React.FC = () => {
+  const [amount, setAmount] = useState<string>('1');
+  const [fromCurrency, setFromCurrency] = useState<string>('EUR');
+  const [toCurrency, setToCurrency] = useState<string>('USD');
+  const [result, setResult] = useState<string>('');
+
+  const currencies: CurrencyOption[] = [
+    { code: 'EUR', name: 'Euro', symbol: '€', flag: '🇪🇺' },
+    { code: 'USD', name: 'US Dollar', symbol: '$', flag: '🇺🇸' },
+    { code: 'GBP', name: 'British Pound', symbol: '£', flag: '🇬🇧' },
+    { code: 'JPY', name: 'Japanese Yen', symbol: '¥', flag: '🇯🇵' }
+  ];
+
+  // Simplified conversion rates (you can replace with API call)
+  const rates: Record<string, Record<string, number>> = {
+    EUR: { USD: 1.09, GBP: 0.86, JPY: 158.27, EUR: 1 },
+    USD: { EUR: 0.92, GBP: 0.79, JPY: 145.20, USD: 1 },
+    GBP: { EUR: 1.16, USD: 1.27, JPY: 183.92, GBP: 1 },
+    JPY: { EUR: 0.0063, USD: 0.0069, GBP: 0.0054, JPY: 1 }
+  };
+
+  const convert = () => {
+    const rate = rates[fromCurrency][toCurrency];
+    const calculated = (parseFloat(amount) * rate).toFixed(2);
+    setResult(calculated);
+  };
+
+  useEffect(() => {
+    convert();
+  }, [amount, fromCurrency, toCurrency]);
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <DollarSign size={24} className="text-[#60A5FA] mb-1" />
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Currency</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Currency Converter</DialogTitle>
+          <DialogDescription>Convert between different currencies</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="text-lg"
+            />
+            <select
+              value={fromCurrency}
+              onChange={(e) => setFromCurrency(e.target.value)}
+              className="w-full p-2 rounded-md border"
+            >
+              {currencies.map(currency => (
+                <option key={currency.code} value={currency.code}>
+                  {currency.flag} {currency.code} - {currency.name}
+                </option>
+              ))}
+            </select>
+            <div className="flex justify-center my-2">
+              <ArrowRight className="text-gray-500" />
+            </div>
+            <select
+              value={toCurrency}
+              onChange={(e) => setToCurrency(e.target.value)}
+              className="w-full p-2 rounded-md border"
+            >
+              {currencies.map(currency => (
+                <option key={currency.code} value={currency.code}>
+                  {currency.flag} {currency.code} - {currency.name}
+                </option>
+              ))}
+            </select>
+            <div className="text-center mt-4">
+              <div className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA]">
+                {result} {currencies.find(c => c.code === toCurrency)?.symbol}
+              </div>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Weather Widget Component
+const WeatherWidget: React.FC = () => {
+  useEffect(() => {
+    // Add weather widget script
+    const script = document.createElement('script');
+    script.src = 'https://weatherwidget.io/js/widget.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <Cloud size={24} className="text-[#60A5FA] mb-1" />
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Weather Forecast</DialogTitle>
+        </DialogHeader>
+        <div className="w-full h-[400px]">
+          <a 
+            className="weatherwidget-io" 
+            href="https://forecast7.com/en/41d0617d09/mola-di-bari/"
+            data-label_1="MOLA DI BARI" 
+            data-label_2="WEATHER" 
+            data-icons="Climacons Animated" 
+            data-theme="marine"
+          >
+            MOLA DI BARI WEATHER
+          </a>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 const Explore: React.FC = () => {
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);
+  const utilitiesRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -322,7 +580,7 @@ const Explore: React.FC = () => {
           </div>
         </section>
 
-        <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+        <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-8">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -341,6 +599,23 @@ const Explore: React.FC = () => {
                 delay={0.1 * index}
               />
             ))}
+          </div>
+        </section>
+
+        <section ref={utilitiesRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+          <motion.h2
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6 text-center"
+          >
+            Utilities
+          </motion.h2>
+          <div className="flex justify-center gap-4 flex-wrap">
+            <NotesDialog />
+            <MapsDialog />
+            <CurrencyConverter />
+            <WeatherWidget />
           </div>
         </section>
       </div>

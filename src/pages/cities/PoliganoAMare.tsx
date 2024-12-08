@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
+import { 
+  Calendar, 
+  MapPin, 
+  ArrowLeft, 
+  ArrowRight 
+} from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -152,7 +157,6 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     </motion.div>
   );
 };
-
 const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
   <Dialog>
     <DialogTrigger>
@@ -181,15 +185,14 @@ const PoliganoAMare: React.FC = () => {
   const location = useLocation();
   const mainRef = useRef<HTMLDivElement>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0);
     mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      
       const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor.setAttribute('content', isDarkMode ? '#3662e1' : '#3662e1'); 
+      themeColor.setAttribute('content', isDarkMode ? '#3662e1' : '#3662e1');
     }
     return () => {
       if (themeColor) {
@@ -251,7 +254,17 @@ const PoliganoAMare: React.FC = () => {
   };
 
   return (
-    <div className="flex-grow" ref={mainRef}>
+    <div 
+      className="giftCardSection overflow-y-auto pb-24" 
+      style={{
+        height: 'calc(100vh - 88px)',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'none',
+        position: 'relative',
+        zIndex: 1
+      }}
+      ref={mainRef}
+    >
       <style>{`
         .shimmer {
           position: relative;
@@ -262,19 +275,21 @@ const PoliganoAMare: React.FC = () => {
           position: absolute;
           top: 0;
           left: -100%;
-          width: 50%;
+          width: 200%;
           height: 100%;
           background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.3),
-            transparent
+            115deg,
+            transparent 0%,
+            transparent 40%,
+            rgba(255, 255, 255, 0.3) 50%,
+            transparent 60%,
+            transparent 100%
           );
-          animation: shimmer 3s infinite;
+          animation: shimmer 3s infinite linear;
         }
         @keyframes shimmer {
-          0% { left: -100% }
-          100% { left: 200% }
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(50%); }
         }
       `}</style>
 
@@ -290,12 +305,19 @@ const PoliganoAMare: React.FC = () => {
       <NextCityButton nextCityPath="/cities/monopoli" />
 
       {/* Hero Section */}
-      <div className="bg-blue-600 dark:bg-blue-900 text-white py-16 px-4">
+      <div 
+        className="bg-blue-600 dark:bg-blue-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
+        style={{
+          paddingTop: '4rem',
+          paddingBottom: '4rem',
+          marginBottom: '2rem'
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto pt-8"
+          className="text-center max-w-3xl mx-auto px-4 pt-8"
         >
           <h1 className="text-3xl font-bold mb-4">
             Polignano a Mare

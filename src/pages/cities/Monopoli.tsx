@@ -269,7 +269,6 @@ const Monopoli: React.FC = () => {
           position: relative;
           overflow: hidden;
         }
-        }
         .shimmer::after {
           content: '';
           position: absolute;

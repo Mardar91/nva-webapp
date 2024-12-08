@@ -269,27 +269,28 @@ const Monopoli: React.FC = () => {
           position: relative;
           overflow: hidden;
         }
+        }
         .shimmer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 200%;    // Cambiato da 50% a 200%
-  height: 100%;
-  background: linear-gradient(
-    115deg,       // Cambiato da 90deg a 115deg
-    transparent 0%,
-    transparent 40%,
-    rgba(255, 255, 255, 0.3) 50%,
-    transparent 60%,
-    transparent 100%
-  );
-  animation: shimmer 3s infinite linear;  // Aggiunto 'linear'
-}
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(50%); }   // Cambiato per un movimento più fluido
-}
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 200%;
+          height: 100%;
+          background: linear-gradient(
+            115deg,
+            transparent 0%,
+            transparent 40%,
+            rgba(255, 255, 255, 0.3) 50%,
+            transparent 60%,
+            transparent 100%
+          );
+          animation: shimmer 3s infinite linear;
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(50%); }
+        }
       `}</style>
 
       {/* Back Button */}

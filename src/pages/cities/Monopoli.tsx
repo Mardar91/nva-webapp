@@ -274,10 +274,10 @@ const Monopoli: React.FC = () => {
           position: absolute;
           top: 0;
           left: -100%;
-          width: 200%;
+          width: 50%;
           height: 100%;
           background: linear-gradient(
-            115deg,
+            90deg,
             transparent 0%,
             transparent 40%,
             rgba(255, 255, 255, 0.3) 50%,

@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
+import { 
+  Calendar, 
+  MapPin, 
+  ArrowLeft, 
+  ArrowRight 
+} from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -103,6 +108,7 @@ const CurrentEventBadge = () => (
     <span className="text-xs font-medium text-green-600">Today</span>
   </div>
 );
+
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -151,7 +157,6 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     </motion.div>
   );
 };
-
 const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
   <Dialog>
     <DialogTrigger>
@@ -248,31 +253,43 @@ const Monopoli: React.FC = () => {
   };
 
   return (
-    <div className="flex-grow" ref={mainRef}>
+    <div 
+      className="giftCardSection overflow-y-auto pb-24" 
+      style={{
+        height: 'calc(100vh - 88px)',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'none',
+        position: 'relative',
+        zIndex: 1
+      }}
+      ref={mainRef}
+    >
       <style>{`
         .shimmer {
           position: relative;
           overflow: hidden;
         }
         .shimmer::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 50%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.3),
-            transparent
-          );
-          animation: shimmer 3s infinite;
-        }
-        @keyframes shimmer {
-          0% { left: -100% }
-          100% { left: 200% }
-        }
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;    // Cambiato da 50% a 200%
+  height: 100%;
+  background: linear-gradient(
+    115deg,       // Cambiato da 90deg a 115deg
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  animation: shimmer 3s infinite linear;  // Aggiunto 'linear'
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(50%); }   // Cambiato per un movimento più fluido
+}
       `}</style>
 
       {/* Back Button */}
@@ -287,12 +304,19 @@ const Monopoli: React.FC = () => {
       <NextCityButton nextCityPath="/cities/bari" />
 
       {/* Hero Section */}
-      <div className="bg-indigo-600 dark:bg-indigo-900 text-white py-16 px-4">
+      <div 
+        className="bg-indigo-600 dark:bg-indigo-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
+        style={{
+          paddingTop: '4rem',
+          paddingBottom: '4rem',
+          marginBottom: '2rem'
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto pt-8"
+          className="text-center max-w-3xl mx-auto px-4 pt-8"
         >
           <h1 className="text-3xl font-bold mb-4">
             Monopoli

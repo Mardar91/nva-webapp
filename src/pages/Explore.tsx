@@ -259,21 +259,19 @@ const Explore: React.FC = () => {
           position: absolute;
           top: 0;
           left: -100%;
-          width: 200%;
+          width: 50%;
           height: 100%;
           background: linear-gradient(
-            115deg,
-            transparent 0%,
-            transparent 40%,
-            rgba(255, 255, 255, 0.3) 50%,
-            transparent 60%,
-            transparent 100%
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
           );
-          animation: shimmer 3s infinite linear;
+          animation: shimmer 3s infinite;
         }
         @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(50%); }
+          0% { left: -100% }
+          100% { left: 200% }
         }
       `}</style>
 

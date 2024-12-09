@@ -205,40 +205,58 @@ const CityButton: React.FC<{
   </motion.div>
 );
 
-// Note Card component with swipe-to-delete
+// Note Card component with swipe-to-reveal delete button
 const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ note, onDelete }) => {
-  const [isDragging, setIsDragging] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
 
   return (
-    <motion.div
-      drag="x"
-      dragConstraints={{ left: -100, right: 0 }}
-      onDragEnd={(event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        if (info.offset.x < -50) {
-          onDelete(note.id);
-        }
-      }}
-      className="relative"
-      style={{ touchAction: 'pan-y' }}
-    >
-      <div
-        className={`absolute right-0 top-0 bottom-0 w-[100px] bg-red-500 rounded-r-lg flex items-center justify-center 
-          ${isDragging ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}
+    <motion.div className="relative flex items-center overflow-hidden">
+      <motion.div
+        initial={false}
+        animate={{ x: isRevealed ? -100 : 0 }}
+        drag="x"
+        dragConstraints={{ left: -100, right: 0 }}
+        dragElastic={0.7}
+        onDragEnd={(e, info) => {
+          if (info.offset.x < -50) {
+            setIsRevealed(true);
+          } else {
+            setIsRevealed(false);
+          }
+        }}
+        className="w-full cursor-grab active:cursor-grabbing touch-pan-y"
       >
-        <Trash2 className="text-white" />
-      </div>
-      <Card className="bg-white dark:bg-gray-800">
-        <CardContent className="p-4">
-          <h4 className="font-semibold text-[#1e3a8a] dark:text-[#60A5FA]">{note.title}</h4>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">{note.content}</p>
-          <div className="text-xs text-gray-400 mt-2">
-            {new Date(note.date).toLocaleDateString()}
-          </div>
-        </CardContent>
-      </Card>
+        <Card className="bg-white dark:bg-gray-800 w-full">
+          <CardContent className="p-4">
+            <h4 className="font-semibold text-[#1e3a8a] dark:text-[#60A5FA]">{note.title}</h4>
+            <p className="text-gray-600 dark:text-gray-300 mt-1">{note.content}</p>
+            <div className="text-xs text-gray-400 mt-2">
+              {new Date(note.date).toLocaleDateString()}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isRevealed ? 1 : 0 }}
+        className="absolute right-0 h-full flex items-center px-4"
+      >
+        <Button
+          onClick={() => {
+            onDelete(note.id);
+            setIsRevealed(false);
+          }}
+          className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
+        >
+          <Trash2 className="h-4 w-4" />
+          Delete
+        </Button>
+      </motion.div>
     </motion.div>
   );
 };
+
 // Notes Dialog Component
 const NotesDialog: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>(() => {
@@ -275,8 +293,8 @@ const NotesDialog: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <PenLine size={24} className="text-[#60A5FA] mb-1" />
+        <button className="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow w-[75px]">
+          <PenLine className="h-6 w-6 text-[#60A5FA] mb-2" />
           <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Notes</span>
         </button>
       </DialogTrigger>

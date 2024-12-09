@@ -462,7 +462,7 @@ const WeatherWidget: React.FC = () => {
 const Explore: React.FC = () => {
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<HTMLDivElement>(null);
+  const utilitiesRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -620,7 +620,7 @@ const Explore: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+        <section ref={utilitiesRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -629,27 +629,11 @@ const Explore: React.FC = () => {
           >
             Utilities
           </motion.h2>
-          <div className="grid grid-cols-4 gap-8 max-w-3xl mx-auto px-4">
+          <div className="flex justify-between items-center w-full max-w-md mx-auto px-4">
             <NotesDialog />
-            <div className="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow w-[75px]" onClick={() => mapRef.current?.scrollIntoView({ behavior: 'smooth' })}>
-              <Map className="h-6 w-6 text-[#60A5FA] mb-2" />
-              <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Maps</span>
-            </div>
+            <MapsDialog />
             <CurrencyConverter />
             <WeatherWidget />
-          </div>
-        </section>
-
-        {/* Interactive Map Section */}
-        <section ref={mapRef} className="mt-8">
-          <div className="relative w-full h-[calc(100vh-88px)] bg-white dark:bg-gray-800 rounded-xl overflow-hidden">
-            <iframe 
-              src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"
-              className="absolute inset-0 w-full h-full"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-            />
           </div>
         </section>
       </div>

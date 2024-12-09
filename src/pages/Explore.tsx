@@ -205,28 +205,52 @@ const CityButton: React.FC<{
   </motion.div>
 );
 
-// Note Card component with swipe-to-reveal delete button
+// Note Card component con nuovo sistema di swipe-to-delete
 const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ note, onDelete }) => {
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [showDeleteButton, setShowDeleteButton] = useState(false);
+  const [dragX, setDragX] = useState(0);
 
   return (
-    <motion.div className="relative flex items-center overflow-hidden">
+    <motion.div
+      drag="x"
+      dragConstraints={{ left: -100, right: 0 }}
+      dragElastic={0.7}
+      onDrag={(event, info) => {
+        setDragX(info.point.x);
+        if (info.offset.x < -50) {
+          setShowDeleteButton(true);
+        } else {
+          setShowDeleteButton(false);
+        }
+      }}
+      onDragEnd={(event, info) => {
+        setDragX(0);
+        if (info.offset.x > -50) {
+          setShowDeleteButton(false);
+        }
+      }}
+      className="relative"
+      style={{ touchAction: 'pan-y' }}
+    >
+      <AnimatePresence>
+        {showDeleteButton && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute right-0 top-0 bottom-0 w-24 bg-red-500 text-white rounded-r-lg flex items-center justify-center gap-2"
+            onClick={() => onDelete(note.id)}
+          >
+            <Trash2 className="h-5 w-5" />
+            Delete
+          </motion.button>
+        )}
+      </AnimatePresence>
       <motion.div
-        initial={false}
-        animate={{ x: isRevealed ? -100 : 0 }}
-        drag="x"
-        dragConstraints={{ left: -100, right: 0 }}
-        dragElastic={0.7}
-        onDragEnd={(e, info) => {
-          if (info.offset.x < -50) {
-            setIsRevealed(true);
-          } else {
-            setIsRevealed(false);
-          }
-        }}
-        className="w-full cursor-grab active:cursor-grabbing touch-pan-y"
+        animate={{ x: showDeleteButton ? -96 : 0 }}
+        transition={{ type: "spring", damping: 20 }}
       >
-        <Card className="bg-white dark:bg-gray-800 w-full">
+        <Card className="bg-white dark:bg-gray-800">
           <CardContent className="p-4">
             <h4 className="font-semibold text-[#1e3a8a] dark:text-[#60A5FA]">{note.title}</h4>
             <p className="text-gray-600 dark:text-gray-300 mt-1">{note.content}</p>
@@ -235,23 +259,6 @@ const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ no
             </div>
           </CardContent>
         </Card>
-      </motion.div>
-      
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isRevealed ? 1 : 0 }}
-        className="absolute right-0 h-full flex items-center px-4"
-      >
-        <Button
-          onClick={() => {
-            onDelete(note.id);
-            setIsRevealed(false);
-          }}
-          className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
-        >
-          <Trash2 className="h-4 w-4" />
-          Delete
-        </Button>
       </motion.div>
     </motion.div>
   );
@@ -293,9 +300,9 @@ const NotesDialog: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow w-[75px]">
-          <PenLine className="h-6 w-6 text-[#60A5FA] mb-2" />
-          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Notes</span>
+        <button className="w-full aspect-square bg-white dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-3 shadow-sm hover:shadow-md transition-shadow p-4">
+          <PenLine size={28} className="text-[#60A5FA]" />
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-sm">Notes</span>
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">

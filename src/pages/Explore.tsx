@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { 
   Calendar, 
   MapPin, 
@@ -12,7 +12,8 @@ import {
   PenLine,
   Map,
   DollarSign,
-  Cloud
+  Cloud,
+  Trash2
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -204,7 +205,41 @@ const CityButton: React.FC<{
   </motion.div>
 );
 
-// Nuovi componenti per le Utilities
+// Note Card component with swipe-to-delete
+const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ note, onDelete }) => {
+  const [isDragging, setIsDragging] = useState(false);
+
+  return (
+    <motion.div
+      drag="x"
+      dragConstraints={{ left: -100, right: 0 }}
+      onDragEnd={(event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        if (info.offset.x < -50) {
+          onDelete(note.id);
+        }
+      }}
+      className="relative"
+      style={{ touchAction: 'pan-y' }}
+    >
+      <div
+        className={`absolute right-0 top-0 bottom-0 w-[100px] bg-red-500 rounded-r-lg flex items-center justify-center 
+          ${isDragging ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}
+      >
+        <Trash2 className="text-white" />
+      </div>
+      <Card className="bg-white dark:bg-gray-800">
+        <CardContent className="p-4">
+          <h4 className="font-semibold text-[#1e3a8a] dark:text-[#60A5FA]">{note.title}</h4>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">{note.content}</p>
+          <div className="text-xs text-gray-400 mt-2">
+            {new Date(note.date).toLocaleDateString()}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+// Notes Dialog Component
 const NotesDialog: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>(() => {
     const savedNotes = localStorage.getItem('travel-notes');
@@ -229,6 +264,12 @@ const NotesDialog: React.FC = () => {
     
     setTitle('');
     setContent('');
+  };
+
+  const deleteNote = (id: string) => {
+    const updatedNotes = notes.filter(note => note.id !== id);
+    setNotes(updatedNotes);
+    localStorage.setItem('travel-notes', JSON.stringify(updatedNotes));
   };
 
   return (
@@ -265,17 +306,13 @@ const NotesDialog: React.FC = () => {
               Save Note
             </Button>
           </div>
-          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+          <div className="space-y-4 max-h-[400px] overflow-y-auto">
             {notes.map((note) => (
-              <Card key={note.id}>
-                <CardContent className="p-4">
-                  <h4 className="font-semibold text-[#1e3a8a] dark:text-[#60A5FA]">{note.title}</h4>
-                  <p className="text-gray-600 dark:text-gray-300 mt-1">{note.content}</p>
-                  <div className="text-xs text-gray-400 mt-2">
-                    {new Date(note.date).toLocaleDateString()}
-                  </div>
-                </CardContent>
-              </Card>
+              <NoteCard 
+                key={note.id} 
+                note={note} 
+                onDelete={deleteNote}
+              />
             ))}
           </div>
         </div>
@@ -283,6 +320,7 @@ const NotesDialog: React.FC = () => {
     </Dialog>
   );
 };
+
 // Maps Dialog Component
 const MapsDialog: React.FC = () => (
   <Dialog>
@@ -292,14 +330,14 @@ const MapsDialog: React.FC = () => (
         <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Maps</span>
       </button>
     </DialogTrigger>
-    <DialogContent className="max-w-4xl h-[80vh]">
-      <DialogHeader>
+    <DialogContent className="max-w-[90vw] w-full h-[90vh] p-0">
+      <DialogHeader className="p-6 pb-0">
         <DialogTitle>Interactive Map</DialogTitle>
       </DialogHeader>
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-[calc(100%-4rem)]">
         <iframe 
           src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"
-          className="absolute w-full h-[calc(100%-2rem)] rounded-lg"
+          className="absolute inset-0 w-full h-full"
           style={{ border: 0 }}
           allowFullScreen
           loading="lazy"
@@ -323,7 +361,6 @@ const CurrencyConverter: React.FC = () => {
     { code: 'JPY', name: 'Japanese Yen', symbol: '¥', flag: '🇯🇵' }
   ];
 
-  // Simplified conversion rates (you can replace with API call)
   const rates: Record<string, Record<string, number>> = {
     EUR: { USD: 1.09, GBP: 0.86, JPY: 158.27, EUR: 1 },
     USD: { EUR: 0.92, GBP: 0.79, JPY: 145.20, USD: 1 },
@@ -355,13 +392,13 @@ const CurrencyConverter: React.FC = () => {
           <DialogDescription>Convert between different currencies</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="text-lg"
-            />
+          <Input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="text-lg"
+          />
+          <div className="grid grid-cols-2 gap-4">
             <select
               value={fromCurrency}
               onChange={(e) => setFromCurrency(e.target.value)}
@@ -369,13 +406,10 @@ const CurrencyConverter: React.FC = () => {
             >
               {currencies.map(currency => (
                 <option key={currency.code} value={currency.code}>
-                  {currency.flag} {currency.code} - {currency.name}
+                  {currency.flag} {currency.code}
                 </option>
               ))}
             </select>
-            <div className="flex justify-center my-2">
-              <ArrowRight className="text-gray-500" />
-            </div>
             <select
               value={toCurrency}
               onChange={(e) => setToCurrency(e.target.value)}
@@ -383,14 +417,14 @@ const CurrencyConverter: React.FC = () => {
             >
               {currencies.map(currency => (
                 <option key={currency.code} value={currency.code}>
-                  {currency.flag} {currency.code} - {currency.name}
+                  {currency.flag} {currency.code}
                 </option>
               ))}
             </select>
-            <div className="text-center mt-4">
-              <div className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA]">
-                {result} {currencies.find(c => c.code === toCurrency)?.symbol}
-              </div>
+          </div>
+          <div className="text-center mt-4">
+            <div className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA]">
+              {result} {currencies.find(c => c.code === toCurrency)?.symbol}
             </div>
           </div>
         </div>
@@ -401,18 +435,6 @@ const CurrencyConverter: React.FC = () => {
 
 // Weather Widget Component
 const WeatherWidget: React.FC = () => {
-  useEffect(() => {
-    // Add weather widget script
-    const script = document.createElement('script');
-    script.src = 'https://weatherwidget.io/js/widget.min.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -421,21 +443,19 @@ const WeatherWidget: React.FC = () => {
           <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
+      <DialogContent className="max-w-[500px] p-0">
+        <DialogHeader className="p-6 pb-0">
           <DialogTitle>Weather Forecast</DialogTitle>
         </DialogHeader>
-        <div className="w-full h-[400px]">
-          <a 
-            className="weatherwidget-io" 
-            href="https://forecast7.com/en/41d0617d09/mola-di-bari/"
-            data-label_1="MOLA DI BARI" 
-            data-label_2="WEATHER" 
-            data-icons="Climacons Animated" 
-            data-theme="marine"
-          >
-            MOLA DI BARI WEATHER
-          </a>
+        <div className="relative w-full h-[587px]">
+          <iframe 
+            src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
+            className="w-full h-full"
+            style={{ border: 0 }}
+            scrolling="no"
+            allowTransparency={true}
+            sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
+          />
         </div>
       </DialogContent>
     </Dialog>
@@ -611,7 +631,7 @@ const Explore: React.FC = () => {
           >
             Utilities
           </motion.h2>
-          <div className="flex justify-center gap-4 flex-wrap">
+          <div className="flex justify-between items-center w-full max-w-md mx-auto px-4">
             <NotesDialog />
             <MapsDialog />
             <CurrencyConverter />

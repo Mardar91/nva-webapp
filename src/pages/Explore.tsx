@@ -515,7 +515,7 @@ const Explore: React.FC = () => {
       <div className="relative w-full h-[calc(100vh-88px)]">
         <button
           onClick={() => setShowMap(false)}
-          className="fixed top-4 left-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
+          className="fixed bottom-4 right-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
         >
           <ArrowLeft className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA]" />
         </button>

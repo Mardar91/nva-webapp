@@ -517,7 +517,7 @@ const Explore: React.FC = () => {
           onClick={() => setShowMap(false)}
           className="fixed bottom-4 right-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
         >
-          <ArrowLeft className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA]" />
+          <ArrowRight className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180" />
         </button>
         <iframe 
           src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"

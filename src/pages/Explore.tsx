@@ -458,7 +458,7 @@ const CurrencyConverter: React.FC = () => {
 const Explore: React.FC = () => {
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);
-  const utilitiesRef = useRef<HTMLDivElement>(null);
+  const [showMap, setShowMap] = useState(false);
   
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -509,6 +509,26 @@ const Explore: React.FC = () => {
     { name: 'Monopoli', path: '/cities/monopoli', icon: <Ship size={32} /> },
     { name: 'Bari', path: '/cities/bari', icon: <Church size={32} /> }
   ];
+
+  if (showMap) {
+    return (
+      <div className="relative w-full h-[calc(100vh-88px)]">
+        <button
+          onClick={() => setShowMap(false)}
+          className="fixed top-4 left-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
+        >
+          <ArrowLeft className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA]" />
+        </button>
+        <iframe 
+          src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"
+          className="w-full h-full"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+        />
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -626,7 +646,7 @@ const Explore: React.FC = () => {
           <div className="flex justify-between items-center w-full max-w-md mx-auto px-4 gap-4">
             <NotesDialog />
             <button
-              onClick={() => window.location.href = "https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"}
+              onClick={() => setShowMap(true)}
               className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
             >
               <Map size={24} className="text-[#60A5FA] mb-1" />

@@ -368,6 +368,93 @@ const WeatherWidget: React.FC = () => {
     </Dialog>
   );
 };
+
+// Currency Converter Component
+const CurrencyConverter: React.FC = () => {
+  const [amount, setAmount] = useState<string>('1');
+  const [fromCurrency, setFromCurrency] = useState<string>('EUR');
+  const [toCurrency, setToCurrency] = useState<string>('USD');
+  const [result, setResult] = useState<string>('');
+
+  const currencies: CurrencyOption[] = [
+    { code: 'EUR', name: 'Euro', symbol: '€', flag: '🇪🇺' },
+    { code: 'USD', name: 'US Dollar', symbol: '$', flag: '🇺🇸' },
+    { code: 'GBP', name: 'British Pound', symbol: '£', flag: '🇬🇧' },
+    { code: 'JPY', name: 'Japanese Yen', symbol: '¥', flag: '🇯🇵' }
+  ];
+
+  const rates: Record<string, Record<string, number>> = {
+    EUR: { USD: 1.09, GBP: 0.86, JPY: 158.27, EUR: 1 },
+    USD: { EUR: 0.92, GBP: 0.79, JPY: 145.20, USD: 1 },
+    GBP: { EUR: 1.16, USD: 1.27, JPY: 183.92, GBP: 1 },
+    JPY: { EUR: 0.0063, USD: 0.0069, GBP: 0.0054, JPY: 1 }
+  };
+
+  const convert = () => {
+    const rate = rates[fromCurrency][toCurrency];
+    const calculated = (parseFloat(amount) * rate).toFixed(2);
+    setResult(calculated);
+  };
+
+  useEffect(() => {
+    convert();
+  }, [amount, fromCurrency, toCurrency]);
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <DollarSign size={24} className="text-[#60A5FA] mb-1" />
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Currency</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Currency Converter</DialogTitle>
+          <DialogDescription>Convert between different currencies</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <Input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="text-lg"
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <select
+              value={fromCurrency}
+              onChange={(e) => setFromCurrency(e.target.value)}
+              className="w-full p-2 rounded-md border"
+            >
+              {currencies.map(currency => (
+                <option key={currency.code} value={currency.code}>
+                  {currency.flag} {currency.code}
+                </option>
+              ))}
+            </select>
+            <select
+              value={toCurrency}
+              onChange={(e) => setToCurrency(e.target.value)}
+              className="w-full p-2 rounded-md border"
+            >
+              {currencies.map(currency => (
+                <option key={currency.code} value={currency.code}>
+                  {currency.flag} {currency.code}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="text-center mt-4">
+            <div className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA]">
+              {result} {currencies.find(c => c.code === toCurrency)?.symbol}
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const Explore: React.FC = () => {
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);

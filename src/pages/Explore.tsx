@@ -193,14 +193,14 @@ const CityButton: React.FC<{
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.5, delay }}
-    className="w-full aspect-square"
+    className="w-full aspect-square p-6" // Aggiunto padding per migliorare la spaziatura
   >
     <button 
       onClick={onClick}
-      className="w-full h-full bg-gray-50 dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+      className="w-full h-full bg-white dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-4 shadow-sm hover:shadow-md transition-shadow"
     >
-      <span className="text-[#60A5FA]">{icon}</span>
-      <span className="text-[#1e3a8a] dark:text-[#60A5FA] font-medium text-sm">{city}</span>
+      <span className="text-[#60A5FA] text-3xl">{icon}</span>
+      <span className="text-[#1e3a8a] dark:text-[#60A5FA] font-medium">{city}</span>
     </button>
   </motion.div>
 );
@@ -263,7 +263,6 @@ const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ no
     </motion.div>
   );
 };
-
 // Notes Dialog Component
 const NotesDialog: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>(() => {
@@ -346,33 +345,7 @@ const NotesDialog: React.FC = () => {
   );
 };
 
-// Maps Dialog Component
-const MapsDialog: React.FC = () => (
-  <Dialog>
-    <DialogTrigger asChild>
-      <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-        <Map size={24} className="text-[#60A5FA] mb-1" />
-        <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Maps</span>
-      </button>
-    </DialogTrigger>
-    <DialogContent className="max-w-[90vw] w-full h-[90vh] p-0">
-      <DialogHeader className="p-6 pb-0">
-        <DialogTitle>Interactive Map</DialogTitle>
-      </DialogHeader>
-      <div className="relative w-full h-[calc(100%-4rem)]">
-        <iframe 
-          src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"
-          className="absolute inset-0 w-full h-full"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-        />
-      </div>
-    </DialogContent>
-  </Dialog>
-);
-
-// Currency Converter Component
+// Currency Converter Component (mantenuto invariato come richiesto)
 const CurrencyConverter: React.FC = () => {
   const [amount, setAmount] = useState<string>('1');
   const [fromCurrency, setFromCurrency] = useState<string>('EUR');
@@ -406,9 +379,9 @@ const CurrencyConverter: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <DollarSign size={24} className="text-[#60A5FA] mb-1" />
-          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Currency</span>
+        <button className="w-full aspect-square bg-white dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-3 shadow-sm hover:shadow-md transition-shadow p-4">
+          <DollarSign size={28} className="text-[#60A5FA]" />
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-sm">Currency</span>
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -458,21 +431,21 @@ const CurrencyConverter: React.FC = () => {
   );
 };
 
-// Weather Widget Component
+// Weather Widget Component con dimensioni ottimizzate
 const WeatherWidget: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <Cloud size={24} className="text-[#60A5FA] mb-1" />
-          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
+        <button className="w-full aspect-square bg-white dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-3 shadow-sm hover:shadow-md transition-shadow p-4">
+          <Cloud size={28} className="text-[#60A5FA]" />
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-sm">Weather</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-[500px] p-0">
-        <DialogHeader className="p-6 pb-0">
+      <DialogContent className="max-w-[90vw] sm:max-w-[500px] h-[80vh] max-h-[600px]">
+        <DialogHeader className="p-4">
           <DialogTitle>Weather Forecast</DialogTitle>
         </DialogHeader>
-        <div className="relative w-full h-[587px]">
+        <div className="relative flex-1 w-full h-[calc(100%-60px)]">
           <iframe 
             src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
             className="w-full h-full"
@@ -486,10 +459,11 @@ const WeatherWidget: React.FC = () => {
     </Dialog>
   );
 };
+// Componente principale Explore
 const Explore: React.FC = () => {
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);
-  const utilitiesRef = useRef<HTMLDivElement>(null);
+  const [showMap, setShowMap] = useState(false);
   
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -541,43 +515,35 @@ const Explore: React.FC = () => {
     { name: 'Bari', path: '/cities/bari', icon: <Church size={32} /> }
   ];
 
+  if (showMap) {
+    return (
+      <div className="relative w-full h-[calc(100vh-88px)]">
+        <button
+          onClick={() => setShowMap(false)}
+          className="fixed top-4 left-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
+        >
+          <ArrowLeft className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA]" />
+        </button>
+        <iframe 
+          src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"
+          className="w-full h-full"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
   return (
     <div 
       className="giftCardSection overflow-y-auto pb-24" 
       style={{
         height: 'calc(100vh - 88px)',
         WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'none',
-        position: 'relative',
-        zIndex: 1
+        overscrollBehavior: 'none'
       }}
     >
-      <style>{`
-        .shimmer-button {
-          position: relative;
-          overflow: hidden;
-        }
-        .shimmer-button::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 50%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.3),
-            transparent
-          );
-          animation: shimmer 3s infinite;
-        }
-        @keyframes shimmer {
-          0% { left: -100% }
-          100% { left: 200% }
-        }
-      `}</style>
-
       <div 
         className="bg-[#1e3a8a] dark:bg-gray-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
         style={{
@@ -599,11 +565,11 @@ const Explore: React.FC = () => {
             Discover magnificent cultural cities and unforgettable events in the surroundings.
           </p>
           <Button 
-            onClick={() => scrollToRef.current?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => setShowMap(true)}
             variant="outline" 
-            className="shimmer-button bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
+            className="bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a]"
           >
-            Go to Cities
+            Open Interactive Map
           </Button>
         </motion.div>
       </div>
@@ -647,7 +613,7 @@ const Explore: React.FC = () => {
           </div>
         </section>
 
-        <section ref={utilitiesRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+        <section className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -656,9 +622,16 @@ const Explore: React.FC = () => {
           >
             Utilities
           </motion.h2>
-          <div className="flex justify-between items-center w-full max-w-md mx-auto px-4">
+          {/* Grid layout modificato per i pulsanti delle utilities */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-3xl mx-auto px-4">
             <NotesDialog />
-            <MapsDialog />
+            <button
+              onClick={() => setShowMap(true)}
+              className="w-full aspect-square bg-white dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-3 shadow-sm hover:shadow-md transition-shadow p-4"
+            >
+              <Map size={28} className="text-[#60A5FA]" />
+              <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-sm">Maps</span>
+            </button>
             <CurrencyConverter />
             <WeatherWidget />
           </div>

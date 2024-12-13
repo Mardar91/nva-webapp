@@ -12,6 +12,11 @@ import { format, differenceInDays } from "date-fns";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-react";
 import { useNotifications } from '../hooks/useNotifications';
+import {
+    saveCheckInDate,
+    calculateNotificationTiming,
+    hasNotificationBeenSent
+  } from '../lib/notifications/checkInNotifications';
 
 interface CheckInNotificationState {
   deviceId: string | null;
@@ -34,18 +39,6 @@ const usePersistedCheckIn = () => {
     return localStorage.getItem('check-in-confirmed') === 'true';
   });
 
-  const [notificationState, setNotificationState] = useState<CheckInNotificationState>(() => {
-    const saved = localStorage.getItem('check-in-notification-state');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      deviceId: null,
-      notificationSent: false,
-      lastNotificationDate: null
-    };
-  });
-
   useEffect(() => {
     if (checkInDate) {
       localStorage.setItem('check-in-date', checkInDate.toISOString());
@@ -58,17 +51,11 @@ const usePersistedCheckIn = () => {
     localStorage.setItem('check-in-confirmed', isConfirmed.toString());
   }, [isConfirmed]);
 
-  useEffect(() => {
-    localStorage.setItem('check-in-notification-state', JSON.stringify(notificationState));
-  }, [notificationState]);
-
   return {
     checkInDate,
     setCheckInDate,
     isConfirmed,
     setIsConfirmed,
-    notificationState,
-    setNotificationState
   };
 };
 
@@ -155,11 +142,9 @@ const CheckIn = () => {
     setCheckInDate: setStoredCheckInDate,
     isConfirmed, 
     setIsConfirmed,
-    notificationState,
-    setNotificationState 
   } = usePersistedCheckIn();
 
-  const { 
+    const { 
     isSupported,
     isSubscribed,
     deviceId,
@@ -167,65 +152,22 @@ const CheckIn = () => {
     setCheckInDate: setNotificationCheckInDate,
     error: notificationError 
   } = useNotifications(checkInDate);
-  
+    
   const [showForm, setShowForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(false);
   const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
+
   // Gestione del countdown e invio notifica
-  const handleDayChange = async (daysLeft: number, date: Date) => {
-    console.log('handleDayChange called with:', { daysLeft, deviceId, date });
-    
-    if (daysLeft === 1 && !notificationState.notificationSent && deviceId) {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const lastAttempt = sessionStorage.getItem('lastNotificationAttempt');
-        const now = Date.now();
-        
-        if (lastAttempt && now - parseInt(lastAttempt) < 5000) {
-          console.log('Skipping notification - too soon since last attempt');
-          return;
+    const handleDayChange = async (daysLeft: number, date: Date) => {
+        if (daysLeft === 1 ) {
+            const notificationSent = hasNotificationBeenSent(date);
+            if (!notificationSent) {
+                console.log('Checkin.tsx - handleDayChange - notification is not sent and should be scheduled now');
+                saveCheckInDate(date);
+            }
         }
-        
-        sessionStorage.setItem('lastNotificationAttempt', now.toString());
-
-        if (notificationState.lastNotificationDate !== today) {
-          console.log('Sending notification request with:', {
-            deviceId,
-            checkInDate: date.toISOString()
-          });
-
-          const response = await fetch('/api/check-in-notification', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              deviceId: deviceId,
-              checkInDate: date.toISOString()
-            })
-          });
-
-          const responseData = await response.json();
-          console.log('Notification API response:', responseData);
-
-          if (response.ok) {
-            console.log('Notification sent successfully');
-            setNotificationState(prev => ({
-              ...prev,
-              deviceId: deviceId,
-              notificationSent: true,
-              lastNotificationDate: today
-            }));
-          } else {
-            console.error('Failed to send notification:', responseData);
-          }
-        }
-      } catch (error) {
-        console.error('Error sending notification:', error);
-      }
     }
-  };
 
   useEffect(() => {
     if (checkInDate) {

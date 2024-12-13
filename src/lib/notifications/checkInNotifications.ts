@@ -1,4 +1,5 @@
 // lib/notifications/checkInNotifications.ts
+
 import { 
     getDeviceId, 
     getSubscriptionStatus, 
@@ -19,7 +20,17 @@ import {
   const getStoredNotificationState = (): CheckInNotificationState => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      return JSON.parse(stored);
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            console.error("Error parsing stored notification state:", e);
+            return {
+                deviceId: null,
+                notificationSent: false,
+                lastNotificationDate: null,
+                checkInDate: null
+            };
+        }
     }
     return {
       deviceId: null,
@@ -32,14 +43,16 @@ import {
   const updateStoredNotificationState = (
     updates: Partial<CheckInNotificationState>
   ): void => {
-    const currentState = getStoredNotificationState();
+      const currentState = getStoredNotificationState();
     const newState = { ...currentState, ...updates };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+      console.log('updateStoredNotificationState - New state saved:', newState);
   };
   
   // Verifica e aggiorna lo stato del dispositivo
   const updateDeviceState = async (): Promise<void> => {
     const subscriptionStatus = await getSubscriptionStatus();
+    console.log('updateDeviceState - Subscription status:', subscriptionStatus);
     if (subscriptionStatus?.deviceId) {
       const currentState = getStoredNotificationState();
       if (currentState.deviceId !== subscriptionStatus.deviceId) {
@@ -53,6 +66,7 @@ import {
   
   // Gestisce il salvataggio di una nuova data di check-in
   const saveCheckInDate = (date: Date): void => {
+      console.log('saveCheckInDate - Date received:', date.toISOString());
     updateStoredNotificationState({
       checkInDate: date.toISOString(),
       notificationSent: false,
@@ -65,14 +79,16 @@ import {
     shouldSend: boolean;
     daysUntilCheckIn: number;
   } => {
-    const today = new Date();
+      const today = new Date();
     today.setHours(0, 0, 0, 0);
     
     const checkIn = new Date(checkInDate);
     checkIn.setHours(0, 0, 0, 0);
     
     const diffTime = checkIn.getTime() - today.getTime();
-    const daysUntilCheckIn = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const daysUntilCheckIn = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+      console.log('calculateNotificationTiming - CheckInDate:', checkInDate.toISOString(), 'Today:', today.toISOString(), 'Days until check-in:', daysUntilCheckIn);
     
     return {
       shouldSend: daysUntilCheckIn === 1,
@@ -81,43 +97,50 @@ import {
   };
   
   // Verifica e invia la notifica di check-in se necessario
-  const checkAndSendNotification = async (): Promise<boolean> => {
-    const state = getStoredNotificationState();
-    
-    if (!state.checkInDate || !state.deviceId) {
-      return false;
-    }
-  
-    const checkInDate = new Date(state.checkInDate);
-    const shouldSend = shouldSendCheckInNotification(
-      checkInDate,
-      state.lastNotificationDate
-    );
-  
-    if (shouldSend) {
-      try {
-        const success = await sendCheckInNotification(
-          state.deviceId,
-          checkInDate
-        );
-  
-        if (success) {
-          updateStoredNotificationState({
-            notificationSent: true,
-            lastNotificationDate: new Date().toISOString()
-          });
-          return true;
+    const checkAndSendNotification = async (): Promise<boolean> => {
+        const state = getStoredNotificationState();
+        console.log('checkAndSendNotification - State:', state);
+
+        if (!state.checkInDate || !state.deviceId) {
+            console.log('checkAndSendNotification - Missing checkInDate or deviceId, skipping');
+            return false;
         }
-      } catch (error) {
-        console.error('Error sending check-in notification:', error);
-      }
-    }
-  
-    return false;
-  };
+
+        const checkInDate = new Date(state.checkInDate);
+        const shouldSend = shouldSendCheckInNotification(
+            checkInDate,
+            state.lastNotificationDate
+        );
+        console.log('checkAndSendNotification - Should send:', shouldSend);
+
+        if (shouldSend) {
+            try {
+                console.log('checkAndSendNotification - Attempting to send notification.');
+
+                const success = await sendCheckInNotification(
+                    state.deviceId,
+                    checkInDate
+                );
+                 console.log('checkAndSendNotification - Notification sent success', success);
+
+                if (success) {
+                    updateStoredNotificationState({
+                        notificationSent: true,
+                        lastNotificationDate: new Date().toISOString()
+                    });
+                    return true;
+                }
+            } catch (error) {
+              console.error('Error sending check-in notification:', error);
+            }
+        }
+
+        return false;
+    };
   
   // Resetta lo stato delle notifiche
   const resetNotificationState = (): void => {
+      console.log('resetNotificationState - Removing notification state.');
     localStorage.removeItem(STORAGE_KEY);
   };
   
@@ -129,30 +152,39 @@ import {
       return false;
     }
   
-    const storedCheckIn = new Date(state.checkInDate);
-    return (
+      const storedCheckIn = new Date(state.checkInDate);
+    const isSent =  (
       storedCheckIn.getTime() === checkInDate.getTime() && 
       state.notificationSent
-    );
+      );
+    console.log('hasNotificationBeenSent - checkInDate:', checkInDate.toISOString(), 'Stored checkIn date:', storedCheckIn.toISOString(), 'Notification sent:', isSent)
+      return isSent;
   };
   
   // Configura un intervallo per controllare periodicamente se inviare notifiche
   const setupNotificationCheck = (intervalMinutes: number = 60): () => void => {
+      console.log('setupNotificationCheck - Setting up notification check with interval:', intervalMinutes, 'minutes.');
     const intervalId = setInterval(async () => {
+        console.log('setupNotificationCheck - Interval tick.');
       await checkAndSendNotification();
     }, intervalMinutes * 60 * 1000);
   
     // Restituisce una funzione di cleanup
-    return () => clearInterval(intervalId);
+    return () => {
+        console.log('setupNotificationCheck - Clearing interval.');
+        clearInterval(intervalId);
+    }
   };
   
   // Inizializza il sistema di notifiche di check-in
   const initializeCheckInNotifications = async (): Promise<void> => {
+      console.log('initializeCheckInNotifications - Initializing check-in notifications.');
     await updateDeviceState();
     const cleanup = setupNotificationCheck();
     
     // Aggiungi un event listener per when the window closes/unloads
     window.addEventListener('beforeunload', cleanup);
+      console.log('initializeCheckInNotifications - Initialization completed.');
   };
   
   export {

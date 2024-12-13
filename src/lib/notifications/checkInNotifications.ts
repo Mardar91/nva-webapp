@@ -96,33 +96,34 @@ import {
     };
   };
   
-  // Verifica e invia la notifica di check-in se necessario
+    // Verifica e invia la notifica di check-in se necessario
     const checkAndSendNotification = async (): Promise<boolean> => {
-        const state = getStoredNotificationState();
-        console.log('checkAndSendNotification - State:', state);
-
-        if (!state.checkInDate || !state.deviceId) {
+       try{
+          const state = getStoredNotificationState();
+          console.log('checkAndSendNotification - State:', state);
+    
+          if (!state.checkInDate || !state.deviceId) {
             console.log('checkAndSendNotification - Missing checkInDate or deviceId, skipping');
             return false;
-        }
-
-        const checkInDate = new Date(state.checkInDate);
-        const shouldSend = shouldSendCheckInNotification(
+          }
+    
+          const checkInDate = new Date(state.checkInDate);
+          const shouldSend = shouldSendCheckInNotification(
             checkInDate,
             state.lastNotificationDate
-        );
-        console.log('checkAndSendNotification - Should send:', shouldSend);
-
-        if (shouldSend) {
-            try {
+          );
+          console.log('checkAndSendNotification - Should send:', shouldSend);
+    
+          if (shouldSend) {
+              try {
                 console.log('checkAndSendNotification - Attempting to send notification.');
-
+    
                 const success = await sendCheckInNotification(
-                    state.deviceId,
-                    checkInDate
+                  state.deviceId,
+                  checkInDate
                 );
-                 console.log('checkAndSendNotification - Notification sent success', success);
-
+                console.log('checkAndSendNotification - Notification sent success', success);
+    
                 if (success) {
                     updateStoredNotificationState({
                         notificationSent: true,
@@ -130,13 +131,17 @@ import {
                     });
                     return true;
                 }
-            } catch (error) {
-              console.error('Error sending check-in notification:', error);
+              } catch (error) {
+                console.error('Error sending check-in notification:', error);
+              }
             }
-        }
-
+       } catch (error){
+           console.error('checkAndSendNotification - Error during execution:', error)
+       }
+        
+    
         return false;
-    };
+      };
   
   // Resetta lo stato delle notifiche
   const resetNotificationState = (): void => {
@@ -163,7 +168,7 @@ import {
   
   // Configura un intervallo per controllare periodicamente se inviare notifiche
   const setupNotificationCheck = (intervalMinutes: number = 60): () => void => {
-      console.log('setupNotificationCheck - Setting up notification check with interval:', intervalMinutes, 'minutes.');
+      console.log('setupNotificationCheck - Setting up notification check with interval:', intervalMinutes, 'minutes. - before interval');
     const intervalId = setInterval(async () => {
         console.log('setupNotificationCheck - Interval tick.');
       await checkAndSendNotification();
@@ -175,6 +180,36 @@ import {
         clearInterval(intervalId);
     }
   };
+  
+    // Helper per verificare se è il momento di inviare la notifica di check-in
+  const shouldSendCheckInNotification = (
+      checkInDate: Date,
+      lastNotificationDate: string | null
+    ): boolean => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+    
+        const checkIn = new Date(checkInDate);
+        checkIn.setHours(0, 0, 0, 0);
+    
+        const diffDays = Math.floor((checkIn.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        console.log("shouldSendCheckInNotification - diffDays:", diffDays)
+      
+      // Verifica se è passato un giorno dall'ultima notifica
+        if (lastNotificationDate) {
+            const lastNotification = new Date(lastNotificationDate);
+          lastNotification.setHours(0, 0, 0, 0);
+          const daysSinceLastNotification = Math.floor(
+            (today.getTime() - lastNotification.getTime()) / (1000 * 60 * 60 * 24)
+          );
+            console.log("shouldSendCheckInNotification - daysSinceLastNotification:", daysSinceLastNotification)
+          if (daysSinceLastNotification < 1) return false;
+        }
+    
+      const shouldSend = diffDays === 1;
+      console.log("shouldSendCheckInNotification - shouldSend:", shouldSend)
+      return shouldSend; // Invia la notifica quando manca 1 giorno al check-in
+    };
   
   // Inizializza il sistema di notifiche di check-in
   const initializeCheckInNotifications = async (): Promise<void> => {

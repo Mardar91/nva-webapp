@@ -181,35 +181,6 @@ import {
     }
   };
   
-    // Helper per verificare se è il momento di inviare la notifica di check-in
-  const shouldSendCheckInNotification = (
-      checkInDate: Date,
-      lastNotificationDate: string | null
-    ): boolean => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-    
-        const checkIn = new Date(checkInDate);
-        checkIn.setHours(0, 0, 0, 0);
-    
-        const diffDays = Math.floor((checkIn.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        console.log("shouldSendCheckInNotification - diffDays:", diffDays)
-      
-      // Verifica se è passato un giorno dall'ultima notifica
-        if (lastNotificationDate) {
-            const lastNotification = new Date(lastNotificationDate);
-          lastNotification.setHours(0, 0, 0, 0);
-          const daysSinceLastNotification = Math.floor(
-            (today.getTime() - lastNotification.getTime()) / (1000 * 60 * 60 * 24)
-          );
-            console.log("shouldSendCheckInNotification - daysSinceLastNotification:", daysSinceLastNotification)
-          if (daysSinceLastNotification < 1) return false;
-        }
-    
-      const shouldSend = diffDays === 1;
-      console.log("shouldSendCheckInNotification - shouldSend:", shouldSend)
-      return shouldSend; // Invia la notifica quando manca 1 giorno al check-in
-    };
   
   // Inizializza il sistema di notifiche di check-in
   const initializeCheckInNotifications = async (): Promise<void> => {

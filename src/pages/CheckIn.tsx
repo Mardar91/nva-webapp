@@ -14,7 +14,6 @@ import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-
 import { useNotifications } from '../hooks/useNotifications';
 import {
     saveCheckInDate,
-    calculateNotificationTiming,
     hasNotificationBeenSent
 } from '../lib/notifications/checkInNotifications';
 
@@ -149,25 +148,20 @@ const CheckIn = () => {
         isSubscribed,
         deviceId,
         requestPermission,
-        setCheckInDate: setNotificationCheckInDate,
+        isLoading,
         error: notificationError
-    } = useNotifications(checkInDate ?? undefined);
+    } = useNotifications();
 
     const [showForm, setShowForm] = useState(false);
     const [dateSelected, setDateSelected] = useState(false);
     const [showCalendar, setShowCalendar] = useState(() => !localStorage.getItem('check-in-confirmed'));
 
 
-    // Gestione del countdown e invio notifica
+    // Gestione del countdown
     const handleDayChange = async (daysLeft: number, date: Date) => {
-        if (daysLeft === 1) {
-            const notificationSent = hasNotificationBeenSent(date);
-            if (!notificationSent) {
-                console.log('Checkin.tsx - handleDayChange - notification is not sent and should be scheduled now');
-                saveCheckInDate(date);
-            }
-        }
-    }
+      
+    };
+
 
     useEffect(() => {
         if (checkInDate) {
@@ -189,7 +183,6 @@ const CheckIn = () => {
             today.setHours(0, 0, 0, 0);
             if (newDate.getTime() >= today.getTime()) {
                 setStoredCheckInDate(newDate);
-                setNotificationCheckInDate(newDate);
                 setDateSelected(true);
                 setIsConfirmed(false);
             } else {
@@ -208,6 +201,7 @@ const CheckIn = () => {
     const handleConfirm = () => {
         if (checkInDate) {
             setIsConfirmed(true);
+             saveCheckInDate(checkInDate)
             setShowCalendar(false);
             if (validateDate(checkInDate)) {
                 setShowForm(true);

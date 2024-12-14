@@ -1,80 +1,84 @@
 // hooks/useNotifications.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   getDeviceId,
   getSubscriptionStatus,
   requestNotificationPermission,
-  ONE_SIGNAL_CONFIG,
-    optInToNotifications,
+  isOneSignalAvailable,
+  optInToNotifications
 } from '../lib/notifications/oneSignal';
 import { initializeCheckInNotifications } from '../lib/notifications/checkInNotifications';
 
-
-export const useNotifications = (checkInDate?: Date) => {
-    const [isSupported, setIsSupported] = useState(false);
-    const [isSubscribed, setIsSubscribed] = useState(false);
-    const [deviceId, setDeviceId] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-
+export const useNotifications = () => {
+  const [isSupported, setIsSupported] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+    const isInitializedRef = useRef(false);
 
     useEffect(() => {
-      const checkSupport = async () => {
-        try {
-          if (typeof window !== 'undefined' && !!window.OneSignal) {
-            setIsSupported(true);
-            await initializeCheckInNotifications();
-          }
-        } catch (err) {
-          setError('OneSignal initialization error');
-        }
-      };
-      checkSupport();
+        const checkSupport = async () => {
+            try {
+                if (isOneSignalAvailable()) {
+                    setIsSupported(true);
+                   if (!isInitializedRef.current){
+                        await initializeCheckInNotifications();
+                        isInitializedRef.current = true;
+                    }
+                    setIsLoading(false); // Imposta a false al termine dell'inizializzazione
+                } else {
+                    setIsLoading(false); // Imposta a false se OneSignal non è disponibile
+                    setError('OneSignal is not available.');
+                }
+            } catch (err) {
+                setError('OneSignal initialization error');
+                setIsLoading(false); // Imposta a false anche in caso di errore
+            }
+        };
+        checkSupport();
     }, []);
 
-
     useEffect(() => {
-      if (isSupported) {
-        const fetchStatus = async () => {
-          try {
-            const status = await getSubscriptionStatus();
-            setIsSubscribed(!!status?.isSubscribed);
-              setDeviceId(status?.deviceId || null);
-          } catch (err) {
-            setError('Error fetching subscription status.');
-          }
-        };
+        if (isSupported) {
+            const fetchStatus = async () => {
+                try {
+                    const status = await getSubscriptionStatus();
+                    setIsSubscribed(!!status?.isSubscribed);
+                    setDeviceId(status?.deviceId || null);
+                    setIsLoading(false); // Imposta a false dopo aver ottenuto lo stato
+                } catch (err) {
+                    setError('Error fetching subscription status.');
+                    setIsLoading(false); // Imposta a false anche in caso di errore
+                }
+            };
 
-        fetchStatus();
-      }
+            fetchStatus();
+        }
     }, [isSupported]);
 
     const requestPermission = async () => {
       if (!isSupported) {
-        setError('Notifications are not supported');
-        return;
+          setError('Notifications are not supported');
+          return;
       }
 
-      try {
-          const permission = await requestNotificationPermission();
-          if (permission){
-            setIsSubscribed(true)
-            await optInToNotifications();
-          }
-      } catch (err) {
-          setError('Error requesting notification permission.');
-      }
+        try {
+            const permission = await requestNotificationPermission();
+            if (permission){
+              setIsSubscribed(true);
+              await optInToNotifications();
+            }
+        } catch (err) {
+            setError('Error requesting notification permission.');
+        }
     };
-  
-    const setCheckInDate = async (date: Date) => {
-      localStorage.setItem('check-in-date', date.toISOString());
-    };
-  
     return {
-      isSupported,
-      isSubscribed,
-      deviceId,
-      error,
-      requestPermission,
-      setCheckInDate
+        isSupported,
+        isSubscribed,
+        deviceId,
+        error,
+        requestPermission,
+        isLoading
     };
-  };
+};

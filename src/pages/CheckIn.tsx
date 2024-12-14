@@ -14,8 +14,10 @@ import { ChevronDown, ChevronUp, Calendar as CalendarIcon, LogIn } from "lucide-
 import { useNotifications } from '../hooks/useNotifications';
 import {
     saveCheckInDate,
-    hasNotificationBeenSent
+    hasNotificationBeenSent,
+    getStoredNotificationState
 } from '../lib/notifications/checkInNotifications';
+import { sendCheckInNotification } from '../lib/notifications/oneSignal';
 
 interface CheckInNotificationState {
     deviceId: string | null;
@@ -149,7 +151,6 @@ const CheckIn = () => {
         deviceId,
         requestPermission,
         isLoading,
-        timerRef,
         error: notificationError
     } = useNotifications();
 
@@ -159,10 +160,40 @@ const CheckIn = () => {
 
 
     // Gestione del countdown
-    const handleDayChange = async (daysLeft: number, date: Date) => {
+      const handleDayChange = async (daysLeft: number, date: Date) => {
+        if (daysLeft === 1 && deviceId) {
+            const notificationSent = hasNotificationBeenSent(date);
+            if (!notificationSent) {
+                 try {
+                       const response = await fetch('/api/check-in-notification', {
+                         method: 'POST',
+                           headers: {
+                             'Content-Type': 'application/json',
+                           },
+                         body: JSON.stringify({
+                                 deviceId: deviceId,
+                                 checkInDate: date.toISOString()
+                             })
+                       });
 
+                       const responseData = await response.json();
+                     if (response.ok) {
+                         console.log('Notification sent successfully');
+                         const state = getStoredNotificationState()
+                         localStorage.setItem('check-in-notification-state',JSON.stringify({
+                             ...state,
+                            notificationSent: true,
+                            lastNotificationDate: new Date().toISOString()
+                         }))
+                       } else {
+                         console.error('Failed to send notification:', responseData);
+                       }
+                   } catch (error) {
+                       console.error('Error sending notification:', error);
+                   }
+            }
+        }
     };
-
 
     useEffect(() => {
         if (checkInDate) {

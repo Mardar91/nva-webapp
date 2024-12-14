@@ -112,12 +112,13 @@ const CurrentEventBadge = () => (
 );
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
+  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
-  }).format(event.startDate);
+  }).format(event.startDate) : 'Data non disponibile';
 
   const isCurrentEvent = () => {
+    if(!event.startDate) return false
     const now = new Date();
     const start = new Date(event.startDate);
     start.setHours(0, 0, 0, 0);

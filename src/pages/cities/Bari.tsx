@@ -145,7 +145,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
-               {event.link && (
+              {event.link && (
                 <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
                   More info
                 </a>
@@ -196,7 +196,7 @@ const Bari: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = async () => {
+    const fetchEvents = async () => {
         setLoading(true);
         setError(null);
         try {
@@ -208,38 +208,40 @@ const Bari: React.FC = () => {
             const $ = cheerio.load(html);
             const extractedEvents: Event[] = [];
 
+
             $('.evento-featured').each((_, element) => {
-                const titleElement = $(element).find('.titolo.blocco-locali h2 a');
-                const title = titleElement.text().trim();
-                const link = titleElement.attr('href') || undefined;
-                const dateText = $(element).find('.testa').text().trim();
-                const location = $(element).find('.evento-data a').text().trim() || 'Bari'; // fallback
-                const description = $(element).find('.evento-corpo').text().trim();
+              const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+              const title = titleElement.text().trim();
+              const link = titleElement.attr('href') || undefined;
+               const dateText = $(element).find('.testa').text().trim();
+               const location = $(element).find('.evento-data a').text().trim() || 'Bari'; // fallback
+                 const description = $(element).find('.evento-corpo').text().trim();
 
-                const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)/) || dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)/);
 
-                let startDate: Date;
-        if (dateMatch) {
+          const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)/) || dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)/);
+
+
+           let startDate: Date;
+          if (dateMatch) {
             let dayStart: number;
             let monthStart: string;
 
-             if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
+              if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
                 dayStart = parseInt(dateMatch[1], 10);
-                 monthStart = dateMatch[3];
+                   monthStart = dateMatch[3];
 
             } else {
                dayStart=parseInt(dateMatch[2],10);
                 monthStart= dateMatch[3];
             }
-              const year = new Date().getFullYear();
-              const month = new Date(`${monthStart} 1, 2024`).getMonth();
-              startDate = new Date(year, month, dayStart);
+            const year = new Date().getFullYear();
+            const month = new Date(`${monthStart} 1, 2024`).getMonth();
+            startDate = new Date(year, month, dayStart);
+          
 
         } else {
-           startDate = new Date()
+           startDate = new Date();
          }
-    
-
 
                 if (title) {
                     extractedEvents.push({
@@ -253,25 +255,24 @@ const Bari: React.FC = () => {
                 }
             });
 
+           extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-            extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+      // Get the next 4 events
+      const now = new Date();
+      const futureEvents = extractedEvents.filter(event => event.startDate >= now).slice(0, 4)
 
-
-            // Get the next 4 events
-            const now = new Date();
-            const futureEvents = extractedEvents.filter(event => event.startDate >= now).slice(0, 4)
 
             setEvents(futureEvents);
 
 
         } catch (err) {
-             if (err instanceof Error) {
-            setError(err.message);
+           if (err instanceof Error) {
+        setError(err.message);
       } else {
         setError('An unexpected error occurred.');
       }
         } finally {
-            setLoading(false);
+           setLoading(false);
         }
     };
 
@@ -292,7 +293,7 @@ const Bari: React.FC = () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
       }
-     clearInterval(intervalId)
+      clearInterval(intervalId)
     };
   }, [location]);
 

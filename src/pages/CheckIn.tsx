@@ -149,6 +149,7 @@ const CheckIn = () => {
         deviceId,
         requestPermission,
         isLoading,
+        timerRef,
         error: notificationError
     } = useNotifications();
 
@@ -159,7 +160,7 @@ const CheckIn = () => {
 
     // Gestione del countdown
     const handleDayChange = async (daysLeft: number, date: Date) => {
-      
+
     };
 
 
@@ -201,7 +202,7 @@ const CheckIn = () => {
     const handleConfirm = () => {
         if (checkInDate) {
             setIsConfirmed(true);
-             saveCheckInDate(checkInDate)
+            saveCheckInDate(checkInDate)
             setShowCalendar(false);
             if (validateDate(checkInDate)) {
                 setShowForm(true);

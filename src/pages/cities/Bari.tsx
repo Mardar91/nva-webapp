@@ -197,7 +197,7 @@ const Bari: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = async () => {
+    const fetchEvents = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -236,12 +236,13 @@ const Bari: React.FC = () => {
               });
             }
         });
-
+      console.log("Extracted events:", extractedEvents); // log degli eventi estratti
        extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
       // Get the next 4 events
       const now = new Date();
       const futureEvents = extractedEvents.filter(event => event.startDate >= now).slice(0, 4)
+        console.log("Future events:", futureEvents); // log degli eventi filtrati
 
       setEvents(futureEvents);
 

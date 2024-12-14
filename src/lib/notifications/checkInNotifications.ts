@@ -6,6 +6,7 @@ import {
     sendCheckInNotification,
     shouldSendCheckInNotification 
   } from './oneSignal';
+import React from "react";
   
   interface CheckInNotificationState {
     deviceId: string | null;
@@ -166,31 +167,37 @@ import {
       return isSent;
   };
   
-  // Configura un intervallo per controllare periodicamente se inviare notifiche
-  const setupNotificationCheck = (intervalMinutes: number = 60): () => void => {
-      console.log('setupNotificationCheck - Setting up notification check with interval:', intervalMinutes, 'minutes. - before interval');
-    const intervalId = setInterval(async () => {
-        console.log('setupNotificationCheck - Interval tick - START LOG');
-      await checkAndSendNotification();
-         console.log('setupNotificationCheck - Interval tick - END LOG');
-    }, intervalMinutes * 60 * 1000);
-  
-    // Restituisce una funzione di cleanup
-    return () => {
-        console.log('setupNotificationCheck - Clearing interval.');
-        clearInterval(intervalId);
-    }
-  };
-  
-  
-  // Inizializza il sistema di notifiche di check-in
-  const initializeCheckInNotifications = async (): Promise<void> => {
-      console.log('initializeCheckInNotifications - Initializing check-in notifications.');
-    await updateDeviceState();
-    const cleanup = setupNotificationCheck();
-     //rimuovi questa riga:  window.addEventListener('beforeunload', cleanup);
-    console.log('initializeCheckInNotifications - Initialization completed.');
-  };
+   // Configura un intervallo per controllare periodicamente se inviare notifiche
+     const setupNotificationCheck = (timerRef:  React.MutableRefObject<NodeJS.Timeout | null>, intervalMinutes: number = 60): () => void => {
+        console.log('setupNotificationCheck - Setting up notification check with interval:', intervalMinutes, 'minutes. - before interval');
+         timerRef.current = setInterval(() => {
+              console.log('setupNotificationCheck - Interval tick - START LOG');
+              try{
+                  checkAndSendNotification();
+              } catch (error){
+                console.error('setupNotificationCheck - Error in callback timer:', error)
+                }
+              console.log('setupNotificationCheck - Interval tick - END LOG');
+         }, intervalMinutes * 60 * 1000);
+        
+      // Restituisce una funzione di cleanup
+        return () => {
+            console.log('setupNotificationCheck - Clearing interval.');
+          if (timerRef.current){
+              clearInterval(timerRef.current);
+          }
+          timerRef.current = null;
+        }
+     };
+      
+      // Inizializza il sistema di notifiche di check-in
+    const initializeCheckInNotifications = async (timerRef:  React.MutableRefObject<NodeJS.Timeout | null>): Promise<void> => {
+       console.log('initializeCheckInNotifications - Initializing check-in notifications.');
+        await updateDeviceState();
+        const cleanup = setupNotificationCheck(timerRef);
+      //rimuovi questa riga:  window.addEventListener('beforeunload', cleanup);
+     console.log('initializeCheckInNotifications - Initialization completed.');
+    };
   
   export {
     initializeCheckInNotifications,

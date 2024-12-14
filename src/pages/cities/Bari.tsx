@@ -196,83 +196,99 @@ const Bari: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-      const fetchEvents = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-        const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const html = await response.text();
-        const $ = cheerio.load(html);
-        const extractedEvents: Event[] = [];
-
-        $('.evento-featured').each((_, element) => {
-          const titleElement = $(element).find('.titolo.blocco-locali h2 a');
-          const title = titleElement.text().trim();
-          const link = titleElement.attr('href') || undefined;
-          const dateText = $(element).find('.testa').text().trim();
-          const location = $(element).find('.evento-data a').text().trim() || 'Bari'; // fallback
-          const description = $(element).find('.evento-corpo').text().trim();
-
-           const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)/) || dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)/);
-
-                let startDate: Date;
-                if (dateMatch) {
-                    let dayStart: number;
-                   let monthStart: string;
-
-             if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
-                dayStart = parseInt(dateMatch[1], 10);
-                monthStart = dateMatch[3];
-
-            } else {
-               dayStart=parseInt(dateMatch[2],10);
-                monthStart= dateMatch[3];
+       const fetchEvents = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-                   const year = new Date().getFullYear();
-                   const month = new Date(`${monthStart} 1, 2024`).getMonth();
-                startDate = new Date(year, month, dayStart);
+            const html = await response.text();
+            const $ = cheerio.load(html);
+            const extractedEvents: Event[] = [];
 
-        } else {
-           startDate = new Date()
-         }
+            $('.evento-featured').each((_, element) => {
+                const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+                const title = titleElement.text().trim();
+                const link = titleElement.attr('href') || undefined;
+                const dateText = $(element).find('.testa').text().trim();
+                 const location = $(element).find('.evento-data a').text().trim() || 'Bari'; // fallback
+                const description = $(element).find('.evento-corpo').text().trim();
+
+                const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/) ||
+                                  dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/);
+
+           
+              
+                let startDate: Date | undefined;
+
+          if (dateMatch) {
+            let dayStart: number;
+            let monthStart: string;
+               let year = new Date().getFullYear();
+                if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
+                    dayStart = parseInt(dateMatch[1], 10);
+                  monthStart = dateMatch[3];
+                  if (dateMatch[4]) {
+                        year = parseInt(dateMatch[4], 10);
+                   }
+
+
+                } else {
+                 dayStart = parseInt(dateMatch[2], 10);
+                   monthStart = dateMatch[3];
+
+                  if(dateMatch[4]) {
+                     year = parseInt(dateMatch[4], 10);
+
+                   }
+
+
+           
+           }
           
-          const eventData = {
+            const month = new Date(`${monthStart} 1, 2024`).getMonth();
+            startDate = new Date(year, month, dayStart);
+
+          } 
+          
+            const eventData = {
             title,
-             link,
+            link,
             dateText,
             location,
             description,
-            startDate
+            startDate,
           };
 
-          if (title) {
+
+         if (title && startDate) {
               extractedEvents.push({
-                id: Date.now().toString() + Math.random().toString(),
-                title,
-                startDate,
+                    id: Date.now().toString() + Math.random().toString(),
+                  title,
+                  startDate,
                   city: 'Bari',
                 description,
-                link
-                  });
+                  link
+              });
             }
+             console.log("Event Data Before Filter:", eventData); // Log dettagliato di ogni evento
+            });
             
-               console.log("Event Data Before Filter:", eventData); // Log dettagliato di ogni evento
-             
-        });
-            
-         extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+           extractedEvents.sort((a, b) => a.startDate!.getTime() - b.startDate!.getTime());
+        
         console.log("Extracted Events", extractedEvents); // Log degli eventi dopo il parse
+
       // Get the next 4 events
       const now = new Date();
-      const futureEvents = extractedEvents.filter(event => event.startDate >= now).slice(0, 4)
+      const futureEvents = extractedEvents.filter(event => event.startDate! >= now).slice(0, 4)
+
 
            setEvents(futureEvents);
             console.log("Future Events", futureEvents); // Log degli eventi dopo il filtro
     } catch (err) {
-         if (err instanceof Error) {
+        if (err instanceof Error) {
         setError(err.message);
       } else {
         setError('An unexpected error occurred.');

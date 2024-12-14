@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -118,7 +118,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   }).format(event.startDate) : 'Data non disponibile';
 
   const isCurrentEvent = () => {
-        if(!event.startDate) return false;
+        if(!event.startDate) return false
     const now = new Date();
     const start = new Date(event.startDate);
     start.setHours(0, 0, 0, 0);
@@ -146,10 +146,10 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
-               {event.link && (
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
-                  More info
-                </a>
+                 {event.link && (
+                    <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
+                    More info
+                  </a>
               )}
             </div>
             <div className="flex flex-col items-end">
@@ -192,112 +192,123 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
 const Bari: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const mainRef = useRef<HTMLDivElement>(null);
+    const mainRef = useRef<HTMLDivElement>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-        const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const html = await response.text();
-        const $ = cheerio.load(html);
-        const extractedEvents: Event[] = [];
 
-         $('.evento-featured').each((_, element) => {
-            const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+const fetchEvents = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const html = await response.text();
+            const $ = cheerio.load(html);
+            const extractedEvents: Event[] = [];
+
+
+             $('.evento-featured').each((_, element) => {
+              const titleElement = $(element).find('.titolo.blocco-locali h2 a');
               const title = titleElement.text().trim();
               const link = titleElement.attr('href') || undefined;
-               const dateText = $(element).find('.testa').text().trim();
-              const location = $(element).find('.evento-data a').text().trim() || 'Bari'; // fallback
-                 const description = $(element).find('.evento-corpo').text().trim();
-                  const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/) ||
-                                  dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/);
-                    
-                let startDate: Date | undefined;
+              const dateText = $(element).find('.testa').text().trim();
+               const location = $(element).find('.evento-data a').text().trim() || 'Bari'; // fallback
+               const description = $(element).find('.evento-corpo').text().trim();
 
-                if (dateMatch) {
-                    let dayStart: number;
-                    let monthStart: string;
-                      let year = new Date().getFullYear();
-                      if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
-                        dayStart = parseInt(dateMatch[1], 10);
-                           monthStart = dateMatch[3];
-                     if (dateMatch[4]) {
-                          year = parseInt(dateMatch[4], 10);
-                        }
-                     } else {
-                      dayStart = parseInt(dateMatch[2], 10);
-                       monthStart= dateMatch[3];
+
+                const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/) ||
+                                  dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/);
+
+                 let startDate: Date | undefined;
+
+          if (dateMatch) {
+              let dayStart: number;
+                let monthStart: string;
+             let year = new Date().getFullYear();
+                if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
+                    dayStart = parseInt(dateMatch[1], 10);
+                    monthStart=dateMatch[3]
 
                       if (dateMatch[4]) {
-                        year = parseInt(dateMatch[4], 10);
-                       }
-                     }
-                      const month = new Date(`${monthStart} 1, 2024`).getMonth();
-                    startDate = new Date(year, month, dayStart);
-
-
-             } 
-          
-          if (title && startDate) {
-              extractedEvents.push({
-                  id: Date.now().toString() + Math.random().toString(),
-                title,
-                startDate,
-                city: 'Bari',
-                  description,
-                   link
-                });
+                         year = parseInt(dateMatch[4], 10);
+                      }
+                }
+             else {
+               dayStart = parseInt(dateMatch[2], 10);
+                   monthStart = dateMatch[3];
+                  if (dateMatch[4]) {
+                       year = parseInt(dateMatch[4], 10);
+                   }
+              
             }
-        });
+                const month = new Date(`${monthStart} 1, 2024`).getMonth();
+                startDate = new Date(year, month, dayStart);
+             
+                } 
+            
+        
+           if (title && startDate) {
+              extractedEvents.push({
+                    id: Date.now().toString() + Math.random().toString(),
+                    title,
+                   startDate,
+                   city: 'Bari',
+                   description,
+                    link
+                 });
+             }
+
+            });
+
 
            extractedEvents.sort((a, b) => a.startDate!.getTime() - b.startDate!.getTime());
 
-
       // Get the next 4 events
-      const now = new Date();
-      const futureEvents = extractedEvents.filter(event => event.startDate! >= now).slice(0, 4)
+        const now = new Date();
+        const futureEvents = extractedEvents.filter(event => event.startDate! >= now).slice(0, 4)
 
             setEvents(futureEvents);
 
 
         } catch (err) {
-          if (err instanceof Error) {
-            setError(err.message);
-          } else {
-        setError('An unexpected error occurred.');
-            }
+              if (err instanceof Error) {
+                setError(err.message);
+                } else {
+                  setError('An unexpected error occurred.');
+              }
+           
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
   useEffect(() => {
-    fetchEvents();
+      fetchEvents();
 
     const intervalId = setInterval(fetchEvents, 10 * 60 * 1000); //ogni 10 minuti
-
+    
     window.scrollTo(0, 0);
     mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
+
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor.setAttribute('content', isDarkMode ? '#9f1239' : '#9f1239');
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        themeColor.setAttribute('content', isDarkMode ? '#9f1239' : '#9f1239');
     }
     return () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
       }
-      clearInterval(intervalId)
+      clearInterval(intervalId);
     };
-  }, [location]);
+  }, [location, fetchEvents]);
+
+    
 
   const handleBackClick = () => {
     navigate('/explore');
@@ -323,7 +334,6 @@ const Bari: React.FC = () => {
   const handleExploreClick = () => {
     scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
 
   return (
     <div
@@ -420,7 +430,8 @@ const Bari: React.FC = () => {
           {loading && <p>Loading events...</p>}
           {error && <p>Error: {error}</p>}
           <div className="grid gap-4">
-          { events.map((event) => (
+          
+             {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>

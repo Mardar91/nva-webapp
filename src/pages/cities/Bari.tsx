@@ -345,7 +345,7 @@ const Bari: React.FC = () => {
     scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  return (
+    return (
     <div
       className="giftCardSection overflow-y-auto pb-24"
       style={{
@@ -439,6 +439,10 @@ const Bari: React.FC = () => {
           </motion.h2>
           {loading && <p>Loading events...</p>}
           {error && <p>Error: {error}</p>}
+          
+          
+           {console.log("Rendering events:", events)}
+          
           <div className="grid gap-4">
             {events.map((event) => (
               <EventCard key={event.id} event={event} />

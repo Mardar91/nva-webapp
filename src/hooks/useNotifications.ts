@@ -23,10 +23,6 @@ export const useNotifications = () => {
             try {
                 if (isOneSignalAvailable()) {
                     setIsSupported(true);
-                   if (!isInitializedRef.current){
-                        await initializeCheckInNotifications(timerRef);
-                       isInitializedRef.current = true;
-                    }
                     setIsLoading(false); // Imposta a false al termine dell'inizializzazione
                 } else {
                     setIsLoading(false); // Imposta a false se OneSignal non è disponibile
@@ -48,6 +44,10 @@ export const useNotifications = () => {
                     setIsSubscribed(!!status?.isSubscribed);
                     setDeviceId(status?.deviceId || null);
                     setIsLoading(false); // Imposta a false dopo aver ottenuto lo stato
+                      if (!isInitializedRef.current){
+                         await initializeCheckInNotifications(timerRef);
+                        isInitializedRef.current = true;
+                     }
                 } catch (err) {
                     setError('Error fetching subscription status.');
                     setIsLoading(false); // Imposta a false anche in caso di errore
@@ -81,6 +81,6 @@ export const useNotifications = () => {
         error,
         requestPermission,
         isLoading,
-        timerRef
+      timerRef
     };
 };

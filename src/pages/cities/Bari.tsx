@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Calendar, 
-  MapPin, 
-  ArrowLeft, 
-  ArrowRight 
+import {
+  Calendar,
+  MapPin,
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -17,6 +17,8 @@ import {
   DialogTrigger,
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
+import * as cheerio from 'cheerio';
+
 
 // Next City Components
 interface NextCityToastProps {
@@ -53,7 +55,7 @@ interface NextCityButtonProps {
 const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
-  
+
   useEffect(() => {
     setShowToast(true);
     const timer = setTimeout(() => {
@@ -90,7 +92,8 @@ interface Event {
   startDate: Date;
   endDate?: Date;
   city: string;
-  description: string;
+  description?: string;
+  link?: string;
 }
 
 interface Attraction {
@@ -121,7 +124,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     start.setHours(0, 0, 0, 0);
     const end = event.endDate ? new Date(event.endDate) : new Date(start);
     end.setHours(23, 59, 59, 999);
-    
+
     return now >= start && now <= end;
   };
 
@@ -143,6 +146,11 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
+               {event.link && (
+                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
+                  More info
+                </a>
+              )}
             </div>
             <div className="flex flex-col items-end">
               <div className="flex items-center">
@@ -157,6 +165,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     </motion.div>
   );
 };
+
 const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
   <Dialog>
     <DialogTrigger>
@@ -184,8 +193,78 @@ const Bari: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const mainRef = useRef<HTMLDivElement>(null);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchEvents = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+        const response = await fetch('https://iltaccodibacco.it/bari/');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const html = await response.text();
+        const $ = cheerio.load(html);
+        const extractedEvents: Event[] = [];
+      
+        $('.event-card').each((_, element) => {
+            const titleElement = $(element).find('.event-title a');
+            const title = titleElement.text().trim();
+            const link = titleElement.attr('href') || undefined;
+            const dateText = $(element).find('.event-date').text().trim();
+            const description = $(element).find('.event-description').text().trim();
+
+          
+            const dateParts = dateText.split(' ');
+            const day = parseInt(dateParts[0], 10);
+            const monthString = dateParts[1];
+            const month = new Date(`${monthString} 1, 2024`).getMonth(); // Get month number from text
+
+            const year = new Date().getFullYear(); // Current year
+            const startDate = new Date(year, month, day);
+          
+          
+          
+          
+            if (title) {
+                 extractedEvents.push({
+                    id: Date.now().toString() + Math.random().toString(),
+                  title,
+                  startDate,
+                  city: 'Bari',
+                  description,
+                  link
+                });
+              }
+            });
+            
+           extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+
+            // Get the next 4 events
+            const now = new Date();
+            const futureEvents = extractedEvents.filter(event => event.startDate >= now).slice(0, 4)
+
+           setEvents(futureEvents);
+
+    } catch (err) {
+       if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unexpected error occurred.');
+      }
+    } finally {
+       setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    fetchEvents();
+
+    const intervalId = setInterval(fetchEvents, 10 * 60 * 1000); //ogni 10 minuti
+    
     window.scrollTo(0, 0);
     mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
@@ -198,43 +277,13 @@ const Bari: React.FC = () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
       }
+     clearInterval(intervalId)
     };
   }, [location]);
 
   const handleBackClick = () => {
     navigate('/explore');
   };
-
-  const bariEvents: Event[] = [
-    {
-      id: '1',
-      title: 'San Nicola Festival',
-      startDate: new Date(),
-      city: 'Bari',
-      description: 'Traditional celebration of Saint Nicholas'
-    },
-    {
-      id: '2',
-      title: 'Bari International Film Festival',
-      startDate: new Date(new Date().setDate(new Date().getDate() + 10)),
-      city: 'Bari',
-      description: 'Annual international film festival'
-    },
-    {
-      id: '3',
-      title: 'Opera Season Opening',
-      startDate: new Date(new Date().setDate(new Date().getDate() + 18)),
-      city: 'Bari',
-      description: 'Teatro Petruzzelli season opening'
-    },
-    {
-      id: '4',
-      title: 'Christmas Street Market',
-      startDate: new Date(new Date().setDate(new Date().getDate() + 28)),
-      city: 'Bari',
-      description: 'Traditional Christmas market'
-    }
-  ];
 
   const attractions: Attraction[] = [
     { name: 'Basilica San Nicola', icon: '⛪' },
@@ -252,14 +301,14 @@ const Bari: React.FC = () => {
   ];
 
   const scrollToRef = useRef<HTMLDivElement>(null);
-  
+
   const handleExploreClick = () => {
     scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div 
-      className="giftCardSection overflow-y-auto pb-24" 
+    <div
+      className="giftCardSection overflow-y-auto pb-24"
       style={{
         height: 'calc(100vh - 88px)',
         WebkitOverflowScrolling: 'touch',
@@ -308,7 +357,7 @@ const Bari: React.FC = () => {
       <NextCityButton nextCityPath="/cities/mola-di-bari" />
 
       {/* Hero Section */}
-      <div 
+      <div
         className="bg-rose-800 dark:bg-rose-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
         style={{
           paddingTop: '4rem',
@@ -328,9 +377,9 @@ const Bari: React.FC = () => {
           <p className="text-gray-100 text-lg mb-8">
             A vibrant city in southern Italy, blending historic charm with modern energy. Known for its stunning old town, beautiful seafront, and delicious cuisine, it offers an unforgettable mix of culture, history, and coastal beauty.
           </p>
-          <Button 
+          <Button
             onClick={handleExploreClick}
-            variant="outline" 
+            variant="outline"
             className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-rose-800 transition-colors"
           >
             Explore the City
@@ -349,8 +398,10 @@ const Bari: React.FC = () => {
           >
             Upcoming Events
           </motion.h2>
+             {loading && <p>Loading events...</p>}
+             {error && <p>Error: {error}</p>}
           <div className="grid gap-4">
-            {bariEvents.map((event) => (
+            {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>

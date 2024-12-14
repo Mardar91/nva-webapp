@@ -19,7 +19,6 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
 
-
 // Next City Components
 interface NextCityToastProps {
   show: boolean;
@@ -87,13 +86,13 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
 };
 
 interface Event {
-  id: string;
-  title: string;
-  startDate: Date;
-  endDate?: Date;
-  city: string;
-  description?: string;
-    link?: string;
+    id: string;
+    title: string;
+    startDate: Date;
+    endDate?: Date;
+    city: string;
+    description?: string;
+      link?: string;
 }
 
 interface Attraction {
@@ -113,10 +112,11 @@ const CurrentEventBadge = () => (
 );
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+    const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
   }).format(event.startDate) : 'Data non disponibile';
+
 
   const isCurrentEvent = () => {
         if(!event.startDate) return false
@@ -147,10 +147,10 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
-              {event.link && (
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
-                  More info
-                </a>
+                {event.link && (
+                    <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
+                    More info
+                  </a>
               )}
             </div>
             <div className="flex flex-col items-end">
@@ -198,7 +198,7 @@ const Bari: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = async () => {
+ const fetchEvents = async () => {
         setLoading(true);
         setError(null);
         try {
@@ -218,73 +218,55 @@ const Bari: React.FC = () => {
                const location = $(element).find('.evento-data a').text().trim() || 'Bari'; // fallback
                  const description = $(element).find('.evento-corpo').text().trim();
 
-         const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/) ||
+                const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/) ||
                                   dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/);
 
-
-           let startDate: Date | undefined;
-          if (dateMatch) {
-             let dayStart: number;
-            let monthStart: string;
-            let year = new Date().getFullYear();
-
-
-            if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
-                dayStart = parseInt(dateMatch[1], 10);
-                monthStart = dateMatch[3];
-                if(dateMatch[4]){
-                  year=parseInt(dateMatch[4],10)
-                }
-
-              }
-            else {
-              dayStart=parseInt(dateMatch[2],10)
-              monthStart= dateMatch[3];
-
-              if (dateMatch[4]) {
-                year = parseInt(dateMatch[4], 10);
-
-               }
-            }
-              const month = new Date(`${monthStart} 1, 2024`).getMonth();
-            startDate = new Date(year, month, dayStart);
-
-          }
            
-            const eventData = {
-            title,
-            link,
-            dateText,
-            location,
-            description,
-             startDate,
-          };
+              
+                let startDate: Date | undefined;
 
-           if (title && startDate) {
-             extractedEvents.push({
+          if (dateMatch) {
+            let dayStart: number;
+            let monthStart: string;
+               let year = new Date().getFullYear();
+                if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
+                    dayStart = parseInt(dateMatch[1], 10);
+                     monthStart = dateMatch[3];
+                   if (dateMatch[4]) {
+                         year = parseInt(dateMatch[4], 10);
+                     }
+                } else {
+                 dayStart = parseInt(dateMatch[2], 10);
+                  monthStart = dateMatch[3];
+                   if (dateMatch[4]) {
+                       year = parseInt(dateMatch[4], 10);
+                     }
+            }
+           const month = new Date(`${monthStart} 1, 2024`).getMonth();
+                startDate = new Date(year, month, dayStart);
+          } 
+          
+            if (title && startDate) {
+                extractedEvents.push({
                     id: Date.now().toString() + Math.random().toString(),
-                  title,
-                  startDate,
+                    title,
+                    startDate,
                     city: 'Bari',
-                 description,
-                   link
-              });
-          }
-               
-            });
-
-
-            extractedEvents.sort((a, b) => a.startDate!.getTime() - b.startDate!.getTime());
-
+                    description,
+                    link
+                });
+            }
+        });
+            
+           extractedEvents.sort((a, b) => a.startDate!.getTime() - b.startDate!.getTime());
 
       // Get the next 4 events
       const now = new Date();
-      const futureEvents = extractedEvents.filter(event => event.startDate! >= now).slice(0, 4)
+      const futureEvents = extractedEvents.filter(event => event.startDate! >= now).slice(0, 4);
            setEvents(futureEvents);
 
-
         } catch (err) {
-           if (err instanceof Error) {
+             if (err instanceof Error) {
         setError(err.message);
       } else {
         setError('An unexpected error occurred.');
@@ -293,7 +275,6 @@ const Bari: React.FC = () => {
             setLoading(false);
         }
     };
-
 
   useEffect(() => {
     fetchEvents();
@@ -435,11 +416,7 @@ const Bari: React.FC = () => {
           </motion.h2>
           {loading && <p>Loading events...</p>}
           {error && <p>Error: {error}</p>}
-          
-           
-          
           <div className="grid gap-4">
-           {console.log("Rendering events:", events)}
             {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}

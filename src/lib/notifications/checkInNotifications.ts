@@ -167,28 +167,29 @@ import React from "react";
       return isSent;
   };
   
-   // Configura un intervallo per controllare periodicamente se inviare notifiche
-     const setupNotificationCheck = (timerRef:  React.MutableRefObject<NodeJS.Timeout | null>, intervalMinutes: number = 60): () => void => {
-        console.log('setupNotificationCheck - Setting up notification check with interval:', intervalMinutes, 'minutes. - before interval');
+  // Configura un intervallo per controllare periodicamente se inviare notifiche
+    const setupNotificationCheck = (timerRef:  React.MutableRefObject<NodeJS.Timeout | null>, intervalMinutes: number = 60): () => void => {
+       console.log('setupNotificationCheck - Setting up notification check with interval:', intervalMinutes, 'minutes. - before interval');
          timerRef.current = setInterval(() => {
               console.log('setupNotificationCheck - Interval tick - START LOG');
               try{
+                  console.log("setupNotificationCheck - before checkAndSendNotification")
                   checkAndSendNotification();
               } catch (error){
                 console.error('setupNotificationCheck - Error in callback timer:', error)
-                }
+                 }
               console.log('setupNotificationCheck - Interval tick - END LOG');
          }, intervalMinutes * 60 * 1000);
-        
+       
       // Restituisce una funzione di cleanup
         return () => {
             console.log('setupNotificationCheck - Clearing interval.');
-          if (timerRef.current){
-              clearInterval(timerRef.current);
-          }
-          timerRef.current = null;
+           if (timerRef.current){
+                clearInterval(timerRef.current);
+            }
+             timerRef.current = null;
         }
-     };
+    };
       
       // Inizializza il sistema di notifiche di check-in
     const initializeCheckInNotifications = async (timerRef:  React.MutableRefObject<NodeJS.Timeout | null>): Promise<void> => {

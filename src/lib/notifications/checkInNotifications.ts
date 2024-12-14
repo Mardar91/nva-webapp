@@ -172,7 +172,7 @@ import {
     const intervalId = setInterval(async () => {
         console.log('setupNotificationCheck - Interval tick - START LOG');
       await checkAndSendNotification();
-        console.log('setupNotificationCheck - Interval tick - END LOG');
+         console.log('setupNotificationCheck - Interval tick - END LOG');
     }, intervalMinutes * 60 * 1000);
   
     // Restituisce una funzione di cleanup
@@ -181,46 +181,14 @@ import {
         clearInterval(intervalId);
     }
   };
-    
-   // Helper per verificare se è il momento di inviare la notifica di check-in
-    const shouldSendCheckInNotification = (
-      checkInDate: Date,
-      lastNotificationDate: string | null
-    ): boolean => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const checkIn = new Date(checkInDate);
-        checkIn.setHours(0, 0, 0, 0);
-
-        const diffDays = Math.floor((checkIn.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        console.log("shouldSendCheckInNotification - diffDays:", diffDays)
-
-        // Verifica se è passato un giorno dall'ultima notifica
-        if (lastNotificationDate) {
-            const lastNotification = new Date(lastNotificationDate);
-          lastNotification.setHours(0, 0, 0, 0);
-            const daysSinceLastNotification = Math.floor(
-            (today.getTime() - lastNotification.getTime()) / (1000 * 60 * 60 * 24)
-          );
-            console.log("shouldSendCheckInNotification - daysSinceLastNotification:", daysSinceLastNotification)
-          if (daysSinceLastNotification < 1) {
-                console.log("shouldSendCheckInNotification - returning false, daysSinceLastNotification < 1")
-               return false
-          }
-        }
-
-        const shouldSend = diffDays === 1;
-        console.log("shouldSendCheckInNotification - shouldSend:", shouldSend)
-      return shouldSend; // Invia la notifica quando manca 1 giorno al check-in
-    };
+  
   
   // Inizializza il sistema di notifiche di check-in
   const initializeCheckInNotifications = async (): Promise<void> => {
       console.log('initializeCheckInNotifications - Initializing check-in notifications.');
     await updateDeviceState();
     const cleanup = setupNotificationCheck();
-       //rimuovi questa riga:  window.addEventListener('beforeunload', cleanup);
+     //rimuovi questa riga:  window.addEventListener('beforeunload', cleanup);
     console.log('initializeCheckInNotifications - Initialization completed.');
   };
   

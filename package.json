@@ -56,7 +56,8 @@
     "react-datepicker": "^4.25.0",
     "@types/react-datepicker": "^4.19.5",
      "framer-motion": "^11.13.1",
-     "cheerio": "^1.0.0-rc.12"
+     "cheerio": "^1.0.0-rc.12",
+     "axios": "^1.6.7"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.16.0",

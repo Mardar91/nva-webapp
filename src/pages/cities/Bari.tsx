@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Calendar, 
-  MapPin, 
-  ArrowLeft, 
-  ArrowRight 
+import {
+  Calendar,
+  MapPin,
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -19,28 +19,11 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
 
-// Interfaces
+// Next City Components
 interface NextCityToastProps {
   show: boolean;
 }
 
-interface Event {
-  id: string;
-  title: string;
-  startDate: Date;
-  endDate?: Date;
-  city: string;
-  description: string;
-  link?: string;
-}
-
-interface Attraction {
-  name: string;
-  icon: string;
-  description?: string;
-}
-
-// Toast Components
 const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
   <AnimatePresence>
     {show && (
@@ -71,7 +54,7 @@ interface NextCityButtonProps {
 const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
-  
+
   useEffect(() => {
     setShowToast(true);
     const timer = setTimeout(() => {
@@ -102,6 +85,22 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
   );
 };
 
+interface Event {
+    id: string;
+    title: string;
+    startDate: Date;
+    endDate?: Date;
+    city: string;
+    description?: string;
+    link?: string;
+}
+
+interface Attraction {
+  name: string;
+  icon: string;
+  description?: string;
+}
+
 const CurrentEventBadge = () => (
   <div className="flex items-center gap-1.5 mt-2">
     <span className="relative flex h-2.5 w-2.5">
@@ -111,19 +110,21 @@ const CurrentEventBadge = () => (
     <span className="text-xs font-medium text-green-600">Today</span>
   </div>
 );
+
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
+  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
-  }).format(event.startDate);
+  }).format(event.startDate) : 'Data non disponibile';
 
   const isCurrentEvent = () => {
+        if(!event.startDate) return false
     const now = new Date();
     const start = new Date(event.startDate);
     start.setHours(0, 0, 0, 0);
     const end = event.endDate ? new Date(event.endDate) : new Date(start);
     end.setHours(23, 59, 59, 999);
-    
+
     return now >= start && now <= end;
   };
 
@@ -145,15 +146,10 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
-              {event.link && (
-                <a 
-                  href={event.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-sm text-blue-500 mt-1 block hover:text-blue-600"
-                >
-                  More info
-                </a>
+                 {event.link && (
+                    <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
+                    More info
+                  </a>
               )}
             </div>
             <div className="flex flex-col items-end">
@@ -193,119 +189,129 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
   </Dialog>
 );
 
-const monthsIT = {
-  'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3, 
-  'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
-  'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
-};
-
-const parseItalianDate = (dateText: string): Date | null => {
-  // Gestione formato "dal gg al gg mese anno"
-  const dateRangeMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/);
-  
-  // Gestione formato "giorno dd mese anno"
-  const singleDateMatch = dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/);
-
-  if (dateRangeMatch) {
-    const day = parseInt(dateRangeMatch[1], 10);
-    const monthStr = dateRangeMatch[3].toLowerCase();
-    const year = dateRangeMatch[4] ? parseInt(dateRangeMatch[4], 10) : new Date().getFullYear();
-    const month = monthsIT[monthStr as keyof typeof monthsIT];
-    
-    if (!isNaN(day) && month !== undefined) {
-      return new Date(year, month, day);
-    }
-  } else if (singleDateMatch) {
-    const day = parseInt(singleDateMatch[2], 10);
-    const monthStr = singleDateMatch[3].toLowerCase();
-    const year = singleDateMatch[4] ? parseInt(singleDateMatch[4], 10) : new Date().getFullYear();
-    const month = monthsIT[monthStr as keyof typeof monthsIT];
-    
-    if (!isNaN(day) && month !== undefined) {
-      return new Date(year, month, day);
-    }
-  }
-
-  return null;
-};
 const Bari: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const mainRef = useRef<HTMLDivElement>(null);
+    const mainRef = useRef<HTMLDivElement>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = useCallback(async () => {
+
+const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const html = await response.text();
-      const $ = cheerio.load(html);
-      const extractedEvents: Event[] = [];
-
-      $('.evento-featured').each((_, element) => {
-        const titleElement = $(element).find('.titolo.blocco-locali h2 a');
-        const title = titleElement.text().trim();
-        const link = titleElement.attr('href');
-        const dateText = $(element).find('.testa').text().trim();
-        const location = $(element).find('.evento-data a').text().trim() || 'Bari';
-        const description = $(element).find('.evento-corpo').text().trim();
-
-        const startDate = parseItalianDate(dateText);
-
-        if (title && startDate) {
-          extractedEvents.push({
-            id: Date.now().toString() + Math.random().toString(),
-            title,
-            startDate,
-            city: 'Bari',
-            description,
-            link
-          });
+        const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
+        console.log('Proxy Response Status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-      });
+        
+        const html = await response.text();
+        console.log('HTML received:', html.substring(0, 200));
+        
+        const $ = cheerio.load(html);
+        const extractedEvents: Event[] = [];
 
-      // Ordina gli eventi per data
-      extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+        $('.evento-featured').each((_, element) => {
+            const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+            const title = titleElement.text().trim();
+            const link = titleElement.attr('href') || undefined;
+            const dateText = $(element).find('.testa').text().trim();
+            const location = $(element).find('.evento-data a').text().trim() || 'Bari';
+            const description = $(element).find('.evento-corpo').text().trim();
 
-      // Prendi i prossimi 4 eventi
-      const now = new Date();
-      const futureEvents = extractedEvents
-        .filter(event => event.startDate >= now)
-        .slice(0, 4);
+            // Log dei dati prima del parsing
+            console.log('Event Data Before Filter:', {
+                title,
+                link,
+                dateText,
+                location,
+                description
+            });
 
-      setEvents(futureEvents);
-    } catch (err) {
-      console.error('Error fetching events:', err);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+                const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/) ||
+                                  dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/);
+
+                 let startDate: Date | undefined;
+
+          if (dateMatch) {
+              let dayStart: number;
+                let monthStart: string;
+             let year = new Date().getFullYear();
+                if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
+                    dayStart = parseInt(dateMatch[1], 10);
+                    monthStart=dateMatch[3]
+
+                      if (dateMatch[4]) {
+                         year = parseInt(dateMatch[4], 10);
+                      }
+                }
+             else {
+               dayStart = parseInt(dateMatch[2], 10);
+                   monthStart = dateMatch[3];
+                  if (dateMatch[4]) {
+                       year = parseInt(dateMatch[4], 10);
+                   }
+              
+            }
+                const month = new Date(`${monthStart} 1, 2024`).getMonth();
+                startDate = new Date(year, month, dayStart);
+             
+                } 
+            
+        
+           if (title && startDate) {
+              extractedEvents.push({
+                    id: Date.now().toString() + Math.random().toString(),
+                    title,
+                   startDate,
+                   city: 'Bari',
+                   description,
+                    link
+                 });
+             }
+
+            });
+
+
+           extractedEvents.sort((a, b) => a.startDate!.getTime() - b.startDate!.getTime());
+
+      // Get the next 4 events
+        const now = new Date();
+        const futureEvents = extractedEvents.filter(event => event.startDate! >= now).slice(0, 4)
+
+            setEvents(futureEvents);
+
+
+        } catch (err) {
+              if (err instanceof Error) {
+                setError(err.message);
+                } else {
+                  setError('An unexpected error occurred.');
+              }
+           
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
   useEffect(() => {
-    fetchEvents();
-    const intervalId = setInterval(fetchEvents, 10 * 60 * 1000); // Aggiorna ogni 10 minuti
+      fetchEvents();
+
+    const intervalId = setInterval(fetchEvents, 10 * 60 * 1000); //ogni 10 minuti
     
     window.scrollTo(0, 0);
     mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
+
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor.setAttribute('content', isDarkMode ? '#9f1239' : '#9f1239');
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        themeColor.setAttribute('content', isDarkMode ? '#9f1239' : '#9f1239');
     }
-
     return () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
@@ -313,6 +319,8 @@ const Bari: React.FC = () => {
       clearInterval(intervalId);
     };
   }, [location, fetchEvents]);
+
+    
 
   const handleBackClick = () => {
     navigate('/explore');
@@ -326,18 +334,22 @@ const Bari: React.FC = () => {
     { name: 'Teatro Petruzzelli', icon: '🎭' },
     { name: 'Piazza Ferrarese', icon: '🏛️' },
     { name: 'Strada delle Orecchiette', icon: '🍝' },
-    { name: 'Castello Svevo', icon: '🏰' }
+    { name: 'Castello Svevo', icon: '🏰' },
+    { name: 'Succorpo della Cattedrale', icon: '⛪' },
+    { name: 'Porto Vecchio', icon: '⚓' },
+    { name: 'Palazzo Mincuzzi', icon: '🏛️' },
+    { name: 'Pinacoteca C. Giaquinto', icon: '🎨' }
   ];
 
   const scrollToRef = useRef<HTMLDivElement>(null);
-  
+
   const handleExploreClick = () => {
     scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div 
-      className="giftCardSection overflow-y-auto pb-24" 
+    <div
+      className="giftCardSection overflow-y-auto pb-24"
       style={{
         height: 'calc(100vh - 88px)',
         WebkitOverflowScrolling: 'touch',
@@ -347,6 +359,33 @@ const Bari: React.FC = () => {
       }}
       ref={mainRef}
     >
+      <style>{`
+        .shimmer {
+          position: relative;
+          overflow: hidden;
+        }
+        .shimmer::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 50%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            transparent 40%,
+            rgba(255, 255, 255, 0.3),
+            transparent
+          );
+          animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+          0% { left: -100% }
+          100% { left: 200% }
+        }
+      `}</style>
+
       {/* Back Button */}
       <button
         onClick={handleBackClick}
@@ -359,7 +398,7 @@ const Bari: React.FC = () => {
       <NextCityButton nextCityPath="/cities/mola-di-bari" />
 
       {/* Hero Section */}
-      <div 
+      <div
         className="bg-rose-800 dark:bg-rose-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
         style={{
           paddingTop: '4rem',
@@ -377,11 +416,11 @@ const Bari: React.FC = () => {
             Bari
           </h1>
           <p className="text-gray-100 text-lg mb-8">
-            A vibrant city in southern Italy, blending historic charm with modern energy. Known for its stunning old town, beautiful seafront, and delicious cuisine.
+            A vibrant city in southern Italy, blending historic charm with modern energy. Known for its stunning old town, beautiful seafront, and delicious cuisine, it offers an unforgettable mix of culture, history, and coastal beauty.
           </p>
-          <Button 
+          <Button
             onClick={handleExploreClick}
-            variant="outline" 
+            variant="outline"
             className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-rose-800 transition-colors"
           >
             Explore the City
@@ -400,10 +439,11 @@ const Bari: React.FC = () => {
           >
             Upcoming Events
           </motion.h2>
-          {loading && <p className="text-gray-600">Loading events...</p>}
-          {error && <p className="text-red-600">Error: {error}</p>}
+          {loading && <p>Loading events...</p>}
+          {error && <p>Error: {error}</p>}
           <div className="grid gap-4">
-            {events.map((event) => (
+          
+             {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>

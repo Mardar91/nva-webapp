@@ -129,30 +129,48 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     }).format(event.startDate) : 'Data non disponibile';
 
  const isCurrentEvent = () => {
-        if(!event.startDate) return null;
+    if(!event.startDate) return null;
 
     const now = new Date();
     const start = new Date(event.startDate);
     start.setHours(0, 0, 0, 0);
-    const end = event.endDate ? new Date(event.endDate) : new Date(start);
-    end.setHours(23, 59, 59, 999);
 
-     const tomorrow = new Date();
+    const tomorrow = new Date();
     tomorrow.setDate(now.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    
-     const isToday = now >= start && now <= end;
 
+    // Se l'evento è continuo (ha una data di fine)
+    if (event.endDate) {
+        const end = new Date(event.endDate);
+        end.setHours(23, 59, 59, 999);
+        
+        // Se siamo nel periodo dell'evento
+        if (now >= start && now <= end) {
+            return 'today';
+        }
+        
+        // Se l'evento inizia domani
+        if (
+            start.getDate() === tomorrow.getDate() &&
+            start.getMonth() === tomorrow.getMonth() &&
+            start.getFullYear() === tomorrow.getFullYear()
+        ) {
+            return 'tomorrow';
+        }
+    } else {
+        // Logica per eventi di un solo giorno
+        const isToday = now >= start && now <= start;
+        const isTomorrow = 
+            start.getDate() === tomorrow.getDate() &&
+            start.getMonth() === tomorrow.getMonth() &&
+            start.getFullYear() === tomorrow.getFullYear();
 
-     const isTomorrow =
-      start.getDate() === tomorrow.getDate() &&
-      start.getMonth() === tomorrow.getMonth() &&
-      start.getFullYear() === tomorrow.getFullYear();
+        if (isToday) return 'today';
+        if (isTomorrow) return 'tomorrow';
+    }
 
-     if (isToday) return 'today';
-     if (isTomorrow) return 'tomorrow';
     return null;
-  };
+};
 
   const currentEventType = isCurrentEvent();
 
@@ -266,13 +284,15 @@ const PoliganoAMare: React.FC = () => {
                 title, link, dateText, location, description
             });
 
-            let startDate: Date | undefined;
+// Nella funzione fetchEvents, modifica solo la parte del parsing delle date così:
+
+let startDate: Date | undefined;
 let endDate: Date | undefined;
 
 // Gestione formato "Domenica 15 dicembre 2024"
 const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
 
-// Gestione formato "dal 14 al 15 dicembre 2024"
+// Gestione formato "dal 13 al 20 dicembre 2024"
 const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
 
 if (singleDateMatch) {
@@ -282,7 +302,6 @@ if (singleDateMatch) {
     
     if (monthsIT.hasOwnProperty(monthStr)) {
         startDate = new Date(year, monthsIT[monthStr], day);
-        endDate = new Date(year, monthsIT[monthStr], day);
     }
 } else if (rangeDateMatch) {
     const startDay = parseInt(rangeDateMatch[1]);
@@ -297,12 +316,21 @@ if (singleDateMatch) {
 }
 
 if (title && startDate && !isNaN(startDate.getTime())) {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    // Se l'evento ha un endDate e siamo tra startDate e endDate,
+    // usiamo la data corrente come startDate
+    if (endDate && startDate <= now && now <= endDate) {
+        startDate = new Date(); // Usa la data di oggi
+    }
+
     extractedEvents.push({
         id: Date.now().toString() + Math.random().toString(),
         title,
         startDate,
-        endDate: endDate, // Aggiungiamo la data di fine
-        city: 'Polignano a Mare',  // Cambia questo per ogni città
+        endDate,
+        city: 'Polignano a Mare', // Cambia per ogni città
         description,
         link
     });

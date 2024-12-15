@@ -429,25 +429,27 @@ const fetchEvents = useCallback(async () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Upcoming Events Section */}
-        <section className="mb-12">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold text-rose-800 dark:text-rose-400 mb-6"
-          >
-            Upcoming Events
-          </motion.h2>
-          {loading && <p>Loading events...</p>}
-          {error && <p>Error: {error}</p>}
-          <div className="grid gap-4">
-          
-             {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </section>
+{/* Upcoming Events Section */}
+<section className="mb-12">
+    <motion.h2
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="text-2xl font-bold text-rose-800 dark:text-rose-400 mb-6"
+    >
+        Upcoming Events ({events.length})
+    </motion.h2>
+    {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
+    {error && <p className="text-red-600 mb-4">Error: {error}</p>}
+    {!loading && !error && events.length === 0 && (
+        <p className="text-gray-600 mb-4">No upcoming events found</p>
+    )}
+    <div className="grid gap-4">
+        {events.map((event) => (
+            <EventCard key={event.id} event={event} />
+        ))}
+    </div>
+</section>
 
         {/* Attractions Section */}
         <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">

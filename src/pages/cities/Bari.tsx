@@ -202,7 +202,7 @@ const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-        const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
+        const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/#`);
         console.log('Proxy Response Status:', response.status);
         
         if (!response.ok) {

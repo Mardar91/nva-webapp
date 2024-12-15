@@ -228,23 +228,12 @@ const fetchEvents = useCallback(async () => {
             const title = titleElement.text().trim();
             const link = titleElement.attr('href');
             const dateText = $(element).find('.testa').text().trim();
-            const location = $(element).find('.evento-data a').text().trim();
+            const location = $(element).find('.evento-data a').text().trim() || 'Bari';
             const description = $(element).find('.evento-corpo').text().trim();
 
-            // Verifica se l'evento è a Bari
-            const isInBari = !location || 
-                           location.toLowerCase() === 'bari' || 
-                           location.includes('Teatro Team') ||
-                           location.includes('Teatro Piccinni') ||
-                           location.includes('Teatro Kismet') ||
-                           location.includes('Teatro Petruzzelli') ||
-                           location.includes('Auditorium La Vallisa') ||
-                           location.includes('Vallisa');
-
-            // Procedi solo se l'evento è a Bari
-            if (!isInBari) {
-                return;
-            }
+            console.log('Event Data Before Filter:', {
+                title, link, dateText, location, description
+            });
 
             let startDate: Date | undefined;
 

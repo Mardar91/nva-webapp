@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Calendar, 
-  MapPin, 
-  ArrowLeft, 
-  ArrowRight 
+import {
+  Calendar,
+  MapPin,
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
+import * as cheerio from 'cheerio';
 
 // Next City Components
 interface NextCityToastProps {
@@ -53,7 +54,7 @@ interface NextCityButtonProps {
 const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
-  
+
   useEffect(() => {
     setShowToast(true);
     const timer = setTimeout(() => {
@@ -90,7 +91,8 @@ interface Event {
   startDate: Date;
   endDate?: Date;
   city: string;
-  description: string;
+  description?: string;
+  link?: string;
 }
 
 interface Attraction {
@@ -99,31 +101,54 @@ interface Attraction {
   description?: string;
 }
 
-const CurrentEventBadge = () => (
-  <div className="flex items-center gap-1.5 mt-2">
-    <span className="relative flex h-2.5 w-2.5">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-    </span>
-    <span className="text-xs font-medium text-green-600">Today</span>
-  </div>
-);
+const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
+    let color = "bg-green-500";
+    let text = "Today";
+
+    if (type === 'tomorrow') {
+        color = "bg-orange-500";
+        text = "Tomorrow";
+    }
+
+    return (
+        <div className="flex items-center gap-1.5 mt-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${color} opacity-75`}></span>
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${color}`}></span>
+            </span>
+            <span className="text-xs font-medium" style={{ color: type === 'today' ? '#22c55e' : '#f97316' }}>{text}</span>
+        </div>
+    );
+};
+
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-  }).format(event.startDate);
-
+    const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+    }).format(event.startDate) : 'Data non disponibile';
+    
   const isCurrentEvent = () => {
+        if(!event.startDate) return null;
+
     const now = new Date();
     const start = new Date(event.startDate);
     start.setHours(0, 0, 0, 0);
     const end = event.endDate ? new Date(event.endDate) : new Date(start);
     end.setHours(23, 59, 59, 999);
-    
-    return now >= start && now <= end;
+
+    const tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+
+       if(now >= start && now <= end) return 'today';
+       if(start >= tomorrow && start <= end) return 'tomorrow';
+       return null
   };
+
+  const currentEventType = isCurrentEvent();
+
 
   return (
     <motion.div
@@ -143,13 +168,18 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
+              {event.link && (
+                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
+                  More info
+                </a>
+              )}
             </div>
             <div className="flex flex-col items-end">
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-1 text-indigo-700 dark:text-indigo-400" />
                 <span className="text-sm font-medium">{formattedDate}</span>
               </div>
-              {isCurrentEvent() && <CurrentEventBadge />}
+              {currentEventType && <CurrentEventBadge type={currentEventType} />}
             </div>
           </div>
         </CardContent>
@@ -157,6 +187,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     </motion.div>
   );
 };
+
 const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
   <Dialog>
     <DialogTrigger>
@@ -184,8 +215,122 @@ const Monopoli: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const mainRef = useRef<HTMLDivElement>(null);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+
+    const fetchEvents = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+        // Prima impostiamo il filtro per 0km
+        await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}`);
+        
+        // Aspettiamo un momento per assicurarci che il filtro sia applicato
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Poi prendiamo i risultati filtrati
+        const response = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/monopoli/')}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const html = await response.text();
+        const $ = cheerio.load(html);
+        const extractedEvents: Event[] = [];
+
+        // Mappa dei mesi italiani
+        const monthsIT: { [key: string]: number } = {
+            'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
+            'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
+            'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
+        };
+
+        $('.evento-featured').each((_, element) => {
+            const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+            const title = titleElement.text().trim();
+            const link = titleElement.attr('href');
+            const dateText = $(element).find('.testa').text().trim();
+            const location = $(element).find('.evento-data a').text().trim() || 'Monopoli';
+            const description = $(element).find('.evento-corpo').text().trim();
+
+            console.log('Event Data Before Filter:', {
+                title, link, dateText, location, description
+            });
+
+            let startDate: Date | undefined;
+
+            // Gestione formato "Domenica 15 dicembre 2024"
+            const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+            
+            // Gestione formato "dal 14 al 15 dicembre 2024"
+            const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
+
+            if (singleDateMatch) {
+                const day = parseInt(singleDateMatch[1]);
+                const monthStr = singleDateMatch[2].toLowerCase();
+                const year = parseInt(singleDateMatch[3]);
+                
+                if (monthsIT.hasOwnProperty(monthStr)) {
+                    startDate = new Date(year, monthsIT[monthStr], day);
+                }
+            } else if (rangeDateMatch) {
+                const day = parseInt(rangeDateMatch[1]);
+                const monthStr = rangeDateMatch[3].toLowerCase();
+                const year = parseInt(rangeDateMatch[4]);
+                
+                if (monthsIT.hasOwnProperty(monthStr)) {
+                    startDate = new Date(year, monthsIT[monthStr], day);
+                }
+            }
+
+            if (title && startDate && !isNaN(startDate.getTime())) {
+                extractedEvents.push({
+                    id: Date.now().toString() + Math.random().toString(),
+                    title,
+                    startDate,
+                    city: 'Monopoli',
+                    description,
+                    link
+                });
+            }
+        });
+
+        // Ordina gli eventi per data
+        extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+        // Filtra solo gli eventi futuri
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        
+        const futureEvents = extractedEvents.filter(event => {
+            const eventDate = new Date(event.startDate);
+            eventDate.setHours(0, 0, 0, 0);
+            return eventDate >= now;
+        }).slice(0, 4);
+
+        console.log('Extracted Events:', futureEvents);
+        setEvents(futureEvents);
+
+    } catch (err) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('An unexpected error occurred.');
+        }
+    } finally {
+        setLoading(false);
+    }
+}, []);
+
 
   useEffect(() => {
+      fetchEvents();
+
+    const intervalId = setInterval(fetchEvents, 10 * 60 * 1000); //ogni 10 minuti
+    
     window.scrollTo(0, 0);
     mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
@@ -197,43 +342,13 @@ const Monopoli: React.FC = () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
       }
+      clearInterval(intervalId);
     };
-  }, [location]);
+  }, [location, fetchEvents]);
 
   const handleBackClick = () => {
     navigate('/explore');
   };
-
-  const monopoliEvents: Event[] = [
-    {
-      id: '1',
-      title: 'Festival del Mare',
-      startDate: new Date(),
-      city: 'Monopoli',
-      description: 'Traditional maritime festival'
-    },
-    {
-      id: '2',
-      title: 'Festa della Madonna della Madia',
-      startDate: new Date(new Date().setDate(new Date().getDate() + 8)),
-      city: 'Monopoli',
-      description: 'Religious celebration'
-    },
-    {
-      id: '3',
-      title: 'Summer Night Market',
-      startDate: new Date(new Date().setDate(new Date().getDate() + 16)),
-      city: 'Monopoli',
-      description: 'Artisan and local products market'
-    },
-    {
-      id: '4',
-      title: 'Medieval Festival',
-      startDate: new Date(new Date().setDate(new Date().getDate() + 23)),
-      city: 'Monopoli',
-      description: 'Historical reenactment and festivities'
-    }
-  ];
 
   const attractions: Attraction[] = [
     { name: 'Centro Storico', icon: '🏛️' },
@@ -253,8 +368,8 @@ const Monopoli: React.FC = () => {
   };
 
   return (
-    <div 
-      className="giftCardSection overflow-y-auto pb-24" 
+    <div
+      className="giftCardSection overflow-y-auto pb-24"
       style={{
         height: 'calc(100vh - 88px)',
         WebkitOverflowScrolling: 'touch',
@@ -303,7 +418,7 @@ const Monopoli: React.FC = () => {
       <NextCityButton nextCityPath="/cities/bari" />
 
       {/* Hero Section */}
-      <div 
+      <div
         className="bg-indigo-600 dark:bg-indigo-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
         style={{
           paddingTop: '4rem',
@@ -323,9 +438,9 @@ const Monopoli: React.FC = () => {
           <p className="text-gray-100 text-lg mb-8">
             A picturesque coastal town in southern Italy, renowned for its stunning beaches, vibrant harbor, and charming old town. With its historic architecture and welcoming atmosphere, it's the ideal spot for an authentic and relaxing getaway.
           </p>
-          <Button 
+          <Button
             onClick={handleExploreClick}
-            variant="outline" 
+            variant="outline"
             className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-indigo-600 transition-colors"
           >
             Explore the City
@@ -334,22 +449,27 @@ const Monopoli: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Upcoming Events Section */}
-        <section className="mb-12">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 mb-6"
-          >
-            Upcoming Events
-          </motion.h2>
-          <div className="grid gap-4">
-            {monopoliEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </section>
+{/* Upcoming Events Section */}
+<section className="mb-12">
+    <motion.h2
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 mb-6"
+    >
+        Upcoming Events ({events.length})
+    </motion.h2>
+    {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
+    {error && <p className="text-red-600 mb-4">Error: {error}</p>}
+    {!loading && !error && events.length === 0 && (
+        <p className="text-gray-600 mb-4">No upcoming events found</p>
+    )}
+    <div className="grid gap-4">
+        {events.map((event) => (
+            <EventCard key={event.id} event={event} />
+        ))}
+    </div>
+</section>
 
         {/* Attractions Section */}
         <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">

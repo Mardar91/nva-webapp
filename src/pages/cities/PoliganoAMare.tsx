@@ -267,30 +267,46 @@ const PoliganoAMare: React.FC = () => {
             });
 
             let startDate: Date | undefined;
+let endDate: Date | undefined;
 
-            // Gestione formato "Domenica 15 dicembre 2024"
-            const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
-            
-            // Gestione formato "dal 14 al 15 dicembre 2024"
-            const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
+// Gestione formato "Domenica 15 dicembre 2024"
+const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
 
-            if (singleDateMatch) {
-                const day = parseInt(singleDateMatch[1]);
-                const monthStr = singleDateMatch[2].toLowerCase();
-                const year = parseInt(singleDateMatch[3]);
-                
-                if (monthsIT.hasOwnProperty(monthStr)) {
-                    startDate = new Date(year, monthsIT[monthStr], day);
-                }
-            } else if (rangeDateMatch) {
-                const day = parseInt(rangeDateMatch[1]);
-                const monthStr = rangeDateMatch[3].toLowerCase();
-                const year = parseInt(rangeDateMatch[4]);
-                
-                if (monthsIT.hasOwnProperty(monthStr)) {
-                    startDate = new Date(year, monthsIT[monthStr], day);
-                }
-            }
+// Gestione formato "dal 14 al 15 dicembre 2024"
+const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
+
+if (singleDateMatch) {
+    const day = parseInt(singleDateMatch[1]);
+    const monthStr = singleDateMatch[2].toLowerCase();
+    const year = parseInt(singleDateMatch[3]);
+    
+    if (monthsIT.hasOwnProperty(monthStr)) {
+        startDate = new Date(year, monthsIT[monthStr], day);
+        endDate = new Date(year, monthsIT[monthStr], day);
+    }
+} else if (rangeDateMatch) {
+    const startDay = parseInt(rangeDateMatch[1]);
+    const endDay = parseInt(rangeDateMatch[2]);
+    const monthStr = rangeDateMatch[3].toLowerCase();
+    const year = parseInt(rangeDateMatch[4]);
+    
+    if (monthsIT.hasOwnProperty(monthStr)) {
+        startDate = new Date(year, monthsIT[monthStr], startDay);
+        endDate = new Date(year, monthsIT[monthStr], endDay);
+    }
+}
+
+if (title && startDate && !isNaN(startDate.getTime())) {
+    extractedEvents.push({
+        id: Date.now().toString() + Math.random().toString(),
+        title,
+        startDate,
+        endDate: endDate, // Aggiungiamo la data di fine
+        city: 'Polignano a Mare',  // Cambia questo per ogni città
+        description,
+        link
+    });
+}
 
             if (title && startDate && !isNaN(startDate.getTime())) {
                 extractedEvents.push({
@@ -312,10 +328,10 @@ const PoliganoAMare: React.FC = () => {
         now.setHours(0, 0, 0, 0);
         
         const futureEvents = extractedEvents.filter(event => {
-            const eventDate = new Date(event.startDate);
-            eventDate.setHours(0, 0, 0, 0);
-            return eventDate >= now;
-        }).slice(0, 4);
+    const eventEndDate = event.endDate || event.startDate;
+    eventEndDate.setHours(23, 59, 59, 999);
+    return eventEndDate >= now;
+}).slice(0, 4);
 
         console.log('Extracted Events:', futureEvents);
         setEvents(futureEvents);

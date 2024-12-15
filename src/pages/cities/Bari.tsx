@@ -202,8 +202,11 @@ const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-        const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
-        console.log('Proxy Response Status:', response.status);
+        // Prima impostiamo il filtro per 0km
+        const filterResponse = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}`);
+        
+        // Poi prendiamo i risultati filtrati
+        const response = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/bari/')}`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);

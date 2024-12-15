@@ -19,7 +19,6 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
 
-
 // Next City Components
 interface NextCityToastProps {
   show: boolean;
@@ -87,13 +86,13 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
 };
 
 interface Event {
-  id: string;
-  title: string;
-  startDate: Date;
-  endDate?: Date;
-  city: string;
-  description?: string;
-  link?: string;
+    id: string;
+    title: string;
+    startDate: Date;
+    endDate?: Date;
+    city: string;
+    description?: string;
+    link?: string;
 }
 
 interface Attraction {
@@ -117,10 +116,8 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         month: 'short',
         day: 'numeric',
     }).format(event.startDate) : 'Data non disponibile';
-
-
   const isCurrentEvent = () => {
-      if(!event.startDate) return false;
+        if(!event.startDate) return false;
     const now = new Date();
     const start = new Date(event.startDate);
     start.setHours(0, 0, 0, 0);
@@ -148,10 +145,10 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
-               {event.link && (
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
-                  More info
-                </a>
+                {event.link && (
+                    <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
+                    More info
+                  </a>
               )}
             </div>
             <div className="flex flex-col items-end">
@@ -194,94 +191,136 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
 const Bari: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const mainRef = useRef<HTMLDivElement>(null);
+    const mainRef = useRef<HTMLDivElement>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-       const response = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}&url=${encodeURIComponent('https://iltaccodibacco.it/bari/')}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const html = await response.text();
-        const $ = cheerio.load(html);
-        const extractedEvents: Event[] = [];
-      
-        $('.evento-featured').each((_, element) => {
-            const titleElement = $(element).find('.titolo.blocco-locali h2 a');
-            const title = titleElement.text().trim();
-            const link = titleElement.attr('href') || undefined;
-            const dateText = $(element).find('.testa').text().trim();
-             const location = $(element).find('.evento-data a').text().trim() || 'Bari';
-            const description = $(element).find('.evento-corpo').text().trim();
-
-          
-           const dateParts = dateText.split(' ');
-            const day = parseInt(dateParts[0], 10);
-            const monthString = dateParts[1];
-            const month = new Date(`${monthString} 1, 2024`).getMonth();
-            const year = new Date().getFullYear();
-            const startDate = new Date(year, month, day);
-          
-          
-          
-          
-            if (title) {
-                 extractedEvents.push({
-                    id: Date.now().toString() + Math.random().toString(),
-                  title,
-                  startDate,
-                  city: 'Bari',
-                  description,
-                  link
-                });
-              }
-            });
+    const fetchEvents = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            // Prima impostiamo il filtro per 0km
+            const filterResponse = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}`);
             
-           extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+            // Poi prendiamo i risultati filtrati
+            const response = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/bari/')}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            const html = await response.text();
+            const $ = cheerio.load(html);
+            const extractedEvents: Event[] = [];
 
+            // Mappa dei mesi italiani
+            const monthsIT: { [key: string]: number } = {
+                'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
+                'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
+                'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
+            };
 
-            // Get the next 4 events
+            $('.evento-featured').each((_, element) => {
+                const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+                const title = titleElement.text().trim();
+                const link = titleElement.attr('href');
+                const dateText = $(element).find('.testa').text().trim();
+                const location = $(element).find('.evento-data a').text().trim() || 'Bari';
+                const description = $(element).find('.evento-corpo').text().trim();
+
+                console.log('Event Data Before Filter:', {
+                    title, link, dateText, location, description
+                });
+
+                let startDate: Date | undefined;
+
+                // Gestione formato "Domenica 15 dicembre 2024"
+                const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+                
+                // Gestione formato "dal 14 al 15 dicembre 2024"
+                const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
+
+                if (singleDateMatch) {
+                    const day = parseInt(singleDateMatch[1]);
+                    const monthStr = singleDateMatch[2].toLowerCase();
+                    const year = parseInt(singleDateMatch[3]);
+                    
+                    if (monthsIT.hasOwnProperty(monthStr)) {
+                        startDate = new Date(year, monthsIT[monthStr], day);
+                    }
+                } else if (rangeDateMatch) {
+                    const day = parseInt(rangeDateMatch[1]);
+                    const monthStr = rangeDateMatch[3].toLowerCase();
+                    const year = parseInt(rangeDateMatch[4]);
+                    
+                    if (monthsIT.hasOwnProperty(monthStr)) {
+                        startDate = new Date(year, monthsIT[monthStr], day);
+                    }
+                }
+
+                if (title && startDate && !isNaN(startDate.getTime())) {
+                    extractedEvents.push({
+                        id: Date.now().toString() + Math.random().toString(),
+                        title,
+                        startDate,
+                        city: 'Bari',
+                        description,
+                        link
+                    });
+                }
+            });
+
+            // Ordina gli eventi per data
+            extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+            // Filtra solo gli eventi futuri
             const now = new Date();
-            const futureEvents = extractedEvents.filter(event => event.startDate >= now).slice(0, 4)
+            now.setHours(0, 0, 0, 0);
+            
+            const futureEvents = extractedEvents.filter(event => {
+                const eventDate = new Date(event.startDate);
+                eventDate.setHours(0, 0, 0, 0);
+                return eventDate >= now;
+            }).slice(0, 4);
 
-           setEvents(futureEvents);
+            console.log('Extracted Events:', futureEvents);
+            setEvents(futureEvents);
 
-    } catch (err) {
-       if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred.');
-      }
-    } finally {
-       setLoading(false);
-    }
-  }, []);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unexpected error occurred.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
   useEffect(() => {
-    fetchEvents();
+      fetchEvents();
 
     const intervalId = setInterval(fetchEvents, 10 * 60 * 1000); //ogni 10 minuti
     
     window.scrollTo(0, 0);
     mainRef.current?.scrollIntoView({ behavior: 'auto' });
 
+
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor.setAttribute('content', isDarkMode ? '#9f1239' : '#9f1239');
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        themeColor.setAttribute('content', isDarkMode ? '#9f1239' : '#9f1239');
     }
     return () => {
       if (themeColor) {
         themeColor.setAttribute('content', '#ffffff');
       }
-     clearInterval(intervalId)
+      clearInterval(intervalId);
     };
   }, [location, fetchEvents]);
+
+    
 
   const handleBackClick = () => {
     navigate('/explore');
@@ -390,24 +429,27 @@ const Bari: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Upcoming Events Section */}
-        <section className="mb-12">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold text-rose-800 dark:text-rose-400 mb-6"
-          >
-            Upcoming Events
-          </motion.h2>
-             {loading && <p>Loading events...</p>}
-             {error && <p>Error: {error}</p>}
-          <div className="grid gap-4">
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </section>
+{/* Upcoming Events Section */}
+<section className="mb-12">
+    <motion.h2
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="text-2xl font-bold text-rose-800 dark:text-rose-400 mb-6"
+    >
+        Upcoming Events ({events.length})
+    </motion.h2>
+    {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
+    {error && <p className="text-red-600 mb-4">Error: {error}</p>}
+    {!loading && !error && events.length === 0 && (
+        <p className="text-gray-600 mb-4">No upcoming events found</p>
+    )}
+    <div className="grid gap-4">
+        {events.map((event) => (
+            <EventCard key={event.id} event={event} />
+        ))}
+    </div>
+</section>
 
         {/* Attractions Section */}
         <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">

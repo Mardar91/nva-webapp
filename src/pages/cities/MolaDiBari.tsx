@@ -69,7 +69,7 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
       <button
         onClick={() => navigate(nextCityPath)}
         onMouseEnter={() => setShowToast(true)}
-        onMouseLeave(() => setShowToast(false)}
+        onMouseLeave={() => setShowToast(false)}
         className="fixed top-4 right-4 z-50 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700 transition-all group"
       >
         <div className="relative flex items-center justify-center">
@@ -223,7 +223,7 @@ const MolaDiBari: React.FC = () => {
     setError(null);
     try {
         // Prima impostiamo il filtro per 0km
-         await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}`);
+        await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}`);
         
         // Aspettiamo un momento per assicurarci che il filtro sia applicato
          await new Promise(resolve => setTimeout(resolve, 500));

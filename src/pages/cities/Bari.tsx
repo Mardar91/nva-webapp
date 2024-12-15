@@ -202,7 +202,7 @@ const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-        const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/#`);
+        const response = await fetch(`/api/proxy?url=https://iltaccodibacco.it/bari/`);
         console.log('Proxy Response Status:', response.status);
         
         if (!response.ok) {
@@ -225,12 +225,23 @@ const fetchEvents = useCallback(async () => {
             const title = titleElement.text().trim();
             const link = titleElement.attr('href');
             const dateText = $(element).find('.testa').text().trim();
-            const location = $(element).find('.evento-data a').text().trim() || 'Bari';
+            const location = $(element).find('.evento-data a').text().trim();
             const description = $(element).find('.evento-corpo').text().trim();
 
-            console.log('Event Data Before Filter:', {
-                title, link, dateText, location, description
-            });
+            // Verifica se l'evento è a Bari
+            const isInBari = !location || 
+                           location.toLowerCase() === 'bari' || 
+                           location.includes('Teatro Team') ||
+                           location.includes('Teatro Piccinni') ||
+                           location.includes('Teatro Kismet') ||
+                           location.includes('Teatro Petruzzelli') ||
+                           location.includes('Auditorium La Vallisa') ||
+                           location.includes('Vallisa');
+
+            // Procedi solo se l'evento è a Bari
+            if (!isInBari) {
+                return;
+            }
 
             let startDate: Date | undefined;
 

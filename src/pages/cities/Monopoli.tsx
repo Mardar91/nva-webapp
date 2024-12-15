@@ -128,7 +128,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         day: 'numeric',
     }).format(event.startDate) : 'Data non disponibile';
     
-  const isCurrentEvent = () => {
+   const isCurrentEvent = () => {
         if(!event.startDate) return null;
 
     const now = new Date();
@@ -137,14 +137,21 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     const end = event.endDate ? new Date(event.endDate) : new Date(start);
     end.setHours(23, 59, 59, 999);
 
-    const tomorrow = new Date();
+     const tomorrow = new Date();
     tomorrow.setDate(now.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
+    
+     const isToday = now >= start && now <= end;
 
 
-       if(now >= start && now <= end) return 'today';
-       if(start >= tomorrow && start <= end) return 'tomorrow';
-       return null
+     const isTomorrow =
+      start.getDate() === tomorrow.getDate() &&
+      start.getMonth() === tomorrow.getMonth() &&
+      start.getFullYear() === tomorrow.getFullYear();
+
+     if (isToday) return 'today';
+     if (isTomorrow) return 'tomorrow';
+    return null;
   };
 
   const currentEventType = isCurrentEvent();

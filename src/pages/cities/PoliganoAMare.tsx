@@ -132,41 +132,35 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     if(!event.startDate) return null;
 
     const now = new Date();
-    const start = new Date(event.startDate);
-    start.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+    const today = new Date(now);
 
-    const tomorrow = new Date();
-    tomorrow.setDate(now.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // Se l'evento è continuo (ha una data di fine)
+    const eventStart = new Date(event.startDate);
+    eventStart.setHours(0, 0, 0, 0);
+
     if (event.endDate) {
-        const end = new Date(event.endDate);
-        end.setHours(23, 59, 59, 999);
-        
-        // Se siamo nel periodo dell'evento
-        if (now >= start && now <= end) {
+        const eventEnd = new Date(event.endDate);
+        eventEnd.setHours(23, 59, 59, 999);
+
+        // Se oggi è tra la data di inizio e fine evento
+        if (now >= eventStart && now <= eventEnd) {
             return 'today';
         }
-        
         // Se l'evento inizia domani
-        if (
-            start.getDate() === tomorrow.getDate() &&
-            start.getMonth() === tomorrow.getMonth() &&
-            start.getFullYear() === tomorrow.getFullYear()
-        ) {
+        if (eventStart.getTime() === tomorrow.getTime()) {
             return 'tomorrow';
         }
     } else {
-        // Logica per eventi di un solo giorno
-        const isToday = now >= start && now <= start;
-        const isTomorrow = 
-            start.getDate() === tomorrow.getDate() &&
-            start.getMonth() === tomorrow.getMonth() &&
-            start.getFullYear() === tomorrow.getFullYear();
-
-        if (isToday) return 'today';
-        if (isTomorrow) return 'tomorrow';
+        // Per eventi di un solo giorno
+        if (eventStart.getTime() === today.getTime()) {
+            return 'today';
+        }
+        if (eventStart.getTime() === tomorrow.getTime()) {
+            return 'tomorrow';
+        }
     }
 
     return null;
@@ -284,85 +278,76 @@ const PoliganoAMare: React.FC = () => {
                 title, link, dateText, location, description
             });
 
-// Nella funzione fetchEvents, modifica solo la parte del parsing delle date così:
+// Nella funzione fetchEvents
 
-let startDate: Date | undefined;
-let endDate: Date | undefined;
+const uniqueEvents = new Map();  // Per evitare duplicati
 
-// Gestione formato "Domenica 15 dicembre 2024"
-const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+$('.evento-featured').each((_, element) => {
+    const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+    const title = titleElement.text().trim();
+    const link = titleElement.attr('href');
+    const dateText = $(element).find('.testa').text().trim();
+    const location = $(element).find('.evento-data a').text().trim() || 'Polignano a Mare';
+    const description = $(element).find('.evento-corpo').text().trim();
 
-// Gestione formato "dal 13 al 20 dicembre 2024"
-const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
 
-if (singleDateMatch) {
-    const day = parseInt(singleDateMatch[1]);
-    const monthStr = singleDateMatch[2].toLowerCase();
-    const year = parseInt(singleDateMatch[3]);
-    
-    if (monthsIT.hasOwnProperty(monthStr)) {
-        startDate = new Date(year, monthsIT[monthStr], day);
-    }
-} else if (rangeDateMatch) {
-    const startDay = parseInt(rangeDateMatch[1]);
-    const endDay = parseInt(rangeDateMatch[2]);
-    const monthStr = rangeDateMatch[3].toLowerCase();
-    const year = parseInt(rangeDateMatch[4]);
-    
-    if (monthsIT.hasOwnProperty(monthStr)) {
-        startDate = new Date(year, monthsIT[monthStr], startDay);
-        endDate = new Date(year, monthsIT[monthStr], endDay);
-    }
-}
+    // Gestione formato "dal 13 al 20 dicembre 2024"
+    const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
+    // Gestione formato "Domenica 15 dicembre 2024"
+    const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
 
-if (title && startDate && !isNaN(startDate.getTime())) {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    // Se l'evento ha un endDate e siamo tra startDate e endDate,
-    // usiamo la data corrente come startDate
-    if (endDate && startDate <= now && now <= endDate) {
-        startDate = new Date(); // Usa la data di oggi
-    }
-
-    extractedEvents.push({
-        id: Date.now().toString() + Math.random().toString(),
-        title,
-        startDate,
-        endDate,
-        city: 'Polignano a Mare', // Cambia per ogni città
-        description,
-        link
-    });
-}
-
-            if (title && startDate && !isNaN(startDate.getTime())) {
-                extractedEvents.push({
-                    id: Date.now().toString() + Math.random().toString(),
-                    title,
-                    startDate,
-                    city: 'Polignano a Mare',
-                    description,
-                    link
-                });
-            }
-        });
-
-        // Ordina gli eventi per data
-        extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-
-        // Filtra solo gli eventi futuri
-        const now = new Date();
-        now.setHours(0, 0, 0, 0);
+    if (rangeDateMatch) {
+        const startDay = parseInt(rangeDateMatch[1]);
+        const endDay = parseInt(rangeDateMatch[2]);
+        const monthStr = rangeDateMatch[3].toLowerCase();
+        const year = parseInt(rangeDateMatch[4]);
         
-        const futureEvents = extractedEvents.filter(event => {
+        if (monthsIT.hasOwnProperty(monthStr)) {
+            startDate = new Date(year, monthsIT[monthStr], startDay);
+            endDate = new Date(year, monthsIT[monthStr], endDay);
+        }
+    } else if (singleDateMatch) {
+        const day = parseInt(singleDateMatch[1]);
+        const monthStr = singleDateMatch[2].toLowerCase();
+        const year = parseInt(singleDateMatch[3]);
+        
+        if (monthsIT.hasOwnProperty(monthStr)) {
+            startDate = new Date(year, monthsIT[monthStr], day);
+        }
+    }
+
+    if (title && startDate && !isNaN(startDate.getTime())) {
+        const eventKey = `${title}-${startDate.getTime()}`;
+        if (!uniqueEvents.has(eventKey)) {
+            uniqueEvents.set(eventKey, {
+                id: Date.now().toString() + Math.random().toString(),
+                title,
+                startDate,
+                endDate,
+                city: 'Polignano a Mare', // Cambia per ogni città
+                description,
+                link
+            });
+        }
+    }
+});
+
+// Converti la Map in array e filtra gli eventi
+const extractedEvents = Array.from(uniqueEvents.values());
+extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+// Filtra solo gli eventi futuri o in corso
+const now = new Date();
+now.setHours(0, 0, 0, 0);
+
+const futureEvents = extractedEvents.filter(event => {
     const eventEndDate = event.endDate || event.startDate;
-    eventEndDate.setHours(23, 59, 59, 999);
     return eventEndDate >= now;
 }).slice(0, 4);
 
-        console.log('Extracted Events:', futureEvents);
-        setEvents(futureEvents);
+setEvents(futureEvents);
 
     } catch (err) {
         if (err instanceof Error) {

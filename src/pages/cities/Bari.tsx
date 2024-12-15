@@ -112,12 +112,13 @@ const CurrentEventBadge = () => (
 );
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-    const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-    }).format(event.startDate) : 'Data non disponibile';
+  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+  }).format(event.startDate) : 'Data non disponibile';
+
   const isCurrentEvent = () => {
-        if(!event.startDate) return false;
+        if(!event.startDate) return false
     const now = new Date();
     const start = new Date(event.startDate);
     start.setHours(0, 0, 0, 0);
@@ -145,7 +146,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
-                {event.link && (
+                 {event.link && (
                     <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
                     More info
                   </a>
@@ -196,107 +197,111 @@ const Bari: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-    const fetchEvents = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            // Prima impostiamo il filtro per 0km
-            const filterResponse = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}`);
-            
-            // Poi prendiamo i risultati filtrati
-            const response = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/bari/')}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            
-            const html = await response.text();
-            const $ = cheerio.load(html);
-            const extractedEvents: Event[] = [];
 
-            // Mappa dei mesi italiani
-            const monthsIT: { [key: string]: number } = {
-                'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
-                'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
-                'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
-            };
+const fetchEvents = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+        // Prima impostiamo il filtro per 0km
+        await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}`);
+        
+        // Aspettiamo un momento per assicurarci che il filtro sia applicato
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Poi prendiamo i risultati filtrati
+        const response = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/bari/')}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const html = await response.text();
+        const $ = cheerio.load(html);
+        const extractedEvents: Event[] = [];
 
-            $('.evento-featured').each((_, element) => {
-                const titleElement = $(element).find('.titolo.blocco-locali h2 a');
-                const title = titleElement.text().trim();
-                const link = titleElement.attr('href');
-                const dateText = $(element).find('.testa').text().trim();
-                const location = $(element).find('.evento-data a').text().trim() || 'Bari';
-                const description = $(element).find('.evento-corpo').text().trim();
+        // Mappa dei mesi italiani
+        const monthsIT: { [key: string]: number } = {
+            'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
+            'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
+            'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
+        };
 
-                console.log('Event Data Before Filter:', {
-                    title, link, dateText, location, description
-                });
+        $('.evento-featured').each((_, element) => {
+            const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+            const title = titleElement.text().trim();
+            const link = titleElement.attr('href');
+            const dateText = $(element).find('.testa').text().trim();
+            const location = $(element).find('.evento-data a').text().trim() || 'Bari';
+            const description = $(element).find('.evento-corpo').text().trim();
 
-                let startDate: Date | undefined;
-
-                // Gestione formato "Domenica 15 dicembre 2024"
-                const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
-                
-                // Gestione formato "dal 14 al 15 dicembre 2024"
-                const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
-
-                if (singleDateMatch) {
-                    const day = parseInt(singleDateMatch[1]);
-                    const monthStr = singleDateMatch[2].toLowerCase();
-                    const year = parseInt(singleDateMatch[3]);
-                    
-                    if (monthsIT.hasOwnProperty(monthStr)) {
-                        startDate = new Date(year, monthsIT[monthStr], day);
-                    }
-                } else if (rangeDateMatch) {
-                    const day = parseInt(rangeDateMatch[1]);
-                    const monthStr = rangeDateMatch[3].toLowerCase();
-                    const year = parseInt(rangeDateMatch[4]);
-                    
-                    if (monthsIT.hasOwnProperty(monthStr)) {
-                        startDate = new Date(year, monthsIT[monthStr], day);
-                    }
-                }
-
-                if (title && startDate && !isNaN(startDate.getTime())) {
-                    extractedEvents.push({
-                        id: Date.now().toString() + Math.random().toString(),
-                        title,
-                        startDate,
-                        city: 'Bari',
-                        description,
-                        link
-                    });
-                }
+            console.log('Event Data Before Filter:', {
+                title, link, dateText, location, description
             });
 
-            // Ordina gli eventi per data
-            extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+            let startDate: Date | undefined;
 
-            // Filtra solo gli eventi futuri
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
+            // Gestione formato "Domenica 15 dicembre 2024"
+            const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
             
-            const futureEvents = extractedEvents.filter(event => {
-                const eventDate = new Date(event.startDate);
-                eventDate.setHours(0, 0, 0, 0);
-                return eventDate >= now;
-            }).slice(0, 4);
+            // Gestione formato "dal 14 al 15 dicembre 2024"
+            const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
 
-            console.log('Extracted Events:', futureEvents);
-            setEvents(futureEvents);
-
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('An unexpected error occurred.');
+            if (singleDateMatch) {
+                const day = parseInt(singleDateMatch[1]);
+                const monthStr = singleDateMatch[2].toLowerCase();
+                const year = parseInt(singleDateMatch[3]);
+                
+                if (monthsIT.hasOwnProperty(monthStr)) {
+                    startDate = new Date(year, monthsIT[monthStr], day);
+                }
+            } else if (rangeDateMatch) {
+                const day = parseInt(rangeDateMatch[1]);
+                const monthStr = rangeDateMatch[3].toLowerCase();
+                const year = parseInt(rangeDateMatch[4]);
+                
+                if (monthsIT.hasOwnProperty(monthStr)) {
+                    startDate = new Date(year, monthsIT[monthStr], day);
+                }
             }
-        } finally {
-            setLoading(false);
+
+            if (title && startDate && !isNaN(startDate.getTime())) {
+                extractedEvents.push({
+                    id: Date.now().toString() + Math.random().toString(),
+                    title,
+                    startDate,
+                    city: 'Bari',
+                    description,
+                    link
+                });
+            }
+        });
+
+        // Ordina gli eventi per data
+        extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+        // Filtra solo gli eventi futuri
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        
+        const futureEvents = extractedEvents.filter(event => {
+            const eventDate = new Date(event.startDate);
+            eventDate.setHours(0, 0, 0, 0);
+            return eventDate >= now;
+        }).slice(0, 4);
+
+        console.log('Extracted Events:', futureEvents);
+        setEvents(futureEvents);
+
+    } catch (err) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('An unexpected error occurred.');
         }
-    }, []);
+    } finally {
+        setLoading(false);
+    }
+}, []);
 
   useEffect(() => {
       fetchEvents();

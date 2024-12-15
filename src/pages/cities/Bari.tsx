@@ -210,93 +210,92 @@ const fetchEvents = useCallback(async () => {
         }
         
         const html = await response.text();
-        console.log('HTML received:', html.substring(0, 200));
-        
         const $ = cheerio.load(html);
         const extractedEvents: Event[] = [];
+
+        // Mappa dei mesi italiani
+        const monthsIT: { [key: string]: number } = {
+            'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
+            'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
+            'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
+        };
 
         $('.evento-featured').each((_, element) => {
             const titleElement = $(element).find('.titolo.blocco-locali h2 a');
             const title = titleElement.text().trim();
-            const link = titleElement.attr('href') || undefined;
+            const link = titleElement.attr('href');
             const dateText = $(element).find('.testa').text().trim();
             const location = $(element).find('.evento-data a').text().trim() || 'Bari';
             const description = $(element).find('.evento-corpo').text().trim();
 
-            // Log dei dati prima del parsing
             console.log('Event Data Before Filter:', {
-                title,
-                link,
-                dateText,
-                location,
-                description
+                title, link, dateText, location, description
             });
 
-                const dateMatch = dateText.match(/dal\s*(\d{1,2})\s*al\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/) ||
-                                  dateText.match(/(\w+)\s*(\d{1,2})\s*(\w+)\s*(\d{4})?/);
+            let startDate: Date | undefined;
 
-                 let startDate: Date | undefined;
-
-          if (dateMatch) {
-              let dayStart: number;
-                let monthStart: string;
-             let year = new Date().getFullYear();
-                if (dateMatch[1] && dateMatch[2]) { // Gestisci date del tipo: dal gg al gg mese
-                    dayStart = parseInt(dateMatch[1], 10);
-                    monthStart=dateMatch[3]
-
-                      if (dateMatch[4]) {
-                         year = parseInt(dateMatch[4], 10);
-                      }
-                }
-             else {
-               dayStart = parseInt(dateMatch[2], 10);
-                   monthStart = dateMatch[3];
-                  if (dateMatch[4]) {
-                       year = parseInt(dateMatch[4], 10);
-                   }
-              
-            }
-                const month = new Date(`${monthStart} 1, 2024`).getMonth();
-                startDate = new Date(year, month, dayStart);
-             
-                } 
+            // Gestione formato "Domenica 15 dicembre 2024"
+            const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
             
-        
-           if (title && startDate) {
-              extractedEvents.push({
+            // Gestione formato "dal 14 al 15 dicembre 2024"
+            const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
+
+            if (singleDateMatch) {
+                const day = parseInt(singleDateMatch[1]);
+                const monthStr = singleDateMatch[2].toLowerCase();
+                const year = parseInt(singleDateMatch[3]);
+                
+                if (monthsIT.hasOwnProperty(monthStr)) {
+                    startDate = new Date(year, monthsIT[monthStr], day);
+                }
+            } else if (rangeDateMatch) {
+                const day = parseInt(rangeDateMatch[1]);
+                const monthStr = rangeDateMatch[3].toLowerCase();
+                const year = parseInt(rangeDateMatch[4]);
+                
+                if (monthsIT.hasOwnProperty(monthStr)) {
+                    startDate = new Date(year, monthsIT[monthStr], day);
+                }
+            }
+
+            if (title && startDate && !isNaN(startDate.getTime())) {
+                extractedEvents.push({
                     id: Date.now().toString() + Math.random().toString(),
                     title,
-                   startDate,
-                   city: 'Bari',
-                   description,
+                    startDate,
+                    city: 'Bari',
+                    description,
                     link
-                 });
-             }
+                });
+            }
+        });
 
-            });
+        // Ordina gli eventi per data
+        extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-
-           extractedEvents.sort((a, b) => a.startDate!.getTime() - b.startDate!.getTime());
-
-      // Get the next 4 events
+        // Filtra solo gli eventi futuri
         const now = new Date();
-        const futureEvents = extractedEvents.filter(event => event.startDate! >= now).slice(0, 4)
+        now.setHours(0, 0, 0, 0);
+        
+        const futureEvents = extractedEvents.filter(event => {
+            const eventDate = new Date(event.startDate);
+            eventDate.setHours(0, 0, 0, 0);
+            return eventDate >= now;
+        }).slice(0, 4);
 
-            setEvents(futureEvents);
+        console.log('Extracted Events:', futureEvents);
+        setEvents(futureEvents);
 
-
-        } catch (err) {
-              if (err instanceof Error) {
-                setError(err.message);
-                } else {
-                  setError('An unexpected error occurred.');
-              }
-           
-        } finally {
-            setLoading(false);
+    } catch (err) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('An unexpected error occurred.');
         }
-    }, []);
+    } finally {
+        setLoading(false);
+    }
+}, []);
 
   useEffect(() => {
       fetchEvents();

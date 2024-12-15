@@ -117,7 +117,7 @@ interface Event {
   endDate?: Date;
   city: string;
   description?: string;
-  link?: string;
+    link?: string;
 }
 
 interface Attraction {
@@ -152,7 +152,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         month: 'short',
         day: 'numeric',
     }).format(event.startDate) : 'Data non disponibile';
-      const isCurrentEvent = () => {
+     const isCurrentEvent = () => {
         if(!event.startDate) return null;
 
     const now = new Date();
@@ -189,7 +189,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
               </h3>
               <div className="flex items-center mt-2 text-gray-600 dark:text-gray-300">
                 <MapPin className="w-4 h-4 mr-1" />
-                 <span className="text-sm">{event.city}</span>
+                <span className="text-sm">{event.city}</span>
               </div>
               {event.link && (
                 <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
@@ -502,6 +502,7 @@ const Explore: React.FC = () => {
       }
     };
   }, []);
+
     const fetchEvents = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -521,15 +522,10 @@ const Explore: React.FC = () => {
             $('.evento-featured').each((_, element) => {
                 const titleElement = $(element).find('.titolo.blocco-locali h2 a');
                 const title = titleElement.text().trim();
-                const link = titleElement.attr('href');
+                  const link = titleElement.attr('href');
                 const dateText = $(element).find('.testa').text().trim();
-                let location = $(element).find('.evento-data a').text().trim() || 'Mola di Bari';
-                 const description = $(element).find('.evento-corpo').text().trim();
-
-                 // Extract city from location string
-                    const locationParts = location.split(' ');
-                    const extractedCity = locationParts[locationParts.length - 1];
-                    location = extractedCity
+               const location = $(element).find('.evento-data a').text().trim() || 'Mola di Bari';
+                const description = $(element).find('.evento-corpo').text().trim();
 
                 let startDate: Date | undefined;
 
@@ -554,7 +550,7 @@ const Explore: React.FC = () => {
                     }
                 }
                 
-                   if (title && startDate && !isNaN(startDate.getTime())) {
+                  if (title && startDate && !isNaN(startDate.getTime())) {
                     extractedEvents.push({
                         id: Date.now().toString() + Math.random().toString(),
                         title,
@@ -579,7 +575,7 @@ const Explore: React.FC = () => {
              setEvents(futureEvents);
 
         } catch (err) {
-              if (err instanceof Error) {
+             if (err instanceof Error) {
                 setError(err.message);
             } else {
                 setError('An unexpected error occurred.');
@@ -589,8 +585,8 @@ const Explore: React.FC = () => {
         }
     }, []);
 
-    useEffect(() => {
-         fetchEvents();
+      useEffect(() => {
+          fetchEvents();
          const intervalId = setInterval(fetchEvents, 10 * 60 * 1000);
     return () => clearInterval(intervalId);
     }, [fetchEvents]);
@@ -697,7 +693,7 @@ const Explore: React.FC = () => {
           >
             Upcoming Events
           </motion.h2>
-             {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
+           {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
              {error && <p className="text-red-600 mb-4">Error: {error}</p>}
           <div className="grid gap-4">
             {events.map((event) => (

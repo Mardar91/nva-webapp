@@ -101,32 +101,54 @@ interface Attraction {
   description?: string;
 }
 
-const CurrentEventBadge = () => (
-  <div className="flex items-center gap-1.5 mt-2">
-    <span className="relative flex h-2.5 w-2.5">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-    </span>
-    <span className="text-xs font-medium text-green-600">Today</span>
-  </div>
-);
+const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
+    let color = "bg-green-500";
+    let text = "Today";
+
+    if (type === 'tomorrow') {
+        color = "bg-orange-500";
+        text = "Tomorrow";
+    }
+
+    return (
+        <div className="flex items-center gap-1.5 mt-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${color} opacity-75`}></span>
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${color}`}></span>
+            </span>
+            <span className="text-xs font-medium" style={{ color: type === 'today' ? '#22c55e' : '#f97316' }}>{text}</span>
+        </div>
+    );
+};
+
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-  }).format(event.startDate) : 'Data non disponibile';
+    const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+    }).format(event.startDate) : 'Data non disponibile';
+  
+   const isCurrentEvent = () => {
+      if(!event.startDate) return null;
 
-  const isCurrentEvent = () => {
-        if(!event.startDate) return false
     const now = new Date();
     const start = new Date(event.startDate);
     start.setHours(0, 0, 0, 0);
     const end = event.endDate ? new Date(event.endDate) : new Date(start);
     end.setHours(23, 59, 59, 999);
 
-    return now >= start && now <= end;
+    const tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+
+       if(now >= start && now <= end) return 'today';
+       if(start >= tomorrow && start <= end) return 'tomorrow';
+       return null
   };
+
+  const currentEventType = isCurrentEvent();
+
 
   return (
     <motion.div
@@ -146,7 +168,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
-                 {event.link && (
+                {event.link && (
                     <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
                     More info
                   </a>
@@ -157,7 +179,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <Calendar className="w-4 h-4 mr-1 text-rose-800 dark:text-rose-400" />
                 <span className="text-sm font-medium">{formattedDate}</span>
               </div>
-              {isCurrentEvent() && <CurrentEventBadge />}
+              {currentEventType && <CurrentEventBadge type={currentEventType} />}
             </div>
           </div>
         </CardContent>

@@ -225,7 +225,7 @@ const MolaDiBari: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = useCallback(async () => {
+const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -233,7 +233,7 @@ const MolaDiBari: React.FC = () => {
         await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=0')}`);
         
         // Aspettiamo un momento per assicurarci che il filtro sia applicato
-         await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         // Poi prendiamo i risultati filtrati
         const response = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/mola-di-bari/')}`);
@@ -244,14 +244,15 @@ const MolaDiBari: React.FC = () => {
         
         const html = await response.text();
         const $ = cheerio.load(html);
-        const extractedEvents: Event[] = [];
-
+        
         // Mappa dei mesi italiani
         const monthsIT: { [key: string]: number } = {
             'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
             'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
             'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
         };
+
+        const uniqueEvents = new Map();
 
         $('.evento-featured').each((_, element) => {
             const titleElement = $(element).find('.titolo.blocco-locali h2 a');
@@ -261,19 +262,25 @@ const MolaDiBari: React.FC = () => {
             const location = $(element).find('.evento-data a').text().trim() || 'Mola di Bari';
             const description = $(element).find('.evento-corpo').text().trim();
 
-            console.log('Event Data Before Filter:', {
-                title, link, dateText, location, description
-            });
-
             let startDate: Date | undefined;
+            let endDate: Date | undefined;
 
+            // Gestione formato "dal 13 al 20 dicembre 2024"
+            const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
             // Gestione formato "Domenica 15 dicembre 2024"
             const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
-            
-            // Gestione formato "dal 14 al 15 dicembre 2024"
-            const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
 
-            if (singleDateMatch) {
+            if (rangeDateMatch) {
+                const startDay = parseInt(rangeDateMatch[1]);
+                const endDay = parseInt(rangeDateMatch[2]);
+                const monthStr = rangeDateMatch[3].toLowerCase();
+                const year = parseInt(rangeDateMatch[4]);
+                
+                if (monthsIT.hasOwnProperty(monthStr)) {
+                    startDate = new Date(year, monthsIT[monthStr], startDay);
+                    endDate = new Date(year, monthsIT[monthStr], endDay);
+                }
+            } else if (singleDateMatch) {
                 const day = parseInt(singleDateMatch[1]);
                 const monthStr = singleDateMatch[2].toLowerCase();
                 const year = parseInt(singleDateMatch[3]);
@@ -281,42 +288,37 @@ const MolaDiBari: React.FC = () => {
                 if (monthsIT.hasOwnProperty(monthStr)) {
                     startDate = new Date(year, monthsIT[monthStr], day);
                 }
-            } else if (rangeDateMatch) {
-                const day = parseInt(rangeDateMatch[1]);
-                const monthStr = rangeDateMatch[3].toLowerCase();
-                const year = parseInt(rangeDateMatch[4]);
-                
-                if (monthsIT.hasOwnProperty(monthStr)) {
-                    startDate = new Date(year, monthsIT[monthStr], day);
-                }
             }
 
             if (title && startDate && !isNaN(startDate.getTime())) {
-                extractedEvents.push({
-                    id: Date.now().toString() + Math.random().toString(),
-                    title,
-                    startDate,
-                    city: 'Mola di Bari',
-                    description,
-                    link
-                });
+                const eventKey = `${title}-${startDate.getTime()}`;
+                if (!uniqueEvents.has(eventKey)) {
+                    uniqueEvents.set(eventKey, {
+                        id: Date.now().toString() + Math.random().toString(),
+                        title,
+                        startDate,
+                        endDate,
+                        city: 'Mola di Bari',
+                        description,
+                        link
+                    });
+                }
             }
         });
 
-        // Ordina gli eventi per data
+        // Converti la Map in array e filtra gli eventi
+        const extractedEvents = Array.from(uniqueEvents.values());
         extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-        // Filtra solo gli eventi futuri
+        // Filtra solo gli eventi futuri o in corso
         const now = new Date();
         now.setHours(0, 0, 0, 0);
-        
+
         const futureEvents = extractedEvents.filter(event => {
-            const eventDate = new Date(event.startDate);
-            eventDate.setHours(0, 0, 0, 0);
-            return eventDate >= now;
+            const eventEndDate = event.endDate || event.startDate;
+            return eventEndDate >= now;
         }).slice(0, 4);
 
-        console.log('Extracted Events:', futureEvents);
         setEvents(futureEvents);
 
     } catch (err) {
@@ -328,7 +330,7 @@ const MolaDiBari: React.FC = () => {
     } finally {
         setLoading(false);
     }
-  }, []);
+}, []);
 
 
   useEffect(() => {

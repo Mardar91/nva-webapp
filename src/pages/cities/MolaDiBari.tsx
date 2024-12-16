@@ -101,6 +101,8 @@ interface Attraction {
   description?: string;
     imageUrl?: string;
   mapUrl?: string;
+    bookingNumber?:string;
+  eventsUrl?:string;
 }
 
 const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
@@ -231,6 +233,24 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
                     </Button>
                 </div>
              )}
+             {attraction.bookingNumber && (
+                <div className="mt-2">
+                      <Button asChild variant="outline">
+                        <a href={`tel:${attraction.bookingNumber}`} >
+                            Call to Book: {attraction.bookingNumber}
+                        </a>
+                     </Button>
+                </div>
+            )}
+             {attraction.eventsUrl && (
+                <div className="mt-2">
+                    <Button asChild variant="secondary">
+                        <a href={attraction.eventsUrl} target="_blank" rel="noopener noreferrer">
+                            View Events
+                        </a>
+                    </Button>
+                </div>
+            )}
         </DialogHeader>
       </DialogContent>
     </Dialog>
@@ -387,13 +407,71 @@ const fetchEvents = useCallback(async () => {
         'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/09/09/12/photo1jpg.jpg?w=700&h=-1&s=1',
       mapUrl: 'https://maps.app.goo.gl/ggfSTa9DQGa5zsZb7'
     },
-    { name: 'Chiesa Matrice', icon: '⛪' },
-    { name: 'Castello Angioino', icon: '🏰' },
-    { name: 'Piazza XX Settembre', icon: '⛲' },
-    { name: 'Chiesa Maddalena', icon: '🕍' },
-    { name: 'Palazzo Roberti', icon: '🏛️' },
-    { name: 'Teatro Van Westerhout', icon: '🎭' },
-    { name: 'Centro Storico', icon: '🏘️' }
+     {
+      name: 'Chiesa Matrice',
+      icon: '⛪',
+      description:
+        "The Chiesa Matrice in Mola di Bari is a stunning Renaissance church, noted for its architectural beauty and historical significance. Originally constructed between 1545 and 1564 by masters of Levantine origin, the church combines elegance with historical charm. Its main façade features three levels adorned with detailed elements, while the lateral façade boasts lesenes and an architraved portal. Inside, three naves divided by columns and arches create an atmosphere of grandeur, complemented by exquisite Renaissance sculptures and paintings, including a statue of St. Michael by Stefano da Putignano.\n\nA highlight is the church’s crypt, which, according to tradition, holds a fragment of the True Cross. This sacred relic is said to have been given to Mola di Bari during the church’s construction, enhancing its spiritual significance. Visitors are captivated by this “miniature” version of San Nicola’s church in Bari, which beautifully merges history, art, and faith.",
+         imageUrl:
+        'https://www.barinedita.it/public/foto_news_upload/chiesa%20matrice%20san%20nicola%20mola%20di%20bari.jpg',
+      mapUrl: 'https://maps.app.goo.gl/5Vru9zj6nWKqLrNY8'
+    },
+    {
+      name: 'Castello Angioino',
+      icon: '🏰',
+      description:
+        "The Angevin Castle in Mola di Bari is a historic fortress built between 1277 and 1279 by order of Charles I of Anjou. Designed by royal carpenters Pierre d’Angicourt and Jean from Toul, the castle was constructed to defend the coast against pirate incursions.\n\nOriginally, the castle featured a rectangular tower with three levels, adorned with battlements and equipped with machicolations and arrow slits. In the early 16th century, following significant damage during the Venetian siege of 1508, the castle underwent a major restoration led by architect Evangelista Menga. This renovation introduced the current star-shaped polygonal layout, enhancing its defensive capabilities.\n\nThe castle’s robust scarp walls were designed to withstand firearm attacks and were equipped with numerous machicolations. A moat, connected to the sea, surrounded the structure, which was linked to the city’s walls by a bridge.\n\nToday, the Angevin Castle stands as a testament to Mola di Bari’s rich history and architectural heritage, offering visitors a glimpse into its medieval past.",
+      imageUrl:
+        'https://www.divento.com/23351/castello-mola-di-bari-puglia.jpg',
+      mapUrl: 'https://maps.app.goo.gl/CFdnaj3e5w4Q8XSG6',
+      bookingNumber: '+390804738227'
+    },
+    {
+      name: 'Piazza XX Settembre',
+      icon: '⛲',
+      description:
+        "Piazza XX Settembre is the vibrant heart of Mola di Bari, serving as a central hub for social and cultural activities. The square is renowned for its Monumental Fountain, a significant landmark that adds to its charm. \n\nRecently renovated, the piazza has become a popular gathering spot for both locals and visitors. In the mornings, it’s common to see residents enjoying the space, while evenings bring a lively atmosphere with numerous bars and restaurants catering to the nightlife.\n\nThe square’s strategic location and welcoming ambiance make it a must-visit destination for those exploring Mola di Bari, offering a glimpse into the town’s vibrant community life.",
+      imageUrl:
+        'https://upload.wikimedia.org/wikipedia/commons/6/69/Mola_di_Bari_-_piazza_XX_Settembre.jpg',
+      mapUrl: 'https://maps.app.goo.gl/rrtq8izWn3VYSwMR8'
+    },
+    {
+      name: 'Chiesa Maddalena',
+      icon: '🕍',
+      description:
+        "The Chiesa di Santa Maria Maddalena, located in Mola di Bari’s Piazza XX Settembre, is a significant religious and cultural landmark. This church serves as the main place of worship for the local community, hosting various religious events and ceremonies. \n\nArchitecturally, the church showcases traditional design elements typical of the region, with notable features such as its façade and interior decorations. The interior houses various artworks and religious iconography, reflecting the town’s rich artistic heritage.\n\nThe Chiesa di Santa Maria Maddalena is also associated with the Arciconfraternita Maria SS. Addolorata, which organizes events and activities within the church, contributing to the town’s vibrant cultural scene. \n\nVisitors to Mola di Bari often include this church in their itineraries to appreciate its historical significance and architectural beauty. Its central location makes it easily accessible for those exploring the town’s cultural and historical sites.",
+         imageUrl:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Mola_di_Bari_-_chiesa_della_Maddalena_-_202209111340.jpg/800px-Mola_di_Bari_-_chiesa_della_Maddalena_-_202209111340.jpg',
+      mapUrl: 'https://maps.app.goo.gl/79Vf8FFu3Cqg9XKL8'
+    },
+    {
+      name: 'Palazzo Roberti',
+      icon: '🏛️',
+      description:
+         "Palazzo Roberti, also known as Palazzo Roberti-Alberotanza, is a prominent example of Neapolitan Baroque architecture in Mola di Bari. Constructed between 1760 and 1770 by Giambattista Roberti, a notable figure from a distinguished local family, the palace is situated on Piazza XX Settembre. \n\nThe building’s symmetrical façade features three tiers of windows, with a central noble loggia above a grand Neapolitan-style portal that leads to an expansive courtyard. This courtyard houses an elegant double-ramp staircase, reminiscent of designs by Neapolitan architect Ferdinando Sanfelice. \n\nInside, the palace boasts intricate painted ceilings attributed to Neapolitan artists, including works by Aniello D’Arminio, who signed a piece in the main hall dated 1783. \n\nOriginally owned by the Roberti family, the palace transitioned to the Alberotanza family in the mid-19th century through marriage. In the 20th century, it became municipal property. Locally, it’s referred to as the “Palace of a Hundred Rooms” due to its impressive size. \n\nToday, Palazzo Roberti stands as a testament to Mola di Bari’s rich architectural heritage, reflecting the town’s historical and cultural significance.",
+      imageUrl:
+        'https://i0.wp.com/www.puglialive.net/wp-content/uploads/2023/12/2-5.jpg?resize=500%2C333&ssl=1',
+      mapUrl: 'https://maps.app.goo.gl/iXLZ75VVpRjqkiQz5'
+    },
+    {
+      name: 'Teatro Van Westerhout',
+      icon: '🎭',
+      description:
+        "The Teatro Van Westerhout, located in Mola di Bari, is a historic theater built in 1888. Named after the composer Niccolò van Westerhout, it stands as one of the oldest theaters in Puglia. \n\nDesigned in the traditional Italian theater style, the venue has been a cultural hub for over a century, hosting a variety of performances, including music and theater productions. \n\nToday, the theater continues to enrich the cultural landscape of Mola di Bari, offering a diverse program of events that attract both locals and visitors.",
+          imageUrl:
+        'https://www.barinedita.it/public/foto_galleria/2541-teatro%20van%20westerhout%20mola%20(41).jpg',
+      mapUrl: 'https://maps.app.goo.gl/RfQCjsWfyZJGcfmy9',
+        eventsUrl:'https://www.baritoday.it/eventi/location/Teatro%20Van%20Westerhout/'
+    },
+    {
+      name: 'Centro Storico',
+      icon: '🏘️',
+      description:
+        "The historic center of Mola di Bari is a captivating blend of medieval architecture and Adriatic charm. Enclosed by ancient defensive walls and towers, this area features narrow, cobblestone streets and historic squares that reflect the town’s rich maritime heritage. \n\nAt the heart of the old town lies Piazza XX Settembre, a vibrant square that serves as a central hub for locals and visitors alike. The square is home to the Chiesa di Santa Maria Maddalena, a significant religious site, and is surrounded by various shops and cafes, making it a lively spot throughout the day. \n\nNearby, the imposing Palazzo Roberti, also known as Palazzo Alberotanza, stands as a testament to 18th-century architecture. Often referred to as the “Palace of a Hundred Rooms,” this noble building adds to the historical ambiance of the area. \n\nExploring the historic center offers a journey through time, with each alley and building narrating stories of Mola di Bari’s past. The town’s deep connection to the Adriatic Sea is evident throughout, from the design of its streets to the local traditions that continue to thrive. \n\nFor those seeking an authentic Italian experience, the historic center of Mola di Bari provides a glimpse into the region’s unspoiled beauty and cultural richness.",
+           imageUrl:
+        'https://www.barinedita.it/public/foto_galleria/2582-Mola%20di%20Bari%20centro%20storico%20-%202%20(10).jpg',
+      mapUrl: 'https://maps.app.goo.gl/1n3yf6sCGdhZxy637'
+    }
   ];
 
   const scrollToRef = useRef<HTMLDivElement>(null);

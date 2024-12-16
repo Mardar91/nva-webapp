@@ -28,26 +28,28 @@ const VipTicketHero = () => {
   }, []);
 
   const handleVipTicket = () => {
-    // Funzione per rilevare iOS/iPadOS
+    // Verifica se è un dispositivo iOS/iPadOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && 
       !(window as any).MSStream && 
-      !window.navigator.standalone; // Verifica se non è in modalità standalone
+      !(('standalone' in window.navigator) && (window.navigator as any).standalone);
     
-    // Funzione per rilevare macOS
+    // Verifica se è un Mac (escludendo iPad che si identifica come Mac)
     const isMacOS = /Macintosh/.test(navigator.userAgent) && 
-      'ontouchend' in document === false; // Esclude iPad che si identifica come Mac
-    
+      'ontouchend' in document === false;
+
+    // Se è un dispositivo iOS non in modalità standalone, apri in Safari
     if (isIOSDevice) {
-      // Per iOS/iPadOS, apri in Safari
       window.location.href = "https://nonnavittoriaapartments.it/VipTicket.pkpass";
-    } else if (isMacOS) {
-      // Per macOS, apri in una nuova finestra
+    } 
+    // Se è macOS, apri in una nuova finestra
+    else if (isMacOS) {
       window.open(
         "https://nonnavittoriaapartments.it/VipTicket.pkpass",
         "_blank"
       );
-    } else {
-      // Per Android e altri dispositivi, usa il link Google Pay Pass
+    } 
+    // Per Android e altri dispositivi, usa il link Google Pay Pass
+    else {
       window.open(
         "https://app.passcreator.com/en/passinstance/googlepaypass?noBundling=0&passInstance[__identity]=20ad5572-9d1c-497c-b091-215c9874ce85",
         "_blank"

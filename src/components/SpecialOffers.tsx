@@ -17,7 +17,7 @@ const SpecialOffers = () => {
       >
         <div className="cardHeader">
           <h3 className="cardTitle">GIFT CARD</h3>
-          <div className="discountBadge glowing">
+          <div className="discountBadge shimmer-button">
             <span className="discountText">+10% FREE</span>
           </div>
         </div>

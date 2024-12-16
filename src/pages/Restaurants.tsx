@@ -62,7 +62,7 @@ const RestaurantScreen = () => {
           <div className="card" key={index}>
             <div className="cardHeader">
               <h3 className="cardTitle">{restaurant.name}</h3>
-              <div className="discountBadge glowing">
+              <div className="discountBadge shimmer-button">
                 <span className="discountText">10% OFF</span>
               </div>
             </div>

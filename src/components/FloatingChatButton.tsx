@@ -3,9 +3,6 @@ import { FaRobot } from "react-icons/fa";
 import { useSpring, animated } from "react-spring";
 import "./FloatingChatButton.css";
 
-const BUTTON_SIZE = 60;
-const SWIPE_THRESHOLD = 50;
-
 interface FloatingChatButtonProps {
   onPress: () => void;
 }
@@ -16,10 +13,28 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   const [opacity, setOpacity] = useState(1);
   const [waveAnimation, setWaveAnimation] = useState(0);
   const [isIOS, setIsIOS] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(iOS);
+    
+    // Mostra il prompt dopo un breve ritardo
+    const promptTimer = setTimeout(() => {
+      setShowPrompt(true);
+    }, 1000);
+
+    // Nascondi il prompt automaticamente dopo 5 secondi
+    const hideTimer = setTimeout(() => {
+      if (showPrompt) {
+        setShowPrompt(false);
+      }
+    }, 6000);
+
+    return () => {
+      clearTimeout(promptTimer);
+      clearTimeout(hideTimer);
+    };
   }, []);
 
   const startWavingAnimation = useCallback(() => {
@@ -33,11 +48,11 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
 
   const handleSwipe = (e: React.TouchEvent<HTMLDivElement>) => {
     const { clientX } = e.changedTouches[0];
-    if (clientX < SWIPE_THRESHOLD) {
+    if (clientX < 50) {
       setPanX(window.innerWidth);
       setOpacity(0.3);
       setScale(0.8);
-    } else if (clientX > window.innerWidth - SWIPE_THRESHOLD) {
+    } else if (clientX > window.innerWidth - 50) {
       setPanX(0);
       setOpacity(1);
       setScale(1);
@@ -66,6 +81,20 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
       }}
       onTouchMove={handleSwipe}
     >
+      {showPrompt && (
+        <div className="chat-prompt">
+          <button
+            className="chat-prompt-close"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowPrompt(false);
+            }}
+          >
+            ×
+          </button>
+          Hi, I'm here to help. Ask me anything!
+        </div>
+      )}
       <button 
         className="chat-button"
         onClick={openWebApp}

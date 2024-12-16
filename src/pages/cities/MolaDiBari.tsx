@@ -210,7 +210,7 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{attraction.name}</DialogTitle>
            

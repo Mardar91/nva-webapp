@@ -152,8 +152,8 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         month: 'short',
         day: 'numeric',
     }).format(event.startDate) : 'Data non disponibile';
-      const isCurrentEvent = () => {
-        if(!event.startDate) return null;
+const isCurrentEvent = () => {
+    if(!event.startDate) return null;
 
     const now = new Date();
     const start = new Date(event.startDate);
@@ -161,15 +161,15 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     const end = event.endDate ? new Date(event.endDate) : new Date(start);
     end.setHours(23, 59, 59, 999);
 
-    const tomorrow = new Date();
+    const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
 
-
-       if(now >= start && now <= end) return 'today';
-       if(start >= tomorrow && start <= end) return 'tomorrow';
-       return null
-  };
+    if(now >= start && now <= end) return 'today';
+    // Fix per il badge tomorrow - controlla solo per eventi che iniziano esattamente domani
+    if(start.getTime() === tomorrow.getTime()) return 'tomorrow';
+    return null;
+};
 
   const currentEventType = isCurrentEvent();
 
@@ -503,9 +503,15 @@ const Explore: React.FC = () => {
     };
   }, []);
  const fetchEvents = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
+    setLoading(true);
+    setError(null);
+    try {
+        // Imposta esplicitamente il raggio a 20km per Explore
+        await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/index.php?md=Gateway&az=setDintorni&val=20')}`);
+        
+        // Aspetta che il filtro sia applicato
+        await new Promise(resolve => setTimeout(resolve, 500));
+      
             const response = await fetch(`/api/proxy?url=${encodeURIComponent('https://iltaccodibacco.it/mola-di-bari/')}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);

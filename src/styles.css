@@ -731,6 +731,7 @@ main:not(.iframe-container) {
   overflow: hidden;
 }
 
+/* Modifica questa parte nel tuo CSS */
 .shimmer-button::after {
   content: '';
   position: absolute;
@@ -741,10 +742,22 @@ main:not(.iframe-container) {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.6), /* Aumentato da 0.3 a 0.6 per il tema chiaro */
     transparent
   );
   animation: shimmer 3s infinite;
+}
+
+/* Aggiungi questa media query per il tema scuro */
+@media (prefers-color-scheme: dark) {
+  .shimmer-button::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+  }
 }
 
 @keyframes shimmer {

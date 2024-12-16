@@ -502,7 +502,7 @@ const Explore: React.FC = () => {
       }
     };
   }, []);
-    const fetchEvents = useCallback(async () => {
+ const fetchEvents = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -524,12 +524,13 @@ const Explore: React.FC = () => {
                 const link = titleElement.attr('href');
                 const dateText = $(element).find('.testa').text().trim();
                 let location = $(element).find('.evento-data').text().trim();
-                  const description = $(element).find('.evento-corpo').text().trim();
+                const description = $(element).find('.evento-corpo').text().trim();
 
                 // Extract city from location string
-                    const locationParts = location.split(' ');
-                    const extractedCity = locationParts[locationParts.length - 1];
-                    location = extractedCity;
+                 const locationParts = location.split(' ');
+                  const extractedCity = locationParts.slice(1).join(' ');
+                 location = extractedCity;
+
 
                 let startDate: Date | undefined;
 

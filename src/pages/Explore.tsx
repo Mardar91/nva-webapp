@@ -373,27 +373,16 @@ const NotesDialog: React.FC = () => {
   );
 };
 
-// Weather Widget Component corretto per occupare l'intero popup
 const WeatherWidget: React.FC = () => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <Cloud size={24} className="text-[#60A5FA] mb-1" />
-          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
-        </button>
-      </DialogTrigger>
-      <DialogContent className="max-w-[90vw] w-full h-[90vh]">
-        <iframe 
-          src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
-          className="w-full h-full"
-          style={{ border: 0 }}
-          scrolling="no"
-          allowTransparency={true}
-          sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
-        />
-      </DialogContent>
-    </Dialog>
+    <Button
+      variant="ghost"
+      onClick={() => setShowWeather(true)}
+      className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+    >
+      <Cloud size={24} className="text-[#60A5FA] mb-1" />
+      <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
+    </Button>
   );
 };
 
@@ -487,9 +476,10 @@ const Explore: React.FC = () => {
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);
   const [showMap, setShowMap] = useState(false);
-   const [events, setEvents] = useState<Event[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const [showWeather, setShowWeather] = useState(false); // Aggiungi questa riga
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -665,6 +655,31 @@ if (showMap) {
       <div className="fixed bottom-24 right-4 z-[9999]">
         <button
           onClick={() => setShowMap(false)}
+          className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
+        >
+          <ArrowRight 
+            className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
+          />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+  if (showWeather) {
+  return (
+    <div className="fixed inset-0 bg-white">
+      <iframe 
+        src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
+        className="w-full h-[calc(100vh-88px)]"
+        style={{ border: 0 }}
+        scrolling="no"
+        allowTransparency={true}
+        sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
+      />
+      <div className="fixed bottom-24 right-4 z-[9999]">
+        <button
+          onClick={() => setShowWeather(false)}
           className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
         >
           <ArrowRight 

@@ -14,26 +14,42 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   const [waveAnimation, setWaveAnimation] = useState(0);
   const [isIOS, setIsIOS] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [showSecondPrompt, setShowSecondPrompt] = useState(false);
   const promptTimerRef = useRef<NodeJS.Timeout>();
+  const secondPromptTimerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(iOS);
     
-    // Mostra il prompt dopo 1 secondo
+    // Primo prompt dopo 1 secondo
     const showTimer = setTimeout(() => {
       setShowPrompt(true);
       
-      // Nascondi il prompt automaticamente dopo 4 secondi
+      // Nascondi il primo prompt dopo 4 secondi
       promptTimerRef.current = setTimeout(() => {
         setShowPrompt(false);
       }, 4000);
     }, 1000);
 
+    // Secondo prompt dopo 4 minuti
+    const secondShowTimer = setTimeout(() => {
+      setShowSecondPrompt(true);
+      
+      // Nascondi il secondo prompt dopo 4 secondi
+      secondPromptTimerRef.current = setTimeout(() => {
+        setShowSecondPrompt(false);
+      }, 4000);
+    }, 240000); // 4 minuti = 240000 millisecondi
+
     return () => {
       clearTimeout(showTimer);
+      clearTimeout(secondShowTimer);
       if (promptTimerRef.current) {
         clearTimeout(promptTimerRef.current);
+      }
+      if (secondPromptTimerRef.current) {
+        clearTimeout(secondPromptTimerRef.current);
       }
     };
   }, []);
@@ -72,6 +88,20 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
     config: { tension: 170, friction: 26 },
   });
 
+  const handleClosePrompt = (isSecond: boolean = false) => {
+    if (isSecond) {
+      setShowSecondPrompt(false);
+      if (secondPromptTimerRef.current) {
+        clearTimeout(secondPromptTimerRef.current);
+      }
+    } else {
+      setShowPrompt(false);
+      if (promptTimerRef.current) {
+        clearTimeout(promptTimerRef.current);
+      }
+    }
+  };
+
   return (
     <animated.div
       className={`floating-chat-button ${isIOS ? 'ios-device' : ''}`}
@@ -88,16 +118,26 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
             className="chat-prompt-close"
             onClick={(e) => {
               e.stopPropagation();
-              setShowPrompt(false);
-              // Pulisci il timer quando chiudiamo manualmente
-              if (promptTimerRef.current) {
-                clearTimeout(promptTimerRef.current);
-              }
+              handleClosePrompt();
             }}
           >
             ×
           </button>
           Hi, how can I help?
+        </div>
+      )}
+      {showSecondPrompt && !showPrompt && (
+        <div className="chat-prompt">
+          <button
+            className="chat-prompt-close"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClosePrompt(true);
+            }}
+          >
+            ×
+          </button>
+          I'm here if you need me!
         </div>
       )}
       <button 

@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const WeatherWidget: React.FC = () => {
+const WeatherWidgetFullscreen: React.FC = () => {
   useEffect(() => {
     // Funzione per caricare lo script
     const loadScript = () => {
@@ -69,4 +69,4 @@ const WeatherWidget: React.FC = () => {
   );
 };
 
-export default WeatherWidget;
+export default WeatherWidgetFullscreen;

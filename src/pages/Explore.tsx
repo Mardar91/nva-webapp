@@ -652,25 +652,29 @@ $('.evento-featured').each((_, element) => {
     { name: 'Bari', path: '/cities/bari', icon: <Church size={32} /> }
   ];
 
-  if (showMap) {
-    return (
-      <div className="relative w-full h-[calc(100vh-88px)]">
+if (showMap) {
+  return (
+    <div className="fixed inset-0 bg-white">
+      <iframe 
+        src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"
+        className="w-full h-[calc(100vh-88px)]"
+        style={{ border: 0 }}
+        allowFullScreen
+        loading="lazy"
+      />
+      <div className="fixed bottom-24 right-4 z-[9999]">
         <button
           onClick={() => setShowMap(false)}
-          className="fixed bottom-4 right-4 z-50 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
+          className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
         >
-          <ArrowRight className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180" />
+          <ArrowRight 
+            className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
+          />
         </button>
-        <iframe 
-          src="https://www.google.com/maps/d/u/0/embed?mid=1aayihxUbcOPi0X1t52-PFKrWfhRfyAs&ehbc=2E312F&noprof=1"
-          className="w-full h-full"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-        />
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div 

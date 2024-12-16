@@ -1,18 +1,11 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import axios, { AxiosRequestConfig } from 'axios';
 
-// Cookie store separato per diverse rotte
-const cookieStores: { [key: string]: string } = {
-  'explore': '',  // Per la pagina Explore
-  'cities': ''    // Per le pagine delle città
-};
+// Cookie store
+let cookieStore = '';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const targetUrl = req.query.url as string;
-  const referer = req.headers.referer || '';
-  
-  // Determina quale store di cookie usare
-  const cookieKey = referer.includes('/explore') ? 'explore' : 'cities';
   
   if (!targetUrl) {
     return res.status(400).send('Missing target URL');
@@ -33,31 +26,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       withCredentials: true
     };
 
-    // Se abbiamo cookie salvati per questa rotta, li includiamo nella richiesta
-    if (cookieStores[cookieKey]) {
+    // Se abbiamo cookie salvati, li includiamo nella richiesta
+    if (cookieStore) {
       config.headers = {
         ...config.headers,
-        'Cookie': cookieStores[cookieKey]
+        'Cookie': cookieStore
       };
-    }
-
-    // Se la richiesta contiene setDintorni, aggiorna solo lo store appropriato
-    if (targetUrl.includes('setDintorni')) {
-      const distanceValue = targetUrl.includes('val=0') ? 'cities' : 'explore';
-      cookieStores[distanceValue] = ''; // Reset cookie per questo contesto
     }
 
     const response = await axios.get(targetUrl, config);
 
-    // Salviamo i cookie ricevuti nel store appropriato
+    // Salviamo i cookie ricevuti
     const cookies = response.headers['set-cookie'];
     if (cookies) {
-      cookieStores[cookieKey] = cookies.join('; ');
+      cookieStore = cookies.join('; ');
     }
-
-    // Log per debugging
-    console.log(`Route: ${cookieKey}, URL: ${targetUrl.substring(0, 50)}...`);
-    console.log(`Cookies stored for ${cookieKey}: ${cookieStores[cookieKey].substring(0, 50)}...`);
 
     // Impostiamo gli header della risposta
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -67,12 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(response.status).send(response.data);
   } catch (error: any) {
-    console.error('Proxy error:', {
-      message: error.message,
-      route: cookieKey,
-      url: targetUrl
-    });
-
+    console.error('Proxy error:', error);
     res.status(500).send({ 
       message: 'Proxy error', 
       error: error.message,

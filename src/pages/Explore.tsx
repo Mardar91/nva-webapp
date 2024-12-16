@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import {
-  Calendar,
-  MapPin,
-  ArrowLeft,
+import { 
+  Calendar, 
+  MapPin, 
+  ArrowLeft, 
   ArrowRight,
   Building2,
   TreePalm,
@@ -373,19 +373,6 @@ const NotesDialog: React.FC = () => {
   );
 };
 
-const WeatherWidget: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
-  return (
-    <Button
-      variant="ghost"
-      onClick={onOpen}
-      className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
-    >
-      <Cloud size={24} className="text-[#60A5FA] mb-1" />
-      <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
-    </Button>
-  );
-};
-
 // Currency Converter Component
 const CurrencyConverter: React.FC = () => {
   const [amount, setAmount] = useState<string>('1');
@@ -472,11 +459,26 @@ const CurrencyConverter: React.FC = () => {
   );
 };
 
+
+const WeatherWidget: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
+  return (
+    <Button
+      variant="ghost"
+      onClick={onOpen}
+      className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+    >
+      <Cloud size={24} className="text-[#60A5FA] mb-1" />
+      <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
+    </Button>
+  );
+};
+
+
 const Explore: React.FC = () => {
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);
   const [showMap, setShowMap] = useState(false);
-  const [showWeather, setShowWeather] = useState(false); // Aggiungi questa riga
+    const [showWeather, setShowWeather] = useState(false); // Aggiungi questa riga
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -667,18 +669,35 @@ if (showMap) {
 }
 
   if (showWeather) {
-  return (
-      <div className="fixed inset-0 bg-white z-50 flex justify-center items-center">
-         <div className="relative w-full max-w-screen-md h-[calc(100vh-88px)]">
-        <iframe
-          src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
-         className="w-full h-[calc(100vh - 88px)]"
-          style={{ border: 0 }}
-          scrolling="no"
-          allowTransparency={true}
-           sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
-        />
-           <div className="fixed bottom-24 right-4 z-[9999]">
+      return (
+    <div className="fixed inset-0 bg-white">
+       <div style={{ width: '100%', height: 'calc(100vh - 88px)', overflowY: 'auto' }}>
+           <div style={{ padding: '10px'}}>
+        <div className="tomorrow"
+           data-location-id="140209,058790,140296,137215,140213,135365"
+           data-language="EN"
+           data-unit-system="METRIC"
+           data-skin="light"
+           data-widget-type="aqi6"
+           style={{ paddingBottom: '22px', position: 'relative' }}
+        >
+          <a
+            href="https://www.tomorrow.io/weather-api/"
+            rel="nofollow noopener noreferrer"
+            target="_blank"
+            style={{ position: 'absolute', bottom: '0', transform: 'translateX(-50%)', left: '50%' }}
+          >
+            <img
+              alt="Powered by the Tomorrow.io Weather API"
+              src="https://weather-website-client.tomorrow.io/img/powered-by.svg"
+              width="250"
+              height="18"
+            />
+          </a>
+        </div>
+            </div>
+          </div>
+      <div className="fixed bottom-24 right-4 z-[9999]">
         <button
           onClick={() => setShowWeather(false)}
           className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
@@ -687,7 +706,6 @@ if (showMap) {
             className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
           />
         </button>
-      </div>
       </div>
     </div>
   );
@@ -748,7 +766,8 @@ if (showMap) {
           <p className="text-gray-200 text-lg mb-8">
             Discover magnificent cultural cities and unforgettable events in the surroundings.
           </p>
-          <Button onClick={() => scrollToRef.current?.scrollIntoView({ behavior: 'smooth' })}
+          <Button 
+            onClick={() => scrollToRef.current?.scrollIntoView({ behavior: 'smooth' })}
             variant="outline" 
             className="shimmer-button bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
           >
@@ -800,8 +819,7 @@ if (showMap) {
 
 <section className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
   <motion.h2
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: 1, x: 0 }}
+    initial={{ opacity: 0, x: -20 }}    animate={{ opacity: 1, x: 0 }}
     transition={{ duration: 0.5, delay: 0.2 }}
     className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6 text-center"
   >
@@ -823,7 +841,7 @@ if (showMap) {
       <CurrencyConverter />
     </div>
     <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16">
-  <WeatherWidget onOpen={() => setShowWeather(true)} />
+    <WeatherWidget onOpen={() => setShowWeather(true)} />
 </div>
   </div>
 </section>

@@ -797,30 +797,38 @@ if (showWeather) {
 
 <section className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
   <motion.h2
-    initial={{ opacity: 0, x: -20 }}    animate={{ opacity: 1, x: 0 }}
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
     transition={{ duration: 0.5, delay: 0.2 }}
     className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6 text-center"
   >
     Utilities
   </motion.h2>
   <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg pb-4">
-    <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16">
+    {/* Notes Button */}
+    <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow h-16 w-16">
       <NotesDialog />
     </div>
+
+    {/* Maps Button */}
     <Button
       variant="ghost"
       onClick={() => setShowMap(true)}
-      className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
+      className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
     >
       <Map size={24} className="text-[#60A5FA] mb-1" />
       <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Maps</span>
     </Button>
-    <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16">
+
+    {/* Currency Button */}
+    <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow h-16 w-16">
       <CurrencyConverter />
     </div>
-    <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16">
-    <WeatherWidget onOpen={() => setShowWeather(true)} />
-</div>
+
+    {/* Weather Button */}
+    <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow h-16 w-16">
+      <WeatherWidget onOpen={() => setShowWeather(true)} />
+    </div>
   </div>
 </section>
       </div>

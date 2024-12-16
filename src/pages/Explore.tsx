@@ -668,48 +668,25 @@ if (showMap) {
   );
 }
 
-  if (showWeather) {
-      return (
-    <div className="fixed inset-0 bg-white">
-       <div style={{ width: '100%', height: 'calc(100vh - 88px)', overflowY: 'auto' }}>
-           <div style={{ padding: '10px'}}>
-        <div className="tomorrow"
-           data-location-id="140209,058790,140296,137215,140213,135365"
-           data-language="EN"
-           data-unit-system="METRIC"
-           data-skin="light"
-           data-widget-type="aqi6"
-           style={{ paddingBottom: '22px', position: 'relative' }}
-        >
-          <a
-            href="https://www.tomorrow.io/weather-api/"
-            rel="nofollow noopener noreferrer"
-            target="_blank"
-            style={{ position: 'absolute', bottom: '0', transform: 'translateX(-50%)', left: '50%' }}
-          >
-            <img
-              alt="Powered by the Tomorrow.io Weather API"
-              src="https://weather-website-client.tomorrow.io/img/powered-by.svg"
-              width="250"
-              height="18"
-            />
-          </a>
+if (showWeather) {
+    return (
+      <div className="fixed inset-0 bg-white dark:bg-gray-900">
+        <div className="h-[calc(100vh-88px)] overflow-y-auto">
+          <WeatherWidget />
         </div>
-            </div>
-          </div>
-      <div className="fixed bottom-24 right-4 z-[9999]">
-        <button
-          onClick={() => setShowWeather(false)}
-          className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
-        >
-          <ArrowRight 
-            className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
-          />
-        </button>
+        <div className="fixed bottom-24 right-4 z-[9999]">
+          <button
+            onClick={() => setShowWeather(false)}
+            className="p-3 bg-white dark:bg-gray-800 shadow-lg rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform hover:scale-105"
+          >
+            <ArrowRight 
+              className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
+            />
+          </button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div 

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { 
-  Calendar, 
-  MapPin, 
-  ArrowLeft, 
+import {
+  Calendar,
+  MapPin,
+  ArrowLeft,
   ArrowRight,
   Building2,
   TreePalm,
@@ -668,24 +668,26 @@ if (showMap) {
 
   if (showWeather) {
   return (
-    <div className="fixed inset-0 bg-white">
-      <iframe 
-        src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
-        className="w-full h-[calc(100vh-88px)]"
-        style={{ border: 0 }}
-        scrolling="no"
-        allowTransparency={true}
-        sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
-      />
-      <div className="fixed bottom-24 right-4 z-[9999]">
-        <button
-          onClick={() => setShowWeather(false)}
-          className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
-        >
-          <ArrowRight 
-            className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
-          />
-        </button>
+      <div className="fixed inset-0 bg-white z-50 flex justify-center items-center">
+         <div className="relative w-full max-w-screen-md h-[calc(100vh-88px)]">
+        <iframe
+          src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
+         className="w-full h-full"
+          style={{ border: 0 }}
+          scrolling="no"
+          allowTransparency={true}
+           sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
+        />
+          <div className="absolute bottom-4 right-4 z-[9999]">
+          <button
+            onClick={() => setShowWeather(false)}
+            className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
+          >
+            <ArrowRight
+              className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
+            />
+          </button>
+        </div>
       </div>
     </div>
   );

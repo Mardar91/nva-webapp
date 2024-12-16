@@ -667,31 +667,31 @@ if (showMap) {
 }
 
   if (showWeather) {
-  return (
+      return (
       <div className="fixed inset-0 bg-white z-50 flex justify-center items-center">
-         <div className="relative w-full max-w-screen-md h-[calc(100vh-88px)]">
-        <iframe
-          src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
-         className="w-full h-full"
-          style={{ border: 0 }}
-          scrolling="no"
-          allowTransparency={true}
-           sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
-        />
-          <div className="absolute bottom-4 right-4 z-[9999]">
-          <button
-            onClick={() => setShowWeather(false)}
-            className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
-          >
-            <ArrowRight
-              className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
-            />
-          </button>
+        <div className="relative w-full max-w-screen-md h-[calc(100vh - 88px)]">
+          <iframe
+            src="https://www.meteoblue.com/it/tempo/widget/three?geoloc=detect&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=image"
+            className="w-full h-full"
+            style={{ border: 0 }}
+            scrolling="no"
+            allowTransparency={true}
+            sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
+          />
+          <div className="absolute top-4 right-4 z-[9999]"> {/* Pulsante in alto a destra */}
+            <button
+              onClick={() => setShowWeather(false)}
+              className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
+            >
+              <ArrowRight
+                className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
+              />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div 
@@ -786,7 +786,7 @@ if (showMap) {
           >
             Cities
           </motion.h2>
-          <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
             {cities.map((city, index) => (
               <CityButton
                 key={city.name}

@@ -703,6 +703,8 @@ main:not(.iframe-container) {
   min-width: 80px;
   -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
   transform: translateZ(0);
+  position: relative; /* Aggiunto per l'effetto shimmer */
+  overflow: hidden; /* Aggiunto per l'effetto shimmer */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -721,6 +723,33 @@ main:not(.iframe-container) {
   .discountText {
     color: #34d399;
   }
+}
+
+/* Nuovo stile shimmer aggiunto */
+.shimmer-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100% }
+  100% { left: 200% }
 }
 
 .glowing {

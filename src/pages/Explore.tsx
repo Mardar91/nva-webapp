@@ -29,6 +29,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import * as cheerio from 'cheerio';
+import WeatherWidget from './WeatherWidget';
 
 // Interfaces
 interface Note {

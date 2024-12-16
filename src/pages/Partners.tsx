@@ -91,7 +91,7 @@ const PartnersScreen = () => {
               <div key={itemIndex} className="card">
                 <div className="cardHeader">
                   <h4 className="cardTitle">{item.name}</h4>
-                  <div className="discountBadge glowing">
+                  <div className="discountBadge shimmer-button">
                     <span className="discountText">10% OFF</span>
                   </div>
                 </div>

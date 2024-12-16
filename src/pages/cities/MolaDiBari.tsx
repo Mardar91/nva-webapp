@@ -99,6 +99,8 @@ interface Attraction {
   name: string;
   icon: string;
   description?: string;
+    imageUrl?: string;
+  mapUrl?: string;
 }
 
 const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
@@ -209,9 +211,26 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{attraction.name}</DialogTitle>
+           
+          {attraction.imageUrl && (
+            <img
+              src={attraction.imageUrl}
+              alt={attraction.name}
+              className="w-full h-auto rounded-md mb-4"
+            />
+          )}
           <DialogDescription>
             {attraction.description || "Coming soon..."}
           </DialogDescription>
+             {attraction.mapUrl && (
+                <div className="mt-4">
+                     <Button asChild>
+                        <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
+                            View on Map
+                        </a>
+                    </Button>
+                </div>
+             )}
         </DialogHeader>
       </DialogContent>
     </Dialog>
@@ -359,7 +378,15 @@ const fetchEvents = useCallback(async () => {
   };
 
   const attractions: Attraction[] = [
-    { name: 'Lungomare', icon: '🌅' },
+    {
+      name: 'Lungomare',
+      icon: '🌅',
+      description:
+        "The promenade of Mola di Bari is a vibrant coastal gem that showcases the town’s maritime culture. Overlooking the Adriatic Sea, it offers picturesque views, lively pedestrian areas, and proximity to the historic Angioino-Aragonese Castle. Known for its charming combination of modern amenities and traditional character, the seafront is lined with restaurants, cafés, and spaces for leisure. It’s a great spot to enjoy the fresh catch of the day or relax amidst stunning sea breezes while soaking in Mola’s timeless charm",
+      imageUrl:
+        'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/09/09/12/photo1jpg.jpg?w=700&h=-1&s=1',
+      mapUrl: 'https://maps.app.goo.gl/ggfSTa9DQGa5zsZb7'
+    },
     { name: 'Chiesa Matrice', icon: '⛪' },
     { name: 'Castello Angioino', icon: '🏰' },
     { name: 'Piazza XX Settembre', icon: '⛲' },

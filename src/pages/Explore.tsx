@@ -373,11 +373,11 @@ const NotesDialog: React.FC = () => {
   );
 };
 
-const WeatherWidget: React.FC = () => {
+const WeatherWidget: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   return (
     <Button
       variant="ghost"
-      onClick={() => setShowWeather(true)}
+      onClick={onOpen}
       className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
     >
       <Cloud size={24} className="text-[#60A5FA] mb-1" />
@@ -822,8 +822,8 @@ if (showMap) {
       <CurrencyConverter />
     </div>
     <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16">
-      <WeatherWidget />
-    </div>
+  <WeatherWidget onOpen={() => setShowWeather(true)} />
+</div>
   </div>
 </section>
       </div>

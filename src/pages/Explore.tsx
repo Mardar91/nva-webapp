@@ -524,19 +524,62 @@ const Explore: React.FC = () => {
                 'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
                 'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
             };
-            $('.evento-featured').each((_, element) => {
-                const titleElement = $(element).find('.titolo.blocco-locali h2 a');
-                const title = titleElement.text().trim();
-                const link = titleElement.attr('href');
-                const dateText = $(element).find('.testa').text().trim();
-                let location = $(element).find('.evento-data').text().trim();
-                 const description = $(element).find('.evento-corpo').text().trim();
+$('.evento-featured').each((_, element) => {
+    const titleElement = $(element).find('.titolo.blocco-locali h2 a');
+    const title = titleElement.text().trim();
+    const link = titleElement.attr('href');
+    const dateText = $(element).find('.testa').text().trim();
+    const locationElement = $(element).find('.evento-data').text().trim();
+    const description = $(element).find('.evento-corpo').text().trim();
 
+    // Lista delle città nella provincia di Bari e dintorni
+    const knownCities = [
+        'Bari',
+        'Mola di Bari',
+        'Polignano a Mare',
+        'Monopoli',
+        'Gioia del Colle',
+        'Conversano',
+        'Alberobello',
+        'Castellana Grotte',
+        'Putignano',
+        'Rutigliano',
+        'Acquaviva delle Fonti',
+        'Casamassima',
+        'Sammichele di Bari',
+        'Turi',
+        'Noicattaro',
+        'Triggiano',
+        'Capurso',
+        'Valenzano',
+        'Adelfia',
+        'Bitritto',
+        'Modugno',
+        'Bitonto',
+        'Palo del Colle',
+        'Bitetto',
+        'Grumo Appula',
+        'Sannicandro di Bari',
+        'Giovinazzo',
+        'Terlizzi',
+        'Ruvo di Puglia',
+        'Corato',
+        'Altamura',
+        'Gravina in Puglia',
+        'Santeramo in Colle',
+        'Locorotondo',
+        'Noci',
+        'Fasano'
+    ];
 
-                 // Extract city from location string
-                  const locationParts = location.split(' ');
-                    const extractedCity = locationParts.pop() || '';
-                    location = extractedCity;
+    // Trova la città nel testo della location
+    let location = 'Sconosciuta';
+    for (const city of knownCities) {
+        if (locationElement.includes(city)) {
+            location = city;
+            break;
+        }
+    }
 
                 let startDate: Date | undefined;
 

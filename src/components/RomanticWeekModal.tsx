@@ -14,16 +14,18 @@ interface RomanticWeekModalProps {
 
 const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }) => {
   const [step, setStep] = useState<1 | 2>(1);
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     name: '',
     surname: '',
     email: '',
     phone: '',
     checkIn: null as Date | null,
     message: ''
-  });
+  };
+  const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const calculateCheckout = (checkIn: Date) => {
     const checkout = new Date(checkIn);
@@ -59,6 +61,13 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
     }
   };
 
+  const resetForm = () => {
+    setFormData(initialFormData);
+    setStep(1);
+    setError('');
+    setIsSubmitting(false);
+  };
+
   const handleSubmit = async () => {
     setError('');
     setIsSubmitting(true);
@@ -86,7 +95,15 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
         throw new Error('Failed to send request');
       }
 
-      onClose();
+      setShowSuccessMessage(true);
+      
+      // Nascondi il messaggio di successo dopo 3 secondi e resetta/chiudi il form
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+        resetForm();
+        onClose();
+      }, 3000);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -104,6 +121,16 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </button>
+
+        {showSuccessMessage && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/95 dark:bg-gray-900/95 z-50">
+            <div className="text-center p-6 rounded-lg">
+              <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                Your request has been sent successfully. We will respond as soon as possible.
+              </p>
+            </div>
+          </div>
+        )}
 
         {step === 1 ? (
           <>

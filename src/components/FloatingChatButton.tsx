@@ -14,26 +14,27 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   const [waveAnimation, setWaveAnimation] = useState(0);
   const [isIOS, setIsIOS] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
+  const promptTimerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(iOS);
     
-    // Mostra il prompt dopo un breve ritardo
-    const promptTimer = setTimeout(() => {
+    // Mostra il prompt dopo 1 secondo
+    const showTimer = setTimeout(() => {
       setShowPrompt(true);
+      
+      // Nascondi il prompt automaticamente dopo 4 secondi
+      promptTimerRef.current = setTimeout(() => {
+        setShowPrompt(false);
+      }, 4000);
     }, 1000);
 
-    // Nascondi il prompt automaticamente dopo 5 secondi
-    const hideTimer = setTimeout(() => {
-      if (showPrompt) {
-        setShowPrompt(false);
-      }
-    }, 6000);
-
     return () => {
-      clearTimeout(promptTimer);
-      clearTimeout(hideTimer);
+      clearTimeout(showTimer);
+      if (promptTimerRef.current) {
+        clearTimeout(promptTimerRef.current);
+      }
     };
   }, []);
 
@@ -88,11 +89,15 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
             onClick={(e) => {
               e.stopPropagation();
               setShowPrompt(false);
+              // Pulisci il timer quando chiudiamo manualmente
+              if (promptTimerRef.current) {
+                clearTimeout(promptTimerRef.current);
+              }
             }}
           >
             ×
           </button>
-          Hi, I'm here to help. Ask me anything!
+          Hi, how can I help?
         </div>
       )}
       <button 

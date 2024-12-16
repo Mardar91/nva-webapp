@@ -460,16 +460,54 @@ const CurrencyConverter: React.FC = () => {
 };
 
 
-const WeatherWidget: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
+const WeatherWidget: React.FC = () => {
+  const widgetRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const scriptId = 'tomorrow-sdk';
+      if (document.getElementById(scriptId)) {
+          if (window.__TOMORROW__) {
+             window.__TOMORROW__.renderWidget();
+          }
+        return;
+    }
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = "https://www.tomorrow.io/v1/widget/sdk/sdk.bundle.min.js";
+    script.async = true;
+    
+    document.body.appendChild(script);
+
+    return () => {
+        document.body.removeChild(script);
+    };
+  }, []);
+
+
   return (
-    <Button
-      variant="ghost"
-      onClick={onOpen}
-      className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
-    >
-      <Cloud size={24} className="text-[#60A5FA] mb-1" />
-      <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
-    </Button>
+      <div 
+        ref={widgetRef}
+        className="tomorrow"
+        data-location-id="140209,058790,140296,137215,140213,135365"
+        data-language="EN"
+        data-unit-system="METRIC"
+        data-skin="light"
+        data-widget-type="aqi6"
+        style={{ paddingBottom: '22px', position: 'relative', minWidth: '100%', minHeight: '150px'}} // Imposta la larghezza minima
+      >
+        <a
+            href="https://www.tomorrow.io/weather-api/"
+            rel="nofollow noopener noreferrer"
+            target="_blank"
+            style={{ position: 'absolute', bottom: '0', transform: 'translateX(-50%)', left: '50%' }}
+        >
+            <img
+                alt="Powered by the Tomorrow.io Weather API"
+                src="https://weather-website-client.tomorrow.io/img/powered-by.svg"
+                width="250"
+                height="18"
+            />
+        </a>
+    </div>
   );
 };
 
@@ -478,7 +516,6 @@ const Explore: React.FC = () => {
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);
   const [showMap, setShowMap] = useState(false);
-    const [showWeather, setShowWeather] = useState(false); // Aggiungi questa riga
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -668,49 +705,6 @@ if (showMap) {
   );
 }
 
-  if (showWeather) {
-      return (
-    <div className="fixed inset-0 bg-white">
-       <div style={{ width: '100%', height: 'calc(100vh - 88px)', overflowY: 'auto' }}>
-           <div style={{ padding: '10px'}}>
-        <div className="tomorrow"
-           data-location-id="140209,058790,140296,137215,140213,135365"
-           data-language="EN"
-           data-unit-system="METRIC"
-           data-skin="light"
-           data-widget-type="aqi6"
-           style={{ paddingBottom: '22px', position: 'relative' }}
-        >
-          <a
-            href="https://www.tomorrow.io/weather-api/"
-            rel="nofollow noopener noreferrer"
-            target="_blank"
-            style={{ position: 'absolute', bottom: '0', transform: 'translateX(-50%)', left: '50%' }}
-          >
-            <img
-              alt="Powered by the Tomorrow.io Weather API"
-              src="https://weather-website-client.tomorrow.io/img/powered-by.svg"
-              width="250"
-              height="18"
-            />
-          </a>
-        </div>
-            </div>
-          </div>
-      <div className="fixed bottom-24 right-4 z-[9999]">
-        <button
-          onClick={() => setShowWeather(false)}
-          className="p-3 bg-white shadow-lg rounded-full hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
-        >
-          <ArrowRight 
-            className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
-          />
-        </button>
-      </div>
-    </div>
-  );
-}
-
   return (
     <div 
       className="giftCardSection overflow-y-auto pb-24" 
@@ -819,7 +813,8 @@ if (showMap) {
 
 <section className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
   <motion.h2
-    initial={{ opacity: 0, x: -20 }}    animate={{ opacity: 1, x: 0 }}
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
     transition={{ duration: 0.5, delay: 0.2 }}
     className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6 text-center"
   >
@@ -841,7 +836,7 @@ if (showMap) {
       <CurrencyConverter />
     </div>
     <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16">
-    <WeatherWidget onOpen={() => setShowWeather(true)} />
+        <WeatherWidget />
 </div>
   </div>
 </section>

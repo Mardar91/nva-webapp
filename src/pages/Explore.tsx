@@ -461,56 +461,54 @@ const CurrencyConverter: React.FC = () => {
 
 
 const WeatherWidget: React.FC = () => {
-  const widgetRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const scriptId = 'tomorrow-sdk';
-      if (document.getElementById(scriptId)) {
-          if (window.__TOMORROW__) {
-             window.__TOMORROW__.renderWidget();
-          }
-        return;
-    }
-    const script = document.createElement('script');
-    script.id = scriptId;
-    script.src = "https://www.tomorrow.io/v1/widget/sdk/sdk.bundle.min.js";
-    script.async = true;
-    
-    document.body.appendChild(script);
+    const widgetRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const scriptId = 'tomorrow-sdk';
+        if (document.getElementById(scriptId)) {
+            if ((window as any).__TOMORROW__ && typeof (window as any).__TOMORROW__.renderWidget === 'function') {
+                (window as any).__TOMORROW__.renderWidget();
+            }
+            return;
+        }
 
-    return () => {
-        document.body.removeChild(script);
-    };
-  }, []);
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = "https://www.tomorrow.io/v1/widget/sdk/sdk.bundle.min.js";
+        script.async = true;
+        document.body.appendChild(script);
 
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
 
-  return (
-      <div 
-        ref={widgetRef}
-        className="tomorrow"
-        data-location-id="140209,058790,140296,137215,140213,135365"
-        data-language="EN"
-        data-unit-system="METRIC"
-        data-skin="light"
-        data-widget-type="aqi6"
-        style={{ paddingBottom: '22px', position: 'relative', minWidth: '100%', minHeight: '150px'}} // Imposta la larghezza minima
-      >
-        <a
-            href="https://www.tomorrow.io/weather-api/"
-            rel="nofollow noopener noreferrer"
-            target="_blank"
-            style={{ position: 'absolute', bottom: '0', transform: 'translateX(-50%)', left: '50%' }}
+    return (
+        <div
+            ref={widgetRef}
+            className="tomorrow"
+            data-location-id="140209,058790,140296,137215,140213,135365"
+            data-language="EN"
+            data-unit-system="METRIC"
+            data-skin="light"
+            data-widget-type="aqi6"
+            style={{ paddingBottom: '22px', position: 'relative', minWidth: '100%', minHeight: '150px' }}
         >
-            <img
-                alt="Powered by the Tomorrow.io Weather API"
-                src="https://weather-website-client.tomorrow.io/img/powered-by.svg"
-                width="250"
-                height="18"
-            />
-        </a>
-    </div>
-  );
+            <a
+                href="https://www.tomorrow.io/weather-api/"
+                rel="nofollow noopener noreferrer"
+                target="_blank"
+                style={{ position: 'absolute', bottom: '0', transform: 'translateX(-50%)', left: '50%' }}
+            >
+                <img
+                    alt="Powered by the Tomorrow.io Weather API"
+                    src="https://weather-website-client.tomorrow.io/img/powered-by.svg"
+                    width="250"
+                    height="18"
+                />
+            </a>
+        </div>
+    );
 };
-
 
 const Explore: React.FC = () => {
   const navigate = useNavigate();
@@ -729,8 +727,7 @@ if (showMap) {
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(255, 255, 255, 0.3),
-            transparent
+            rgba(255, 255, 255, 0.3            transparent
           );
           animation: shimmer 3s infinite;
         }

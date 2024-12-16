@@ -29,7 +29,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import * as cheerio from 'cheerio';
-import WeatherWidget from '../components/WeatherWidget';
+import WeatherWidgetFullscreen from '../components/WeatherWidgetFullscreen';
 
 // Interfaces
 interface Note {
@@ -670,24 +670,24 @@ if (showMap) {
 }
 
 if (showWeather) {
-    return (
-      <div className="fixed inset-0 bg-white dark:bg-gray-900">
-        <div className="h-[calc(100vh-88px)] overflow-y-auto">
-          <WeatherWidget />
-        </div>
-        <div className="fixed bottom-24 right-4 z-[9999]">
-          <button
-            onClick={() => setShowWeather(false)}
-            className="p-3 bg-white dark:bg-gray-800 shadow-lg rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform hover:scale-105"
-          >
-            <ArrowRight 
-              className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
-            />
-          </button>
-        </div>
+  return (
+    <div className="fixed inset-0 bg-white dark:bg-gray-900">
+      <div className="h-[calc(100vh-88px)] overflow-y-auto">
+        <WeatherWidgetFullscreen />
       </div>
-    );
-  }
+      <div className="fixed bottom-24 right-4 z-[9999]">
+        <button
+          onClick={() => setShowWeather(false)}
+          className="p-3 bg-white dark:bg-gray-800 shadow-lg rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform hover:scale-105"
+        >
+          <ArrowRight 
+            className="h-6 w-6 text-[#1e3a8a] dark:text-[#60A5FA] rotate-180"
+          />
+        </button>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div 

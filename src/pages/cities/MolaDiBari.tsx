@@ -4,9 +4,7 @@ import {
   Calendar,
   MapPin,
   ArrowLeft,
-  ArrowRight,
-    ChevronLeft,
-    ChevronRight
+  ArrowRight
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -20,7 +18,7 @@ import {
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
-import { useTheme } from "../../components/theme-provider";
+import { useSwipeable } from 'react-swipeable';
 
 // Next City Components
 interface NextCityToastProps {
@@ -201,49 +199,68 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   );
 };
 
-const AttractionButton: React.FC<{ attraction: Attraction, index:number, attractions: Attraction[] }> = ({ attraction, index, attractions }) => {
-    const { theme } = useTheme();
-    const [isTutorialVisible, setIsTutorialVisible] = useState(true);
+const AttractionButton: React.FC<{ attraction: Attraction, index: number, attractions: Attraction[] }> = ({ attraction, index, attractions }) => {
+    const [open, setOpen] = useState(false);
     const controls = useAnimation();
-    const dialogRef = useRef<HTMLDivElement>(null)
+    const tutorialTimeout = useRef<number | null>(null);
 
-    useEffect(() => {
-    if(isTutorialVisible){
-        const timer = setTimeout(() => {
-            setIsTutorialVisible(false);
+
+   const showTutorial = useCallback(async () => {
+        await controls.start({ opacity: 1, x: 0 });
+
+         tutorialTimeout.current = window.setTimeout(async () => {
+           await controls.start({ opacity: 0, x: -20 });
         }, 2000);
-            return () => clearTimeout(timer);
-      }
-   }, [isTutorialVisible])
 
-    const handleSwipe = async (direction: 'left' | 'right') => {
-        const nextIndex = direction === 'left' ? index - 1 : index + 1;
-        if (nextIndex >= 0 && nextIndex < attractions.length) {
-          await controls.start({ x: direction === 'left' ? 100 : -100, opacity: 0, transition: { duration: 0.3 }});
-          controls.set({x: direction === 'left' ? -100 : 100, opacity:0})
-           await controls.start({ x: 0, opacity:1, transition: { duration: 0.3 }})
+    }, [controls]);
+    
+      const hideTutorial = useCallback(async () => {
+         if(tutorialTimeout.current) clearTimeout(tutorialTimeout.current);
+          await controls.start({ opacity: 0, x: -20 });
+      }, [controls])
 
-           if(dialogRef.current){
-             const dialog = dialogRef.current.closest('[data-radix-dialog-content]');
-             if(dialog){
-                   const trigger = document.querySelector(`[aria-controls="${dialog.id}"]`) as HTMLElement
-                   trigger?.focus();
-               }
+    const handlers = useSwipeable({
+        onSwipedLeft: () => {
+            const nextIndex = (index + 1) % attractions.length;
+            setOpen(false);
+             setTimeout(() => {
+               const nextButton = document.getElementById(`attraction-button-${nextIndex}`);
+                    nextButton?.click();
+            }, 100)
 
-             }
-                
-           const trigger = document.querySelector(`[aria-label="${attractions[nextIndex].name}"]`) as HTMLElement
-           trigger?.click()
-          
+         
+        },
+        onSwipedRight: () => {
+           const prevIndex = (index - 1 + attractions.length) % attractions.length;
+             setOpen(false);
+              setTimeout(() => {
+               const prevButton = document.getElementById(`attraction-button-${prevIndex}`);
+                    prevButton?.click();
+            }, 100)
+        },
+        preventDefaultTouchmoveEvent: true,
+        trackMouse: true
+    });
+
+
+   useEffect(() => {
+        if (open) {
+              showTutorial();
+        }else{
+            hideTutorial()
         }
 
-      };
-   
+         return () => {
+           if(tutorialTimeout.current) clearTimeout(tutorialTimeout.current)
+         }
 
-    return (
-    <Dialog>
+    }, [open, showTutorial, hideTutorial]);
+
+
+  return (
+      <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow" aria-label={attraction.name}>
+          <div id={`attraction-button-${index}`} className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
           <div className="h-full flex flex-col items-center justify-center gap-2">
             <span className="text-3xl">{attraction.icon}</span>
             <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
@@ -252,48 +269,18 @@ const AttractionButton: React.FC<{ attraction: Attraction, index:number, attract
           </div>
         </div>
       </DialogTrigger>
-        <DialogContent ref={dialogRef}
-         className="max-h-[80vh] overflow-y-auto touch-pan-x"
-         onPointerDown={(e) => {
-           let startX = e.clientX;
-           const handleMove = (e: PointerEvent) => {
-                const diffX = e.clientX - startX;
-             if (Math.abs(diffX) > 50) {
-                   handleSwipe(diffX > 0 ? 'right' : 'left');
-                }
-               };
-
-           const handleUp = () => {
-                dialogRef.current?.removeEventListener('pointermove', handleMove);
-               dialogRef.current?.removeEventListener('pointerup', handleUp)
-            }
-
-           dialogRef.current?.addEventListener('pointermove', handleMove);
-            dialogRef.current?.addEventListener('pointerup', handleUp)
-
-         }}
-          >
-        <motion.div
-         animate={controls}
-        >
+          <DialogContent  {...handlers} className="max-h-[80vh] overflow-y-auto">
+             <motion.div initial={{ opacity: 0, x: -20 }} animate={controls} className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-gray-200/80 dark:bg-gray-700/80 px-2 py-1 rounded-full">
+                <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }} >
+                     ←
+                </motion.div>
+                 <motion.div animate={{ x: [0, -5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                     →
+                 </motion.div>
+            </motion.div>
         <DialogHeader>
           <DialogTitle>{attraction.name}</DialogTitle>
-            {isTutorialVisible && (
-                <motion.div
-                initial={{opacity: 0}}
-                 animate={{opacity: 1, transition: {duration: 0.3} }}
-                  exit={{opacity: 0, transition: {duration: 0.3} }}
-                    className="absolute top-0 right-0 left-0 bottom-0  flex items-center justify-center">
-                       <motion.div
-                        initial={{ scale: 0.5 }}
-                        animate={{ scale: 1 }}
-                           className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-4 rounded-lg flex items-center gap-2">
-                           <ChevronLeft className="text-2xl text-gray-600 dark:text-gray-400 animate-swipeLeft"/>
-                             <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Swipe</span>
-                           <ChevronRight className="text-2xl text-gray-600 dark:text-gray-400 animate-swipeRight"/>
-                       </motion.div>
-                </motion.div>
-            )}
+           
           {attraction.imageUrl && (
             <img
               src={attraction.imageUrl}
@@ -306,7 +293,7 @@ const AttractionButton: React.FC<{ attraction: Attraction, index:number, attract
           </DialogDescription>
              {attraction.mapUrl && (
                 <div className="mt-4">
-                     <Button asChild className={theme === 'light' ? "text-[#0d9488] hover:bg-[#0d9488]/10" : undefined}>
+                     <Button asChild className="bg-[#0d9488] hover:bg-[#0d9488]/80 text-white">
                         <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
                             View on Map
                         </a>
@@ -332,7 +319,6 @@ const AttractionButton: React.FC<{ attraction: Attraction, index:number, attract
                 </div>
             )}
         </DialogHeader>
-        </motion.div>
       </DialogContent>
     </Dialog>
   );
@@ -595,16 +581,10 @@ const fetchEvents = useCallback(async () => {
           );
           animation: shimmer 3s infinite;
         }
-           @keyframes swipeLeft {
-                0% { transform: translateX(0); }
-                50% { transform: translateX(-5px); }
-                100% { transform: translateX(0); }
-            }
-           @keyframes swipeRight {
-                0% { transform: translateX(0); }
-                 50% { transform: translateX(5px); }
-                100% { transform: translateX(0); }
-            }
+        @keyframes shimmer {
+          0% { left: -100% }
+          100% { left: 200% }
+        }
       `}</style>
 
       {/* Back Button */}
@@ -653,7 +633,7 @@ const fetchEvents = useCallback(async () => {
 {/* Upcoming Events Section */}
 <section className="mb-12">
     <motion.h2
-        initial={{ opacity: 0, x: -20 }}      
+        initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
         className="text-2xl font-bold text-teal-700 dark:text-teal-400 mb-6"
@@ -672,7 +652,7 @@ const fetchEvents = useCallback(async () => {
     </div>
 </section>
 
-        {/* Attractions Section */}
+              {/* Attractions Section */}
         <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
@@ -684,7 +664,7 @@ const fetchEvents = useCallback(async () => {
           </motion.h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {attractions.map((attraction, index) => (
-              <AttractionButton key={attraction.name} attraction={attraction} index={index} attractions={attractions}/>
+              <AttractionButton key={attraction.name} attraction={attraction} index={index} attractions={attractions} />
             ))}
           </div>
         </section>

@@ -217,28 +217,25 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   );
 };
 
-const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
-    <Dialog>
-      <DialogTrigger>
-        <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
-          <div className="h-full flex flex-col items-center justify-center gap-2">
-            <span className="text-3xl">{attraction.icon}</span>
-            <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
-              {attraction.name}
-            </span>
-          </div>
+const AttractionButton: React.FC<{ 
+  attraction: Attraction;
+  attractions: Attraction[];
+  onOpen: (index: number) => void;
+  index: number;
+}> = ({ attraction, attractions, onOpen, index }) => (
+  <Dialog>
+    <DialogTrigger>
+      <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
+        <div className="h-full flex flex-col items-center justify-center gap-2">
+          <span className="text-3xl">{attraction.icon}</span>
+          <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
+            {attraction.name}
+          </span>
         </div>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{attraction.name}</DialogTitle>
-          <DialogDescription>
-            {attraction.description || "Coming soon..."}
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
-  );
+      </div>
+    </DialogTrigger>
+  </Dialog>
+);
 
 const AttractionModal: React.FC<{
   attraction: Attraction;

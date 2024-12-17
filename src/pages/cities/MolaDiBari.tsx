@@ -409,19 +409,19 @@ const MolaDiBari: React.FC = () => {
     }
   ];
 
-  const handlePreviousAttraction = () => {
-    if (selectedAttractionIndex === null) return;
-    setSelectedAttractionIndex((prev) => 
-      prev === 0 ? attractions.length - 1 : prev - 1
-    );
-  };
+const handlePreviousAttraction = () => {
+  if (selectedAttractionIndex === null) return;
+  setSelectedAttractionIndex((prev) => 
+    prev !== null ? (prev === 0 ? attractions.length - 1 : prev - 1) : 0
+  );
+};
 
-  const handleNextAttraction = () => {
-    if (selectedAttractionIndex === null) return;
-    setSelectedAttractionIndex((prev) => 
-      prev === attractions.length - 1 ? 0 : prev + 1
-    );
-  };
+const handleNextAttraction = () => {
+  if (selectedAttractionIndex === null) return;
+  setSelectedAttractionIndex((prev) => 
+    prev !== null ? (prev === attractions.length - 1 ? 0 : prev + 1) : 0
+  );
+};
 
   const fetchEvents = useCallback(async () => {
     setLoading(true);

@@ -653,7 +653,7 @@ const fetchEvents = useCallback(async () => {
 {/* Upcoming Events Section */}
 <section className="mb-12">
     <motion.h2
-        initial={{ opacity: 0, x:      initial={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0, x: -20 }}      
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
         className="text-2xl font-bold text-teal-700 dark:text-teal-400 mb-6"

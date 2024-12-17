@@ -21,32 +21,38 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
 
-Copy// Tutorial component for swipe gestures
-const SwipeTutorial: React.FC = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className="absolute inset-0 bg-black/50 rounded-md flex items-center justify-center"
-    style={{ margin: '-24px' }} // Per compensare il padding del DialogContent
-  >
+// Tutorial component for swipe gestures
+const SwipeTutorial: React.FC = () => {
+  return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: [0, 1, 1, 0] }}
-      transition={{ 
-        duration: 2,
-        times: [0, 0.2, 0.8, 1],
-      }}
-      className="text-white text-center px-4"
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 bg-black/50 rounded-md flex items-center justify-center"
+      style={{ margin: '-24px' }}
     >
-      <div className="flex items-center justify-center gap-4">
-        <ChevronLeft size={24} />
-        <span className="text-lg font-medium">Swipe to navigate</span>
-        <ChevronRight size={24} />
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-white text-center px-4"
+      >
+        <motion.div
+          animate={{ opacity: [0, 1, 1, 0] }}
+          transition={{ 
+            duration: 2,
+            times: [0, 0.2, 0.8, 1],
+          }}
+        >
+          <div className="flex items-center justify-center gap-4">
+            <ChevronLeft size={24} />
+            <span className="text-lg font-medium">Swipe to navigate</span>
+            <ChevronRight size={24} />
+          </div>
+        </motion.div>
+      </motion.div>
     </motion.div>
-  </motion.div>
-);
+  );
+};
 
 // Next City Components
 interface NextCityToastProps {

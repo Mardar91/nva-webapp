@@ -238,7 +238,6 @@ const AttractionButton: React.FC<{ attraction: Attraction, index: number, attrac
                     prevButton?.click();
             }, 100)
         },
-        preventDefaultTouchmoveEvent: true,
         trackMouse: true
     });
 
@@ -652,7 +651,7 @@ const fetchEvents = useCallback(async () => {
     </div>
 </section>
 
-              {/* Attractions Section */}
+        {/* Attractions Section */}
         <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}

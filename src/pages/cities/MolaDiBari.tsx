@@ -694,3 +694,4 @@ const fetchEvents = useCallback(async () => {
 };
 
 export default MolaDiBari;
+

@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import {
   Calendar,
   MapPin,
   ArrowLeft,
-  ArrowRight
+  ArrowRight,
+    ChevronLeft,
+    ChevronRight
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -18,6 +20,7 @@ import {
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
+import { useTheme } from "../../components/theme-provider";
 
 // Next City Components
 interface NextCityToastProps {
@@ -198,10 +201,49 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   );
 };
 
-const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
+const AttractionButton: React.FC<{ attraction: Attraction, index:number, attractions: Attraction[] }> = ({ attraction, index, attractions }) => {
+    const { theme } = useTheme();
+    const [isTutorialVisible, setIsTutorialVisible] = useState(true);
+    const controls = useAnimation();
+    const dialogRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+    if(isTutorialVisible){
+        const timer = setTimeout(() => {
+            setIsTutorialVisible(false);
+        }, 2000);
+            return () => clearTimeout(timer);
+      }
+   }, [isTutorialVisible])
+
+    const handleSwipe = async (direction: 'left' | 'right') => {
+        const nextIndex = direction === 'left' ? index - 1 : index + 1;
+        if (nextIndex >= 0 && nextIndex < attractions.length) {
+          await controls.start({ x: direction === 'left' ? 100 : -100, opacity: 0, transition: { duration: 0.3 }});
+          controls.set({x: direction === 'left' ? -100 : 100, opacity:0})
+           await controls.start({ x: 0, opacity:1, transition: { duration: 0.3 }})
+
+           if(dialogRef.current){
+             const dialog = dialogRef.current.closest('[data-radix-dialog-content]');
+             if(dialog){
+                   const trigger = document.querySelector(`[aria-controls="${dialog.id}"]`) as HTMLElement
+                   trigger?.focus();
+               }
+
+             }
+                
+           const trigger = document.querySelector(`[aria-label="${attractions[nextIndex].name}"]`) as HTMLElement
+           trigger?.click()
+          
+        }
+
+      };
+   
+
+    return (
     <Dialog>
-      <DialogTrigger>
-        <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
+      <DialogTrigger asChild>
+        <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow" aria-label={attraction.name}>
           <div className="h-full flex flex-col items-center justify-center gap-2">
             <span className="text-3xl">{attraction.icon}</span>
             <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
@@ -210,10 +252,48 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="max-h-[80vh] overflow-y-auto">
+        <DialogContent ref={dialogRef}
+         className="max-h-[80vh] overflow-y-auto touch-pan-x"
+         onPointerDown={(e) => {
+           let startX = e.clientX;
+           const handleMove = (e: PointerEvent) => {
+                const diffX = e.clientX - startX;
+             if (Math.abs(diffX) > 50) {
+                   handleSwipe(diffX > 0 ? 'right' : 'left');
+                }
+               };
+
+           const handleUp = () => {
+                dialogRef.current?.removeEventListener('pointermove', handleMove);
+               dialogRef.current?.removeEventListener('pointerup', handleUp)
+            }
+
+           dialogRef.current?.addEventListener('pointermove', handleMove);
+            dialogRef.current?.addEventListener('pointerup', handleUp)
+
+         }}
+          >
+        <motion.div
+         animate={controls}
+        >
         <DialogHeader>
           <DialogTitle>{attraction.name}</DialogTitle>
-           
+            {isTutorialVisible && (
+                <motion.div
+                initial={{opacity: 0}}
+                 animate={{opacity: 1, transition: {duration: 0.3} }}
+                  exit={{opacity: 0, transition: {duration: 0.3} }}
+                    className="absolute top-0 right-0 left-0 bottom-0  flex items-center justify-center">
+                       <motion.div
+                        initial={{ scale: 0.5 }}
+                        animate={{ scale: 1 }}
+                           className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-4 rounded-lg flex items-center gap-2">
+                           <ChevronLeft className="text-2xl text-gray-600 dark:text-gray-400 animate-swipeLeft"/>
+                             <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Swipe</span>
+                           <ChevronRight className="text-2xl text-gray-600 dark:text-gray-400 animate-swipeRight"/>
+                       </motion.div>
+                </motion.div>
+            )}
           {attraction.imageUrl && (
             <img
               src={attraction.imageUrl}
@@ -226,7 +306,7 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
           </DialogDescription>
              {attraction.mapUrl && (
                 <div className="mt-4">
-                     <Button asChild>
+                     <Button asChild className={theme === 'light' ? "text-[#0d9488] hover:bg-[#0d9488]/10" : undefined}>
                         <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
                             View on Map
                         </a>
@@ -252,9 +332,11 @@ const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) 
                 </div>
             )}
         </DialogHeader>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );
+};
 
 const MolaDiBari: React.FC = () => {
   const navigate = useNavigate();
@@ -513,10 +595,16 @@ const fetchEvents = useCallback(async () => {
           );
           animation: shimmer 3s infinite;
         }
-        @keyframes shimmer {
-          0% { left: -100% }
-          100% { left: 200% }
-        }
+           @keyframes swipeLeft {
+                0% { transform: translateX(0); }
+                50% { transform: translateX(-5px); }
+                100% { transform: translateX(0); }
+            }
+           @keyframes swipeRight {
+                0% { transform: translateX(0); }
+                 50% { transform: translateX(5px); }
+                100% { transform: translateX(0); }
+            }
       `}</style>
 
       {/* Back Button */}
@@ -565,7 +653,7 @@ const fetchEvents = useCallback(async () => {
 {/* Upcoming Events Section */}
 <section className="mb-12">
     <motion.h2
-        initial={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0, x:      initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
         className="text-2xl font-bold text-teal-700 dark:text-teal-400 mb-6"
@@ -595,8 +683,8 @@ const fetchEvents = useCallback(async () => {
             Explore the City
           </motion.h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {attractions.map((attraction) => (
-              <AttractionButton key={attraction.name} attraction={attraction} />
+            {attractions.map((attraction, index) => (
+              <AttractionButton key={attraction.name} attraction={attraction} index={index} attractions={attractions}/>
             ))}
           </div>
         </section>

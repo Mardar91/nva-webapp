@@ -222,19 +222,18 @@ const AttractionButton: React.FC<{
   attractions: Attraction[];
   onOpen: (index: number) => void;
   index: number;
-}> = ({ attraction, attractions, onOpen, index }) => (
-  <Dialog>
-    <DialogTrigger>
-      <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
-        <div className="h-full flex flex-col items-center justify-center gap-2">
-          <span className="text-3xl">{attraction.icon}</span>
-          <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
-            {attraction.name}
-          </span>
-        </div>
-      </div>
-    </DialogTrigger>
-  </Dialog>
+}> = ({ attraction, index, onOpen }) => (
+  <div 
+    className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
+    onClick={() => onOpen(index)}
+  >
+    <div className="h-full flex flex-col items-center justify-center gap-2">
+      <span className="text-3xl">{attraction.icon}</span>
+      <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
+        {attraction.name}
+      </span>
+    </div>
+  </div>
 );
 
 const AttractionModal: React.FC<{

@@ -224,18 +224,21 @@ const AttractionButton: React.FC<{
   index: number;
 }> = ({ attraction, attractions, onOpen, index }) => (
   <Dialog>
-    <DialogTrigger asChild>
-      <div 
-        className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
-        onClick={() => onOpen(index)}
+    <DialogTrigger>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full aspect-square"
       >
-        <div className="h-full flex flex-col items-center justify-center gap-2">
-          <span className="text-3xl">{attraction.icon}</span>
-          <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
-            {attraction.name}
-          </span>
-        </div>
-      </div>
+        <button 
+          onClick={() => onOpen(index)}
+          className="w-full h-full bg-gray-50 dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+        >
+          <span className="text-[#60A5FA]">{attraction.icon}</span>
+          <span className="text-teal-700 dark:text-teal-400 font-medium text-sm">{attraction.name}</span>
+        </button>
+      </motion.div>
     </DialogTrigger>
   </Dialog>
 );

@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import {
   Calendar,
   MapPin,
   ArrowLeft,
-  ArrowRight
+  ArrowRight,
+    ChevronLeft,
+    ChevronRight
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -18,6 +20,39 @@ import {
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
+
+// Tutorial component for swipe gestures
+const SwipeTutorial: React.FC = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 bg-black/50 rounded-md flex items-center justify-center"
+        style={{ margin: '-24px' }}
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-white text-center px-4"
+      >
+        <motion.div
+          animate={{ opacity: [0, 1, 1, 0] }}
+          transition={{ 
+            duration: 2,
+            times: [0, 0.2, 0.8, 1],
+          }}
+        >
+          <div className="flex items-center justify-center gap-4">
+            <ChevronLeft size={24} />
+            <span className="text-lg font-medium">Swipe to navigate</span>
+            <ChevronRight size={24} />
+          </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 // Next City Components
 interface NextCityToastProps {
@@ -99,6 +134,10 @@ interface Attraction {
   name: string;
   icon: string;
   description?: string;
+  imageUrl?: string;
+  mapUrl?: string;
+  bookingNumber?: string;
+  eventsUrl?: string;
 }
 const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
     let color = "bg-green-500";
@@ -130,37 +169,23 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         if(!event.startDate) return null;
 
         const now = new Date();
-        now.setHours(0, 0, 0, 0);
-        const today = new Date(now);
+        const start = new Date(event.startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = event.endDate ? new Date(event.endDate) : new Date(start);
+        end.setHours(23, 59, 59, 999);
 
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrow = new Date();
+        tomorrow.setDate(now.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+    
+        const isToday = now >= start && now <= end;
+        const isTomorrow =
+          start.getDate() === tomorrow.getDate() &&
+          start.getMonth() === tomorrow.getMonth() &&
+          start.getFullYear() === tomorrow.getFullYear();
 
-        const eventStart = new Date(event.startDate);
-        eventStart.setHours(0, 0, 0, 0);
-
-        if (event.endDate) {
-            const eventEnd = new Date(event.endDate);
-            eventEnd.setHours(23, 59, 59, 999);
-
-            // Se oggi è tra la data di inizio e fine evento
-            if (now >= eventStart && now <= eventEnd) {
-                return 'today';
-            }
-            // Se l'evento inizia domani
-            if (eventStart.getTime() === tomorrow.getTime()) {
-                return 'tomorrow';
-            }
-        } else {
-            // Per eventi di un solo giorno
-            if (eventStart.getTime() === today.getTime()) {
-                return 'today';
-            }
-            if (eventStart.getTime() === tomorrow.getTime()) {
-                return 'tomorrow';
-            }
-        }
-
+        if (isToday) return 'today';
+        if (isTomorrow) return 'tomorrow';
         return null;
     };
 
@@ -204,28 +229,132 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     );
 };
 
-const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
-    <Dialog>
-        <DialogTrigger>
-            <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
-                <div className="h-full flex flex-col items-center justify-center gap-2">
-                    <span className="text-3xl">{attraction.icon}</span>
-                    <span className="text-center text-sm font-medium text-blue-700 dark:text-blue-400">
-                        {attraction.name}
-                    </span>
-                </div>
-            </div>
-        </DialogTrigger>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>{attraction.name}</DialogTitle>
-                <DialogDescription>
-                    {attraction.description || "Coming soon..."}
-                </DialogDescription>
-            </DialogHeader>
-        </DialogContent>
-    </Dialog>
+const AttractionButton: React.FC<{ 
+  attraction: Attraction;
+  attractions: Attraction[];
+  onOpen: (index: number) => void;
+  index: number;
+}> = ({ attraction, attractions, onOpen, index }) => (
+  <Dialog>
+    <DialogTrigger>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full aspect-square"
+      >
+        <button 
+          onClick={() => onOpen(index)}
+          className="w-full h-full bg-gray-50 dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+        >
+          <span className="text-[#60A5FA]">{attraction.icon}</span>
+          <span className="text-blue-700 dark:text-blue-400 font-medium text-sm">{attraction.name}</span>
+        </button>
+      </motion.div>
+    </DialogTrigger>
+  </Dialog>
 );
+
+const AttractionModal: React.FC<{
+  attraction: Attraction;
+  isOpen: boolean;
+  onClose: () => void;
+  onPrevious: () => void;
+  onNext: () => void;
+}> = ({ attraction, isOpen, onClose, onPrevious, onNext }) => {
+  const [showTutorial, setShowTutorial] = useState(true);
+    const [dragStart, setDragStart] = useState<number>(0);
+    const dragThreshold = 50;
+
+    useEffect(() => {
+        if (showTutorial) {
+          const timer = setTimeout(() => {
+            setShowTutorial(false);
+          }, 2000);
+          return () => clearTimeout(timer);
+        }
+      }, [showTutorial]);
+    
+      const handleDragStart = (event: MouseEvent | TouchEvent | PointerEvent) => {
+        if ('touches' in event) {
+          setDragStart(event.touches[0].clientX);
+        } else {
+          setDragStart(event.clientX);
+        }
+      };
+    
+      const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        const dragDistance = info.offset.x;
+        if (Math.abs(dragDistance) > dragThreshold) {
+          if (dragDistance > 0) {
+            onPrevious();
+          } else {
+            onNext();
+          }
+        }
+      };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
+          <div className="relative">
+              {showTutorial && <SwipeTutorial />}
+              <motion.div
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              >
+            <DialogHeader>
+              <DialogTitle>{attraction.name}</DialogTitle>
+              {attraction.imageUrl && (
+                <img
+                  src={attraction.imageUrl}
+                  alt={attraction.name}
+                  className="w-full h-auto rounded-md mb-4"
+                />
+              )}
+              <DialogDescription>
+                {attraction.description || "Coming soon..."}
+              </DialogDescription>
+              {attraction.mapUrl && (
+                <div className="mt-4">
+                  <Button 
+                    asChild
+                    className="bg-[#3662e1] hover:bg-[#3662e1]/90 text-white"
+                  >
+                    <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
+                      View on Map
+                    </a>
+                  </Button>
+                </div>
+              )}
+                {attraction.bookingNumber && (
+                  <div className="mt-2">
+                      <Button asChild variant="outline">
+                          <a href={`tel:${attraction.bookingNumber}`}>
+                            Call to Book: {attraction.bookingNumber}
+                          </a>
+                      </Button>
+                  </div>
+              )}
+                {attraction.eventsUrl && (
+                    <div className="mt-2">
+                        <Button asChild variant="secondary">
+                            <a href={attraction.eventsUrl} target="_blank" rel="noopener noreferrer">
+                                View Events
+                            </a>
+                        </Button>
+                    </div>
+                )}
+            </DialogHeader>
+          </motion.div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const PoliganoAMare: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -233,6 +362,81 @@ const PoliganoAMare: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+    const [selectedAttractionIndex, setSelectedAttractionIndex] = useState<number | null>(null);
+    const scrollToRef = useRef<HTMLDivElement>(null);
+
+  const attractions: Attraction[] = [
+      {
+          name: 'Centro Storico',
+          icon: '🏛️',
+          description: "The historic center of Polignano a Mare is a charming medieval area characterized by whitewashed houses perched on cliffs overlooking the Adriatic Sea. Visitors can enter through the Arco Marchesale, also known as Porta Grande, which once served as the fortified town’s main entrance. Within the old town, narrow streets lead to picturesque squares such as Piazza Vittorio Emanuele II, home to the historic Palazzo dell’Orologio. The Chiesa Matrice, dedicated to Santa Maria Assunta, is also located here. The historic center offers stunning views of the sea from its terraces and balconies, providing a unique blend of history and natural beauty. Exploring the historic center of Polignano a Mare allows visitors to immerse themselves in the town’s rich history and enjoy its breathtaking coastal scenery.",
+          imageUrl: 'https://static2-viaggi.corriereobjects.it/wp-content/uploads/2023/03/Poesie-sui-muri-Polignano-Dario-Raffaele.jpg.webp?v=1679989076',
+          mapUrl: 'https://maps.app.goo.gl/TgfLH9qZBXUZePGB8'
+      },
+    {
+      name: 'Lama Monachile',
+      icon: '🏖️',
+      description: "Lama Monachile, also known as Cala Porto, is a picturesque beach in Polignano a Mare, renowned for its stunning location between high cliffs and crystal-clear waters. The beach is situated within a natural inlet formed by an ancient riverbed, characteristic of Puglia’s karst landscape. Access to the beach is via the historic Roman bridge, which offers panoramic views of the cove and the surrounding cliffs. The pebble beach is a popular spot for both locals and tourists, providing a unique setting for swimming and sunbathing. The transparent waters and dramatic cliffs make it one of the most photographed locations along the Bari coast. Lama Monachile is not only a natural attraction but also a cultural landmark, hosting events such as the Red Bull Cliff Diving World Series, where divers plunge from the cliffs into the Adriatic Sea. Visitors to Polignano a Mare often consider Lama Monachile a must-see destination, offering a blend of natural beauty and historical significance that captures the essence of this coastal town.",
+        imageUrl: 'https://www.photohound.co/images/1031855m.jpg',
+      mapUrl: 'https://maps.app.goo.gl/5QJvHwJzqXJ4mhEC8'
+    },
+    {
+      name: 'Statua di Domenico Modugno',
+      icon: '🎭',
+      description: "The Statue of Domenico Modugno in Polignano a Mare honors the renowned Italian singer-songwriter, famous for “Nel blu dipinto di blu” (“Volare”). Born in Polignano a Mare in 1928, Modugno’s legacy is immortalized through this bronze statue, unveiled on May 31, 2009. Standing approximately 3 meters tall, the sculpture was crafted by Argentine artist Hermann Mejer. It depicts Modugno with outstretched arms, symbolizing an embrace of his hometown.",
+        imageUrl: 'https://www.adb.puglia.it/wp-content/uploads/2022/08/106180_statua_di_domenico_modugno_polignano_a_mare.jpeg',
+      mapUrl: 'https://maps.app.goo.gl/C2bCiC5T93B2rYra7'
+    },
+      {
+          name: 'Ponte Borbonico',
+          icon: '🌉',
+          description: "The Ponte Borbonico di Lama Monachile, also known as the Bourbon Bridge, is a historic landmark in Polignano a Mare, Italy. Constructed in the early 19th century during the reign of King Ferdinand II of Bourbon, the bridge was part of a new route connecting Bari to Lecce. Spanning a deep ravine, the bridge stands approximately 15 meters high and offers panoramic views of the Adriatic Sea and the town’s whitewashed buildings. Below the bridge lies Lama Monachile, one of Puglia’s most beautiful beaches, accessible via a staircase that leads down to the cove. Today, the Ponte Borbonico is a popular spot for visitors, especially at sunset, providing a picturesque setting for photographs and a glimpse into the region’s rich history.",
+          imageUrl: 'https://www.polignanoamare.eu/files/foto-due-ponti.webp',
+          mapUrl: 'https://maps.app.goo.gl/P77TokjpLxgxeGR49'
+      },
+    {
+      name: 'Cala Paura',
+      icon: '⛱️',
+      description: "Cala Paura is a charming pebble beach located in Polignano a Mare, Italy. Nestled between rocky cliffs, it offers clear, calm waters ideal for swimming and snorkeling. The beach is surrounded by picturesque white and beige sands, stretching approximately 150 meters. Visitors can enjoy amenities such as sun loungers and umbrellas, with lifeguards on duty during peak season. The area is also known for its submerged grottoes, providing opportunities for exploration. Cala Paura’s proximity to the town center makes it a convenient spot for both locals and tourists seeking relaxation by the sea. The beach’s natural beauty and tranquil atmosphere contribute to its popularity as a must-visit destination in Puglia.",
+        imageUrl: 'https://www.secretsand.com/wp-content/uploads/2020/05/cala-paura.jpg',
+      mapUrl: 'https://maps.app.goo.gl/vm2ZHjvkVnCgUoRw6'
+    },
+    {
+      name: 'Abbazia San Vito',
+      icon: '⛪',
+      description: "The Abbey of San Vito, located approximately two kilometers from Polignano a Mare, Italy, is a historic Benedictine monastery established in the 10th century. Situated along the Adriatic coast, the abbey is renowned for its picturesque setting adjacent to a small fishing village. Architecturally, the abbey showcases a blend of Baroque and Romanesque styles. The main façade features a portico leading to a 17th-century staircase and panoramic loggia, while the church itself, built on the remnants of an ancient Roman tower, presents a Romanesque design with three naves. The transept is crowned by a small circular dome, and the interior houses a triptych depicting Saints Vito, Modesto, and Crescenza. Although the abbey remains privately owned and is not regularly open to the public, visitors can admire its exterior and the surrounding landscape. The adjacent beach, Cala San Vito, is accessible via a walkway and offers a serene spot for relaxation. The Abbey of San Vito stands as a testament to the region’s rich history and architectural heritage, making it a noteworthy site for those exploring the Apulian coastline.",
+        imageUrl: 'https://www.associazionedongiacomotantardini.it/wp-content/uploads/2018/06/san-vito-polignano-1.jpg',
+      mapUrl: 'https://maps.app.goo.gl/DmpFqRAUxAGUY1XD6'
+    },
+    {
+        name: "Piazza dell'Orologio",
+        icon: '🕰️',
+        description: "Piazza dell’Orologio, officially known as Piazza Vittorio Emanuele II, is a central square in Polignano a Mare, Italy. Dominated by the historic Palazzo dell’Orologio, the square is a hub of local life, featuring various bars and artisan shops. Its strategic location makes it an ideal starting point for exploring the town’s picturesque alleys and experiencing its authentic atmosphere.",
+        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/27/12_Piazza_Vittorio_Emanuele_II%2C_o_Piazza_dell’Orologio_%28Polignano_a_Mare%29.jpg',
+        mapUrl: 'https://maps.app.goo.gl/Cpi7BtbnWktNW5eRA'
+    },
+      {
+          name: 'Chiesa Madre',
+          icon: '🏺',
+          description: "The Chiesa Matrice di Santa Maria Assunta, located in Piazza Vittorio Emanuele II in Polignano a Mare, Italy, is a historic church consecrated in 1295. It is believed to have been built on the remains of a pagan temple. The church features a blend of architectural styles, with the base of its bell tower dating back to the 1500s, completed in later periods. Inside, the church houses significant artworks, including a nativity scene by Stefano da Putignano. Serving as a central place of worship, the Chiesa Matrice di Santa Maria Assunta stands as a testament to Polignano a Mare’s rich religious and cultural heritage.",
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/3/39/Polignano_a_Mare_-_Chiesa_matrice_di_Santa_Maria_Assunta_-_2023-09-29_17-14-45_001.JPG',
+          mapUrl: 'https://maps.app.goo.gl/41Vgf8S7FvH4qeYn8'
+      }
+  ];
+
+    const handlePreviousAttraction = () => {
+        if (selectedAttractionIndex === null) return;
+        setSelectedAttractionIndex((prev) =>
+            prev !== null ? (prev === 0 ? attractions.length - 1 : prev - 1) : 0
+        );
+    };
+
+    const handleNextAttraction = () => {
+        if (selectedAttractionIndex === null) return;
+        setSelectedAttractionIndex((prev) =>
+            prev !== null ? (prev === attractions.length - 1 ? 0 : prev + 1) : 0
+        );
+    };
 
   const fetchEvents = useCallback(async () => {
     setLoading(true);
@@ -255,11 +459,11 @@ const PoliganoAMare: React.FC = () => {
       const $ = cheerio.load(html);
       
       // Mappa dei mesi italiani
-      const monthsIT: { [key: string]: number } = {
-        'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
-        'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
-        'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
-      };
+        const monthsIT: { [key: string]: number } = {
+            'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
+            'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,
+            'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
+        };
 
       const uniqueEvents = new Map();
 
@@ -275,43 +479,43 @@ const PoliganoAMare: React.FC = () => {
         let endDate: Date | undefined;
 
         // Gestione formato "dal 13 al 20 dicembre 2024"
-        const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
+          const rangeDateMatch = dateText.match(/dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(\w+)\s+(\d{4})/);
         // Gestione formato "Domenica 15 dicembre 2024"
-        const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+          const singleDateMatch = dateText.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
 
         if (rangeDateMatch) {
-          const startDay = parseInt(rangeDateMatch[1]);
-          const endDay = parseInt(rangeDateMatch[2]);
+            const startDay = parseInt(rangeDateMatch[1]);
+            const endDay = parseInt(rangeDateMatch[2]);
           const monthStr = rangeDateMatch[3].toLowerCase();
-          const year = parseInt(rangeDateMatch[4]);
-          
-          if (monthsIT.hasOwnProperty(monthStr)) {
-            startDate = new Date(year, monthsIT[monthStr], startDay);
-            endDate = new Date(year, monthsIT[monthStr], endDay);
-          }
+            const year = parseInt(rangeDateMatch[4]);
+
+            if (monthsIT.hasOwnProperty(monthStr)) {
+                startDate = new Date(year, monthsIT[monthStr], startDay);
+                endDate = new Date(year, monthsIT[monthStr], endDay);
+            }
         } else if (singleDateMatch) {
-          const day = parseInt(singleDateMatch[1]);
-          const monthStr = singleDateMatch[2].toLowerCase();
-          const year = parseInt(singleDateMatch[3]);
-          
-          if (monthsIT.hasOwnProperty(monthStr)) {
-            startDate = new Date(year, monthsIT[monthStr], day);
-          }
+            const day = parseInt(singleDateMatch[1]);
+            const monthStr = singleDateMatch[2].toLowerCase();
+            const year = parseInt(singleDateMatch[3]);
+
+            if (monthsIT.hasOwnProperty(monthStr)) {
+                startDate = new Date(year, monthsIT[monthStr], day);
+            }
         }
 
         if (title && startDate && !isNaN(startDate.getTime())) {
-          const eventKey = `${title}-${startDate.getTime()}`;
-          if (!uniqueEvents.has(eventKey)) {
-            uniqueEvents.set(eventKey, {
-              id: Date.now().toString() + Math.random().toString(),
-              title,
-              startDate,
-              endDate,
-              city: 'Polignano a Mare',
-              description,
-              link
-            });
-          }
+            const eventKey = `${title}-${startDate.getTime()}`;
+            if (!uniqueEvents.has(eventKey)) {
+                uniqueEvents.set(eventKey, {
+                    id: Date.now().toString() + Math.random().toString(),
+                    title,
+                    startDate,
+                    endDate,
+                    city: 'Polignano a Mare',
+                    description,
+                    link
+                });
+            }
         }
       });
 
@@ -320,13 +524,13 @@ const PoliganoAMare: React.FC = () => {
       extractedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
       // Filtra solo gli eventi futuri o in corso
-      const now = new Date();
-      now.setHours(0, 0, 0, 0);
-      
-      const futureEvents = extractedEvents.filter(event => {
-        const eventEndDate = event.endDate || event.startDate;
-        return eventEndDate >= now;
-      }).slice(0, 4);
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        const futureEvents = extractedEvents.filter(event => {
+            const eventEndDate = event.endDate || event.startDate;
+            return eventEndDate >= now;
+        }).slice(0, 4);
 
       setEvents(futureEvents);
     } catch (err) {
@@ -350,7 +554,7 @@ const PoliganoAMare: React.FC = () => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
       const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor.setAttribute('content', isDarkMode ? '#3662e1' : '#3662e1');
+        themeColor.setAttribute('content', isDarkMode ? '#3662e1' : '#3662e1');
     }
     
     return () => {
@@ -364,23 +568,9 @@ const PoliganoAMare: React.FC = () => {
   const handleBackClick = () => {
     navigate('/explore');
   };
-
-  const attractions: Attraction[] = [
-    { name: 'Centro Storico', icon: '🏛️' },
-    { name: 'Lama Monachile', icon: '🏖️' },
-    { name: 'Statua di Domenico Modugno', icon: '🎭' },
-    { name: 'Ponte Borbonico', icon: '🌉' },
-    { name: 'Cala Paura', icon: '⛱️' },
-    { name: 'Abbazia San Vito', icon: '⛪' },
-    { name: "Piazza dell'Orologio", icon: '🕰️' },
-    { name: 'Chiesa Madre', icon: '🏺' }
-  ];
-
-  const scrollToRef = useRef<HTMLDivElement>(null);
-  
-  const handleExploreClick = () => {
-    scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    const handleExploreClick = () => {
+        scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
+      };
 
   return (
     <div
@@ -450,13 +640,13 @@ const PoliganoAMare: React.FC = () => {
           <p className="text-gray-100 text-lg mb-8">
             A breathtaking seaside town in southern Italy, famous for its dramatic cliffs, crystal-clear waters, and charming historic center. Known as the "Pearl of the Adriatic," it's a must-visit destination for stunning views and authentic Italian experiences.
           </p>
-          <Button
-            onClick={handleExploreClick}
-            variant="outline"
-            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-blue-600 transition-colors"
-          >
-            Explore the City
-          </Button>
+            <Button
+                onClick={handleExploreClick}
+                variant="outline"
+                className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-blue-600 transition-colors"
+            >
+                Explore the City
+            </Button>
         </motion.div>
       </div>
 
@@ -491,13 +681,28 @@ const PoliganoAMare: React.FC = () => {
           >
             Explore the City
           </motion.h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {attractions.map((attraction) => (
-              <AttractionButton key={attraction.name} attraction={attraction} />
+                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            {attractions.map((attraction, index) => (
+              <AttractionButton
+                key={attraction.name}
+                attraction={attraction}
+                attractions={attractions}
+                onOpen={(index) => setSelectedAttractionIndex(index)}
+                index={index}
+              />
             ))}
           </div>
         </section>
       </div>
+        {selectedAttractionIndex !== null && (
+            <AttractionModal
+                attraction={attractions[selectedAttractionIndex]}
+                isOpen={selectedAttractionIndex !== null}
+                onClose={() => setSelectedAttractionIndex(null)}
+                onPrevious={handlePreviousAttraction}
+                onNext={handleNextAttraction}
+            />
+        )}
     </div>
   );
 };

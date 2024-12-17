@@ -217,31 +217,28 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   );
 };
 
-const AttractionButton: React.FC<{ 
-  attraction: Attraction;
-  attractions: Attraction[];
-  onOpen: (index: number) => void;
-  index: number;
-}> = ({ attraction, attractions, onOpen, index }) => (
-  <Dialog>
-    <DialogTrigger>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full aspect-square"
-      >
-        <button 
-          onClick={() => onOpen(index)}
-          className="w-full h-full bg-gray-50 dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow"
-        >
-          <span className="text-[#60A5FA]">{attraction.icon}</span>
-          <span className="text-teal-700 dark:text-teal-400 font-medium text-sm">{attraction.name}</span>
-        </button>
-      </motion.div>
-    </DialogTrigger>
-  </Dialog>
-);
+const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
+    <Dialog>
+      <DialogTrigger>
+        <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
+          <div className="h-full flex flex-col items-center justify-center gap-2">
+            <span className="text-3xl">{attraction.icon}</span>
+            <span className="text-center text-sm font-medium text-teal-700 dark:text-teal-400">
+              {attraction.name}
+            </span>
+          </div>
+        </div>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{attraction.name}</DialogTitle>
+          <DialogDescription>
+            {attraction.description || "Coming soon..."}
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
 
 const AttractionModal: React.FC<{
   attraction: Attraction;

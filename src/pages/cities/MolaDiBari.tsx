@@ -23,22 +23,24 @@ import * as cheerio from 'cheerio';
 
 // Tutorial component for swipe gestures
 const SwipeTutorial: React.FC = () => (
-  <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50 pointer-events-none">
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: [0, 1, 1, 0] }}
-      transition={{ 
-        duration: 2,
-        times: [0, 0.2, 0.8, 1],
-      }}
-      className="text-white text-center"
-    >
-      <div className="flex items-center justify-center gap-4">
-        <ChevronLeft size={24} />
-        <span>Swipe to navigate attractions</span>
-        <ChevronRight size={24} />
-      </div>
-    </motion.div>
+  <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
+    <div className="absolute inset-6 bg-black/50 rounded-lg flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 1, 1, 0] }}
+        transition={{ 
+          duration: 2,
+          times: [0, 0.2, 0.8, 1],
+        }}
+        className="text-white text-center"
+      >
+        <div className="flex items-center justify-center gap-4">
+          <ChevronLeft size={24} />
+          <span className="text-lg font-medium">Swipe to navigate attractions</span>
+          <ChevronRight size={24} />
+        </div>
+      </motion.div>
+    </div>
   </div>
 );
 
@@ -284,15 +286,14 @@ const AttractionModal: React.FC<{
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-h-[80vh] overflow-y-auto relative">
+        {showTutorial && <SwipeTutorial />}
         <motion.div
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
-          className="relative"
         >
-          {showTutorial && <SwipeTutorial />}
           <DialogHeader>
             <DialogTitle>{attraction.name}</DialogTitle>
             {attraction.imageUrl && (

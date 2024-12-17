@@ -21,27 +21,31 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
 
-// Tutorial component for swipe gestures
+Copy// Tutorial component for swipe gestures
 const SwipeTutorial: React.FC = () => (
-  <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
-    <div className="absolute inset-6 bg-black/50 rounded-lg flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 1, 0] }}
-        transition={{ 
-          duration: 2,
-          times: [0, 0.2, 0.8, 1],
-        }}
-        className="text-white text-center"
-      >
-        <div className="flex items-center justify-center gap-4">
-          <ChevronLeft size={24} />
-          <span className="text-lg font-medium">Swipe to navigate attractions</span>
-          <ChevronRight size={24} />
-        </div>
-      </motion.div>
-    </div>
-  </div>
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="absolute inset-0 bg-black/50 rounded-md flex items-center justify-center"
+    style={{ margin: '-24px' }} // Per compensare il padding del DialogContent
+  >
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: [0, 1, 1, 0] }}
+      transition={{ 
+        duration: 2,
+        times: [0, 0.2, 0.8, 1],
+      }}
+      className="text-white text-center px-4"
+    >
+      <div className="flex items-center justify-center gap-4">
+        <ChevronLeft size={24} />
+        <span className="text-lg font-medium">Swipe to navigate</span>
+        <ChevronRight size={24} />
+      </div>
+    </motion.div>
+  </motion.div>
 );
 
 // Next City Components
@@ -286,62 +290,65 @@ const AttractionModal: React.FC<{
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[80vh] overflow-y-auto relative">
-        {showTutorial && <SwipeTutorial />}
-        <motion.div
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <DialogHeader>
-            <DialogTitle>{attraction.name}</DialogTitle>
-            {attraction.imageUrl && (
-              <img
-                src={attraction.imageUrl}
-                alt={attraction.name}
-                className="w-full h-auto rounded-md mb-4"
-              />
-            )}
-            <DialogDescription>
-              {attraction.description || "Coming soon..."}
-            </DialogDescription>
-            {attraction.mapUrl && (
-              <div className="mt-4">
-                <Button 
-                  asChild
-                  className="bg-[#0d9488] hover:bg-[#0d9488]/90 text-white"
-                >
-                  <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
-                    View on Map
-                  </a>
-                </Button>
-              </div>
-            )}
-            {attraction.bookingNumber && (
-              <div className="mt-2">
-                <Button asChild variant="outline">
-                  <a href={`tel:${attraction.bookingNumber}`}>
-                    Call to Book: {attraction.bookingNumber}
-                  </a>
-                </Button>
-              </div>
-            )}
-            {attraction.eventsUrl && (
-              <div className="mt-2">
-                <Button asChild variant="secondary">
-                  <a href={attraction.eventsUrl} target="_blank" rel="noopener noreferrer">
-                    View Events
-                  </a>
-                </Button>
-              </div>
-            )}
-          </DialogHeader>
-        </motion.div>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
+        <div className="relative">
+          {showTutorial && <SwipeTutorial />}
+          <motion.div
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <DialogHeader>
+              <DialogTitle>{attraction.name}</DialogTitle>
+              {attraction.imageUrl && (
+                <img
+                  src={attraction.imageUrl}
+                  alt={attraction.name}
+                  className="w-full h-auto rounded-md mb-4"
+                />
+              )}
+              <DialogDescription>
+                {attraction.description || "Coming soon..."}
+              </DialogDescription>
+              {attraction.mapUrl && (
+                <div className="mt-4">
+                  <Button 
+                    asChild
+                    className="bg-[#0d9488] hover:bg-[#0d9488]/90 text-white"
+                  >
+                    <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
+                      View on Map
+                    </a>
+                  </Button>
+                </div>
+              )}
+              {attraction.bookingNumber && (
+                <div className="mt-2">
+                  <Button asChild variant="outline">
+                    <a href={`tel:${attraction.bookingNumber}`}>
+                      Call to Book: {attraction.bookingNumber}
+                    </a>
+                  </Button>
+                </div>
+              )}
+              {attraction.eventsUrl && (
+                <div className="mt-2">
+                  <Button asChild variant="secondary">
+                    <a href={attraction.eventsUrl} target="_blank" rel="noopener noreferrer">
+                      View Events
+                    </a>
+                  </Button>
+                </div>
+              )}
+            </DialogHeader>
+          </motion.div>
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
+
 const MolaDiBari: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();

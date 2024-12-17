@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import {
   Calendar,
   MapPin,
   ArrowLeft,
-  ArrowRight
+  ArrowRight,
+    ChevronLeft,
+    ChevronRight
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -18,6 +20,39 @@ import {
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
+
+// Tutorial component for swipe gestures
+const SwipeTutorial: React.FC = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 bg-black/50 rounded-md flex items-center justify-center"
+        style={{ margin: '-24px' }}
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-white text-center px-4"
+      >
+        <motion.div
+          animate={{ opacity: [0, 1, 1, 0] }}
+          transition={{ 
+            duration: 2,
+            times: [0, 0.2, 0.8, 1],
+          }}
+        >
+          <div className="flex items-center justify-center gap-4">
+            <ChevronLeft size={24} />
+            <span className="text-lg font-medium">Swipe to navigate</span>
+            <ChevronRight size={24} />
+          </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 // Next City Components
 interface NextCityToastProps {
@@ -96,9 +131,13 @@ interface Event {
 }
 
 interface Attraction {
-  name: string;
-  icon: string;
-  description?: string;
+    name: string;
+    icon: string;
+    description?: string;
+    imageUrl?: string;
+    mapUrl?: string;
+    bookingNumber?: string;
+    eventsUrl?: string;
 }
 
 const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
@@ -131,26 +170,26 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
    const isCurrentEvent = () => {
         if(!event.startDate) return null;
 
-    const now = new Date();
-    const start = new Date(event.startDate);
-    start.setHours(0, 0, 0, 0);
-    const end = event.endDate ? new Date(event.endDate) : new Date(start);
-    end.setHours(23, 59, 59, 999);
+        const now = new Date();
+        const start = new Date(event.startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = event.endDate ? new Date(event.endDate) : new Date(start);
+        end.setHours(23, 59, 59, 999);
 
-     const tomorrow = new Date();
-    tomorrow.setDate(now.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+        const tomorrow = new Date();
+        tomorrow.setDate(now.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
     
-     const isToday = now >= start && now <= end;
+        const isToday = now >= start && now <= end;
 
 
-     const isTomorrow =
-      start.getDate() === tomorrow.getDate() &&
-      start.getMonth() === tomorrow.getMonth() &&
-      start.getFullYear() === tomorrow.getFullYear();
+        const isTomorrow =
+          start.getDate() === tomorrow.getDate() &&
+          start.getMonth() === tomorrow.getMonth() &&
+          start.getFullYear() === tomorrow.getFullYear();
 
-     if (isToday) return 'today';
-     if (isTomorrow) return 'tomorrow';
+        if (isToday) return 'today';
+        if (isTomorrow) return 'tomorrow';
     return null;
   };
 
@@ -195,28 +234,132 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   );
 };
 
-const AttractionButton: React.FC<{ attraction: Attraction }> = ({ attraction }) => (
-  <Dialog>
-    <DialogTrigger>
-      <div className="w-full aspect-square p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:shadow-md transition-shadow">
-        <div className="h-full flex flex-col items-center justify-center gap-2">
-          <span className="text-3xl">{attraction.icon}</span>
-          <span className="text-center text-sm font-medium text-indigo-700 dark:text-indigo-400">
-            {attraction.name}
-          </span>
-        </div>
-      </div>
-    </DialogTrigger>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>{attraction.name}</DialogTitle>
-        <DialogDescription>
-          {attraction.description || "Coming soon..."}
-        </DialogDescription>
-      </DialogHeader>
-    </DialogContent>
-  </Dialog>
+const AttractionButton: React.FC<{
+    attraction: Attraction;
+    attractions: Attraction[];
+    onOpen: (index: number) => void;
+    index: number;
+}> = ({ attraction, attractions, onOpen, index }) => (
+    <Dialog>
+        <DialogTrigger>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="w-full aspect-square"
+            >
+                <button
+                    onClick={() => onOpen(index)}
+                    className="w-full h-full bg-gray-50 dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+                >
+                    <span className="text-[#60A5FA]">{attraction.icon}</span>
+                    <span className="text-indigo-700 dark:text-indigo-400 font-medium text-sm">{attraction.name}</span>
+                </button>
+            </motion.div>
+        </DialogTrigger>
+    </Dialog>
 );
+
+
+const AttractionModal: React.FC<{
+    attraction: Attraction;
+    isOpen: boolean;
+    onClose: () => void;
+    onPrevious: () => void;
+    onNext: () => void;
+}> = ({ attraction, isOpen, onClose, onPrevious, onNext }) => {
+    const [showTutorial, setShowTutorial] = useState(true);
+      const [dragStart, setDragStart] = useState<number>(0);
+      const dragThreshold = 50;
+  
+      useEffect(() => {
+          if (showTutorial) {
+            const timer = setTimeout(() => {
+              setShowTutorial(false);
+            }, 2000);
+            return () => clearTimeout(timer);
+          }
+        }, [showTutorial]);
+      
+        const handleDragStart = (event: MouseEvent | TouchEvent | PointerEvent) => {
+          if ('touches' in event) {
+            setDragStart(event.touches[0].clientX);
+          } else {
+            setDragStart(event.clientX);
+          }
+        };
+      
+        const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+          const dragDistance = info.offset.x;
+          if (Math.abs(dragDistance) > dragThreshold) {
+            if (dragDistance > 0) {
+              onPrevious();
+            } else {
+              onNext();
+            }
+          }
+        };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
+            <div className="relative">
+              {showTutorial && <SwipeTutorial />}
+                  <motion.div
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                  >
+                <DialogHeader>
+                    <DialogTitle>{attraction.name}</DialogTitle>
+                    {attraction.imageUrl && (
+                        <img
+                            src={attraction.imageUrl}
+                            alt={attraction.name}
+                            className="w-full h-auto rounded-md mb-4"
+                        />
+                    )}
+                    <DialogDescription>
+                        {attraction.description || "Coming soon..."}
+                    </DialogDescription>
+                    {attraction.mapUrl && (
+                        <div className="mt-4">
+                            <Button
+                                asChild
+                                className="bg-[#4f46e5] hover:bg-[#4f46e5]/90 text-white"
+                            >
+                                <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
+                                    View on Map
+                                </a>
+                            </Button>
+                        </div>
+                    )}
+                      {attraction.bookingNumber && (
+                          <div className="mt-2">
+                              <Button asChild variant="outline">
+                                  <a href={`tel:${attraction.bookingNumber}`}>
+                                    Call to Book: {attraction.bookingNumber}
+                                  </a>
+                              </Button>
+                          </div>
+                      )}
+                    {attraction.eventsUrl && (
+                        <div className="mt-2">
+                            <Button asChild variant="secondary">
+                                <a href={attraction.eventsUrl} target="_blank" rel="noopener noreferrer">
+                                    View Events
+                                </a>
+                            </Button>
+                        </div>
+                    )}
+                </DialogHeader>
+              </motion.div>
+          </div>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
 const Monopoli: React.FC = () => {
   const navigate = useNavigate();
@@ -225,9 +368,84 @@ const Monopoli: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+    const [selectedAttractionIndex, setSelectedAttractionIndex] = useState<number | null>(null);
+    const scrollToRef = useRef<HTMLDivElement>(null);
+
+  const attractions: Attraction[] = [
+      {
+          name: 'Centro Storico',
+          icon: '🏛️',
+          description: "The historic center of Monopoli, a coastal town in Puglia, Italy, is a captivating blend of history, culture, and architecture. Characterized by narrow alleys, whitewashed buildings, and charming squares, it reflects the town’s rich past and vibrant present. Central to the old town is Piazza Vittorio Emanuele II, one of the largest squares in Puglia, serving as a focal point for local life and events. The area is renowned for its numerous restaurants and taverns, offering a wide range of fish dishes, reflecting Monopoli’s deep connection to the sea. Visitors can also find artisan workshops and small grocers’ shops, maintaining the traditional charm of the town. The historic center is still inhabited by the local population, preserving its authentic atmosphere and providing visitors with a genuine experience of local life. Exploring the historic center of Monopoli offers a journey through time, showcasing the town’s evolution while preserving its authentic charm.",
+          imageUrl: 'https://apulianstay.it/wp-content/uploads/2020/02/TOUR-CENTRO-STORICO-MONOPOLI.jpg',
+          mapUrl: 'https://maps.app.goo.gl/Ny5NfEtoYCBPVCx88'
+      },
+      {
+        name: 'Basilica Maria SS della Madia',
+          icon: '⛪',
+          description: "The Basilica Cattedrale Maria Santissima della Madia, located in Monopoli, Italy, is a significant example of Baroque architecture. Construction of the current structure began in 1742 and was completed in 1772, replacing an earlier Romanesque church. The cathedral is dedicated to the Madonna della Madia, a revered icon with a storied past. According to local legend, in 1117, a raft carrying the icon miraculously arrived at Monopoli’s harbor, providing the beams necessary to complete the cathedral’s roof. This event is commemorated annually with a procession reenacting the icon’s arrival. Inside, the basilica houses several notable artworks, including two large canvases by Pietro Bardellino and six smaller 18th-century paintings depicting the Life of the Virgin by Michele del Pezzo. The Chapel of Our Lady of Madia features elaborate polychrome decoration on the altar. In 1921, the cathedral was granted the status of a minor basilica, and in 1986, it became a co-cathedral in the Diocese of Conversano-Monopoli. The Basilica Cattedrale Maria Santissima della Madia stands as a testament to Monopoli’s rich religious heritage and architectural splendor, attracting visitors and pilgrims alike.",
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/InternoCattedrale.JPG/244px-InternoCattedrale.JPG',
+          mapUrl: 'https://maps.app.goo.gl/7fsVsLdNYLSCfmo56'
+      },
+      {
+          name: 'Castello di Carlo V',
+          icon: '🏰',
+          description: "The Castello di Carlo V, or Castle of Charles V, is a 16th-century fortress located in Monopoli, Italy. Constructed during the Spanish domination of the city, it was part of a coastal fortification system ordered by Charles V to defend against Ottoman incursions and pirate attacks. Built on a promontory overlooking the Old Port of Monopoli, the castle features a pentagonal design typical of 15th-century Spanish fortresses. It includes two main floors—the quay level and the parade ground level—along with additional mid-levels used for storage. The parade ground offers views of the sentry’s walkway connecting the lookout towers at the northeast and southeast corners. Over the centuries, the castle has undergone several reconstructions. In the early 1900s, it was used as a prison, and it was restored in 1976. Today, it houses the Municipal Archaeological Museum and serves as a venue for exhibitions and events. Visitors can explore the castle’s historical architecture and enjoy panoramic views of the city and the Adriatic Sea. Its strategic location and rich history make it a significant landmark in Monopoli.",
+          imageUrl: 'https://www.comune.monopoli.ba.it/var/opencitymonopoli/storage/images/media/images/castello-carlo-v2/1894053-2-ita-IT/Castello-Carlo-V_reference.jpg',
+          mapUrl: 'https://maps.app.goo.gl/9GLLaejC1D2DJn8S7'
+      },
+      {
+          name: 'Cala Porta Vecchia',
+          icon: '⛱️',
+          description: "Cala Porta Vecchia is a charming beach nestled at the base of Monopoli’s ancient defensive sea walls. This small, sandy area stretches along the foot of the walls and continues around the rocks beneath the Bastione di Babula. The beach is renowned for its crystal-clear waters, offering a serene spot for swimming and relaxation. Despite its appeal, Cala Porta Vecchia is not equipped with facilities such as changing rooms or showers. Visitors should be prepared to bring their own amenities and be aware that the beach can become crowded, especially during peak times. The beach’s proximity to Monopoli’s historic center allows visitors to easily explore the town’s rich history and vibrant culture. After a day at the beach, one can enjoy the town’s charming streets, local eateries, and historical sites. For those planning a visit, it’s advisable to arrive early to secure a spot, as the beach tends to fill up quickly. Additionally, bringing an umbrella is recommended, as shade is limited until late afternoon. In summary, Cala Porta Vecchia offers a picturesque and tranquil beach experience, complemented by the opportunity to immerse oneself in the historical and cultural ambiance of Monopoli.",
+          imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/41/35/e8/cala-porta-vecchia-31.jpg?w=900&h=-1&s=1',
+          mapUrl: 'https://maps.app.goo.gl/phpMuHjQhKwvRHh47'
+      },
+      {
+          name: 'Porto Antico',
+          icon: '⚓',
+          description: "Porto Antico, or the Old Port, is a picturesque and historic harbour located in the heart of Monopoli, Italy. This charming area is renowned for its traditional “gozzo” fishing boats, which are a symbol of Puglia. The port is framed by the ancient city walls, providing a scenic backdrop for visitors. It’s a popular spot to observe local fishermen unloading their daily catch, offering a glimpse into the town’s maritime traditions. For those interested in photography, Porto Antico offers numerous opportunities to capture the essence of coastal life. The vibrant boats, historic architecture, and serene waters make it a photographer’s paradise. After exploring the port, visitors can relax on nearby benches, enjoy the coastal atmosphere, and perhaps indulge in local seafood at one of the nearby eateries. In summary, Porto Antico is a must-visit destination for those seeking to experience the authentic charm and maritime heritage of Monopoli.",
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Il_porto_antico_di_Monopoli.jpg/1600px-Il_porto_antico_di_Monopoli.jpg',
+          mapUrl: 'https://maps.app.goo.gl/zaVgs5k8diVWH6k66'
+      },
+      {
+          name: 'Porto Marzano Beach',
+          icon: '🏖️',
+          description: "Porto Marzano Beach is a serene and picturesque sandy cove located near Monopoli, Italy. Accessible via a short path through native Mediterranean scrub, this beach offers a tranquil retreat away from the more crowded spots in the area. The beach is approximately 400 meters long and is known for its crystal-clear waters and fine white sand. Visitors can enjoy activities such as swimming, sunbathing, and snorkeling. Amenities include bathrooms, showers, and beach umbrellas and chairs. A lifeguard is on duty during the summer months, ensuring safety for all guests. Dogs are not allowed on the beach. For those interested in dining, the nearby Porto Marzano Beach Bar offers a variety of food and beverages. The establishment is known for its friendly atmosphere and is a popular spot for both locals and tourists. Parking is available near the beach, and it is free for visitors. However, the parking lot can fill up quickly during peak hours, so it is advisable to arrive early or consider alternative transportation.",
+          imageUrl: 'https://media-cdn.tripadvisor.com/media/photo-s/10/3c/9f/3d/la-spiaggia.jpg',
+          mapUrl: 'https://maps.app.goo.gl/6kE3yoncKKtHTzC88'
+      },
+      {
+          name: 'Piazza Garibaldi',
+          icon: '🏟️',
+          description: "Piazza Giuseppe Garibaldi is a central square in Monopoli, Italy, serving as a vibrant hub for both locals and visitors. The square is surrounded by a variety of cafes, restaurants, and shops, making it an ideal spot to relax and observe the lively atmosphere. At the heart of the square stands a distinctive drinking fountain, adding to its charm. The surrounding architecture reflects the town’s rich history, with buildings that showcase traditional and contemporary styles. Piazza Garibaldi is also home to the “Sala dei Pescatori” (Fishermen’s Hall), an information point where visitors can learn more about Monopoli’s maritime heritage. Whether you’re looking to enjoy a meal, sip a coffee, or simply people-watch, Piazza Garibaldi offers a welcoming environment that captures the essence of Monopoli.",
+          imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/61/09/42/20190913-172122-largejpg.jpg?w=900&h=500&s=1',
+          mapUrl: 'https://maps.app.goo.gl/Y4UswnWWre9iQdAs8'
+      },
+      {
+          name: 'Museo Cripta Romanica',
+          icon: '🗿',
+          description: "The Museo e Sito Archeologico Cripta Romanica in Monopoli, Italy, offers a captivating journey through 4,500 years of history. Visitors can explore Romanesque sculptures, Gothic artworks, and archaeological remains, providing a deep insight into the region’s rich cultural heritage. Located in the heart of Monopoli, the museum is easily accessible and serves as a testament to the town’s historical significance. The site features a well-preserved Romanesque crypt, showcasing intricate carvings and architectural details that reflect the artistic styles of the era. For those interested in visiting, the museum is open on Saturdays from 16:00 to 19:00.",
+          imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/03/db/a8/80/scavi-archeologici-della.jpg?w=900&h=500&s=1',
+           mapUrl: 'https://maps.app.goo.gl/xzXgWHXULHayKsgw5',
+          eventsUrl: 'https://www.tripadvisor.it/Attraction_Review-g652003-d2312060-Reviews-Museo_e_Sito_Archeologico_Cripta_Romanica-Monopoli_Province_of_Bari_Puglia.html'
+      }
+  ];
+    const handlePreviousAttraction = () => {
+        if (selectedAttractionIndex === null) return;
+        setSelectedAttractionIndex((prev) =>
+            prev !== null ? (prev === 0 ? attractions.length - 1 : prev - 1) : 0
+        );
+    };
+
+    const handleNextAttraction = () => {
+        if (selectedAttractionIndex === null) return;
+        setSelectedAttractionIndex((prev) =>
+            prev !== null ? (prev === attractions.length - 1 ? 0 : prev + 1) : 0
+        );
+    };
 
 
-const fetchEvents = useCallback(async () => {
+  const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -348,7 +566,8 @@ const fetchEvents = useCallback(async () => {
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) {
-      themeColor.setAttribute('content', '#4f46e5'); // indigo-600
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        themeColor.setAttribute('content', isDarkMode ? '#4f46e5' : '#4f46e5');
     }
     return () => {
       if (themeColor) {
@@ -361,23 +580,10 @@ const fetchEvents = useCallback(async () => {
   const handleBackClick = () => {
     navigate('/explore');
   };
+    const handleExploreClick = () => {
+        scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
-  const attractions: Attraction[] = [
-    { name: 'Centro Storico', icon: '🏛️' },
-    { name: 'Basilica Maria SS della Madia', icon: '⛪' },
-    { name: 'Castello di Carlo V', icon: '🏰' },
-    { name: 'Cala Porta Vecchia', icon: '⛱️' },
-    { name: 'Porto Antico', icon: '⚓' },
-    { name: 'Porto Marzano Beach', icon: '🏖️' },
-    { name: 'Piazza Garibaldi', icon: '🏟️' },
-    { name: 'Museo Cripta Romanica', icon: '🗿' }
-  ];
-
-  const scrollToRef = useRef<HTMLDivElement>(null);
-  
-  const handleExploreClick = () => {
-    scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   return (
     <div
@@ -493,13 +699,28 @@ const fetchEvents = useCallback(async () => {
           >
             Explore the City
           </motion.h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {attractions.map((attraction) => (
-              <AttractionButton key={attraction.name} attraction={attraction} />
-            ))}
-          </div>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                {attractions.map((attraction, index) => (
+                    <AttractionButton
+                        key={attraction.name}
+                        attraction={attraction}
+                        attractions={attractions}
+                        onOpen={(index) => setSelectedAttractionIndex(index)}
+                        index={index}
+                    />
+                ))}
+            </div>
         </section>
       </div>
+        {selectedAttractionIndex !== null && (
+            <AttractionModal
+                attraction={attractions[selectedAttractionIndex]}
+                isOpen={selectedAttractionIndex !== null}
+                onClose={() => setSelectedAttractionIndex(null)}
+                onPrevious={handlePreviousAttraction}
+                onNext={handleNextAttraction}
+            />
+        )}
     </div>
   );
 };

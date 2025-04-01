@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Calendar,
   MapPin,
@@ -59,28 +59,28 @@ interface NextCityToastProps {
   show: boolean;
 }
 
-const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
-  <AnimatePresence>
-    {show && (
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => {
+  if (!show) return null;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -50 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 50 }}
+      transition={{ duration: 0.5 }}
+      className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+    >
+      <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
       <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 50 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+        animate={{ x: [0, 10, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+        className="ml-2"
       >
-        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
-        <motion.div
-          animate={{ x: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="ml-2"
-        >
-          →
-        </motion.div>
+        →
       </motion.div>
-    )}
-  </AnimatePresence>
-);
+    </motion.div>
+  );
+};
 
 interface NextCityButtonProps {
   nextCityPath: string;
@@ -119,6 +119,7 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
     </>
   );
 };
+
 interface Event {
   id: string;
   title: string;
@@ -269,16 +270,23 @@ const AttractionModal: React.FC<{
     }
   }, [showTutorial]);
 
-  const handleDragStart = (event: MouseEvent | TouchEvent | PointerEvent) => {
+  const handleDragStart = (event: any) => {
     if ('touches' in event) {
       setDragStart(event.touches[0].clientX);
-    } else {
+    } else if (event.clientX) {
       setDragStart(event.clientX);
     }
   };
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    const dragDistance = info.offset.x;
+  const handleDragEnd = (event: any) => {
+    let dragDistance = 0;
+    
+    if ('changedTouches' in event) {
+      dragDistance = event.changedTouches[0].clientX - dragStart;
+    } else if (event.clientX) {
+      dragDistance = event.clientX - dragStart;
+    }
+    
     if (Math.abs(dragDistance) > dragThreshold) {
       if (dragDistance > 0) {
         onPrevious();
@@ -294,10 +302,11 @@ const AttractionModal: React.FC<{
         <div className="relative">
           {showTutorial && <SwipeTutorial />}
           <motion.div
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
+            className="touch-pan-y"
+            onTouchStart={handleDragStart}
+            onTouchEnd={handleDragEnd}
+            onMouseDown={handleDragStart}
+            onMouseUp={handleDragEnd}
           >
             <DialogHeader>
               <DialogTitle>{attraction.name}</DialogTitle>

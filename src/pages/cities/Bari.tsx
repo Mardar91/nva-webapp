@@ -669,7 +669,7 @@ const Bari: React.FC = () => {
             'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
         };
 
-        const uniqueEvents = new Map();
+        const uniqueEvents = new Map<string, Event>();
         
         $('.evento-featured').each((_, element) => {
             const titleElement = $(element).find('.titolo.blocco-locali h2 a');

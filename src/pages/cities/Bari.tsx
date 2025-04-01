@@ -60,7 +60,7 @@ interface NextCityToastProps {
 }
 
 const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
-  <AnimatePresence mode="wait">
+  <AnimatePresence>
     {show && (
       <motion.div
         initial={{ opacity: 0, x: -50 }}
@@ -119,7 +119,6 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
     </>
   );
 };
-
 interface Event {
   id: string;
   title: string;
@@ -132,13 +131,14 @@ interface Event {
 
 interface Attraction {
   name: string;
-  icon: string;
+  icon: React.ReactNode;
   description?: string;
   imageUrl?: string;
   mapUrl?: string;
   bookingNumber?: string;
   eventsUrl?: string;
 }
+
 
 const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
     let color = "bg-green-500";

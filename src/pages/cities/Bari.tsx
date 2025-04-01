@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import {
   Calendar,
   MapPin,
@@ -20,7 +20,6 @@ import {
 } from "../../components/ui/dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as cheerio from 'cheerio';
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
 
 // Tutorial component for swipe gestures
 const SwipeTutorial: React.FC = () => {

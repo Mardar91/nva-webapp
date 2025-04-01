@@ -59,28 +59,28 @@ interface NextCityToastProps {
   show: boolean;
 }
 
-const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => {
-  if (!show) return null;
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 50 }}
-      transition={{ duration: 0.5 }}
-      className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
-    >
-      <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
+  <AnimatePresence mode="wait">
+    {show && (
       <motion.div
-        animate={{ x: [0, 10, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-        className="ml-2"
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
       >
-        →
+        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+        <motion.div
+          animate={{ x: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="ml-2"
+        >
+          →
+        </motion.div>
       </motion.div>
-    </motion.div>
-  );
-};
+    )}
+  </AnimatePresence>
+);
 
 interface NextCityButtonProps {
   nextCityPath: string;

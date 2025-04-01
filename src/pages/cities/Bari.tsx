@@ -54,28 +54,26 @@ interface NextCityToastProps {
 }
 
 const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
-  <>
-    <AnimatePresence>
-      {show && (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+      >
+        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 50 }}
-          transition={{ duration: 0.5 }}
-          className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+          animate={{ x: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="ml-2"
         >
-          <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
-          <motion.div
-            animate={{ x: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="ml-2"
-          >
-            →
-          </motion.div>
+          →
         </motion.div>
-      )}
-    </AnimatePresence>
-  </>
+      </motion.div>
+    )}
+  </AnimatePresence>
 );
 
 interface NextCityButtonProps {
@@ -300,22 +298,20 @@ const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ no
       className="relative"
       style={{ touchAction: 'pan-y' }}
     >
-      <>
-        <AnimatePresence>
-          {showDeleteButton && (
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute right-0 top-0 bottom-0 w-24 bg-red-500 text-white rounded-r-lg flex items-center justify-center gap-2"
-              onClick={() => onDelete(note.id)}
-            >
-              <Trash2 className="h-5 w-5" />
-              Delete
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </>
+      <AnimatePresence>
+        {showDeleteButton && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute right-0 top-0 bottom-0 w-24 bg-red-500 text-white rounded-r-lg flex items-center justify-center gap-2"
+            onClick={() => onDelete(note.id)}
+          >
+            <Trash2 className="h-5 w-5" />
+            Delete
+          </motion.button>
+        )}
+      </AnimatePresence>
       <motion.div
         animate={{ x: showDeleteButton ? -96 : 0 }}
         transition={{ type: "spring", damping: 20 }}
@@ -570,10 +566,12 @@ const AttractionModal: React.FC<{
     }
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: any, info?: PanInfo) => {
     let dragDistance = 0;
     
-    if ('changedTouches' in event) {
+    if (info) {
+      dragDistance = info.offset.x;
+    } else if ('changedTouches' in event) {
       dragDistance = event.changedTouches[0].clientX - dragStart;
     } else if (event.clientX) {
       dragDistance = event.clientX - dragStart;
@@ -595,10 +593,10 @@ const AttractionModal: React.FC<{
           {showTutorial && <SwipeTutorial />}
           <motion.div
             className="touch-pan-y"
-            onTouchStart={handleDragStart}
-            onTouchEnd={handleDragEnd}
-            onMouseDown={handleDragStart}
-            onMouseUp={handleDragEnd}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
           >
             <DialogHeader>
               <DialogTitle>{attraction.name}</DialogTitle>

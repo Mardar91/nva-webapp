@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { motion, PanInfo } from "framer-motion";
 import {
   Calendar, 
   MapPin, 
@@ -53,28 +53,29 @@ interface NextCityToastProps {
   show: boolean;
 }
 
-const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
-  <AnimatePresence>
-    {show && (
+// Componente riscritto senza AnimatePresence
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => {
+  if (!show) return null;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -50 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 50 }}
+      transition={{ duration: 0.5 }}
+      className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+    >
+      <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
       <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 50 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+        animate={{ x: [0, 10, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+        className="ml-2"
       >
-        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
-        <motion.div
-          animate={{ x: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="ml-2"
-        >
-          →
-        </motion.div>
+        →
       </motion.div>
-    )}
-  </AnimatePresence>
-);
+    </motion.div>
+  );
+};
 
 interface NextCityButtonProps {
   nextCityPath: string;
@@ -113,6 +114,7 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
     </>
   );
 };
+
 interface Event {
   id: string;
   title: string;
@@ -191,24 +193,25 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         month: 'short',
         day: 'numeric',
     }).format(event.startDate) : 'Data non disponibile';
-const isCurrentEvent = () => {
-    if(!event.startDate) return null;
+    
+    const isCurrentEvent = () => {
+        if(!event.startDate) return null;
 
-    const now = new Date();
-    const start = new Date(event.startDate);
-    start.setHours(0, 0, 0, 0);
-    const end = event.endDate ? new Date(event.endDate) : new Date(start);
-    end.setHours(23, 59, 59, 999);
+        const now = new Date();
+        const start = new Date(event.startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = event.endDate ? new Date(event.endDate) : new Date(start);
+        end.setHours(23, 59, 59, 999);
 
-    const tomorrow = new Date(now);
-    tomorrow.setDate(now.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(now);
+        tomorrow.setDate(now.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
 
-    if(now >= start && now <= end) return 'today';
-    // Fix per il badge tomorrow - controlla solo per eventi che iniziano esattamente domani
-    if(start.getTime() === tomorrow.getTime()) return 'tomorrow';
-    return null;
-};
+        if(now >= start && now <= end) return 'today';
+        // Fix per il badge tomorrow - controlla solo per eventi che iniziano esattamente domani
+        if(start.getTime() === tomorrow.getTime()) return 'tomorrow';
+        return null;
+    };
 
   const currentEventType = isCurrentEvent();
 
@@ -271,50 +274,36 @@ const CityButton: React.FC<{
     </button>
   </motion.div>
 );
-// Note Card component con nuovo sistema di swipe-to-delete
+
+// Note Card component con sistema semplificato
 const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ note, onDelete }) => {
   const [showDeleteButton, setShowDeleteButton] = useState(false);
-  const [dragX, setDragX] = useState(0);
 
   return (
-    <motion.div
-      drag="x"
-      dragConstraints={{ left: -100, right: 0 }}
-      dragElastic={0.7}
-      onDrag={(event, info) => {
-        setDragX(info.point.x);
-        if (info.offset.x < -50) {
-          setShowDeleteButton(true);
-        } else {
-          setShowDeleteButton(false);
-        }
-      }}
-      onDragEnd={(event, info) => {
-        setDragX(0);
-        if (info.offset.x > -50) {
-          setShowDeleteButton(false);
-        }
-      }}
-      className="relative"
-      style={{ touchAction: 'pan-y' }}
-    >
-      <AnimatePresence>
-        {showDeleteButton && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute right-0 top-0 bottom-0 w-24 bg-red-500 text-white rounded-r-lg flex items-center justify-center gap-2"
-            onClick={() => onDelete(note.id)}
-          >
-            <Trash2 className="h-5 w-5" />
-            Delete
-          </motion.button>
-        )}
-      </AnimatePresence>
+    <div className="relative">
+      {showDeleteButton && (
+        <button
+          className="absolute right-0 top-0 bottom-0 w-24 bg-red-500 text-white rounded-r-lg flex items-center justify-center gap-2"
+          onClick={() => onDelete(note.id)}
+        >
+          <Trash2 className="h-5 w-5" />
+          Delete
+        </button>
+      )}
       <motion.div
+        drag="x"
+        dragConstraints={{ left: -100, right: 0 }}
+        dragElastic={0.7}
+        onDrag={(event, info) => {
+          if (info.offset.x < -50) {
+            setShowDeleteButton(true);
+          } else {
+            setShowDeleteButton(false);
+          }
+        }}
         animate={{ x: showDeleteButton ? -96 : 0 }}
         transition={{ type: "spring", damping: 20 }}
+        className="touch-pan-y"
       >
         <Card className="bg-white dark:bg-gray-800">
           <CardContent className="p-4">
@@ -326,7 +315,7 @@ const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ no
           </CardContent>
         </Card>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -546,8 +535,6 @@ const AttractionModal: React.FC<{
   onNext: () => void;
 }> = ({ attraction, isOpen, onClose, onPrevious, onNext }) => {
   const [showTutorial, setShowTutorial] = useState(true);
-  const [dragStart, setDragStart] = useState<number>(0);
-  const dragThreshold = 50;
 
   useEffect(() => {
     if (showTutorial) {
@@ -558,31 +545,12 @@ const AttractionModal: React.FC<{
     }
   }, [showTutorial]);
 
-  const handleDragStart = (event: any) => {
-    if ('touches' in event) {
-      setDragStart(event.touches[0].clientX);
-    } else if (event.clientX) {
-      setDragStart(event.clientX);
-    }
-  };
-
-  const handleDragEnd = (event: any, info?: PanInfo) => {
-    let dragDistance = 0;
-    
-    if (info) {
-      dragDistance = info.offset.x;
-    } else if ('changedTouches' in event) {
-      dragDistance = event.changedTouches[0].clientX - dragStart;
-    } else if (event.clientX) {
-      dragDistance = event.clientX - dragStart;
-    }
-    
-    if (Math.abs(dragDistance) > dragThreshold) {
-      if (dragDistance > 0) {
-        onPrevious();
-      } else {
-        onNext();
-      }
+  // Funzione semplificata per gestire lo swipe manualmente
+  const handleDrag = (e: React.MouseEvent | React.TouchEvent, direction: 'left' | 'right') => {
+    if (direction === 'left') {
+      onNext();
+    } else {
+      onPrevious();
     }
   };
 
@@ -591,57 +559,63 @@ const AttractionModal: React.FC<{
       <DialogContent className="max-h-[80vh] overflow-y-auto">
         <div className="relative">
           {showTutorial && <SwipeTutorial />}
-          <motion.div
-            className="touch-pan-y"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
-            <DialogHeader>
-              <DialogTitle>{attraction.name}</DialogTitle>
-              {attraction.imageUrl && (
-                <img
-                  src={attraction.imageUrl}
-                  alt={attraction.name}
-                  className="w-full h-auto rounded-md mb-4"
-                />
-              )}
-              <DialogDescription>
-                {attraction.description || "Coming soon..."}
-              </DialogDescription>
-              {attraction.mapUrl && (
-                <div className="mt-4">
-                  <Button 
-                    asChild
-                    className="bg-[#9f1239] hover:bg-[#9f1239]/90 text-white"
-                  >
-                    <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
-                      View on Map
-                    </a>
-                  </Button>
-                </div>
-              )}
-              {attraction.bookingNumber && (
-                <div className="mt-2">
-                  <Button asChild variant="outline">
-                    <a href={`tel:${attraction.bookingNumber}`}>
-                      Call to Book: {attraction.bookingNumber}
-                    </a>
-                  </Button>
-                </div>
-              )}
-              {attraction.eventsUrl && (
-                <div className="mt-2">
-                  <Button asChild variant="secondary">
-                    <a href={attraction.eventsUrl} target="_blank" rel="noopener noreferrer">
-                      View Events
-                    </a>
-                  </Button>
-                </div>
-              )}
-            </DialogHeader>
-          </motion.div>
+          <div className="flex justify-between items-center mb-4">
+            <button 
+              onClick={() => handleDrag({} as React.MouseEvent, 'right')}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button 
+              onClick={() => handleDrag({} as React.MouseEvent, 'left')}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          </div>
+          <DialogHeader>
+            <DialogTitle>{attraction.name}</DialogTitle>
+            {attraction.imageUrl && (
+              <img
+                src={attraction.imageUrl}
+                alt={attraction.name}
+                className="w-full h-auto rounded-md mb-4"
+              />
+            )}
+            <DialogDescription>
+              {attraction.description || "Coming soon..."}
+            </DialogDescription>
+            {attraction.mapUrl && (
+              <div className="mt-4">
+                <Button 
+                  asChild
+                  className="bg-[#9f1239] hover:bg-[#9f1239]/90 text-white"
+                >
+                  <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
+                    View on Map
+                  </a>
+                </Button>
+              </div>
+            )}
+            {attraction.bookingNumber && (
+              <div className="mt-2">
+                <Button asChild variant="outline">
+                  <a href={`tel:${attraction.bookingNumber}`}>
+                    Call to Book: {attraction.bookingNumber}
+                  </a>
+                </Button>
+              </div>
+            )}
+            {attraction.eventsUrl && (
+              <div className="mt-2">
+                <Button asChild variant="secondary">
+                  <a href={attraction.eventsUrl} target="_blank" rel="noopener noreferrer">
+                    View Events
+                  </a>
+                </Button>
+              </div>
+            )}
+          </DialogHeader>
         </div>
       </DialogContent>
     </Dialog>

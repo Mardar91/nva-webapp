@@ -365,85 +365,85 @@ const Bari: React.FC = () => {
       icon: '⛪', 
       description: "The Basilica of Saint Nicholas, located in Bari's historic center, is a prime example of Apulian Romanesque architecture. Built between 1087 and 1197 to house the relics of Saint Nicholas, brought from Myra (now in Turkey) by 62 sailors in 1087, the basilica features a simple yet majestic façade with three portals and two distinct bell towers. Inside, it follows a Latin cross plan with three naves separated by twelve columns. The crypt, supported by 26 columns, contains the saint's tomb, making the basilica a significant pilgrimage site for both Roman Catholic and Eastern Orthodox Christians.",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Bari_BW_2016-10-19_13-35-11_stitch.jpg/520px-Bari_BW_2016-10-19_13-35-11_stitch.jpg",
-      mapUrl: "https://maps.app.goo.gl/LeBqSDhpVg1w8VZj8"
+      mapUrl: "https://maps.app.goo.gl/3vvpTTKecMrBzjieA"
     },
     { 
       name: 'Città Vecchia', 
       icon: '🏛️',
       description: "Bari Vecchia, or Old Bari, is the historic heart of Bari, Italy, situated on a peninsula between the city's two harbors. This medieval quarter is a maze of narrow, winding streets reminiscent of an Arab kasbah, reflecting its ancient urban layout. Key landmarks include the Basilica of San Nicola, built in 1087 to house the relics of Saint Nicholas; the Cathedral of San Sabino, an exemplar of Apulian Romanesque architecture; and the Norman-Hohenstaufen Castle, constructed around 1131 by Roger II of Sicily. Today, Bari Vecchia seamlessly blends history with vibrant local life, featuring bustling squares like Piazza Mercantile and Piazza Ferrarese, where visitors can experience authentic Apulian culture.",
       imageUrl: "https://img1.oastatic.com/img2/81615547/834x417r/variant.jpg",
-      mapUrl: "https://maps.app.goo.gl/b9pKpkLy4sCvuPGc8"
+      mapUrl: "https://maps.app.goo.gl/kMdQNKmhUiByUEWh7"
     },
     { 
       name: 'Lungomare', 
       icon: '🌊',
       description: "The Lungomare di Bari is a picturesque waterfront promenade along the Adriatic Sea, renowned as one of Italy's longest and most beautiful seafronts. Stretching approximately three kilometers, it offers breathtaking views of the azure sea and the city's coastline. Lined with historic buildings showcasing late Liberty style architecture, the promenade provides a unique opportunity to experience Bari's charm, especially during sunset. Visitors can enjoy leisurely strolls, relax at various cafes, and immerse themselves in the vibrant local atmosphere that defines this captivating stretch of Bari.",
       imageUrl: "https://www.giovannicarrieri.com/photography/italy/bari/1140/bari-grande-albergo-delle-nazioni.webp",
-      mapUrl: "https://maps.app.goo.gl/tGLmMEKqm8oDnqBo8"
+      mapUrl: "https://maps.app.goo.gl/929WnCoAwJzCDeM19"
     },
     { 
       name: 'Cattedrale San Sabino', 
       icon: '🕍',
       description: "The Cattedrale di San Sabino, also known as Bari Cathedral, is a prominent example of Apulian Romanesque architecture located in Bari, Italy. Constructed between the late 12th and late 13th centuries, it stands on the site of a previous Byzantine cathedral destroyed in 1156. The cathedral is dedicated to Saint Sabinus, a bishop of Canosa whose relics were brought to Bari in the 9th century. The façade features three portals beneath a large rose window adorned with intricate carvings of monsters and fantastic beasts. The interior comprises three aisles separated by sixteen columns, leading to a transept and a raised presbytery. The crypt houses the relics of Saint Sabinus and an icon of the Madonna Odegitria, venerated as a significant religious artifact. Adjacent to the cathedral, the Diocesan Museum preserves the Exultet, a precious illuminated manuscript of Byzantine origin, showcasing the rich liturgical traditions associated with the cathedral.",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Bari_BW_2016-10-19_13-57-32.jpg/520px-Bari_BW_2016-10-19_13-57-32.jpg",
-      mapUrl: "https://maps.app.goo.gl/LkbwJNcPBHn7GYrA6"
+      mapUrl: "https://maps.app.goo.gl/wFY88PmDDj62VxyA7"
     },
     { 
       name: 'Teatro Petruzzelli', 
       icon: '🎭',
       description: "Teatro Petruzzelli, located in the heart of Bari, is the city's largest theater and the fourth largest in Italy. Established in 1903, it has hosted numerous prestigious performances, including operas, ballets, and concerts featuring renowned artists such as Luciano Pavarotti and Frank Sinatra. In 1991, the theater tragically burned down but was rebuilt and reopened in 2009. Today, Teatro Petruzzelli continues to be a cultural hub, offering a diverse program of classical and contemporary performances.",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Petruzzellibarioggi.jpg/520px-Petruzzellibarioggi.jpg",
-      mapUrl: "https://maps.app.goo.gl/8DznN7aJGKL9BJLP6",
-      eventsUrl: "https://www.fondazionepetruzzelli.it/en/stagione/"
+      mapUrl: "https://maps.app.goo.gl/C83Xty1sXHEmFX9p6",
+      eventsUrl: "https://www.fondazionepetruzzelli.it/category/eventi/"
     },
     { 
       name: 'Piazza Ferrarese', 
       icon: '🏛️',
       description: "Piazza del Ferrarese is a historic square in the heart of Bari's old town, offering views of the seafront and serving as a gateway to the charming neighborhood. Named after a merchant from Ferrara, the square is surrounded by bars and restaurants, making it a popular spot for both day and night visits. An archaeological site beneath the square reveals traces of the ancient Roman Appian Way. It also houses the Teatro Margherita, a cultural landmark. The square comes alive during the San Nicola festival with concerts and vibrant lights.",
       imageUrl: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/a9/06/82/photo0jpg.jpg?w=700&h=400&s=1",
-      mapUrl: "https://maps.app.goo.gl/qrK7wqQXqgxbEDAL8"
+      mapUrl: "https://maps.app.goo.gl/M4BxuGPenEMFxqV69"
     },
     { 
       name: 'Strada delle Orecchiette', 
       icon: '🍝',
       description: "Strada delle Orecchiette, located in Bari Vecchia, is a narrow street famous for its traditional pasta-making. Locals craft and dry orecchiette, a type of pasta, right outside their homes, offering visitors an authentic glimpse into Bari's culinary culture. The street is lively with women shaping the pasta, filling the air with the scent of fresh pasta. Despite some controversies over the authenticity of some products sold, it remains a unique and cultural experience for travelers.",
       imageUrl: "https://soloviaggiumili.it/wp-content/uploads/2020/11/IMG_9758-2-FILEminimizer.jpg",
-      mapUrl: "https://maps.app.goo.gl/hJpXMWHMxHB4tHyE7"
+      mapUrl: "https://maps.app.goo.gl/qNXGj1LQYMJuPNPF8"
     },
     { 
       name: 'Castello Svevo', 
       icon: '🏰',
       description: "The Castello Svevo, or Swabian Castle, is a fortress in Bari, Italy, built by the Norman King Roger II around 1132. The castle underwent significant reconstruction in the 1230s under Emperor Frederick II, adopting its current name 'Svevo' (Swabian) during this period. Overlooking the Adriatic Sea, the castle features a trapezoidal plan with a central courtyard and two imposing polygonal towers. Throughout its history, it served various functions, including a prison and barracks. Since the early 20th century, it has been open to the public as a venue for cultural events and exhibitions. The castle's strategic location and architectural elements reflect the historical and cultural influences that have shaped Bari over the centuries, making it a significant landmark in the city.",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Castello_Svevo_di_Bari.JPG/520px-Castello_Svevo_di_Bari.JPG",
-      mapUrl: "https://maps.app.goo.gl/4DfrFKnJTPo57MXDA"
+      imageUrl: "https://media.cultura.gov.it/mibac/files/boards/d2f2d611e6572de78b5b601afbef9203/Castello%20svevo%20-%20Bari/Castello%20di%20Bari%201.JPG",
+      mapUrl: "https://maps.app.goo.gl/x9sxgvXpuNuAaykV8"
     },
     { 
       name: 'Succorpo della Cattedrale', 
       icon: '⛪',
       description: "The Succorpo della Cattedrale di Bari, also known as the Cathedral Crypt, is an underground space located in the Cattedrale di San Sabino. This sacred area houses various religious artifacts, including the relics of Saint Sabinus. The crypt's architectural design reflects different historical periods, featuring columns and capitals that date back to various eras. One of its most significant treasures is the icon of the Madonna Odegitria, a revered image in the local religious tradition. The Succorpo provides visitors with a glimpse into Bari's religious heritage and architectural history, serving as a place of devotion and historical significance within the cathedral complex.",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Madonna_Odegitria.jpg",
-      mapUrl: "https://maps.app.goo.gl/LkbwJNcPBHn7GYrA6"
+      imageUrl: "https://www.bari-e.it/wp-content/uploads/2023/05/Succorpo-10.jpg",
+      mapUrl: "https://maps.app.goo.gl/qBmHHBHBESvexRkk8"
     },
     { 
       name: 'Porto Vecchio', 
       icon: '⚓',
       description: "Porto Vecchio, the old port of Bari, is a historic harbor characterized by its traditional fishing boats and vessels. This working port offers an authentic glimpse into the maritime life of the city, with fishermen mending nets, unloading catches, and selling fresh seafood directly from their boats. The sea wall surrounding the port provides a picturesque walkway with views of both the harbor and the cityscape. Visitors can observe the daily activities of the fishing community and experience the port's vibrant atmosphere. The area also features several seafood restaurants where visitors can enjoy the freshest catches, experiencing Bari's culinary traditions firsthand. While not a typical tourist attraction, Porto Vecchio offers an authentic and unfiltered experience of Bari's maritime heritage and local life.",
-      imageUrl: "https://www.apuliatouristguide.com/wp-content/uploads/2021/10/Porto-San-Nicola-Bari.jpg",
-      mapUrl: "https://maps.app.goo.gl/WS9X3d4GKJNCH97u9"
+      imageUrl: "https://www.bariexperience.com/wp-content/uploads/2019/10/porto-vecchio-molo-san-nicola-nderr-la-lanz-mare-sea-foto-images-bari-puglia-apulia.jpg",
+      mapUrl: "https://maps.app.goo.gl/XAsvpRLTLL2zoVZS7"
     },
     { 
       name: 'Palazzo Mincuzzi', 
       icon: '🏛️',
       description: "Palazzo Mincuzzi, located in the heart of Bari, is a notable example of Liberty style architecture. Built in 1928, the palace was originally designed as a luxury department store, reflecting the city's growing commercial development in the early 20th century. With its ornate façade, featuring intricate decorations, impressive columns, and elegant balconies, the building stands as a testament to the architectural trends of its time. The interior, with its large central staircase and luminous interiors, maintains its historic charm. While the building's function has changed over the years, it remains a symbol of Bari's architectural heritage and modern development, serving as a landmark in the city's murattiano district.",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Palazzo_Mincuzzi_%28Bari%29.jpg",
-      mapUrl: "https://maps.app.goo.gl/GKnmJZxXXm5fShrt8"
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Palazzo_Mincuzzi_al_tramonto.jpg/450px-Palazzo_Mincuzzi_al_tramonto.jpg",
+      mapUrl: "https://maps.app.goo.gl/trRLAAHmD77wPJ3s9"
     },
     { 
       name: 'Pinacoteca C. Giaquinto', 
       icon: '🎨',
       description: "The Pinacoteca Corrado Giaquinto, housed in the historic Palazzo della Provincia, is one of Bari's most distinguished art museums. Named after the 18th-century painter Corrado Giaquinto, the gallery boasts a remarkable collection spanning from the 11th to the 19th century. The collection includes sacred art, such as wooden polychrome sculptures, ancient paintings from various churches, and works from the medieval and Byzantine periods. Notable works include pieces by Tintoretto, Paolo Veronese, and Giovanni Bellini. The museum's collection also features modern art from Apulian, Neapolitan, and Venetian schools. Spread across four floors, the Pinacoteca offers a comprehensive overview of the region's artistic heritage and beyond. The museum's setting in the historic palace adds to its charm, making it a significant cultural institution in Bari.",
-      imageUrl: "https://beniculturali.it/mibac/export/MiBAC/sito-MiBAC/Luogo/MibacUnif/Enti/visualizza_asset.html_865723014.html",
-      mapUrl: "https://maps.app.goo.gl/x57UaM8hFSbYGH5K9"
+      imageUrl: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/9a/b0/88/caption.jpg",
+      mapUrl: "https://maps.app.goo.gl/vvh3R3wSSq4xM27w5"
     }
   ];
 

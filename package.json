@@ -55,7 +55,7 @@
     "@types/nodemailer": "^6.4.14",
     "react-datepicker": "^4.25.0",
     "@types/react-datepicker": "^4.19.5",
-     "framer-motion": "^11.13.1",
+     "framer-motion": "^10.16.4",
      "cheerio": "^1.0.0-rc.12",
      "axios": "^1.6.7"
   },

@@ -25,6 +25,7 @@ interface NextCityToastProps {
 }
 
 const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
+  <>
   <AnimatePresence>
     {show && (
       <motion.div
@@ -45,6 +46,7 @@ const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
       </motion.div>
     )}
   </AnimatePresence>
+</>
 );
 
 interface NextCityButtonProps {

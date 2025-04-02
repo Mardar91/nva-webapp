@@ -48,6 +48,26 @@ interface CurrencyOption {
   flag?: string;
 }
 
+interface Event {
+  id: string;
+  title: string;
+  startDate: Date;
+  endDate?: Date;
+  city: string;
+  description?: string;
+  link?: string;
+}
+
+interface Attraction {
+  name: string;
+  icon: React.ReactNode;
+  description?: string;
+  imageUrl?: string;
+  mapUrl?: string;
+  bookingNumber?: string;
+  eventsUrl?: string;
+}
+
 // Next City Components
 interface NextCityToastProps {
   show: boolean;
@@ -114,26 +134,6 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
     </>
   );
 };
-
-interface Event {
-  id: string;
-  title: string;
-  startDate: Date;
-  endDate?: Date;
-  city: string;
-  description?: string;
-  link?: string;
-}
-
-interface Attraction {
-  name: string;
-  icon: React.ReactNode;
-  description?: string;
-  imageUrl?: string;
-  mapUrl?: string;
-  bookingNumber?: string;
-  eventsUrl?: string;
-}
 
 // Tutorial component for swipe gestures
 const SwipeTutorial: React.FC = () => {
@@ -669,6 +669,7 @@ const Bari: React.FC = () => {
             'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
         };
 
+        // Specifichiamo i tipi generics per Map per risolvere l'errore
         const uniqueEvents = new Map<string, Event>();
         
         $('.evento-featured').each((_, element) => {

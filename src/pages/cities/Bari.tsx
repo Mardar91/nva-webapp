@@ -669,8 +669,8 @@ const Bari: React.FC = () => {
             'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11
         };
 
-        // Specifichiamo i tipi generics per Map per risolvere l'errore
-        const uniqueEvents = new Map<string, Event>();
+        // Utilizziamo un oggetto normale invece di Map per evitare problemi con TypeScript
+        const uniqueEvents: Record<string, Event> = {};
         
         $('.evento-featured').each((_, element) => {
             const titleElement = $(element).find('.titolo.blocco-locali h2 a');
@@ -759,8 +759,8 @@ const Bari: React.FC = () => {
             
             if (title && startDate && !isNaN(startDate.getTime())) {
                 const eventKey = `${title}-${startDate.getTime()}`;
-                if (!uniqueEvents.has(eventKey)) {
-                    uniqueEvents.set(eventKey, {
+                if (!uniqueEvents[eventKey]) {
+                    uniqueEvents[eventKey] = {
                         id: Date.now().toString() + Math.random().toString(),
                         title,
                         startDate,
@@ -768,13 +768,13 @@ const Bari: React.FC = () => {
                         city: location,
                         description,
                         link
-                    });
+                    };
                 }
             }
         });
 
-        // Converti la Map in array e filtra gli eventi
-        const allEvents = Array.from(uniqueEvents.values());
+        // Converti l'oggetto in array e filtra gli eventi
+        const allEvents = Object.values(uniqueEvents);
         allEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
         // Filtra solo gli eventi futuri o in corso

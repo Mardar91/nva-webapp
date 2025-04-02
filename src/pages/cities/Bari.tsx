@@ -1,14 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, PanInfo } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Calendar, 
   MapPin, 
   ArrowLeft, 
   ArrowRight,
   Building2,
-  TreePalm,
-  Ship,
-  Church,
   PenLine,
   Map,
   DollarSign,
@@ -73,7 +70,6 @@ interface NextCityToastProps {
   show: boolean;
 }
 
-// Componente riscritto senza AnimatePresence
 const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => {
   if (!show) return null;
   
@@ -233,7 +229,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{event.city}</span>
               </div>
-                {event.link && (
+              {event.link && (
                 <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
                   More info
                 </a>
@@ -244,7 +240,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                 <Calendar className="w-4 h-4 mr-1 text-[#1e3a8a] dark:text-[#60A5FA]" />
                 <span className="text-sm font-medium">{formattedDate}</span>
               </div>
-                {currentEventType && <CurrentEventBadge type={currentEventType} />}
+              {currentEventType && <CurrentEventBadge type={currentEventType} />}
             </div>
           </div>
         </CardContent>
@@ -275,12 +271,12 @@ const CityButton: React.FC<{
   </motion.div>
 );
 
-// Note Card component con sistema semplificato
+// Note Card component
 const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ note, onDelete }) => {
   const [showDeleteButton, setShowDeleteButton] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="relative overflow-hidden">
       {showDeleteButton && (
         <button
           className="absolute right-0 top-0 bottom-0 w-24 bg-red-500 text-white rounded-r-lg flex items-center justify-center gap-2"
@@ -487,7 +483,6 @@ const CurrencyConverter: React.FC = () => {
   );
 };
 
-
 const WeatherWidget: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   return (
     <Button
@@ -662,7 +657,7 @@ const Bari: React.FC = () => {
         }
         const html = await response.text();
         const $ = cheerio.load(html);
-        const extractedEvents: Event[] = [];
+        
         const monthsIT: { [key: string]: number } = {
             'gennaio': 0, 'febbraio': 1, 'marzo': 2, 'aprile': 3,
             'maggio': 4, 'giugno': 5, 'luglio': 6, 'agosto': 7,

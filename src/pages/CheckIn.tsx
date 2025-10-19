@@ -608,7 +608,7 @@ const CheckIn = () => {
             <p className="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2">
               <AlertCircle className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />
               <span>
-                Online check-in is available from <strong>7 days before</strong> up to <strong>1 day after</strong> your expected arrival date.
+                Online check-in is available from <strong>7 days before</strong> your expected arrival date.
                 <span className="block mt-2 text-xs text-gray-500 dark:text-gray-500">
                   💡 <em>Please note: on-site check-in has a cost of €39</em>
                 </span>

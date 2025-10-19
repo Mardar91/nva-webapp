@@ -5,19 +5,17 @@
 }
 
 /* Fix scrolling issues on iOS */
-html {
+/* html {
   position: fixed;
   height: 100%;
   overflow: hidden;
   width: 100%;
   -webkit-overflow-scrolling: touch;
-}
+} */
 
 body {
   height: 100%;
-  overflow: hidden;
   width: 100%;
-  position: fixed;
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
@@ -27,9 +25,7 @@ body {
   background-color: #f3f4f6;
   margin: 0;
   padding: 0;
-  padding-top: var(--safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  min-height: -webkit-fill-available;
+  overflow: hidden; /* IMPORTANTE: previene lo scroll del body */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -61,25 +57,6 @@ iframe {
   -webkit-transform: translateZ(0);
 }
 
-/* Assicura che il contenuto non-iframe abbia scroll corretto */
-main:not(.iframe-container) {
-  height: calc(100vh - 88px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
-  overscroll-behavior-y: none !important; /* Fix per l'effetto rimbalzo */
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  min-height: auto;
-  background-color: #f3f4f6;
-  gap: 5px;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: none !important; /* Fix per l'effetto rimbalzo */
-}
 
 @media (prefers-color-scheme: dark) {
   .container {
@@ -178,16 +155,10 @@ main:not(.iframe-container) {
 }
 
 .giftCardSection {
+  /* RIMUOVI height e overflow */
   margin-bottom: 10px;
   padding: 0 15px;
-  margin-bottom: 10px;
   margin-top: -5px;
-  height: calc(100vh - 88px) !important; /* Fix per lo scroll */
-  overflow-y: auto !important; /* Fix per lo scroll */
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior-y: none !important; /* Fix per l'effetto rimbalzo */
-  position: relative; /* Fix per lo scroll */
-  z-index: 1;
 }
 /* Dialog/Modal styles PARTE3 */
 .DialogContent {

@@ -11,11 +11,13 @@ const Home: React.FC = () => {
 
   return (
     <div 
-      className="overflow-y-auto w-full" 
+      className="absolute inset-0 overflow-y-auto overflow-x-hidden"
       style={{
-        height: 'calc(100vh - 88px)',
+        bottom: '88px',
+        top: 0,
         WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'none',
+        overscrollBehavior: 'contain',
+        touchAction: 'pan-y',
       }}
     >
       <div className="flex flex-col w-full min-h-full pb-24">

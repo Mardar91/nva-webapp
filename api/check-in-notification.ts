@@ -4,26 +4,37 @@ import { randomUUID } from 'crypto';
 interface CheckInNotification {
   deviceId: string;
   checkInDate: string;
+  immediate?: boolean; // ✅ NUOVO PARAMETRO
   notificationSent: boolean;
 }
 
-async function sendCheckInNotification(deviceId: string, checkInDate: string) {
+async function sendCheckInNotification(
+  deviceId: string, 
+  checkInDate: string,
+  immediate: boolean = false
+) {
   try {
-    console.log('Starting sendCheckInNotification with:', { deviceId, checkInDate });
+    console.log('Starting sendCheckInNotification with:', { deviceId, checkInDate, immediate });
 
-    // Calcola quando inviare la notifica
     const checkInDateTime = new Date(checkInDate);
-    const notificationDate = new Date(checkInDateTime);
-    notificationDate.setDate(notificationDate.getDate() - 1);
+    let notificationDate: Date;
     
-    // Se è dopo le 9:00, invia la notifica subito, altrimenti programma per le 9:00
-    const now = new Date();
-    if (now.getHours() >= 9) {
-      // Se è già passato le 9:00, invia la notifica dopo 1 minuto
-      notificationDate.setTime(now.getTime() + 60000);
+    // ✅ SE IMMEDIATE = TRUE, invia tra 1 minuto
+    if (immediate) {
+      notificationDate = new Date();
+      notificationDate.setTime(notificationDate.getTime() + 60000); // 1 minuto
+      console.log('📬 Sending IMMEDIATE notification in 1 minute');
     } else {
-      // Altrimenti programma per le 9:00
-      notificationDate.setHours(9, 0, 0, 0);
+      // Altrimenti usa la logica normale (3 giorni prima alle 9:00)
+      notificationDate = new Date(checkInDateTime);
+      notificationDate.setDate(notificationDate.getDate() - 3);
+      
+      const now = new Date();
+      if (now.getHours() >= 9) {
+        notificationDate.setTime(now.getTime() + 60000);
+      } else {
+        notificationDate.setHours(9, 0, 0, 0);
+      }
     }
 
     console.log('Calculated notification date:', notificationDate.toISOString());
@@ -41,7 +52,8 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
       name: `Check-in Reminder - ${notificationDate.toLocaleDateString()}`,
       data: {
         type: "check_in_notification",
-        notification_id: `checkin-${randomUUID()}`
+        notification_id: `checkin-${randomUUID()}`,
+        immediate: immediate
       },
       send_after: notificationDate.toISOString(),
       timezone: "Europe/Rome",
@@ -53,7 +65,6 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
 
     console.log('Sending notification payload to OneSignal:', notificationPayload);
 
-    // Verifica che ONESIGNAL_REST_API_KEY sia definito
     if (!process.env.ONESIGNAL_REST_API_KEY) {
       console.error('ONESIGNAL_REST_API_KEY is not defined');
       return {
@@ -85,7 +96,8 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
     console.log('Notification scheduled successfully');
     return { 
       success: true, 
-      data: responseData 
+      data: responseData,
+      immediate: immediate
     };
   } catch (error) {
     console.error('Error in sendCheckInNotification:', error);
@@ -95,6 +107,7 @@ async function sendCheckInNotification(deviceId: string, checkInDate: string) {
     };
   }
 }
+
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   console.log('Starting check-in notification handler');
   
@@ -107,7 +120,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
     return response.status(200).end();
   }
 
-  // Verifica le credenziali OneSignal
   if (!process.env.ONESIGNAL_APP_ID || !process.env.ONESIGNAL_REST_API_KEY) {
     console.error('Missing OneSignal configuration');
     return response.status(500).json({
@@ -119,11 +131,12 @@ export default async function handler(request: VercelRequest, response: VercelRe
   if (request.method === 'POST') {
     try {
       console.log('Processing POST request');
-      const { deviceId, checkInDate } = request.body;
+      const { deviceId, checkInDate, immediate } = request.body; // ✅ LEGGI immediate
       
       console.log('Received request data:', { 
         deviceId: deviceId ? 'present' : 'missing', 
-        checkInDate 
+        checkInDate,
+        immediate: immediate || false
       });
 
       if (!deviceId) {
@@ -142,7 +155,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
         });
       }
 
-      // Valida il formato della data
       const dateObj = new Date(checkInDate);
       if (isNaN(dateObj.getTime())) {
         console.error('Invalid check-in date format');
@@ -152,26 +164,31 @@ export default async function handler(request: VercelRequest, response: VercelRe
         });
       }
 
-      // Verifica che la data di check-in sia nel futuro
-      const now = new Date();
-      if (dateObj <= now) {
-        console.error('Check-in date must be in the future');
-        return response.status(400).json({
-          success: false,
-          message: 'Check-in date must be in the future'
-        });
+      // ✅ Se NON è immediate, verifica che la data sia nel futuro
+      if (!immediate) {
+        const now = new Date();
+        if (dateObj <= now) {
+          console.error('Check-in date must be in the future');
+          return response.status(400).json({
+            success: false,
+            message: 'Check-in date must be in the future'
+          });
+        }
       }
 
       console.log('Sending notification...');
-      const result = await sendCheckInNotification(deviceId, checkInDate);
+      const result = await sendCheckInNotification(deviceId, checkInDate, immediate);
       console.log('Notification result:', result);
 
       if (result.success) {
         console.log('Notification scheduled successfully');
         return response.status(200).json({
           success: true,
-          message: 'Check-in notification scheduled successfully',
-          data: result.data
+          message: immediate 
+            ? 'Check-in notification sent immediately' 
+            : 'Check-in notification scheduled successfully',
+          data: result.data,
+          immediate: immediate
         });
       } else {
         console.error('Failed to schedule notification:', result.error);

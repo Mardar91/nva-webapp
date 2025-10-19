@@ -29,10 +29,8 @@ const CheckIn = () => {
     isCheckInAvailable,
     daysUntilCheckIn
   } = useCheckInState();
-
   const { deviceId, isSubscribed } = useNotifications();
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  
   const [showIframe, setShowIframe] = useState(false);
   const [iframeUrl, setIframeUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +39,6 @@ const CheckIn = () => {
 
   useEffect(() => {
     if (!showIframe || iframeReady || loadError) return;
-
     const timeout = setTimeout(() => {
       if (!iframeReady && !loadError) {
         console.error('⏱️ Iframe loading timeout');
@@ -76,7 +73,6 @@ const CheckIn = () => {
       console.warn('⚠️ Message from unauthorized origin:', event.origin);
       return;
     }
-
     const { type, data } = event.data;
     console.log('📨 Message received:', type, data);
 
@@ -91,6 +87,44 @@ const CheckIn = () => {
       case 'CHECKIN_VALIDATION_READY':
         console.log('✅ Validation ready');
         setIsLoading(false);
+        break;
+
+      // ✅ NUOVO CASO: Check-in validato ma non ancora disponibile
+      case 'CHECKIN_PENDING':
+        console.log('⏳ Check-in pending (not yet available):', data);
+        
+        updateCheckInState({
+          status: 'pending',
+          bookingId: data.bookingId,
+          apartmentName: data.apartmentName,
+          checkInDate: data.checkInDate,
+          checkOutDate: data.checkOutDate,
+          numberOfGuests: data.numberOfGuests,
+          mode: data.mode
+        });
+
+        // Programma notifica per quando diventerà disponibile
+        if (data.checkInDate && deviceId) {
+          const result = await scheduleCheckInReminder({
+            checkInDate: data.checkInDate,
+            deviceId: deviceId,
+            bookingReference: data.bookingId
+          });
+          
+          if (result.scheduled) {
+            updateCheckInState({ 
+              notificationScheduled: true,
+              notificationSent: false
+            });
+          }
+        } else if (data.checkInDate && !deviceId) {
+          console.warn('⚠️ Cannot schedule notification: deviceId missing');
+        }
+        
+        // Chiudi iframe dopo 2 secondi per mostrare il messaggio
+        setTimeout(() => {
+          setShowIframe(false);
+        }, 2000);
         break;
 
       case 'CHECKIN_VALIDATED':
@@ -162,19 +196,18 @@ const CheckIn = () => {
     setIsLoading(true);
     setLoadError(false);
     setIframeReady(false);
-    
     const params = new URLSearchParams();
-    
+
     if (checkInState.savedEmail) {
       params.set('email', checkInState.savedEmail);
     }
     if (checkInState.savedBookingRef) {
       params.set('bookingRef', checkInState.savedBookingRef);
     }
-    
+
     const url = `${CHECKIN_CONFIG.IFRAME_URL}?${params.toString()}`;
     console.log('🚀 Opening iframe:', url);
-    
+
     setIframeUrl(url);
     setShowIframe(true);
   };
@@ -183,7 +216,6 @@ const CheckIn = () => {
     setLoadError(false);
     setIframeReady(false);
     setIsLoading(true);
-    
     setShowIframe(false);
     setTimeout(() => {
       setShowIframe(true);
@@ -206,17 +238,12 @@ const CheckIn = () => {
   if (showIframe) {
     return (
       <div className="fixed inset-0 z-50 bg-white dark:bg-[#1a1a1a]">
-        {/* ✅ AGGIUNTO STILE PER NASCONDERE "Torna a Home" */}
+        {/* ✅ RIMOSSO IL CSS CHE NASCONDE I LINK - Non serve più */}
         <style>{`
           iframe {
-            padding-bottom: 100px !important;
-          }
-          /* Nascondi il link "Torna alla Home" nell'iframe */
-          iframe a[href*="nonnavittoriaapartments.it"] {
-            display: none !important;
-          }
+             padding-bottom: 100px !important;
+           }
         `}</style>
-
         {isLoading && !loadError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 dark:bg-[#1a1a1a]/95 z-10">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
@@ -252,21 +279,18 @@ const CheckIn = () => {
           </div>
         )}
 
-        {/* ✅ IFRAME CON SCROLL MIGLIORATO */}
         <iframe
           ref={iframeRef}
           src={iframeUrl}
           className="w-full border-0"
           style={{
-            height: 'calc(100vh + 100px)', // ✅ Aggiunge 100px extra per scroll
+            height: 'calc(100vh + 100px)',
             marginBottom: '-100px'
           }}
           title="Online Check-in"
           allow="camera; geolocation"
           sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
         />
-
-        {/* ✅ RIMOSSO IL BOTTONE CHIUDI */}
       </div>
     );
   }
@@ -293,7 +317,6 @@ const CheckIn = () => {
                 You will receive a confirmation email with all the information for your stay.
               </p>
             </div>
-
             <div className="space-y-3">
               {checkInState.apartmentName && (
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
@@ -376,12 +399,27 @@ const CheckIn = () => {
             <div className="flex items-center gap-3">
               <CalendarIcon className="h-8 w-8 text-blue-500" />
               <CardTitle className="text-2xl">
-                {isCheckInAvailable ? 'Check-in Available!' : 'Check-in Saved'}
+                {/* ✅ MODIFICATO: Mostra messaggio diverso per pending */}
+                {checkInState.status === 'pending'
+                  ? 'Check-in Saved'
+                  : (isCheckInAvailable ? 'Check-in Available!' : 'Check-in Saved')
+                }
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {isCheckInAvailable ? (
+            {/* ✅ MODIFICATO: Badge diverso per status pending */}
+            {checkInState.status === 'pending' ? (
+              <div className="bg-blue-50 dark:bg-blue-900 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4">
+                <p className="text-blue-800 dark:text-blue-300 font-semibold flex items-center gap-2">
+                  <Clock className="h-5 w-5" />
+                  Your booking has been saved!
+                </p>
+                <p className="text-blue-700 dark:text-blue-400 text-sm mt-2">
+                  Check-in will be available 7 days before your arrival. We'll notify you when it's ready!
+                </p>
+              </div>
+            ) : isCheckInAvailable ? (
               <div className="bg-green-50 dark:bg-green-900 border-2 border-green-300 dark:border-green-700 rounded-lg p-4">
                 <p className="text-green-800 dark:text-green-300 font-semibold flex items-center gap-2">
                   <CheckCircle className="h-5 w-5" />
@@ -402,7 +440,6 @@ const CheckIn = () => {
                 </p>
               </div>
             )}
-
             {daysUntilCheckIn !== null && daysUntilCheckIn > 0 && (
               <div className="text-center py-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-lg">
                 <p className="text-6xl font-bold text-blue-600 dark:text-blue-400 mb-2">
@@ -526,7 +563,6 @@ const CheckIn = () => {
               Complete your online check-in quickly and easily
             </p>
           </div>
-
           <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
             <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-4 text-lg">
               Benefits of Online Check-in:
@@ -568,7 +604,6 @@ const CheckIn = () => {
             Start Online Check-in
           </Button>
 
-          {/* ✅ AGGIUNTA NOTA SUL COSTO CHECK-IN IN SEDE */}
           <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
             <p className="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2">
               <AlertCircle className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />

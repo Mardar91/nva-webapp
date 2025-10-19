@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 
-export type CheckInStatus = 
-  | 'idle' 
+export type CheckInStatus =
+  | 'idle'
   | 'loading'
-  | 'pending' 
-  | 'validated' 
-  | 'form_ready' 
-  | 'completed' 
+  | 'pending'
+  | 'validated'
+  | 'form_ready'
+  | 'completed'
   | 'expired';
 
 export interface CheckInState {
@@ -29,7 +29,7 @@ const STORAGE_KEY = 'nva_checkin_state';
 export const useCheckInState = () => {
   const [checkInState, setCheckInState] = useState<CheckInState>(() => {
     if (typeof window === 'undefined') return { status: 'idle' };
-    
+
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
@@ -68,29 +68,38 @@ export const useCheckInState = () => {
     }
   };
 
-  // ✅ MODIFICATO: da -1/3 a -1/7 giorni
+  // ✅ FIX: Usa UTC per evitare problemi di timezone
   const isCheckInAvailable = (): boolean => {
     if (!checkInState.checkInDate) return false;
-    
     const checkInDate = new Date(checkInState.checkInDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    checkInDate.setHours(0, 0, 0, 0);
-    
+
+    // Imposta ore a mezzanotte in UTC
+    today.setUTCHours(0, 0, 0, 0);
+    checkInDate.setUTCHours(0, 0, 0, 0);
+
     const daysUntil = Math.ceil((checkInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+
+    console.log('🗓️ Check-in availability:', {
+      checkInDate: checkInDate.toISOString(),
+      today: today.toISOString(),
+      daysUntil,
+      isAvailable: daysUntil >= -1 && daysUntil <= 7
+    });
+
     // From -1 (1 day after) to 7 (7 days before)
     return daysUntil >= -1 && daysUntil <= 7;
   };
 
   const getDaysUntilCheckIn = (): number | null => {
     if (!checkInState.checkInDate) return null;
-    
     const checkInDate = new Date(checkInState.checkInDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    checkInDate.setHours(0, 0, 0, 0);
-    
+
+    // Usa UTC
+    today.setUTCHours(0, 0, 0, 0);
+    checkInDate.setUTCHours(0, 0, 0, 0);
+
     return Math.ceil((checkInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   };
 

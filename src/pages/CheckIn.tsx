@@ -1,3 +1,8 @@
+// ============================================
+// 📱 APP: NVA (React App)
+// 📄 FILE: src/pages/CheckIn.tsx
+// ============================================
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "../components/ui/button";
 import {
@@ -89,11 +94,9 @@ const CheckIn = () => {
         setIsLoading(false);
         break;
 
-      // ✅ NUOVO CASO: Check-in validato ma non ancora disponibile
       case 'CHECKIN_PENDING':
         console.log('⏳ Check-in pending (not yet available):', data);
         
-        // ✅ NUOVO: Salva email e booking ref per ripopolare il form
         updateCheckInState({
           status: 'pending',
           bookingId: data.bookingId,
@@ -102,11 +105,10 @@ const CheckIn = () => {
           checkOutDate: data.checkOutDate,
           numberOfGuests: data.numberOfGuests || 1,
           mode: data.mode,
-          savedEmail: data.savedEmail, // ✅ NUOVO
-          savedBookingRef: data.savedBookingRef // ✅ NUOVO
+          savedEmail: data.savedEmail,
+          savedBookingRef: data.savedBookingRef
         });
 
-        // Programma notifica per quando diventerà disponibile
         if (data.checkInDate && deviceId) {
           const result = await scheduleCheckInReminder({
             checkInDate: data.checkInDate,
@@ -124,7 +126,6 @@ const CheckIn = () => {
           console.warn('⚠️ Cannot schedule notification: deviceId missing');
         }
         
-        // Chiudi iframe dopo 2 secondi per mostrare il messaggio
         setTimeout(() => {
           setShowIframe(false);
         }, 2000);
@@ -133,7 +134,6 @@ const CheckIn = () => {
       case 'CHECKIN_VALIDATED':
         console.log('✅ Check-in validated:', data);
         
-        // ✅ MODIFICATO: Salva anche email e booking ref
         updateCheckInState({
           status: 'validated',
           bookingId: data.bookingId,
@@ -142,8 +142,8 @@ const CheckIn = () => {
           checkOutDate: data.checkOutDate,
           numberOfGuests: data.numberOfGuests || 1,
           mode: data.mode,
-          savedEmail: data.savedEmail, // ✅ NUOVO
-          savedBookingRef: data.savedBookingRef // ✅ NUOVO
+          savedEmail: data.savedEmail,
+          savedBookingRef: data.savedBookingRef
         });
 
         if (data.checkInDate && deviceId) {
@@ -243,13 +243,7 @@ const CheckIn = () => {
   // ========== IFRAME RENDERING ==========
   if (showIframe) {
     return (
-      <div className="fixed inset-0 z-50 bg-white dark:bg-[#1a1a1a]">
-        {/* ✅ MODIFICATO: Aumentato padding-bottom da 100px a 180px */}
-        <style>{`
-          iframe {
-            padding-bottom: 180px !important;
-          }
-        `}</style>
+      <div className="fixed inset-0 z-40 bg-white dark:bg-[#1a1a1a]" style={{ bottom: '88px' }}>
         {isLoading && !loadError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 dark:bg-[#1a1a1a]/95 z-10">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
@@ -285,15 +279,10 @@ const CheckIn = () => {
           </div>
         )}
 
-        {/* ✅ MODIFICATO: Aumentato height da calc(100vh + 100px) a calc(100vh + 180px) */}
         <iframe
           ref={iframeRef}
           src={iframeUrl}
-          className="w-full border-0"
-          style={{
-            height: 'calc(100vh + 180px)',
-            marginBottom: '-180px'
-          }}
+          className="w-full h-full border-0"
           title="Online Check-in"
           allow="camera; geolocation"
           sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
@@ -406,7 +395,6 @@ const CheckIn = () => {
             <div className="flex items-center gap-3">
               <CalendarIcon className="h-8 w-8 text-blue-500" />
               <CardTitle className="text-2xl">
-                {/* ✅ MODIFICATO: Mostra messaggio diverso per pending */}
                 {checkInState.status === 'pending'
                   ? 'Check-in Saved'
                   : (isCheckInAvailable ? 'Check-in Available!' : 'Check-in Saved')
@@ -415,7 +403,6 @@ const CheckIn = () => {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* ✅ MODIFICATO: Badge diverso per status pending */}
             {checkInState.status === 'pending' ? (
               <div className="bg-blue-50 dark:bg-blue-900 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4">
                 <p className="text-blue-800 dark:text-blue-300 font-semibold flex items-center gap-2">

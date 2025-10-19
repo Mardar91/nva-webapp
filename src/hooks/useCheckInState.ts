@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// ✅ AGGIUNTO STATO 'loading'
 export type CheckInStatus = 
   | 'idle' 
   | 'loading'
@@ -36,7 +35,6 @@ export const useCheckInState = () => {
       try {
         const parsed = JSON.parse(saved);
         
-        // Verifica se il check-in è scaduto
         if (parsed.status === 'completed' && parsed.checkOutDate) {
           const checkOut = new Date(parsed.checkOutDate);
           const now = new Date();
@@ -54,7 +52,6 @@ export const useCheckInState = () => {
     return { status: 'idle' };
   });
 
-  // Salva automaticamente quando cambia
   useEffect(() => {
     if (typeof window === 'undefined') return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(checkInState));
@@ -71,7 +68,7 @@ export const useCheckInState = () => {
     }
   };
 
-  // ✅ CORRETTA: include 1 giorno dopo il check-in
+  // ✅ MODIFICATO: da -1/3 a -1/7 giorni
   const isCheckInAvailable = (): boolean => {
     if (!checkInState.checkInDate) return false;
     
@@ -82,8 +79,8 @@ export const useCheckInState = () => {
     
     const daysUntil = Math.ceil((checkInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
-    // ✅ Da -1 (1 giorno dopo) a 3 (3 giorni prima)
-    return daysUntil >= -1 && daysUntil <= 3;
+    // From -1 (1 day after) to 7 (7 days before)
+    return daysUntil >= -1 && daysUntil <= 7;
   };
 
   const getDaysUntilCheckIn = (): number | null => {

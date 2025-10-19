@@ -93,14 +93,17 @@ const CheckIn = () => {
       case 'CHECKIN_PENDING':
         console.log('⏳ Check-in pending (not yet available):', data);
         
+        // ✅ NUOVO: Salva email e booking ref per ripopolare il form
         updateCheckInState({
           status: 'pending',
           bookingId: data.bookingId,
-          apartmentName: data.apartmentName,
+          apartmentName: data.apartmentName || (data.mode === 'unassigned_checkin' ? 'To be assigned' : 'Apartment'),
           checkInDate: data.checkInDate,
           checkOutDate: data.checkOutDate,
-          numberOfGuests: data.numberOfGuests,
-          mode: data.mode
+          numberOfGuests: data.numberOfGuests || 1,
+          mode: data.mode,
+          savedEmail: data.savedEmail, // ✅ NUOVO
+          savedBookingRef: data.savedBookingRef // ✅ NUOVO
         });
 
         // Programma notifica per quando diventerà disponibile
@@ -108,7 +111,7 @@ const CheckIn = () => {
           const result = await scheduleCheckInReminder({
             checkInDate: data.checkInDate,
             deviceId: deviceId,
-            bookingReference: data.bookingId
+            bookingReference: data.savedBookingRef || data.bookingId || 'unknown'
           });
           
           if (result.scheduled) {
@@ -130,21 +133,24 @@ const CheckIn = () => {
       case 'CHECKIN_VALIDATED':
         console.log('✅ Check-in validated:', data);
         
+        // ✅ MODIFICATO: Salva anche email e booking ref
         updateCheckInState({
           status: 'validated',
           bookingId: data.bookingId,
-          apartmentName: data.apartmentName,
+          apartmentName: data.apartmentName || (data.mode === 'unassigned_checkin' ? 'To be assigned' : 'Apartment'),
           checkInDate: data.checkInDate,
           checkOutDate: data.checkOutDate,
-          numberOfGuests: data.numberOfGuests,
-          mode: data.mode
+          numberOfGuests: data.numberOfGuests || 1,
+          mode: data.mode,
+          savedEmail: data.savedEmail, // ✅ NUOVO
+          savedBookingRef: data.savedBookingRef // ✅ NUOVO
         });
 
         if (data.checkInDate && deviceId) {
           const result = await scheduleCheckInReminder({
             checkInDate: data.checkInDate,
             deviceId: deviceId,
-            bookingReference: data.bookingId
+            bookingReference: data.savedBookingRef || data.bookingId || 'unknown'
           });
           
           if (result.scheduled) {
@@ -238,11 +244,11 @@ const CheckIn = () => {
   if (showIframe) {
     return (
       <div className="fixed inset-0 z-50 bg-white dark:bg-[#1a1a1a]">
-        {/* ✅ RIMOSSO IL CSS CHE NASCONDE I LINK - Non serve più */}
+        {/* ✅ MODIFICATO: Aumentato padding-bottom da 100px a 180px */}
         <style>{`
           iframe {
-             padding-bottom: 100px !important;
-           }
+            padding-bottom: 180px !important;
+          }
         `}</style>
         {isLoading && !loadError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 dark:bg-[#1a1a1a]/95 z-10">
@@ -279,13 +285,14 @@ const CheckIn = () => {
           </div>
         )}
 
+        {/* ✅ MODIFICATO: Aumentato height da calc(100vh + 100px) a calc(100vh + 180px) */}
         <iframe
           ref={iframeRef}
           src={iframeUrl}
           className="w-full border-0"
           style={{
-            height: 'calc(100vh + 100px)',
-            marginBottom: '-100px'
+            height: 'calc(100vh + 180px)',
+            marginBottom: '-180px'
           }}
           title="Online Check-in"
           allow="camera; geolocation"
@@ -608,7 +615,7 @@ const CheckIn = () => {
             <p className="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2">
               <AlertCircle className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />
               <span>
-                Online check-in is available from <strong>7 days before</strong> your expected arrival date.
+                Online check-in is available from <strong>7 days before</strong> up to <strong>1 day after</strong> your expected arrival date.
                 <span className="block mt-2 text-xs text-gray-500 dark:text-gray-500">
                   💡 <em>Please note: on-site check-in has a cost of €39</em>
                 </span>

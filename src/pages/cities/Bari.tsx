@@ -642,13 +642,13 @@ const Bari: React.FC = () => {
 
   return (
     <div
-      className="giftCardSection overflow-y-auto pb-24"
+      className="absolute inset-0 overflow-y-auto overflow-x-hidden pb-24"
       style={{
-        height: 'calc(100vh - 88px)',
+        bottom: '88px',
+        top: 0,
         WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'none',
-        position: 'relative',
-        zIndex: 1
+        overscrollBehavior: 'contain',
+        touchAction: 'pan-y',
       }}
       ref={mainRef}
     >

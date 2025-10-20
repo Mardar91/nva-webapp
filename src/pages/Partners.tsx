@@ -74,11 +74,13 @@ const openInMaps = (address: string) => {
 const PartnersScreen = () => {
   return (
     <div 
-      className="giftCardSection overflow-y-auto pb-24" 
+      className="absolute inset-0 overflow-y-auto overflow-x-hidden"
       style={{
-        height: 'calc(100vh - 88px)', // Altezza dello schermo meno l'altezza della navbar
-        WebkitOverflowScrolling: 'touch', // Per scrolling fluido su iOS
-        overscrollBehavior: 'none', // Previene lo scroll bounce
+        bottom: '88px',
+        top: 0,
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'contain',
+        touchAction: 'pan-y',
       }}
     >
       <VipTicketHero />

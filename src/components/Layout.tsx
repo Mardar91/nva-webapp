@@ -9,30 +9,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
 
   useEffect(() => {
-    // Creiamo un pool di elementi audio per iOS
     if (isIOS.current) {
       audioRef.current = new Audio('/sounds/click.wav');
       audioRef.current.preload = 'auto';
-      // Precarica multipli elementi audio per iOS
       for (let i = 0; i < 3; i++) {
         const audio = new Audio('/sounds/click.wav');
         audio.preload = 'auto';
         audio.load();
       }
     } else {
-      // Per altri browser, un singolo elemento è sufficiente
       audioRef.current = new Audio('/sounds/click.wav');
       audioRef.current.preload = 'auto';
     }
 
-    // Prova a precaricare l'audio
     const preloadAudio = () => {
       if (audioRef.current) {
         audioRef.current.load();
       }
     };
 
-    // Precarica al primo tocco/click
     document.addEventListener('touchstart', preloadAudio, { once: true });
     document.addEventListener('click', preloadAudio, { once: true });
 
@@ -45,11 +40,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const handleNavClick = () => {
     if (isIOS.current) {
-      // Su iOS, crea una nuova istanza per ogni click
       const audio = new Audio('/sounds/click.wav');
       audio.play().catch(() => {});
     } else if (audioRef.current) {
-      // Per altri browser, riusa l'istanza esistente
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
     }
@@ -67,20 +60,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       className="fixed inset-0 flex flex-col" 
       style={{ 
         background: '#f3f4f6',
-        WebkitOverflowScrolling: 'touch'
       }}
     >
-      <div 
-        className={`flex-1 ${isIframePage ? '' : ''}`}
-        style={{
-          height: `calc(100% - 88px)`,
-          overflowY: 'auto',
-          overscrollBehavior: 'none',
-          WebkitOverflowScrolling: 'touch',
-          paddingTop: 'env(safe-area-inset-top)',
-          paddingBottom: `calc(env(safe-area-inset-bottom) + 88px)`
-        }}
-      >
+      {/* RIMOSSO tutto lo scroll wrapper - lascia che children gestiscano il loro scroll */}
+      <div className="flex-1 relative">
         {children}
       </div>
 

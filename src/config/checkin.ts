@@ -1,9 +1,10 @@
 export const CHECKIN_CONFIG = {
-  // URL del channel manager
-  IFRAME_URL: 'https://extranet.nonnavittoriaapartments.it/checkin/embedded',
-  
+  // URL del channel manager (pagine pubbliche su book.nonnavittoriaapartments.it)
+  IFRAME_URL: 'https://book.nonnavittoriaapartments.it/checkin/embedded',
+
   // Origini consentite per postMessage
   ALLOWED_ORIGINS: [
+    'https://book.nonnavittoriaapartments.it',
     'https://extranet.nonnavittoriaapartments.it',
     'http://localhost:3000',
     'http://localhost:3001'
@@ -19,9 +20,7 @@ export const CHECKIN_CONFIG = {
   CHECKIN_AVAILABLE_DAYS_AFTER: 1
 };
 
-// Verifica ESATTA dell'origine
+// Verifica ESATTA dell'origine (solo match esatto per sicurezza)
 export const isAllowedOrigin = (origin: string): boolean => {
-  return CHECKIN_CONFIG.ALLOWED_ORIGINS.some(allowed => 
-    origin === allowed || origin.startsWith(allowed)
-  );
+  return CHECKIN_CONFIG.ALLOWED_ORIGINS.includes(origin);
 };

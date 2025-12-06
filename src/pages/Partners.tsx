@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "../components/ui/button";
 import VipTicketHero from "../components/VipTicketHero";
-import { Linking } from "react-native";
 
 const attractions = [
   {
@@ -107,7 +106,7 @@ const PartnersScreen = () => {
                 <Button
                   variant="outline"
                   className="w-full mt-2"
-                  onClick={() => Linking.openURL(`tel:${item.phone}`)}
+                  onClick={() => window.open(`tel:${item.phone}`, '_self')}
                 >
                   Call {item.phone}
                 </Button>
@@ -115,7 +114,7 @@ const PartnersScreen = () => {
                   <Button
                     variant="link"
                     className="w-full mt-2"
-                    onClick={() => Linking.openURL(item.website)}
+                    onClick={() => window.open(item.website, '_blank')}
                   >
                     Visit Website
                   </Button>
@@ -124,7 +123,7 @@ const PartnersScreen = () => {
                   <Button
                     variant="link"
                     className="w-full mt-2"
-                    onClick={() => Linking.openURL(item.whatsapp)}
+                    onClick={() => window.open(item.whatsapp, '_blank')}
                   >
                     Contact on WhatsApp
                   </Button>

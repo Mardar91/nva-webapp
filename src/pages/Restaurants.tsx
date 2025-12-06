@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "../components/ui/button";
 import VipTicketHero from "../components/VipTicketHero";
-import { Linking } from "react-native";
 
 const restaurants = [
   {
@@ -43,7 +42,7 @@ const RestaurantScreen = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
       address
     )}`;
-    Linking.openURL(url);
+    window.open(url, '_blank');
   };
 
   return (
@@ -78,7 +77,7 @@ const RestaurantScreen = () => {
             <Button
               variant="outline"
               className="w-full mt-2"
-              onClick={() => Linking.openURL(`tel:${restaurant.phone}`)}
+              onClick={() => window.open(`tel:${restaurant.phone}`, '_self')}
             >
               Call {restaurant.phone}
             </Button>
@@ -86,7 +85,7 @@ const RestaurantScreen = () => {
               <Button
                 variant="link"
                 className="w-full mt-2"
-                onClick={() => Linking.openURL(`https://${restaurant.website}`)}
+                onClick={() => window.open(`https://${restaurant.website}`, '_blank')}
               >
                 Visit Website
               </Button>
@@ -95,7 +94,7 @@ const RestaurantScreen = () => {
               <Button
                 variant="link"
                 className="w-full mt-2"
-                onClick={() => Linking.openURL(restaurant.whatsapp)}
+                onClick={() => window.open(restaurant.whatsapp, '_blank')}
               >
                 Contact on WhatsApp
               </Button>
@@ -104,7 +103,7 @@ const RestaurantScreen = () => {
               <Button
                 variant="link"
                 className="w-full mt-2"
-                onClick={() => Linking.openURL(restaurant.facebook)}
+                onClick={() => window.open(restaurant.facebook, '_blank')}
               >
                 Facebook Page
               </Button>
@@ -113,7 +112,7 @@ const RestaurantScreen = () => {
               <Button
                 variant="link"
                 className="w-full mt-2"
-                onClick={() => Linking.openURL(restaurant.book)}
+                onClick={() => window.open(restaurant.book, '_blank')}
               >
                 Book A Table
               </Button>

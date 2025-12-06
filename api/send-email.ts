@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
 
 // Tipo per la richiesta
@@ -24,8 +24,8 @@ const transporter = nodemailer.createTransport({
 });
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+  req: VercelRequest,
+  res: VercelResponse
 ) {
   // Verifica che il metodo sia POST
   if (req.method !== 'POST') {

@@ -13,6 +13,7 @@ import Explore from "./pages/Explore";
 import BookNow from "./pages/BookNow";
 import CheckIn from "./pages/CheckIn";
 import Partners from "./pages/Partners";
+import AutoLogin from "./pages/AutoLogin";
 import Layout from "./components/Layout";
 import PrivateSettings from "./components/PrivateSettings";
 import MolaDiBari from "./pages/cities/MolaDiBari";
@@ -81,6 +82,7 @@ const AppContent: React.FC = () => {
         <Route path="/explore" element={<Explore />} />
         <Route path="/book" element={<BookNow />} />
         <Route path="/check-in" element={<CheckIn />} />
+        <Route path="/auto-login" element={<AutoLogin />} />
         <Route path="/partners" element={<Partners />} />
         <Route path="/privatesettings/private" element={<PrivateSettings />} />
         <Route path="/cities/mola-di-bari" element={<MolaDiBari />} />

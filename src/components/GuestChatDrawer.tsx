@@ -22,6 +22,7 @@ import {
   RefreshCw,
   AlertCircle,
   CheckCircle2,
+  X,
 } from 'lucide-react';
 import { ChatMessage, fetchChatMessages, sendChatMessage, markMessagesAsRead } from '../lib/guestApi';
 
@@ -215,7 +216,7 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
+      <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col" hideCloseButton>
         {/* Header */}
         <SheetHeader className="p-4 border-b dark:border-gray-800">
           <div className="flex items-center justify-between">
@@ -223,15 +224,25 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
               <MessageCircle className="h-5 w-5" />
               Chat
             </SheetTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => loadMessages()}
-              disabled={isLoading}
-              className="h-8 w-8 p-0"
-            >
-              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => loadMessages()}
+                disabled={isLoading}
+                className="h-8 w-8 p-0"
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           {guestName && (
             <p className="text-sm text-gray-500 dark:text-gray-400">

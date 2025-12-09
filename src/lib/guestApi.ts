@@ -51,10 +51,12 @@ export interface SendMessageResponse {
 
 /**
  * Authenticate guest with booking reference and email
+ * Optionally sends deviceId for push notifications
  */
 export const authenticateGuest = async (
   bookingReference: string,
-  email: string
+  email: string,
+  deviceId?: string | null
 ): Promise<GuestAuthResponse> => {
   try {
     const response = await fetch(`${CHANNEL_MANAGER_URL}/api/public/chat/auth`, {
@@ -62,7 +64,11 @@ export const authenticateGuest = async (
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ bookingReference, email }),
+      body: JSON.stringify({
+        bookingReference,
+        email,
+        ...(deviceId && { deviceId })  // Include deviceId if available
+      }),
     });
 
     const data = await response.json();

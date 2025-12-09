@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, LogIn, Map, MessageCircle, User, LogOut } from "lucide-react";
 import { useGuestSession } from "../hooks/useGuestSession";
+import { useNotifications } from "../hooks/useNotifications";
 import GuestLoginModal from "./GuestLoginModal";
 import GuestChatDrawer from "./GuestChatDrawer";
 
@@ -22,6 +23,9 @@ const HeroSection = () => {
     login,
     logout,
   } = useGuestSession();
+
+  // Get OneSignal deviceId for push notifications
+  const { deviceId } = useNotifications();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showChatDrawer, setShowChatDrawer] = useState(false);
@@ -60,7 +64,8 @@ const HeroSection = () => {
   };
 
   const handleLogin = async (bookingRef: string, email: string): Promise<boolean> => {
-    const success = await login(bookingRef, email);
+    // Pass deviceId to channel manager for push notifications
+    const success = await login(bookingRef, email, deviceId);
     if (success && loginForChat) {
       // Open chat after successful login
       setTimeout(() => {

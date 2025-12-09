@@ -22,7 +22,7 @@ interface UseGuestSessionReturn {
   booking: GuestBooking | null;
   guestName: string | null;
   error: string | null;
-  login: (bookingReference: string, email: string) => Promise<boolean>;
+  login: (bookingReference: string, email: string, deviceId?: string | null) => Promise<boolean>;
   logout: () => void;
   refreshSession: () => Promise<boolean>;
 }
@@ -113,13 +113,18 @@ export const useGuestSession = (): UseGuestSessionReturn => {
 
   /**
    * Login with booking reference and email
+   * Optionally sends deviceId for push notifications
    */
-  const login = useCallback(async (bookingReference: string, email: string): Promise<boolean> => {
+  const login = useCallback(async (
+    bookingReference: string,
+    email: string,
+    deviceId?: string | null
+  ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const result = await authenticateGuest(bookingReference, email);
+      const result = await authenticateGuest(bookingReference, email, deviceId);
 
       if (result.success && result.token && result.booking) {
         saveSession(result.token, result.booking);

@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { GuestBooking, authenticateGuest, fetchBookingInfo } from '../lib/guestApi';
 
 const STORAGE_KEY = 'nva_guest_session';
+const PENDING_TOKEN_KEY = 'nva_pending_login_token';
 
 interface GuestSession {
   token: string;
@@ -15,7 +16,7 @@ interface GuestSession {
   loginAt: string;
 }
 
-interface UseGuestSessionReturn {
+export interface UseGuestSessionReturn {
   isLoggedIn: boolean;
   isLoading: boolean;
   token: string | null;
@@ -23,6 +24,7 @@ interface UseGuestSessionReturn {
   guestName: string | null;
   error: string | null;
   login: (bookingReference: string, email: string, deviceId?: string | null) => Promise<boolean>;
+  loginWithToken: (token: string) => Promise<boolean>;
   logout: () => void;
   refreshSession: () => Promise<boolean>;
 }
@@ -147,6 +149,38 @@ export const useGuestSession = (): UseGuestSessionReturn => {
   }, []);
 
   /**
+   * Login with a pre-generated JWT token (from push notification)
+   * Fetches booking info using the token
+   */
+  const loginWithToken = useCallback(async (token: string): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Fetch booking info using the provided token
+      const result = await fetchBookingInfo(token);
+
+      if (result.success && result.booking) {
+        saveSession(token, result.booking);
+        setSession({
+          token,
+          booking: result.booking,
+          loginAt: new Date().toISOString(),
+        });
+        return true;
+      } else {
+        setError(result.error || 'Invalid token');
+        return false;
+      }
+    } catch (err) {
+      setError('Connection error. Please try again.');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  /**
    * Logout and clear session
    */
   const logout = useCallback(() => {
@@ -187,6 +221,54 @@ export const useGuestSession = (): UseGuestSessionReturn => {
     }
   }, [session?.token, logout]);
 
+  // 🔐 Check for pending login token from push notification (checkin_linked)
+  useEffect(() => {
+    const processPendingToken = async () => {
+      if (typeof window === 'undefined') return;
+
+      const pendingToken = localStorage.getItem(PENDING_TOKEN_KEY);
+      if (!pendingToken) return;
+
+      // Remove the pending token immediately to prevent duplicate processing
+      localStorage.removeItem(PENDING_TOKEN_KEY);
+
+      // Skip if already logged in
+      if (session?.token) {
+        console.log('🔐 Already logged in, skipping pending token');
+        return;
+      }
+
+      console.log('🔐 Processing pending login token from push notification...');
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await fetchBookingInfo(pendingToken);
+
+        if (result.success && result.booking) {
+          saveSession(pendingToken, result.booking);
+          setSession({
+            token: pendingToken,
+            booking: result.booking,
+            loginAt: new Date().toISOString(),
+          });
+          console.log('✅ Auto-login from push notification successful');
+        } else {
+          console.warn('⚠️ Auto-login from push notification failed:', result.error);
+          setError(result.error || 'Invalid token');
+        }
+      } catch (err) {
+        console.error('❌ Auto-login from push notification error:', err);
+        setError('Connection error. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    processPendingToken();
+  }, []); // Run once on mount
+
   // Extract first name from full name for display
   const guestName = session?.booking?.guestName
     ? session.booking.guestName.split(' ')[0]
@@ -200,6 +282,7 @@ export const useGuestSession = (): UseGuestSessionReturn => {
     guestName,
     error,
     login,
+    loginWithToken,
     logout,
     refreshSession,
   };

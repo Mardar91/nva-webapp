@@ -223,18 +223,23 @@ export const useGuestSession = (): UseGuestSessionReturn => {
 
   // 🔐 Check for pending login token from push notification (checkin_linked)
   useEffect(() => {
+    let isProcessing = false;
+
     const processPendingToken = async () => {
       if (typeof window === 'undefined') return;
+      if (isProcessing) return; // Prevent duplicate processing
 
       const pendingToken = localStorage.getItem(PENDING_TOKEN_KEY);
       if (!pendingToken) return;
 
       // Remove the pending token immediately to prevent duplicate processing
       localStorage.removeItem(PENDING_TOKEN_KEY);
+      isProcessing = true;
 
       // Skip if already logged in
       if (session?.token) {
         console.log('🔐 Already logged in, skipping pending token');
+        isProcessing = false;
         return;
       }
 
@@ -263,11 +268,25 @@ export const useGuestSession = (): UseGuestSessionReturn => {
         setError('Connection error. Please try again.');
       } finally {
         setIsLoading(false);
+        isProcessing = false;
       }
     };
 
+    // Process on mount
     processPendingToken();
-  }, []); // Run once on mount
+
+    // Also listen for custom event (when notification arrives in foreground)
+    const handleTokenSet = () => {
+      console.log('🔔 Received nva_pending_login_token_set event');
+      processPendingToken();
+    };
+
+    window.addEventListener('nva_pending_login_token_set', handleTokenSet);
+
+    return () => {
+      window.removeEventListener('nva_pending_login_token_set', handleTokenSet);
+    };
+  }, [session?.token]); // Re-run if session changes
 
   // Extract first name from full name for display
   const guestName = session?.booking?.guestName

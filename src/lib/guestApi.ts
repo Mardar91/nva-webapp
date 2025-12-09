@@ -202,9 +202,58 @@ export const markMessagesAsRead = async (token: string): Promise<boolean> => {
 };
 
 /**
+ * Decode JWT payload without verification
+ * Used for auto-login from email link where token is already trusted
+ */
+const decodeJwtPayload = (token: string): Record<string, unknown> | null => {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const payload = parts[1];
+    // Handle base64url encoding
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('JWT decode error:', error);
+    return null;
+  }
+};
+
+/**
  * Get booking info for logged in guest
+ * First tries to decode from JWT, falls back to API call
  */
 export const fetchBookingInfo = async (token: string): Promise<GuestAuthResponse> => {
+  // Try to decode JWT payload directly (for auto-login tokens from email)
+  const payload = decodeJwtPayload(token);
+
+  if (payload && payload.bookingId) {
+    console.log('📦 Decoded booking info from JWT payload');
+    return {
+      success: true,
+      booking: {
+        id: payload.bookingId as string,
+        bookingReference: (payload.bookingReference as string) || '',
+        guestName: (payload.guestName as string) || 'Guest',
+        guestEmail: (payload.guestEmail as string) || '',
+        apartmentName: (payload.apartmentName as string) || '',
+        checkIn: (payload.checkIn as string) || '',
+        checkOut: (payload.checkOut as string) || '',
+        numberOfGuests: (payload.numberOfGuests as number) || 1,
+        status: 'confirmed',
+      },
+    };
+  }
+
+  // Fallback: try API call for tokens that don't contain booking info
   try {
     const response = await fetch(`${CHANNEL_MANAGER_URL}/api/public/booking/info`, {
       method: 'GET',

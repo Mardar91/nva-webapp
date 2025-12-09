@@ -175,12 +175,18 @@ const CheckIn = () => {
 
       case 'CHECKIN_COMPLETED':
         console.log('🎉 Check-in completed!', data);
-        
+
+        // ✅ FIX: Aggiorna numberOfGuests con il valore effettivo dal check-in completato
         updateCheckInState({
           status: 'completed',
-          completedAt: data.timestamp
+          completedAt: data.timestamp,
+          // Aggiorna numberOfGuests se presente nel messaggio (importante per prenotazioni iCal)
+          ...(data.numberOfGuests && { numberOfGuests: data.numberOfGuests }),
+          // Aggiorna anche altri campi se presenti
+          ...(data.apartmentName && { apartmentName: data.apartmentName }),
+          ...(data.bookingId && { bookingId: data.bookingId })
         });
-        
+
         setTimeout(() => {
           setShowIframe(false);
         }, 2000);

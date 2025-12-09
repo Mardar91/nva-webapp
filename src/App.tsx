@@ -136,7 +136,17 @@ const App: React.FC = () => {
 
       // Gestione notifiche in primo piano - versione corretta
       OneSignal.Notifications.addEventListener('foregroundWillDisplay', function(event) {
-        // Mostra direttamente la notifica dopo un breve ritardo
+        const { additionalData } = event.notification;
+
+        // 🔐 Handle checkin_linked notification for auto-login (foreground)
+        if (additionalData?.type === 'checkin_linked' && additionalData?.token) {
+          console.log('📲 Checkin linked notification received in foreground - saving token');
+          localStorage.setItem('nva_pending_login_token', additionalData.token);
+          // Trigger a custom event so useGuestSession can pick it up immediately
+          window.dispatchEvent(new CustomEvent('nva_pending_login_token_set'));
+        }
+
+        // Mostra la notifica dopo un breve ritardo
         setTimeout(() => {
           event.notification.display();
         }, 500);

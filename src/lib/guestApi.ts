@@ -16,6 +16,28 @@ export interface GuestBooking {
   checkOut: string;
   numberOfGuests: number;
   status: string;
+  onlineCheckInCompleted?: boolean;
+  onlineCheckInCompletedAt?: string | null;
+  expectedArrivalTime?: string | null;
+  source?: string;
+}
+
+export interface AccessCodeApartment {
+  apartmentName: string;
+  accessCode: string;
+  validFrom: string;
+  validUntil: string;
+}
+
+export interface AccessCodeResponse {
+  success: boolean;
+  accessCode?: string;
+  apartmentName?: string;
+  validFrom?: string;
+  validUntil?: string;
+  isGroupBooking?: boolean;
+  apartments?: AccessCodeApartment[];
+  error?: string;
 }
 
 export interface GuestAuthResponse {
@@ -249,6 +271,7 @@ export const fetchBookingInfo = async (token: string): Promise<GuestAuthResponse
         checkOut: (payload.checkOut as string) || '',
         numberOfGuests: (payload.numberOfGuests as number) || 1,
         status: 'confirmed',
+        onlineCheckInCompleted: (payload.onlineCheckInCompleted as boolean) || false,
       },
     };
   }
@@ -281,6 +304,91 @@ export const fetchBookingInfo = async (token: string): Promise<GuestAuthResponse
     return {
       success: false,
       error: 'Connection error',
+    };
+  }
+};
+
+/**
+ * Fetch fresh booking info from API (forces API call, ignores JWT)
+ * Use this to get updated check-in status
+ */
+export const fetchBookingInfoFromApi = async (token: string): Promise<GuestAuthResponse> => {
+  try {
+    const response = await fetch(`${CHANNEL_MANAGER_URL}/api/public/booking/info`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        return {
+          success: false,
+          error: 'Session expired. Please login again.',
+        };
+      }
+      return {
+        success: false,
+        error: data.error || 'Failed to fetch booking info',
+      };
+    }
+
+    return {
+      success: true,
+      booking: data.booking,
+    };
+  } catch (error) {
+    console.error('Fetch booking info error:', error);
+    return {
+      success: false,
+      error: 'Connection error. Please try again.',
+    };
+  }
+};
+
+/**
+ * Fetch access code with email verification
+ * Requires email to match booking for security
+ */
+export const fetchAccessCode = async (
+  token: string,
+  email: string
+): Promise<AccessCodeResponse> => {
+  try {
+    const response = await fetch(`${CHANNEL_MANAGER_URL}/api/public/booking/access-code`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        return {
+          success: false,
+          error: 'Session expired. Please login again.',
+        };
+      }
+      return {
+        success: false,
+        error: data.error || 'Failed to fetch access code',
+      };
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Fetch access code error:', error);
+    return {
+      success: false,
+      error: 'Connection error. Please try again.',
     };
   }
 };

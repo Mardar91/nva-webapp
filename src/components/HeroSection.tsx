@@ -4,9 +4,9 @@
 // 🔧 PURPOSE: Hero section with login/chat bar
 // ============================================
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, LogIn, Map, MessageCircle, User, LogOut } from "lucide-react";
+import { Calendar, LogIn, Map, MessageCircle, User, LogOut, ChevronDown } from "lucide-react";
 import { useGuestSession } from "../hooks/useGuestSession";
 import { useNotifications } from "../hooks/useNotifications";
 import GuestLoginModal from "./GuestLoginModal";
@@ -30,6 +30,20 @@ const HeroSection = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showChatDrawer, setShowChatDrawer] = useState(false);
   const [loginForChat, setLoginForChat] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const heroItems = [
     {
@@ -78,6 +92,7 @@ const HeroSection = () => {
   const handleLogout = () => {
     logout();
     setShowChatDrawer(false);
+    setShowUserMenu(false);
   };
 
   const handleSessionExpired = () => {
@@ -91,35 +106,46 @@ const HeroSection = () => {
     <>
       {/* Fixed Login/Chat Bar - Full width at top */}
       <div
-        className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900"
+        className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 to-blue-800 dark:from-blue-800 dark:to-blue-900"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="flex items-center justify-between px-4 py-2">
           {isLoggedIn ? (
             <>
-              {/* Logged in state */}
-              <div className="flex items-center gap-2 text-white">
-                <User className="h-4 w-4" />
-                <span className="text-sm font-medium truncate max-w-[100px]">
-                  {guestName || 'Guest'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
+              {/* Logged in state - Name with dropdown */}
+              <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={handleChatClick}
+                  onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
                 >
-                  <MessageCircle className="h-4 w-4" />
-                  Chat
+                  <User className="h-4 w-4" />
+                  <span className="truncate max-w-[100px]">
+                    {guestName || 'Guest'}
+                  </span>
+                  <ChevronDown className={`h-3 w-3 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
                 </button>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white/90 px-3 py-1.5 rounded-full text-sm transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </button>
+
+                {/* Dropdown Menu */}
+                {showUserMenu && (
+                  <div className="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
+
+              <button
+                onClick={handleChatClick}
+                className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Chat
+              </button>
             </>
           ) : (
             <>
@@ -145,7 +171,7 @@ const HeroSection = () => {
 
       {/* Spacer for fixed bar */}
       <div
-        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900"
+        className="w-full bg-gradient-to-r from-blue-700 to-blue-800 dark:from-blue-800 dark:to-blue-900"
         style={{
           height: 'calc(40px + env(safe-area-inset-top))',
           minHeight: '40px'

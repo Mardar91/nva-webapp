@@ -5,7 +5,7 @@
 // ============================================
 
 import { useState, useEffect, useCallback } from 'react';
-import { GuestBooking, authenticateGuest, fetchBookingInfo } from '../lib/guestApi';
+import { GuestBooking, authenticateGuest, fetchBookingInfo, fetchBookingInfoFromApi } from '../lib/guestApi';
 
 const STORAGE_KEY = 'nva_guest_session';
 const PENDING_TOKEN_KEY = 'nva_pending_login_token';
@@ -190,7 +190,8 @@ export const useGuestSession = (): UseGuestSessionReturn => {
   }, []);
 
   /**
-   * Refresh session by fetching latest booking info
+   * Refresh session by fetching latest booking info from API
+   * Forces API call to get updated check-in status
    */
   const refreshSession = useCallback(async (): Promise<boolean> => {
     if (!session?.token) return false;
@@ -198,7 +199,8 @@ export const useGuestSession = (): UseGuestSessionReturn => {
     setIsLoading(true);
 
     try {
-      const result = await fetchBookingInfo(session.token);
+      // Use fetchBookingInfoFromApi to force API call (not JWT decode)
+      const result = await fetchBookingInfoFromApi(session.token);
 
       if (result.success && result.booking) {
         saveSession(session.token, result.booking);

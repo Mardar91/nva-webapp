@@ -89,46 +89,22 @@ const HeroSection = () => {
 
   return (
     <>
-      <div className="heroContainer bg-white dark:bg-[#1a1a1a]">
-        {/* Login/Chat Bar */}
-        <div className="w-full bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900 px-4 py-2">
-          <div className="flex items-center justify-between max-w-md mx-auto">
-            {isLoggedIn ? (
-              <>
-                {/* Logged in state */}
-                <div className="flex items-center gap-2 text-white">
-                  <User className="h-4 w-4" />
-                  <span className="text-sm font-medium truncate max-w-[100px]">
-                    {guestName || 'Guest'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleChatClick}
-                    className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    Chat
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white/90 px-3 py-1.5 rounded-full text-sm transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Not logged in state */}
-                <button
-                  onClick={handleLoginClick}
-                  className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-                >
-                  <User className="h-4 w-4" />
-                  Login
-                </button>
+      {/* Fixed Login/Chat Bar - Full width at top */}
+      <div
+        className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="flex items-center justify-between px-4 py-2">
+          {isLoggedIn ? (
+            <>
+              {/* Logged in state */}
+              <div className="flex items-center gap-2 text-white">
+                <User className="h-4 w-4" />
+                <span className="text-sm font-medium truncate max-w-[100px]">
+                  {guestName || 'Guest'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
                 <button
                   onClick={handleChatClick}
                   className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
@@ -136,11 +112,47 @@ const HeroSection = () => {
                   <MessageCircle className="h-4 w-4" />
                   Chat
                 </button>
-              </>
-            )}
-          </div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white/90 px-3 py-1.5 rounded-full text-sm transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Not logged in state */}
+              <button
+                onClick={handleLoginClick}
+                className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+              >
+                <User className="h-4 w-4" />
+                Login
+              </button>
+              <button
+                onClick={handleChatClick}
+                className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Chat
+              </button>
+            </>
+          )}
         </div>
+      </div>
 
+      {/* Spacer for fixed bar */}
+      <div
+        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900"
+        style={{
+          height: 'calc(40px + env(safe-area-inset-top))',
+          minHeight: '40px'
+        }}
+      />
+
+      <div className="heroContainer bg-white dark:bg-[#1a1a1a]">
         {/* Title section */}
         <div className="titleContainer">
           <h1 className="welcomeText mb-1 dark:text-[#60A5FA]">Nonna Vittoria Apartments</h1>

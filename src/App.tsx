@@ -120,7 +120,15 @@ const App: React.FC = () => {
     window.OneSignalDeferred.push(function(OneSignal) {
       // Gestione click sulle notifiche
       OneSignal.Notifications.addEventListener('click', function(event) {
-        const { url } = event.notification;
+        const { url, additionalData } = event.notification;
+
+        // 🔐 Handle checkin_linked notification for auto-login
+        if (additionalData?.type === 'checkin_linked' && additionalData?.token) {
+          console.log('📲 Checkin linked notification clicked - saving token for auto-login');
+          // Save token to localStorage for auto-login on next page load
+          localStorage.setItem('nva_pending_login_token', additionalData.token);
+        }
+
         if (url) {
           window.location.href = url;
         }

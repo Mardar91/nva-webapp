@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useCheckInState } from '../hooks/useCheckInState';
 import { useNotifications } from '../hooks/useNotifications';
+import { useGuestSession } from '../hooks/useGuestSession';
 import { scheduleCheckInReminder } from '../lib/checkInReminders';
 import { CHECKIN_CONFIG, isAllowedOrigin } from '../config/checkin';
 
@@ -35,6 +36,7 @@ const CheckIn = () => {
     daysUntilCheckIn
   } = useCheckInState();
   const { deviceId, isSubscribed } = useNotifications();
+  const { login: guestLogin } = useGuestSession();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [showIframe, setShowIframe] = useState(false);
   const [iframeUrl, setIframeUrl] = useState('');
@@ -187,6 +189,40 @@ const CheckIn = () => {
           ...(data.bookingId && { bookingId: data.bookingId })
         });
 
+        // 🔐 Auto-login for direct bookings (mode='normal')
+        // Channel manager sends email in CHECKIN_COMPLETED, use saved bookingRef from validation
+        if (data.mode === 'normal' && data.email && checkInState.savedBookingRef) {
+          console.log('🔐 Auto-login after check-in completion...');
+          guestLogin(checkInState.savedBookingRef, data.email, deviceId)
+            .then(success => {
+              if (success) {
+                console.log('✅ Auto-login successful');
+              } else {
+                console.warn('⚠️ Auto-login failed');
+              }
+            })
+            .catch(err => {
+              console.error('❌ Auto-login error:', err);
+            });
+        }
+
+        // 🔐 Auto-login for iCal bookings (mode='unassigned_checkin')
+        // Channel manager sends email and bookingReference for iCal check-ins
+        if (data.mode === 'unassigned_checkin' && data.email && data.bookingReference) {
+          console.log('🔐 Auto-login after iCal check-in completion...');
+          guestLogin(data.bookingReference, data.email, deviceId)
+            .then(success => {
+              if (success) {
+                console.log('✅ Auto-login (iCal) successful');
+              } else {
+                console.warn('⚠️ Auto-login (iCal) failed');
+              }
+            })
+            .catch(err => {
+              console.error('❌ Auto-login (iCal) error:', err);
+            });
+        }
+
         setTimeout(() => {
           setShowIframe(false);
         }, 2000);
@@ -197,7 +233,7 @@ const CheckIn = () => {
         setShowIframe(false);
         break;
     }
-  }, [deviceId, updateCheckInState]);
+  }, [deviceId, updateCheckInState, guestLogin, checkInState.savedBookingRef]);
 
   useEffect(() => {
     window.addEventListener('message', handleMessage);
@@ -215,6 +251,10 @@ const CheckIn = () => {
     }
     if (checkInState.savedBookingRef) {
       params.set('bookingRef', checkInState.savedBookingRef);
+    }
+    // Pass deviceId to channel manager for push notifications (iCal scenario)
+    if (deviceId) {
+      params.set('deviceId', deviceId);
     }
 
     const url = `${CHECKIN_CONFIG.IFRAME_URL}?${params.toString()}`;

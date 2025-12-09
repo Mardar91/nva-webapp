@@ -1,26 +1,45 @@
 // ============================================
 // 📱 APP: NVA (React App)
 // 📄 FILE: api/guest-notification.ts
-// 🔧 PURPOSE: Send push notification to guest when admin replies in chat
+// 🔧 PURPOSE: Send push notification to guest (chat replies, check-in linked, etc.)
 // ============================================
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { randomUUID } from 'crypto';
+
+interface NotificationData {
+  type: string;
+  bookingId?: string;
+  bookingReference?: string;
+  email?: string;
+  token?: string;
+  [key: string]: unknown;
+}
 
 interface GuestNotificationRequest {
   deviceId: string;
   bookingRef?: string;
   message?: string;
   title?: string;
+  data?: NotificationData;  // Custom data from channel manager
 }
 
 async function sendGuestNotification(
   deviceId: string,
   title: string = 'New Message',
-  message: string = 'You have received a new message from Nonna Vittoria Apartments'
+  message: string = 'You have received a new message from Nonna Vittoria Apartments',
+  customData?: NotificationData
 ) {
   try {
-    console.log('Sending guest notification:', { deviceId, title, message });
+    console.log('Sending guest notification:', { deviceId, title, message, customData });
+
+    // Build notification data - merge custom data with defaults
+    const notificationData: NotificationData = {
+      type: customData?.type || 'chat_message',
+      notification_id: `notification-${randomUUID()}`,
+      timestamp: new Date().toISOString(),
+      ...customData
+    };
 
     const notificationPayload = {
       app_id: process.env.ONESIGNAL_APP_ID,
@@ -32,12 +51,8 @@ async function sendGuestNotification(
         en: title
       },
       url: "https://nva.vercel.app/",
-      name: `Chat Message - ${new Date().toISOString()}`,
-      data: {
-        type: "chat_message",
-        notification_id: `chat-${randomUUID()}`,
-        timestamp: new Date().toISOString()
-      },
+      name: `Notification - ${new Date().toISOString()}`,
+      data: notificationData,
       priority: 10,
       ios_sound: "default",
       android_sound: "default",
@@ -81,7 +96,7 @@ async function sendGuestNotification(
 }
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {
-  // CORS headers
+  // CORS headers - allow channel manager domain
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -100,13 +115,14 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
   if (request.method === 'POST') {
     try {
-      const { deviceId, bookingRef, message, title } = request.body as GuestNotificationRequest;
+      const { deviceId, bookingRef, message, title, data } = request.body as GuestNotificationRequest;
 
       console.log('Guest notification request:', {
         deviceId: deviceId ? 'present' : 'missing',
         bookingRef,
         hasMessage: !!message,
-        hasTitle: !!title
+        hasTitle: !!title,
+        dataType: data?.type
       });
 
       if (!deviceId) {
@@ -119,7 +135,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       const notificationTitle = title || 'New Message from Nonna Vittoria';
       const notificationMessage = message || 'You have received a new reply. Open the app to read it.';
 
-      const result = await sendGuestNotification(deviceId, notificationTitle, notificationMessage);
+      const result = await sendGuestNotification(deviceId, notificationTitle, notificationMessage, data);
 
       if (result.success) {
         return response.status(200).json({

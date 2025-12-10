@@ -16,13 +16,25 @@ import {
   CheckCircle,
   Home,
   Clock,
-  Loader2
+  Loader2,
+  MapPin,
+  Navigation
 } from 'lucide-react';
 import { fetchAccessCode, AccessCodeApartment } from '../lib/guestApi';
 
 interface AccessCodeSectionProps {
   token: string;
   checkInCompleted: boolean;
+}
+
+interface ApartmentAccessData {
+  apartmentName: string;
+  apartmentAddress?: string;
+  apartmentLatitude?: number | null;
+  apartmentLongitude?: number | null;
+  accessCode: string;
+  validFrom: string;
+  validUntil: string;
 }
 
 const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
@@ -36,6 +48,9 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
   const [accessData, setAccessData] = useState<{
     accessCode: string;
     apartmentName: string;
+    apartmentAddress?: string;
+    apartmentLatitude?: number | null;
+    apartmentLongitude?: number | null;
     validFrom: string;
     validUntil: string;
     isGroupBooking?: boolean;
@@ -60,6 +75,9 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
         setAccessData({
           accessCode: result.accessCode!,
           apartmentName: result.apartmentName!,
+          apartmentAddress: result.apartmentAddress,
+          apartmentLatitude: result.apartmentLatitude,
+          apartmentLongitude: result.apartmentLongitude,
           validFrom: result.validFrom!,
           validUntil: result.validUntil!,
           isGroupBooking: result.isGroupBooking,
@@ -93,6 +111,11 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
     });
   };
 
+  const openGoogleMapsDirections = (lat: number, lng: number) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    window.open(url, '_blank');
+  };
+
   // Not available if check-in not completed
   if (!checkInCompleted) {
     return (
@@ -114,10 +137,21 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
 
   // Show code after verification
   if (showCode && accessData) {
-    const apartments = accessData.isGroupBooking && accessData.apartments
-      ? accessData.apartments
+    const apartments: ApartmentAccessData[] = accessData.isGroupBooking && accessData.apartments
+      ? accessData.apartments.map(apt => ({
+          apartmentName: apt.apartmentName,
+          apartmentAddress: apt.apartmentAddress,
+          apartmentLatitude: apt.apartmentLatitude,
+          apartmentLongitude: apt.apartmentLongitude,
+          accessCode: apt.accessCode,
+          validFrom: apt.validFrom,
+          validUntil: apt.validUntil
+        }))
       : [{
           apartmentName: accessData.apartmentName,
+          apartmentAddress: accessData.apartmentAddress,
+          apartmentLatitude: accessData.apartmentLatitude,
+          apartmentLongitude: accessData.apartmentLongitude,
           accessCode: accessData.accessCode,
           validFrom: accessData.validFrom,
           validUntil: accessData.validUntil
@@ -135,12 +169,33 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
             key={index}
             className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/50 dark:to-indigo-900/50 border border-blue-200 dark:border-blue-700 rounded-xl p-5"
           >
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-2">
               <Home className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <span className="font-semibold text-blue-900 dark:text-blue-300">
                 {apt.apartmentName}
               </span>
             </div>
+
+            {/* Address */}
+            {apt.apartmentAddress && (
+              <div className="flex items-start gap-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <span>{apt.apartmentAddress}</span>
+              </div>
+            )}
+
+            {/* Directions Button */}
+            {apt.apartmentLatitude && apt.apartmentLongitude && (
+              <Button
+                onClick={() => openGoogleMapsDirections(apt.apartmentLatitude!, apt.apartmentLongitude!)}
+                variant="outline"
+                size="sm"
+                className="mb-4 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
+              >
+                <Navigation className="mr-2 h-4 w-4" />
+                Get Directions
+              </Button>
+            )}
 
             <div className="text-center mb-4">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">

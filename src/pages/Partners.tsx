@@ -8,40 +8,43 @@ import {
   Dumbbell,
   Smile,
   Car,
-  Umbrella,
+  Waves,
   MapPin,
   Phone,
   Globe,
   MessageCircle,
-  Percent,
   Sparkles,
 } from "lucide-react";
 
 // Category icons and colors
-const categoryConfig: Record<string, { icon: React.ElementType; gradient: string; iconBg: string; iconColor: string }> = {
+const categoryConfig: Record<string, { icon: React.ElementType; gradient: string; iconBg: string; iconColor: string; border: string }> = {
   "Shopping & Souvenirs": {
     icon: ShoppingBag,
     gradient: "from-pink-500 to-rose-600",
     iconBg: "bg-pink-100 dark:bg-pink-900/30",
     iconColor: "text-pink-600 dark:text-pink-400",
+    border: "border-pink-300 dark:border-pink-700",
   },
   "Wellness & Fitness": {
     icon: Heart,
     gradient: "from-purple-500 to-violet-600",
     iconBg: "bg-purple-100 dark:bg-purple-900/30",
     iconColor: "text-purple-600 dark:text-purple-400",
+    border: "border-purple-300 dark:border-purple-700",
   },
   "Entertainment & Services": {
     icon: Sparkles,
     gradient: "from-blue-500 to-indigo-600",
     iconBg: "bg-blue-100 dark:bg-blue-900/30",
     iconColor: "text-blue-600 dark:text-blue-400",
+    border: "border-blue-300 dark:border-blue-700",
   },
   "Beaches": {
-    icon: Umbrella,
+    icon: Waves,
     gradient: "from-cyan-500 to-teal-600",
     iconBg: "bg-cyan-100 dark:bg-cyan-900/30",
     iconColor: "text-cyan-600 dark:text-cyan-400",
+    border: "border-cyan-300 dark:border-cyan-700",
   },
 };
 
@@ -53,7 +56,7 @@ const itemIcons: Record<string, React.ElementType> = {
   "ATHENA 2000 - GYM & FITNESS": Dumbbell,
   "GOMMOLAND - AMUSEMENT PARK": Smile,
   "CAR RENTAL WITH DELIVERY SERVICE": Car,
-  "NIRVANA BEACH": Umbrella,
+  "NIRVANA BEACH": Waves,
 };
 
 const attractions = [
@@ -139,8 +142,8 @@ const PartnersScreen = () => {
       {/* Section Header */}
       <div className="px-5 pt-6 pb-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-            <Sparkles className="h-5 w-5 text-white" strokeWidth={1.5} />
+          <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+            <Sparkles className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Our Partners</h2>
@@ -174,20 +177,21 @@ const PartnersScreen = () => {
                   return (
                     <div
                       key={itemIndex}
-                      className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700"
+                      className={`bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 ${itemConfig.border}`}
                     >
                       {/* Card Header */}
                       <div className={`bg-gradient-to-r ${itemConfig.gradient} px-4 py-3`}>
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
                               <ItemIcon className="h-5 w-5 text-white" strokeWidth={1.5} />
                             </div>
-                            <h4 className="font-bold text-white text-sm leading-tight">{item.name}</h4>
+                            <h4 className="font-bold text-white text-sm leading-tight truncate">{item.name}</h4>
                           </div>
-                          <div className="bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1 flex-shrink-0">
-                            <Percent className="h-3 w-3 text-white" />
-                            <span className="text-white text-xs font-bold">10%</span>
+                          <div className="relative bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full overflow-hidden flex-shrink-0 ml-2">
+                            <span className="relative z-10 text-white text-xs font-bold whitespace-nowrap">10% OFF</span>
+                            {/* Shimmer effect */}
+                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                           </div>
                         </div>
                       </div>

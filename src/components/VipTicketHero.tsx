@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
-import { Ticket, Sparkles, Gift } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Ticket, Sparkles, Gift, Lock } from "lucide-react";
+import { useGuestSession } from "../hooks/useGuestSession";
 
 const VipTicketHero = () => {
+  const { isLoggedIn } = useGuestSession();
+  const [showToast, setShowToast] = useState(false);
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -27,6 +30,13 @@ const VipTicketHero = () => {
   }, []);
 
   const handleVipTicket = () => {
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
     // Rileva iOS/iPadOS in modo più accurato
     const isAppleDevice = /iPhone|iPad|iPod/.test(navigator.userAgent) && 'maxTouchPoints' in navigator &&
       (navigator.maxTouchPoints > 0);
@@ -58,6 +68,16 @@ const VipTicketHero = () => {
 
   return (
     <div className="relative overflow-hidden">
+      {/* Toast notification */}
+      {showToast && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-lg">
+            <Lock className="h-4 w-4 text-amber-400" />
+            <span className="text-sm font-medium">Log in to download your VIP Ticket</span>
+          </div>
+        </div>
+      )}
+
       {/* Background with gradient */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-gray-800 dark:via-gray-900 dark:to-gray-900">
         {/* Decorative elements */}

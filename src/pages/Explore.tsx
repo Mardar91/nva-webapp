@@ -253,9 +253,9 @@ const cityConfig: Record<string, { gradient: string; border: string; iconBg: str
     iconBg: "bg-amber-100 dark:bg-amber-900/30",
   },
   "Bari": {
-    gradient: "from-purple-500 to-violet-600",
-    border: "border-purple-300 dark:border-purple-700",
-    iconBg: "bg-purple-100 dark:bg-purple-900/30",
+    gradient: "from-rose-500 to-rose-700",
+    border: "border-rose-300 dark:border-rose-700",
+    iconBg: "bg-rose-100 dark:bg-rose-900/30",
   },
 };
 

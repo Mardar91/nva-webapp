@@ -202,12 +202,6 @@ const HeroSection = () => {
               className="w-full h-48 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-            {/* Floating Badge on Image */}
-            <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Mola di Bari, Puglia</span>
-            </div>
           </div>
         </div>
 

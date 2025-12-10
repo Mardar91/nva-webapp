@@ -736,7 +736,7 @@ const Bari: React.FC = () => {
         style={{
           paddingTop: '4rem',
           paddingBottom: '4rem',
-          marginBottom: '0'
+          marginBottom: '1.5rem'
         }}
       >
         {/* Background Image */}

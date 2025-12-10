@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { 
-  Calendar, 
-  MapPin, 
-  ArrowLeft, 
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Calendar,
+  MapPin,
   ArrowRight,
   Building2,
   TreePalm,
@@ -13,7 +12,9 @@ import {
   Map,
   DollarSign,
   Cloud,
-  Trash2
+  Trash2,
+  Compass,
+  Sparkles
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -149,12 +150,13 @@ const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) =
 };
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-    const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-    }).format(event.startDate) : 'Data non disponibile';
-const isCurrentEvent = () => {
-    if(!event.startDate) return null;
+  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+  }).format(event.startDate) : 'Data non disponibile';
+
+  const isCurrentEvent = () => {
+    if (!event.startDate) return null;
 
     const now = new Date();
     const start = new Date(event.startDate);
@@ -166,11 +168,10 @@ const isCurrentEvent = () => {
     tomorrow.setDate(now.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
 
-    if(now >= start && now <= end) return 'today';
-    // Fix per il badge tomorrow - controlla solo per eventi che iniziano esattamente domani
-    if(start.getTime() === tomorrow.getTime()) return 'tomorrow';
+    if (now >= start && now <= end) return 'today';
+    if (start.getTime() === tomorrow.getTime()) return 'tomorrow';
     return null;
-};
+  };
 
   const currentEventType = isCurrentEvent();
 
@@ -181,58 +182,115 @@ const isCurrentEvent = () => {
       transition={{ duration: 0.5 }}
       className="relative"
     >
-      <Card className="hover:shadow-lg transition-shadow duration-200">
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-[#1e3a8a] dark:text-[#60A5FA]">
-                {event.title}
-              </h3>
-              <div className="flex items-center mt-2 text-gray-600 dark:text-gray-300">
-                <MapPin className="w-4 h-4 mr-1" />
-                <span className="text-sm">{event.city}</span>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 border-rose-200 dark:border-rose-800 hover:shadow-lg transition-all duration-200">
+        {/* Card Header */}
+        <div className="bg-gradient-to-r from-rose-500 to-pink-600 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <Calendar className="h-4 w-4 text-white" />
               </div>
-                {event.link && (
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
-                  More info
-                </a>
-              )}
+              <span className="text-white font-bold">{formattedDate}</span>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1 text-[#1e3a8a] dark:text-[#60A5FA]" />
-                <span className="text-sm font-medium">{formattedDate}</span>
+            {currentEventType && (
+              <div className={`px-2.5 py-1 rounded-full ${currentEventType === 'today' ? 'bg-green-500' : 'bg-orange-500'}`}>
+                <span className="text-white text-xs font-bold">
+                  {currentEventType === 'today' ? 'Today' : 'Tomorrow'}
+                </span>
               </div>
-                {currentEventType && <CurrentEventBadge type={currentEventType} />}
-            </div>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Card Content */}
+        <div className="p-4">
+          <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+            {event.title}
+          </h3>
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-3">
+            <div className="w-6 h-6 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center">
+              <MapPin className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
+            </div>
+            <span className="text-sm">{event.city}</span>
+          </div>
+          {event.link && (
+            <a
+              href={event.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-rose-500 hover:text-rose-600 font-medium"
+            >
+              More info
+              <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          )}
+        </div>
+      </div>
     </motion.div>
   );
 };
 
-const CityButton: React.FC<{ 
+// City config for gradients and colors
+const cityConfig: Record<string, { gradient: string; border: string; iconBg: string }> = {
+  "Mola di Bari": {
+    gradient: "from-blue-500 to-indigo-600",
+    border: "border-blue-300 dark:border-blue-700",
+    iconBg: "bg-blue-100 dark:bg-blue-900/30",
+  },
+  "Polignano a Mare": {
+    gradient: "from-cyan-500 to-teal-600",
+    border: "border-cyan-300 dark:border-cyan-700",
+    iconBg: "bg-cyan-100 dark:bg-cyan-900/30",
+  },
+  "Monopoli": {
+    gradient: "from-amber-500 to-orange-600",
+    border: "border-amber-300 dark:border-amber-700",
+    iconBg: "bg-amber-100 dark:bg-amber-900/30",
+  },
+  "Bari": {
+    gradient: "from-purple-500 to-violet-600",
+    border: "border-purple-300 dark:border-purple-700",
+    iconBg: "bg-purple-100 dark:bg-purple-900/30",
+  },
+};
+
+const CityButton: React.FC<{
   city: string;
   icon: React.ReactNode;
   onClick: () => void;
   delay: number;
-}> = ({ city, icon, onClick, delay }) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.5, delay }}
-    className="w-full aspect-square"
-  >
-    <button 
-      onClick={onClick}
-      className="w-full h-full bg-gray-50 dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+}> = ({ city, icon, onClick, delay }) => {
+  const config = cityConfig[city] || cityConfig["Mola di Bari"];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, delay }}
+      className="w-full"
     >
-      <span className="text-[#60A5FA]">{icon}</span>
-      <span className="text-[#1e3a8a] dark:text-[#60A5FA] font-medium text-sm">{city}</span>
-    </button>
-  </motion.div>
-);
+      <button
+        onClick={onClick}
+        className={`w-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 ${config.border} hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+      >
+        {/* Gradient Header */}
+        <div className={`bg-gradient-to-r ${config.gradient} px-4 py-3`}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+              <span className="text-white">{icon}</span>
+            </div>
+            <span className="text-white font-bold">{city}</span>
+          </div>
+        </div>
+        {/* Card Body */}
+        <div className="px-4 py-3 flex items-center justify-between">
+          <span className="text-gray-500 dark:text-gray-400 text-sm">Discover the city</span>
+          <ArrowRight className="h-4 w-4 text-gray-400" />
+        </div>
+      </button>
+    </motion.div>
+  );
+};
 // Note Card component con nuovo sistema di swipe-to-delete
 const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ note, onDelete }) => {
   const [showDeleteButton, setShowDeleteButton] = useState(false);
@@ -292,8 +350,8 @@ const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ no
   );
 };
 
-// Notes Dialog Component
-const NotesDialog: React.FC = () => {
+// Notes Dialog Content Component (extracted for reuse)
+const NotesDialogContent: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>(() => {
     const savedNotes = localStorage.getItem('travel-notes');
     return savedNotes ? JSON.parse(savedNotes) : [];
@@ -303,18 +361,18 @@ const NotesDialog: React.FC = () => {
 
   const saveNote = () => {
     if (!title.trim() || !content.trim()) return;
-    
+
     const newNote = {
       id: Date.now().toString(),
       title,
       content,
       date: new Date().toISOString()
     };
-    
+
     const updatedNotes = [newNote, ...notes];
     setNotes(updatedNotes);
     localStorage.setItem('travel-notes', JSON.stringify(updatedNotes));
-    
+
     setTitle('');
     setContent('');
   };
@@ -325,6 +383,43 @@ const NotesDialog: React.FC = () => {
     localStorage.setItem('travel-notes', JSON.stringify(updatedNotes));
   };
 
+  return (
+    <div className="space-y-4">
+      <div>
+        <Input
+          placeholder="Note title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="mb-2"
+        />
+        <Textarea
+          placeholder="Write your note here..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="min-h-[100px]"
+        />
+        <Button
+          onClick={saveNote}
+          className="mt-2 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white"
+        >
+          Save Note
+        </Button>
+      </div>
+      <div className="space-y-4 max-h-[400px] overflow-y-auto">
+        {notes.map((note) => (
+          <NoteCard
+            key={note.id}
+            note={note}
+            onDelete={deleteNote}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Notes Dialog Component (kept for backward compatibility)
+const NotesDialog: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -338,73 +433,87 @@ const NotesDialog: React.FC = () => {
           <DialogTitle>Travel Notes</DialogTitle>
           <DialogDescription>Add and manage your travel notes</DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div>
-            <Input
-              placeholder="Note title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="mb-2"
-            />
-            <Textarea
-              placeholder="Write your note here..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="min-h-[100px]"
-            />
-            <Button 
-              onClick={saveNote}
-              className="mt-2 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white"
-            >
-              Save Note
-            </Button>
-          </div>
-          <div className="space-y-4 max-h-[400px] overflow-y-auto">
-            {notes.map((note) => (
-              <NoteCard 
-                key={note.id} 
-                note={note} 
-                onDelete={deleteNote}
-              />
-            ))}
-          </div>
-        </div>
+        <NotesDialogContent />
       </DialogContent>
     </Dialog>
   );
 };
 
-// Currency Converter Component
-const CurrencyConverter: React.FC = () => {
+// Currency data
+const currencies: CurrencyOption[] = [
+  { code: 'EUR', name: 'Euro', symbol: '€', flag: '🇪🇺' },
+  { code: 'USD', name: 'US Dollar', symbol: '$', flag: '🇺🇸' },
+  { code: 'GBP', name: 'British Pound', symbol: '£', flag: '🇬🇧' },
+  { code: 'JPY', name: 'Japanese Yen', symbol: '¥', flag: '🇯🇵' }
+];
+
+const rates: Record<string, Record<string, number>> = {
+  EUR: { USD: 1.09, GBP: 0.86, JPY: 158.27, EUR: 1 },
+  USD: { EUR: 0.92, GBP: 0.79, JPY: 145.20, USD: 1 },
+  GBP: { EUR: 1.16, USD: 1.27, JPY: 183.92, GBP: 1 },
+  JPY: { EUR: 0.0063, USD: 0.0069, GBP: 0.0054, JPY: 1 }
+};
+
+// Currency Dialog Content Component (extracted for reuse)
+const CurrencyDialogContent: React.FC = () => {
   const [amount, setAmount] = useState<string>('1');
   const [fromCurrency, setFromCurrency] = useState<string>('EUR');
   const [toCurrency, setToCurrency] = useState<string>('USD');
   const [result, setResult] = useState<string>('');
 
-  const currencies: CurrencyOption[] = [
-    { code: 'EUR', name: 'Euro', symbol: '€', flag: '🇪🇺' },
-    { code: 'USD', name: 'US Dollar', symbol: '$', flag: '🇺🇸' },
-    { code: 'GBP', name: 'British Pound', symbol: '£', flag: '🇬🇧' },
-    { code: 'JPY', name: 'Japanese Yen', symbol: '¥', flag: '🇯🇵' }
-  ];
-
-  const rates: Record<string, Record<string, number>> = {
-    EUR: { USD: 1.09, GBP: 0.86, JPY: 158.27, EUR: 1 },
-    USD: { EUR: 0.92, GBP: 0.79, JPY: 145.20, USD: 1 },
-    GBP: { EUR: 1.16, USD: 1.27, JPY: 183.92, GBP: 1 },
-    JPY: { EUR: 0.0063, USD: 0.0069, GBP: 0.0054, JPY: 1 }
-  };
-
-  const convert = () => {
+  const convert = useCallback(() => {
     const rate = rates[fromCurrency][toCurrency];
     const calculated = (parseFloat(amount) * rate).toFixed(2);
     setResult(calculated);
-  };
+  }, [amount, fromCurrency, toCurrency]);
 
   useEffect(() => {
     convert();
-  }, [amount, fromCurrency, toCurrency]);
+  }, [convert]);
 
+  return (
+    <div className="grid gap-4 py-4">
+      <Input
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="text-lg"
+      />
+      <div className="grid grid-cols-2 gap-4">
+        <select
+          value={fromCurrency}
+          onChange={(e) => setFromCurrency(e.target.value)}
+          className="w-full p-2 rounded-md border dark:bg-gray-800 dark:border-gray-700"
+        >
+          {currencies.map(currency => (
+            <option key={currency.code} value={currency.code}>
+              {currency.flag} {currency.code}
+            </option>
+          ))}
+        </select>
+        <select
+          value={toCurrency}
+          onChange={(e) => setToCurrency(e.target.value)}
+          className="w-full p-2 rounded-md border dark:bg-gray-800 dark:border-gray-700"
+        >
+          {currencies.map(currency => (
+            <option key={currency.code} value={currency.code}>
+              {currency.flag} {currency.code}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="text-center mt-4">
+        <div className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA]">
+          {result} {currencies.find(c => c.code === toCurrency)?.symbol}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Currency Converter Component (kept for backward compatibility)
+const CurrencyConverter: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -418,43 +527,7 @@ const CurrencyConverter: React.FC = () => {
           <DialogTitle>Currency Converter</DialogTitle>
           <DialogDescription>Convert between different currencies</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="text-lg"
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <select
-              value={fromCurrency}
-              onChange={(e) => setFromCurrency(e.target.value)}
-              className="w-full p-2 rounded-md border"
-            >
-              {currencies.map(currency => (
-                <option key={currency.code} value={currency.code}>
-                  {currency.flag} {currency.code}
-                </option>
-              ))}
-            </select>
-            <select
-              value={toCurrency}
-              onChange={(e) => setToCurrency(e.target.value)}
-              className="w-full p-2 rounded-md border"
-            >
-              {currencies.map(currency => (
-                <option key={currency.code} value={currency.code}>
-                  {currency.flag} {currency.code}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="text-center mt-4">
-            <div className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA]">
-              {result} {currencies.find(c => c.code === toCurrency)?.symbol}
-            </div>
-          </div>
-        </div>
+        <CurrencyDialogContent />
       </DialogContent>
     </Dialog>
   );
@@ -690,8 +763,8 @@ if (showWeather) {
 }
 
   return (
-    <div 
-      className="absolute inset-0 overflow-y-auto overflow-x-hidden"
+    <div
+      className="absolute inset-0 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-gray-900"
       style={{
         bottom: '88px',
         top: 0,
@@ -726,65 +799,85 @@ if (showWeather) {
         }
       `}</style>
 
-      <div 
-        className="bg-[#1e3a8a] dark:bg-gray-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
+      {/* Modern Hero Section */}
+      <div
+        className="relative w-screen left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] overflow-hidden"
         style={{
-          paddingTop: '4rem',
-          paddingBottom: '4rem',
-          marginBottom: '2rem'
+          marginBottom: '1.5rem'
         }}
       >
+        {/* Background Image with Overlay */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1932&auto=format&fit=crop)',
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 via-indigo-900/70 to-purple-900/80" />
+
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto px-4"
+          className="relative text-center max-w-3xl mx-auto px-5 py-12"
         >
-          <h1 className="text-3xl font-bold mb-4">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+            <Compass className="h-4 w-4 text-white" />
+            <span className="text-white/90 text-sm font-medium">Your adventure starts here</span>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-3">
             Explore Puglia
           </h1>
-          <p className="text-gray-200 text-lg mb-8">
+          <p className="text-white/80 text-base mb-6">
             Discover magnificent cultural cities and unforgettable events in the surroundings.
           </p>
-          <Button 
+          <button
             onClick={() => scrollToRef.current?.scrollIntoView({ behavior: 'smooth' })}
-            variant="outline" 
-            className="shimmer-button bg-transparent border-white text-white hover:bg-white hover:text-[#1e3a8a] transition-colors"
+            className="shimmer-button inline-flex items-center gap-2 bg-white text-blue-900 font-semibold px-6 py-3 rounded-xl hover:bg-white/90 transition-all hover:scale-105 active:scale-95"
           >
+            <Building2 className="h-5 w-5" />
             Go to Cities
-          </Button>
+          </button>
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-4 pb-8">
-        <section className="mb-12">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6"
-          >
-            Upcoming Events
-          </motion.h2>
-            {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
-             {error && <p className="text-red-600 mb-4">Error: {error}</p>}
-          <div className="grid gap-4">
+      <div className="px-5 pb-8">
+        {/* Events Section */}
+        <section className="mb-8">
+          {/* Section Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">What's happening nearby</p>
+            </div>
+          </div>
+
+          {loading && <p className="text-gray-600 dark:text-gray-400 mb-4">Loading events...</p>}
+          {error && <p className="text-red-600 mb-4">Error: {error}</p>}
+          <div className="space-y-3">
             {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>
         </section>
 
-        <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-8">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6 text-center"
-          >
-            Cities
-          </motion.h2>
-          <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+        {/* Cities Section */}
+        <section ref={scrollToRef} className="mb-8">
+          {/* Section Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Cities to Explore</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Discover the beauty of Puglia</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3">
             {cities.map((city, index) => (
               <CityButton
                 key={city.name}
@@ -797,40 +890,87 @@ if (showWeather) {
           </div>
         </section>
 
-<section className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-  <motion.h2
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.5, delay: 0.2 }}
-    className="text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA] mb-6 text-center"
-  >
-    Utilities
-  </motion.h2>
-  <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg pb-4">
-    {/* Notes Button */}
-    <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow h-16 w-16">
-      <NotesDialog />
+{/* Utilities Section */}
+<section className="mb-8">
+  {/* Section Header */}
+  <div className="flex items-center gap-3 mb-4">
+    <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+      <Sparkles className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+    </div>
+    <div>
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Utilities</h2>
+      <p className="text-sm text-gray-500 dark:text-gray-400">Useful tools for your trip</p>
+    </div>
+  </div>
+
+  <div className="grid grid-cols-4 gap-3">
+    {/* Notes */}
+    <div className="group">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-purple-300 dark:border-purple-700 p-3 flex flex-col items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95">
+        <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 group-hover:bg-purple-500 dark:group-hover:bg-purple-500 flex items-center justify-center mb-1 transition-colors">
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="w-full h-full flex items-center justify-center">
+                <PenLine className="h-5 w-5 text-purple-500 dark:text-purple-400 group-hover:text-white transition-colors" />
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Travel Notes</DialogTitle>
+                <DialogDescription>Add and manage your travel notes</DialogDescription>
+              </DialogHeader>
+              <NotesDialogContent />
+            </DialogContent>
+          </Dialog>
+        </div>
+        <span className="text-purple-700 dark:text-purple-400 text-xs font-medium">Notes</span>
+      </div>
     </div>
 
-    {/* Maps Button */}
-    <Button
-      variant="ghost"
+    {/* Maps */}
+    <button
       onClick={() => setShowMap(true)}
-      className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+      className="group bg-white dark:bg-gray-800 rounded-2xl border border-blue-300 dark:border-blue-700 p-3 flex flex-col items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
     >
-      <Map size={24} className="text-[#60A5FA] mb-1" />
-      <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Maps</span>
-    </Button>
+      <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 group-hover:bg-blue-500 dark:group-hover:bg-blue-500 flex items-center justify-center mb-1 transition-colors">
+        <Map className="h-5 w-5 text-blue-500 dark:text-blue-400 group-hover:text-white transition-colors" />
+      </div>
+      <span className="text-blue-700 dark:text-blue-400 text-xs font-medium">Maps</span>
+    </button>
 
-    {/* Currency Button */}
-    <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow h-16 w-16">
-      <CurrencyConverter />
+    {/* Currency */}
+    <div className="group">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-green-300 dark:border-green-700 p-3 flex flex-col items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95">
+        <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 group-hover:bg-green-500 dark:group-hover:bg-green-500 flex items-center justify-center mb-1 transition-colors">
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="w-full h-full flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-green-500 dark:text-green-400 group-hover:text-white transition-colors" />
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Currency Converter</DialogTitle>
+                <DialogDescription>Convert between different currencies</DialogDescription>
+              </DialogHeader>
+              <CurrencyDialogContent />
+            </DialogContent>
+          </Dialog>
+        </div>
+        <span className="text-green-700 dark:text-green-400 text-xs font-medium">Currency</span>
+      </div>
     </div>
 
-    {/* Weather Button */}
-    <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow h-16 w-16">
-      <WeatherWidget onOpen={() => setShowWeather(true)} />
-    </div>
+    {/* Weather */}
+    <button
+      onClick={() => setShowWeather(true)}
+      className="group bg-white dark:bg-gray-800 rounded-2xl border border-cyan-300 dark:border-cyan-700 p-3 flex flex-col items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
+    >
+      <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-900/20 group-hover:bg-cyan-500 dark:group-hover:bg-cyan-500 flex items-center justify-center mb-1 transition-colors">
+        <Cloud className="h-5 w-5 text-cyan-500 dark:text-cyan-400 group-hover:text-white transition-colors" />
+      </div>
+      <span className="text-cyan-700 dark:text-cyan-400 text-xs font-medium">Weather</span>
+    </button>
   </div>
 </section>
       </div>

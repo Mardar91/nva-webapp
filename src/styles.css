@@ -1,37 +1,32 @@
-/* Base styles PARTE1*/
+/* ============================================
+   NVA WEBAPP - Modern UI Styles
+   ============================================ */
+
+/* Base styles */
 :root {
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
 }
 
-/* Fix scrolling issues on iOS */
-/* html {
-  position: fixed;
-  height: 100%;
-  overflow: hidden;
-  width: 100%;
-  -webkit-overflow-scrolling: touch;
-} */
-
 body {
   height: 100%;
   width: 100%;
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  background-color: #f3f4f6;
+  background-color: #f9fafb;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* IMPORTANTE: previene lo scroll del body */
+  overflow: hidden;
 }
 
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #1a1a1a;
-    color: #ffffff;
+    background-color: #111827;
+    color: #f9fafb;
   }
 }
 
@@ -160,70 +155,78 @@ iframe {
   padding: 0 15px;
   margin-top: -5px;
 }
-/* Dialog/Modal styles PARTE3 */
+/* Dialog/Modal styles - Modern Design */
 .DialogContent {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 24px;
   background: white;
-  border-radius: 12px;
+  border-radius: 24px;
   width: 90vw;
-  max-width: 500px;
+  max-width: 420px;
   max-height: 85vh;
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) translateZ(0); /* Aggiunto translateZ per il fix su iOS */
+  transform: translate(-50%, -50%) translateZ(0);
   -webkit-transform: translate(-50%, -50%) translateZ(0);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   text-align: center;
-  overscroll-behavior: contain; /* Fix per l'effetto rimbalzo nel modal */
-  z-index: 100; /* Fix per il layering */
+  overscroll-behavior: contain;
+  z-index: 100;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   .DialogContent {
-    background: #2d2d2d;
-    color: #ffffff;
+    background: #1f2937;
+    color: #f9fafb;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
 .DialogHeader {
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   width: 100%;
 }
 
 .DialogFooter {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-top: 16px;
   width: 100%;
 }
 
 .DialogFooter button {
   width: 100%;
+  border-radius: 14px;
+  font-weight: 600;
+  padding: 14px 20px;
+  font-size: 15px;
 }
 
 .DialogTitle {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1e3a8a;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
   margin-bottom: 8px;
 }
 
 @media (prefers-color-scheme: dark) {
   .DialogTitle {
-    color: #60a5fa;
+    color: #f9fafb;
   }
 }
 
 .DialogDescription {
-  color: #4b5563;
-  line-height: 1.5;
+  color: #6b7280;
+  line-height: 1.6;
+  font-size: 15px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -566,31 +569,38 @@ iframe {
   font-weight: bold;
 }
 
-/* Delivery button styles */
+/* Modern button styles */
 .delivery-button {
-  background-color: #2563eb;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 14px;
-  height: 36px;
-  line-height: 20px;
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-size: 15px;
+  height: auto;
+  min-height: 48px;
+  line-height: 1.4;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  -webkit-transform: translateZ(0); /* Fix per il rendering su iOS */
+  font-weight: 600;
+  transition: all 0.2s ease;
+  -webkit-transform: translateZ(0);
   transform: translateZ(0);
   position: relative;
   z-index: 2;
+  box-shadow: 0 4px 14px -3px rgba(37, 99, 235, 0.4);
 }
 
 .delivery-button:hover {
-  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px -3px rgba(37, 99, 235, 0.5);
+}
+
+.delivery-button:active {
+  transform: translateY(0);
 }
 
 .golden-vip-button {

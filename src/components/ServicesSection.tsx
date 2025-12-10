@@ -8,6 +8,32 @@ import {
   DialogTitle,
   DialogFooter,
 } from "./ui/dialog";
+import {
+  Car,
+  Wine,
+  Sparkles,
+  ShoppingBag,
+  UtensilsCrossed,
+  Sailboat,
+  ParkingCircle,
+  Croissant,
+  Heart,
+  Bike,
+  WashingMachine,
+  AlertTriangle,
+  Pill,
+  Recycle,
+  Gamepad2,
+  Compass,
+  Info,
+  Phone,
+  MessageCircle,
+  ExternalLink,
+  MapPin,
+  Clock,
+  FileText,
+  X,
+} from "lucide-react";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([
@@ -73,7 +99,7 @@ const MemoryGame = () => {
         <p className="text-lg font-semibold">Moves: {moves}</p>
         {isWon && (
           <div className="mt-4">
-            <p className="text-xl font-bold text-green-600">Congratulations! You won! 🎉</p>
+            <p className="text-xl font-bold text-green-600">Congratulations! You won!</p>
             <Button onClick={resetGame} className="mt-2 bg-blue-600 hover:bg-blue-700 text-white">
               Play Again
             </Button>
@@ -122,62 +148,86 @@ const ServicesSection = () => {
   const services = [
     {
       name: "Taxi",
-      icon: "🚕",
+      icon: Car,
+      gradient: "from-yellow-400 to-amber-500",
+      bgLight: "bg-amber-50",
       onClick: () => (window.location.href = "/taxi"),
     },
     {
       name: "Wine",
-      icon: "🍷",
+      icon: Wine,
+      gradient: "from-red-400 to-rose-600",
+      bgLight: "bg-rose-50",
       onClick: () => setOpenWineModal(true),
     },
     {
       name: "Clean",
-      icon: "🧹",
+      icon: Sparkles,
+      gradient: "from-cyan-400 to-blue-500",
+      bgLight: "bg-cyan-50",
       onClick: () => setOpenCleanModal(true),
     },
     {
       name: "Shop",
-      icon: "🛍️",
+      icon: ShoppingBag,
+      gradient: "from-pink-400 to-fuchsia-500",
+      bgLight: "bg-pink-50",
       onClick: () => window.open("https://store.nonnavittoriaapartments.it", "_blank"),
     },
     {
       name: "Delivery",
-      icon: "🍔",
+      icon: UtensilsCrossed,
+      gradient: "from-orange-400 to-red-500",
+      bgLight: "bg-orange-50",
       onClick: () => setOpenDeliveryModal(true),
     },
     {
-      name: "Rent a Car",
-      icon: "🚗",
+      name: "Rent Car",
+      icon: Car,
+      gradient: "from-slate-500 to-slate-700",
+      bgLight: "bg-slate-50",
       onClick: () => setOpenRentCarModal(true),
     },
     {
       name: "Excursions",
-      icon: "⛵️",
+      icon: Sailboat,
+      gradient: "from-sky-400 to-blue-600",
+      bgLight: "bg-sky-50",
       onClick: () => setOpenExcursionsModal(true),
     },
     {
       name: "Parking",
-      icon: "🅿️",
+      icon: ParkingCircle,
+      gradient: "from-blue-500 to-indigo-600",
+      bgLight: "bg-blue-50",
       onClick: () => setOpenParkingModal(true),
     },
     {
       name: "Breakfast",
-      icon: "🥐",
+      icon: Croissant,
+      gradient: "from-amber-400 to-yellow-500",
+      bgLight: "bg-amber-50",
       onClick: () => setOpenBreakfastModal(true),
     },
     {
       name: "Massage",
-      icon: "💆",
+      icon: Heart,
+      gradient: "from-purple-400 to-violet-600",
+      bgLight: "bg-purple-50",
       onClick: () => setOpenMassageModal(true),
     },
     {
-      name: "Rent a Bike",
-      icon: "🚲",
+      name: "Rent Bike",
+      icon: Bike,
+      gradient: "from-green-400 to-emerald-600",
+      bgLight: "bg-green-50",
       onClick: () => setOpenRentBikeModal(true),
     },
     {
       name: "Laundry",
-      icon: "🧺",
+      icon: WashingMachine,
+      gradient: "from-teal-400 to-cyan-600",
+      bgLight: "bg-teal-50",
       onClick: () => setOpenLaundryModal(true),
     },
   ];
@@ -185,22 +235,30 @@ const ServicesSection = () => {
   const utilities = [
     {
       name: "Emergency",
-      icon: "🚨",
+      icon: AlertTriangle,
+      gradient: "from-red-500 to-red-700",
+      bgLight: "bg-red-50",
       onClick: () => setOpenEmergencyModal(true),
     },
     {
       name: "Pharmacy",
-      icon: "💊",
+      icon: Pill,
+      gradient: "from-emerald-400 to-green-600",
+      bgLight: "bg-emerald-50",
       onClick: () => setOpenPharmacyModal(true),
     },
     {
       name: "Recycle",
-      icon: "♻️",
+      icon: Recycle,
+      gradient: "from-lime-400 to-green-500",
+      bgLight: "bg-lime-50",
       onClick: () => setOpenRecycleModal(true),
     },
     {
       name: "Game",
-      icon: "🎮",
+      icon: Gamepad2,
+      gradient: "from-violet-400 to-purple-600",
+      bgLight: "bg-violet-50",
       onClick: () => setOpenGameModal(true),
     },
   ];
@@ -230,437 +288,582 @@ const ServicesSection = () => {
   };
 
   return (
-  <div className="bg-white mt-5 pt-4">
-    <div className="container mx-auto px-4 flex flex-col" style={{ gap: '1rem' }}>
-      <h2 className="sectionTitle">Our Services</h2>
-      <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg" style={{ marginBottom: '1rem' }}>
-        {services.map((service) => (
-          <Button
-            key={service.name}
-            variant="ghost"
-            onClick={service.onClick}
-            className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
-          >
-            <span className="text-2xl">{service.icon}</span>
-            <span className="text-blue-900 font-medium text-xs mt-1">{service.name}</span>
-          </Button>
-        ))}
-      </div>
+    <div className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 pt-6 pb-8">
+      <div className="px-5">
+        {/* Services Section Header */}
+        <div className="flex items-center gap-2 mb-5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+            <Compass className="h-4 w-4 text-white" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Our Services</h2>
+        </div>
 
-      <h2 className="sectionTitle">Useful Information</h2>
-      <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg pb-4">
-        {utilities.map((utility) => (
-          <Button
-            key={utility.name}
-            variant="ghost"
-            onClick={utility.onClick}
-            className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
-          >
-            <span className="text-2xl">{utility.icon}</span>
-            <span className="text-blue-900 font-medium text-xs mt-1">{utility.name}</span>
-          </Button>
-        ))}
+        {/* Services Grid - Modern Cards */}
+        <div className="grid grid-cols-4 gap-3 mb-8">
+          {services.map((service) => {
+            const IconComponent = service.icon;
+            return (
+              <button
+                key={service.name}
+                onClick={service.onClick}
+                className="group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
+              >
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-2 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                  <IconComponent className="h-5 w-5 text-white" strokeWidth={1.5} />
+                </div>
+                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
+                  {service.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Utilities Section Header */}
+        <div className="flex items-center gap-2 mb-5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-500 to-slate-700 flex items-center justify-center">
+            <Info className="h-4 w-4 text-white" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Useful Information</h2>
+        </div>
+
+        {/* Utilities Grid */}
+        <div className="grid grid-cols-4 gap-3">
+          {utilities.map((utility) => {
+            const IconComponent = utility.icon;
+            return (
+              <button
+                key={utility.name}
+                onClick={utility.onClick}
+                className="group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
+              >
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${utility.gradient} flex items-center justify-center mb-2 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                  <IconComponent className="h-5 w-5 text-white" strokeWidth={1.5} />
+                </div>
+                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
+                  {utility.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
 
       {/* Delivery Modal */}
-<Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Delivery Service</DialogTitle>
-      <DialogDescription className="text-center">
-        Order your food online and have it delivered directly to your apartment every day except Wednesday.
-        <div className="mt-4 mb-4">
-          <div className="font-semibold">MONDAY - SATURDAY:</div>
-          <div>10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM</div>
-        </div>
-        <div className="mb-4">
-          <div className="font-semibold">SUNDAY:</div>
-          <div>9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM</div>
-        </div>
-      </DialogDescription>
-    </DialogHeader>
-    <div className="flex flex-col items-center w-full max-w-sm mx-auto">
-      <div className="grid grid-cols-2 gap-2 w-full mb-4">
-        <button
-          onClick={() => {
-            window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank");
-          }}
-          className="delivery-button"
-        >
-          View Menu
-        </button>
-        <button
-          onClick={() => {
-            window.location.href = "tel:+390804741063";
-          }}
-          className="delivery-button"
-        >
-          Call Now
-        </button>
-      </div>
-      
-      <div className="text-center w-full mb-4">
-        <p className="text-gray-600 mb-2">or order online with the code:</p>
-        <p className="font-bold text-gray-800 text-lg mb-2">NONNAVITTORIA</p>
-        <p className="text-gray-600 mb-4">and get 5% OFF</p>
-      </div>
-      
-      <button
-        onClick={() => {
-          window.open("https://2ly.link/1yEMK", "_blank");
-        }}
-        className="delivery-button w-full"
-      >
-        Download the App
-      </button>
-    </div>
-  </DialogContent>
-</Dialog>
+      <Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
+        <DialogContent className="p-0 overflow-hidden">
+          {/* Header with gradient */}
+          <div className="bg-gradient-to-br from-orange-500 to-red-600 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <UtensilsCrossed className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Delivery Service</DialogTitle>
+            </DialogHeader>
+          </div>
 
-      {/* Altri Modal con la stessa struttura */}
-      <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Rent a Car</DialogTitle>
-            <DialogDescription>
-              Rent a car at exclusive rates through our trusted partner. Enjoy the convenience of having the vehicle delivered directly to your location..
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              onClick={() => {
-                window.location.href = "tel:+393493425023";
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+              Order your food online and have it delivered directly to your apartment every day except Wednesday.
+            </p>
+
+            {/* Schedule */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-orange-500" />
+                <div>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Monday - Saturday</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-orange-500" />
+                <div>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Sunday</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <button
+                onClick={() => window.open("https://www.pugliainbocca.it/wp-content/uploads/2023/03/pugliainbocca-menu-2023.pdf", "_blank")}
+                className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-xl transition-colors"
+              >
+                <FileText className="h-4 w-4" />
+                View Menu
+              </button>
+              <button
+                onClick={() => window.location.href = "tel:+390804741063"}
+                className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-xl transition-colors"
+              >
+                <Phone className="h-4 w-4" />
+                Call Now
+              </button>
+            </div>
+
+            {/* Discount Code */}
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-4 mb-4 text-center border border-orange-200 dark:border-orange-800">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Order online with the code:</p>
+              <p className="font-bold text-orange-600 dark:text-orange-400 text-xl mb-1">NONNAVITTORIA</p>
+              <p className="text-green-600 dark:text-green-400 text-sm font-medium">and get 5% OFF</p>
+            </div>
+
+            <button
+              onClick={() => window.open("https://2ly.link/1yEMK", "_blank")}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
+              <ExternalLink className="h-4 w-4" />
+              Download the App
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rent Car Modal */}
+      <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-slate-600 to-slate-800 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Car className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Rent a Car</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
+              Rent a car at exclusive rates through our trusted partner. Enjoy the convenience of having the vehicle delivered directly to your location.
+            </p>
+            <button
+              onClick={() => window.location.href = "tel:+393493425023"}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-700 hover:to-slate-900 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
+            >
+              <Phone className="h-4 w-4" />
               Call Now
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Wine Modal */}
       <Dialog open={openWineModal} onOpenChange={setOpenWineModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Room Service</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-red-500 to-rose-700 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Wine className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Room Service</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               Request a bottle of wine or prosecco to be available upon arrival at a special price (subject to availability). To place an order, contact us on WhatsApp.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
+            </p>
+            <button
               onClick={() => {
-                const phoneNumber = "+393458381107";
-                window.location.href = `https://wa.me/${phoneNumber}`;
+                window.location.href = "https://wa.me/+393458381107";
                 setOpenWineModal(false);
               }}
-              className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
+              <MessageCircle className="h-4 w-4" />
               Contact us on WhatsApp
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Clean Modal */}
       <Dialog open={openCleanModal} onOpenChange={setOpenCleanModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Cleaning Service</DialogTitle>
-            <DialogDescription>Request a cleaning service during your stay for €20.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-cyan-500 to-blue-600 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Sparkles className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Cleaning Service</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-xl p-4 mb-6 text-center border border-cyan-200 dark:border-cyan-800">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Service price</p>
+              <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">€20</p>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
+              Request a cleaning service during your stay.
+            </p>
+            <button
               onClick={() => {
-                const message = encodeURIComponent(
-                  "Hello, I would like to request a cleaning service for my apartment. Please let me know the available time slots."
-                );
-                const phoneNumber = "+393458381107";
-                window.location.href = `https://wa.me/${phoneNumber}?text=${message}`;
+                const message = encodeURIComponent("Hello, I would like to request a cleaning service for my apartment. Please let me know the available time slots.");
+                window.location.href = `https://wa.me/+393458381107?text=${message}`;
                 setOpenCleanModal(false);
               }}
-              className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
+              <MessageCircle className="h-4 w-4" />
               Request on WhatsApp
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Excursions Modal */}
       <Dialog open={openExcursionsModal} onOpenChange={setOpenExcursionsModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Discover Amazing Excursions</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-sky-500 to-blue-700 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Sailboat className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Discover Amazing Excursions</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               Experience incredible adventures and unforgettable moments in our beautiful region.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              onClick={() => {
-                window.open("https://www.getyourguide.com/monopoli-l98256/polignano-a-mare-tour-privato-in-barca-con-aperitivo-t787847", "_blank");
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+            </p>
+            <button
+              onClick={() => window.open("https://www.getyourguide.com/monopoli-l98256/polignano-a-mare-tour-privato-in-barca-con-aperitivo-t787847", "_blank")}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-blue-700 hover:from-sky-600 hover:to-blue-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
-              🚤 Boat Tours
-            </Button>
-          </DialogFooter>
+              <Sailboat className="h-4 w-4" />
+              Boat Tours
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Parking Modal */}
       <Dialog open={openParkingModal} onOpenChange={setOpenParkingModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Parking Information</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <ParkingCircle className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Parking Information</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
               Nonna Vittoria Apartments does not currently provide private parking. However, there are several secure, free parking options on the surrounding streets:
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col space-y-2">
-            {parkingStreets.map((street) => (
-              <Button
-                key={street.name}
-                variant="outline"
-                onClick={() => openInMaps(street.address)}
-                className="w-full text-left justify-start"
-              >
-                {street.name}
-              </Button>
-            ))}
+            </p>
+            <div className="space-y-2">
+              {parkingStreets.map((street) => (
+                <button
+                  key={street.name}
+                  onClick={() => openInMaps(street.address)}
+                  className="w-full flex items-center gap-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 p-3 rounded-xl transition-colors text-left"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <span className="text-gray-900 dark:text-white font-medium text-sm">{street.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Breakfast Modal */}
-<Dialog open={openBreakfastModal} onOpenChange={setOpenBreakfastModal}>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Breakfast Service</DialogTitle>
-      <DialogDescription className="text-center">
-        In our apartments, we offer complimentary coffee pods and croissants upon arrival. If you would like to order more, use the button below to place an order, price varies based on quantity (subject to availability).
-        
-        <div className="mt-6 flex flex-col gap-4">
-          <Button
-            onClick={() => {
-              const message = encodeURIComponent("I would like to order coffee pods and croissants.");
-              window.location.href = `https://wa.me/393458381107?text=${message}`;
-            }}
-            className="delivery-button bg-[#25D366] hover:bg-[#128C7E]"
-          >
-            Order on WhatsApp
-          </Button>
-
-          <div className="mt-4 text-left">
-            <p className="mb-4">If you prefer to have breakfast outside, we recommend the following place:</p>
-            
-            <Button
-              onClick={() => {
-                const address = encodeURIComponent("Café L'Incontro, Piazza Risorgimento, 70042 Mola di Bari BA, Italia");
-                window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
-              }}
-              className="delivery-button bg-blue-600 hover:bg-blue-700"
-            >
-              Caffè l'Incontro
-            </Button>
+      <Dialog open={openBreakfastModal} onOpenChange={setOpenBreakfastModal}>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-amber-500 to-yellow-600 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Croissant className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Breakfast Service</DialogTitle>
+            </DialogHeader>
           </div>
-        </div>
-      </DialogDescription>
-    </DialogHeader>
-  </DialogContent>
-</Dialog>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+              In our apartments, we offer complimentary coffee pods and croissants upon arrival. If you would like to order more, use the button below to place an order, price varies based on quantity (subject to availability).
+            </p>
+
+            <button
+              onClick={() => {
+                const message = encodeURIComponent("I would like to order coffee pods and croissants.");
+                window.location.href = `https://wa.me/393458381107?text=${message}`;
+              }}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg mb-4"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Order on WhatsApp
+            </button>
+
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">If you prefer to have breakfast outside, we recommend:</p>
+              <button
+                onClick={() => {
+                  const address = encodeURIComponent("Café L'Incontro, Piazza Risorgimento, 70042 Mola di Bari BA, Italia");
+                  window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
+                }}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white font-semibold py-3 px-4 rounded-xl transition-all"
+              >
+                <MapPin className="h-4 w-4" />
+                Caffè l'Incontro
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Massage Modal */}
       <Dialog open={openMassageModal} onOpenChange={setOpenMassageModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Massage Service</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-purple-500 to-violet-700 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Heart className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Massage Service</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               Enjoy the convenience of booking a massage directly in your apartment, subject to availability.
-              <div className="mt-4 flex flex-col space-y-2">
-                <Button
-                  onClick={() => {
-                    window.open("https://nonnavittoriaapartments.it/massage.pdf", "_blank");
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Price List
-                </Button>
-                <Button
-                  onClick={() => {
-                    window.location.href = "https://wa.me/491794265253";
-                  }}
-                  className="bg-[#25D366] hover:bg-[#128C7E] text-white"
-                >
-                  Contact on WhatsApp
-                </Button>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => window.open("https://nonnavittoriaapartments.it/massage.pdf", "_blank")}
+                className="w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-xl transition-colors"
+              >
+                <FileText className="h-4 w-4" />
+                View Price List
+              </button>
+              <button
+                onClick={() => window.location.href = "https://wa.me/491794265253"}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Contact on WhatsApp
+              </button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Rent a Bike Modal */}
       <Dialog open={openRentBikeModal} onOpenChange={setOpenRentBikeModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Rent a Bike</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-green-500 to-emerald-700 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Bike className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Rent a Bike</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               Rent a bicycle for convenient and efficient transportation. Availability upon request.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              onClick={() => {
-                window.location.href = "https://wa.me/393458381107";
-              }}
-              className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full"
+            </p>
+            <button
+              onClick={() => window.location.href = "https://wa.me/393458381107"}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
+              <MessageCircle className="h-4 w-4" />
               Check Availability on WhatsApp
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Laundry Modal */}
       <Dialog open={openLaundryModal} onOpenChange={setOpenLaundryModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Laundry Services</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-teal-500 to-cyan-700 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <WashingMachine className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Laundry Services</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
               For professional laundry services, visit:
-              <div className="mt-4 flex flex-col space-y-2">
-                <Button
-                  variant="outline"
-                  onClick={() => openInMaps("Via G. Salvemini, 5/B, 70042 Mola di Bari")}
-                  className="justify-start text-left"
-                >
-                  Via G. Salvemini, 5/B, 70042 Mola di Bari
-                </Button>
-                <Button
-                  onClick={() => {
-                    window.location.href = "tel:+390804733856";
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Call Now
-                </Button>
+            </p>
+            <button
+              onClick={() => openInMaps("Via G. Salvemini, 5/B, 70042 Mola di Bari")}
+              className="w-full flex items-center gap-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 p-3 rounded-xl transition-colors text-left mb-3"
+            >
+              <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0">
+                <MapPin className="h-5 w-5 text-teal-600 dark:text-teal-400" />
               </div>
-            </DialogDescription>
-          </DialogHeader>
+              <span className="text-gray-900 dark:text-white font-medium text-sm">Via G. Salvemini, 5/B, 70042 Mola di Bari</span>
+            </button>
+            <button
+              onClick={() => window.location.href = "tel:+390804733856"}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-700 hover:from-teal-600 hover:to-cyan-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
+            >
+              <Phone className="h-4 w-4" />
+              Call Now
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Emergency Modal */}
       <Dialog open={openEmergencyModal} onOpenChange={setOpenEmergencyModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Emergency Numbers</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-red-600 to-red-800 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <AlertTriangle className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Emergency Numbers</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
               If you need help, here are all the useful numbers:
-              <div className="mt-4 flex flex-col space-y-2">
-                <Button
-                  onClick={() => {
-                    window.location.href = "tel:112";
-                  }}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                >
-                  🚔 Police - 112
-                </Button>
-                <Button
-                  onClick={() => {
-                    window.location.href = "tel:118";
-                  }}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                >
-                  🚑 Ambulance - 118
-                </Button>
-                <Button
-                  onClick={() => {
-                    window.location.href = "tel:115";
-                  }}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                >
-                  🚒 Fire Department - 115
-                </Button>
-                <Button
-                  onClick={() => {
-                    window.location.href = "tel:+393928431675";
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  🏠 Nonna Vittoria Apartments - +39 392 843 1675
-                </Button>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
+            </p>
+            <div className="space-y-2">
+              <button
+                onClick={() => window.location.href = "tel:112"}
+                className="w-full flex items-center gap-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 p-3 rounded-xl transition-colors border border-red-200 dark:border-red-800"
+              >
+                <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <Phone className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold text-gray-900 dark:text-white">Police</p>
+                  <p className="text-red-600 dark:text-red-400 font-bold">112</p>
+                </div>
+              </button>
+              <button
+                onClick={() => window.location.href = "tel:118"}
+                className="w-full flex items-center gap-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 p-3 rounded-xl transition-colors border border-red-200 dark:border-red-800"
+              >
+                <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <Phone className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold text-gray-900 dark:text-white">Ambulance</p>
+                  <p className="text-red-600 dark:text-red-400 font-bold">118</p>
+                </div>
+              </button>
+              <button
+                onClick={() => window.location.href = "tel:115"}
+                className="w-full flex items-center gap-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 p-3 rounded-xl transition-colors border border-red-200 dark:border-red-800"
+              >
+                <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <Phone className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold text-gray-900 dark:text-white">Fire Department</p>
+                  <p className="text-red-600 dark:text-red-400 font-bold">115</p>
+                </div>
+              </button>
+              <button
+                onClick={() => window.location.href = "tel:+393928431675"}
+                className="w-full flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 p-3 rounded-xl transition-colors border border-blue-200 dark:border-blue-800"
+              >
+                <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                  <Phone className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold text-gray-900 dark:text-white">Nonna Vittoria Apartments</p>
+                  <p className="text-blue-600 dark:text-blue-400 font-bold">+39 392 843 1675</p>
+                </div>
+              </button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Pharmacy Modal */}
       <Dialog open={openPharmacyModal} onOpenChange={setOpenPharmacyModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Pharmacy Information</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-emerald-500 to-green-700 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Pill className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Pharmacy Information</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               Here you can view the pharmacies on duty:
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="DialogFooter">
-            <Button
-              onClick={() => {
-                window.open("https://www.farmaciediturno.org/comune.asp?cod=72028", "_blank");
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+            </p>
+            <button
+              onClick={() => window.open("https://www.farmaciediturno.org/comune.asp?cod=72028", "_blank")}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-700 hover:from-emerald-600 hover:to-green-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
+              <ExternalLink className="h-4 w-4" />
               View On-Duty Pharmacies
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Recycle Modal */}
-<Dialog open={openRecycleModal} onOpenChange={setOpenRecycleModal}>
-  <DialogContent className="DialogContent">
-    <DialogHeader>
-      <DialogTitle>Recycling Information</DialogTitle>
-      <DialogDescription>
-        Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.
-        
-        <div className="mt-4 mb-4 text-left">
-          <p className="font-semibold mb-2">Separate the waste as follows:</p>
-          <p className="mb-2">🍌 Organic waste</p>
-          <p className="mb-2">🥫 Plastic and cans</p>
-          <p className="mb-2">🧻 Paper</p>
-        </div>
-      </DialogDescription>
-    </DialogHeader>
-    <DialogFooter className="DialogFooter">
-      <Button
-        onClick={() => {
-          window.location.href = "https://wa.me/393458381107";
-        }}
-        className="delivery-button bg-[#25D366] hover:bg-[#128C7E]"
-      >
-        Schedule a Collection
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+      <Dialog open={openRecycleModal} onOpenChange={setOpenRecycleModal}>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-lime-500 to-green-600 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Recycle className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Recycling Information</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+              Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.
+            </p>
+            <div className="bg-lime-50 dark:bg-lime-900/20 rounded-xl p-4 mb-4 border border-lime-200 dark:border-lime-800">
+              <p className="font-semibold text-gray-900 dark:text-white mb-3">Separate the waste as follows:</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-lg">🍌</span>
+                  <span className="text-gray-700 dark:text-gray-300">Organic waste</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-lg">🥫</span>
+                  <span className="text-gray-700 dark:text-gray-300">Plastic and cans</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-lg">🧻</span>
+                  <span className="text-gray-700 dark:text-gray-300">Paper</span>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => window.location.href = "https://wa.me/393458381107"}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Schedule a Collection
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Game Modal */}
       <Dialog open={openGameModal} onOpenChange={setOpenGameModal}>
-        <DialogContent className="DialogContent">
-          <DialogHeader>
-            <DialogTitle>Memory Game</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-violet-500 to-purple-700 px-6 py-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+              <Gamepad2 className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Memory Game</DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
               Find all the matching pairs! Click on the cards to flip them and try to match them with as few moves as possible.
-            </DialogDescription>
-          </DialogHeader>
-          <MemoryGame />
+            </p>
+            <MemoryGame />
+          </div>
         </DialogContent>
       </Dialog>
 

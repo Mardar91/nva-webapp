@@ -22,7 +22,7 @@ const Home: React.FC = () => {
 
   return (
     <div
-      className="absolute inset-0 overflow-y-auto overflow-x-hidden"
+      className="absolute inset-0 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-gray-900"
       style={{
         bottom: '88px',
         top: 0,
@@ -31,12 +31,12 @@ const Home: React.FC = () => {
         touchAction: 'pan-y',
       }}
     >
-      <div className="flex flex-col w-full min-h-full pb-24">
+      <div className="flex flex-col w-full min-h-full pb-8">
         <HeroSection />
-        <div className="mt-4">
+        <div className="mt-2">
           <SpecialOffers />
         </div>
-        <div className="mt-4">
+        <div className="mt-2">
           <ServicesSection />
         </div>
         <FloatingChatButton

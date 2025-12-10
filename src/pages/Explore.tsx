@@ -193,7 +193,12 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
               <span className="text-white font-bold">{formattedDate}</span>
             </div>
             {currentEventType && (
-              <div className={`px-2.5 py-1 rounded-full ${currentEventType === 'today' ? 'bg-green-500' : 'bg-orange-500'}`}>
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${currentEventType === 'today' ? 'bg-green-500' : 'bg-orange-500'}`}>
+                {/* Live ping effect */}
+                <span className="relative flex h-2 w-2">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${currentEventType === 'today' ? 'bg-white' : 'bg-white'}`}></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
                 <span className="text-white text-xs font-bold">
                   {currentEventType === 'today' ? 'Today' : 'Tomorrow'}
                 </span>

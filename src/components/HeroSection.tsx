@@ -1,12 +1,12 @@
 // ============================================
 // 📱 APP: NVA (React App)
 // 📄 FILE: src/components/HeroSection.tsx
-// 🔧 PURPOSE: Hero section with login/chat bar
+// 🔧 PURPOSE: Hero section with login bar
 // ============================================
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, LogIn, Map, MessageCircle, User, LogOut, ChevronDown } from "lucide-react";
+import { Calendar, LogIn, Map, User, LogOut, ChevronDown } from "lucide-react";
 import { useGuestSession } from "../hooks/useGuestSession";
 import { useNotifications } from "../hooks/useNotifications";
 import GuestLoginModal from "./GuestLoginModal";
@@ -29,7 +29,6 @@ const HeroSection = () => {
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showChatDrawer, setShowChatDrawer] = useState(false);
-  const [loginForChat, setLoginForChat] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -76,28 +75,12 @@ const HeroSection = () => {
   ];
 
   const handleLoginClick = () => {
-    setLoginForChat(false);
     setShowLoginModal(true);
-  };
-
-  const handleChatClick = () => {
-    if (isLoggedIn) {
-      setShowChatDrawer(true);
-    } else {
-      setLoginForChat(true);
-      setShowLoginModal(true);
-    }
   };
 
   const handleLogin = async (bookingRef: string, email: string): Promise<boolean> => {
     // Pass deviceId to channel manager for push notifications
     const success = await login(bookingRef, email, deviceId);
-    if (success && loginForChat) {
-      // Open chat after successful login
-      setTimeout(() => {
-        setShowChatDrawer(true);
-      }, 300);
-    }
     return success;
   };
 
@@ -110,73 +93,53 @@ const HeroSection = () => {
   const handleSessionExpired = () => {
     logout();
     setShowChatDrawer(false);
-    setLoginForChat(true);
     setShowLoginModal(true);
   };
 
   return (
     <>
-      {/* Fixed Login/Chat Bar - Full width at top */}
+      {/* Fixed Login Bar - Full width at top */}
       <div
         className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 to-blue-800 dark:from-blue-800 dark:to-blue-900"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center justify-center px-4 py-2">
           {isLoggedIn ? (
-            <>
-              {/* Logged in state - Name with dropdown */}
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-                >
-                  <User className="h-4 w-4" />
-                  <span className="truncate max-w-[100px]">
-                    {guestName || 'Guest'}
-                  </span>
-                  <ChevronDown className={`h-3 w-3 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
-                </button>
-
-                {/* Dropdown Menu */}
-                {showUserMenu && (
-                  <div className="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-
+            /* Logged in state - Name with dropdown */
+            <div className="relative" ref={userMenuRef}>
               <button
-                onClick={handleChatClick}
-                className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Chat
-              </button>
-            </>
-          ) : (
-            <>
-              {/* Not logged in state */}
-              <button
-                onClick={handleLoginClick}
+                onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
               >
                 <User className="h-4 w-4" />
-                Login
+                <span className="truncate max-w-[100px]">
+                  {guestName || 'Guest'}
+                </span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
               </button>
-              <button
-                onClick={handleChatClick}
-                className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Chat
-              </button>
-            </>
+
+              {/* Dropdown Menu */}
+              {showUserMenu && (
+                <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Not logged in state */
+            <button
+              onClick={handleLoginClick}
+              className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+            >
+              <User className="h-4 w-4" />
+              Login
+            </button>
           )}
         </div>
       </div>
@@ -228,10 +191,10 @@ const HeroSection = () => {
         onLogin={handleLogin}
         isLoading={isLoading}
         error={error}
-        redirectToChat={loginForChat}
+        redirectToChat={false}
       />
 
-      {/* Chat Drawer */}
+      {/* Chat Drawer - opened via FloatingChatButton event */}
       <GuestChatDrawer
         isOpen={showChatDrawer}
         onClose={() => setShowChatDrawer(false)}

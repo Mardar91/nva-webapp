@@ -35,6 +35,7 @@ import {
 import { useGuestSession } from "../hooks/useGuestSession";
 import { fetchAccessCode, AccessCodeResponse, AccessCodeApartment } from "../lib/guestApi";
 import GuestLoginModal from "../components/GuestLoginModal";
+import GuestChatDrawer from "../components/GuestChatDrawer";
 import { useNotifications } from "../hooks/useNotifications";
 
 const MyStay: React.FC = () => {
@@ -53,6 +54,7 @@ const MyStay: React.FC = () => {
   const { deviceId } = useNotifications();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showChatDrawer, setShowChatDrawer] = useState(false);
   const [accessCodeData, setAccessCodeData] = useState<AccessCodeResponse | null>(null);
   const [accessCodeLoading, setAccessCodeLoading] = useState(false);
   const [accessCodeError, setAccessCodeError] = useState<string | null>(null);
@@ -67,6 +69,18 @@ const MyStay: React.FC = () => {
       refreshSession();
     }
   }, []);
+
+  // Listen for openGuestChat event
+  useEffect(() => {
+    const handleOpenGuestChat = () => {
+      if (isLoggedIn) {
+        setShowChatDrawer(true);
+      }
+    };
+
+    window.addEventListener('openGuestChat', handleOpenGuestChat);
+    return () => window.removeEventListener('openGuestChat', handleOpenGuestChat);
+  }, [isLoggedIn]);
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -147,6 +161,11 @@ const MyStay: React.FC = () => {
   const handleLogin = async (bookingRef: string, email: string): Promise<boolean> => {
     const success = await login(bookingRef, email, deviceId);
     return success;
+  };
+
+  // Handle session expired from chat
+  const handleSessionExpired = () => {
+    setShowChatDrawer(false);
   };
 
   // Not logged in view
@@ -664,9 +683,7 @@ const MyStay: React.FC = () => {
             </button>
 
             <button
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent('openGuestChat'));
-              }}
+              onClick={() => setShowChatDrawer(true)}
               className="bg-white dark:bg-gray-800 rounded-2xl border-2 border-blue-200 dark:border-blue-800 p-4 hover:shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-3 mx-auto">
@@ -678,6 +695,15 @@ const MyStay: React.FC = () => {
           </div>
         </section>
       </div>
+
+      {/* Guest Chat Drawer */}
+      <GuestChatDrawer
+        isOpen={showChatDrawer}
+        onClose={() => setShowChatDrawer(false)}
+        token={token}
+        guestName={guestName}
+        onSessionExpired={handleSessionExpired}
+      />
     </div>
   );
 };

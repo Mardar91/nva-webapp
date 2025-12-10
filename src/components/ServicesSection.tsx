@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -141,6 +142,8 @@ const MemoryGame = () => {
 
 const ServicesSection = () => {
   const { isLoggedIn, token, booking } = useGuestSession();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [openWineModal, setOpenWineModal] = useState(false);
   const [openCleanModal, setOpenCleanModal] = useState(false);
@@ -171,6 +174,35 @@ const ServicesSection = () => {
   const [recycleTypes, setRecycleTypes] = useState<string[]>([]);
   const [sendingMessage, setSendingMessage] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+
+  // Handle hash navigation to open specific service modals
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash) {
+      // Small delay to ensure component is mounted
+      setTimeout(() => {
+        switch (hash) {
+          case 'wine':
+            setOpenWineModal(true);
+            break;
+          case 'clean':
+            setOpenCleanModal(true);
+            break;
+          case 'breakfast':
+            setOpenBreakfastModal(true);
+            break;
+          case 'bike':
+            setOpenRentBikeModal(true);
+            break;
+          case 'recycle':
+            setOpenRecycleModal(true);
+            break;
+        }
+        // Clear the hash after opening modal
+        navigate(location.pathname, { replace: true });
+      }, 100);
+    }
+  }, [location.hash, navigate, location.pathname]);
 
   // Helper to get valid dates for cleaning (day after check-in to day before checkout)
   const getCleaningDateRange = () => {

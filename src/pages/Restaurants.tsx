@@ -12,7 +12,22 @@ import {
   Percent,
 } from "lucide-react";
 
-const restaurants = [
+interface Restaurant {
+  name: string;
+  subtitle: string;
+  address: string;
+  phone: string;
+  gradient: string;
+  iconBg: string;
+  iconColor: string;
+  website?: string;
+  whatsapp?: string;
+  facebook?: string;
+  book?: string;
+  deliveryCode?: string;
+}
+
+const restaurants: Restaurant[] = [
   {
     name: "LA BARISIENNE",
     subtitle: "HAMBURGER & PIZZA",

@@ -45,6 +45,18 @@ const HeroSection = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Listen for custom event from FloatingChatButton to open chat
+  useEffect(() => {
+    const handleOpenGuestChat = () => {
+      if (isLoggedIn) {
+        setShowChatDrawer(true);
+      }
+    };
+
+    window.addEventListener('openGuestChat', handleOpenGuestChat);
+    return () => window.removeEventListener('openGuestChat', handleOpenGuestChat);
+  }, [isLoggedIn]);
+
   const heroItems = [
     {
       title: "Book Now",

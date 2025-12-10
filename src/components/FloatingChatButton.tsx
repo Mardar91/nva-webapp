@@ -1,13 +1,22 @@
+// ============================================
+// APP: NVA (React App)
+// FILE: src/components/FloatingChatButton.tsx
+// PURPOSE: Floating chat button - opens CM chat if logged in, chatbot if not
+// ============================================
+
 import React, { useRef, useEffect, useCallback, useState } from "react";
-import { FaRobot } from "react-icons/fa";
+import { FaRobot, FaComments } from "react-icons/fa";
 import { useSpring, animated } from "react-spring";
+import { useGuestSession } from "../hooks/useGuestSession";
 import "./FloatingChatButton.css";
 
 interface FloatingChatButtonProps {
-  onPress: () => void;
+  onPress?: () => void;
+  unreadCount?: number;
 }
 
-const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
+const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress, unreadCount = 0 }) => {
+  const { isLoggedIn } = useGuestSession();
   const [panX, setPanX] = useState(0);
   const [scale, setScale] = useState(1);
   const [opacity, setOpacity] = useState(1);
@@ -15,32 +24,34 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   const [isIOS, setIsIOS] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [showSecondPrompt, setShowSecondPrompt] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const promptTimerRef = useRef<NodeJS.Timeout>();
   const secondPromptTimerRef = useRef<NodeJS.Timeout>();
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(iOS);
-    
-    // Primo prompt dopo 1 secondo
+
+    // First prompt after 1 second
     const showTimer = setTimeout(() => {
       setShowPrompt(true);
-      
-      // Nascondi il primo prompt dopo 4 secondi
+
+      // Hide first prompt after 4 seconds
       promptTimerRef.current = setTimeout(() => {
         setShowPrompt(false);
       }, 4000);
     }, 1000);
 
-    // Secondo prompt dopo 4 minuti
+    // Second prompt after 4 minutes
     const secondShowTimer = setTimeout(() => {
       setShowSecondPrompt(true);
-      
-      // Nascondi il secondo prompt dopo 4 secondi
+
+      // Hide second prompt after 4 seconds
       secondPromptTimerRef.current = setTimeout(() => {
         setShowSecondPrompt(false);
       }, 4000);
-    }, 240000); // 4 minuti = 240000 millisecondi
+    }, 240000);
 
     return () => {
       clearTimeout(showTimer);
@@ -53,6 +64,20 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
       }
     };
   }, []);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showMenu]);
 
   const startWavingAnimation = useCallback(() => {
     setWaveAnimation((prev) => (prev === 0 ? 1 : 0));
@@ -78,8 +103,26 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
     }
   };
 
-  const openWebApp = () => {
+  const openChatbot = () => {
     window.open("https://nva.zapier.app", "_blank");
+    setShowMenu(false);
+  };
+
+  const openGuestChat = () => {
+    // Dispatch custom event to open the guest chat drawer in HeroSection
+    window.dispatchEvent(new CustomEvent('openGuestChat'));
+    setShowMenu(false);
+  };
+
+  const handleButtonClick = () => {
+    if (isLoggedIn) {
+      // If logged in, show menu with options
+      setShowMenu(!showMenu);
+    } else {
+      // If not logged in, open chatbot directly
+      openChatbot();
+    }
+    onPress?.();
   };
 
   const springProps = useSpring({
@@ -111,8 +154,10 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
         transform: `${springProps.transform} translateZ(0)`,
       }}
       onTouchMove={handleSwipe}
+      ref={menuRef}
     >
-      {showPrompt && (
+      {/* Prompts */}
+      {showPrompt && !showMenu && (
         <div className="chat-prompt">
           <button
             className="chat-prompt-close"
@@ -123,10 +168,10 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
           >
             ×
           </button>
-          Hi, how can I help?
+          {isLoggedIn ? "Need help? Chat with us!" : "Hi, how can I help?"}
         </div>
       )}
-      {showSecondPrompt && !showPrompt && (
+      {showSecondPrompt && !showPrompt && !showMenu && (
         <div className="chat-prompt">
           <button
             className="chat-prompt-close"
@@ -140,21 +185,54 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
           I'm here if you need me!
         </div>
       )}
-      <button 
+
+      {/* Menu for logged in users */}
+      {showMenu && isLoggedIn && (
+        <div className="chat-menu">
+          <button
+            className="chat-menu-item"
+            onClick={openGuestChat}
+          >
+            <FaComments size={18} />
+            <span>Chat with Us</span>
+            {unreadCount > 0 && (
+              <span className="chat-menu-badge">{unreadCount}</span>
+            )}
+          </button>
+          <button
+            className="chat-menu-item"
+            onClick={openChatbot}
+          >
+            <FaRobot size={18} />
+            <span>AI Assistant</span>
+          </button>
+        </div>
+      )}
+
+      {/* Main button */}
+      <button
         className="chat-button"
-        onClick={openWebApp}
+        onClick={handleButtonClick}
         style={{
           WebkitAppearance: 'none',
           transform: 'translateZ(0)',
         }}
       >
+        {/* Unread badge */}
+        {unreadCount > 0 && (
+          <span className="unread-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+        )}
         <animated.div
           style={{
             transform: waveAnimation === 0 ? "rotate(0deg)" : "rotate(-20deg)",
             transition: "transform 0.3s ease-in-out",
           }}
         >
-          <FaRobot size={30} color="#ffffff" />
+          {isLoggedIn ? (
+            <FaComments size={28} color="#ffffff" />
+          ) : (
+            <FaRobot size={30} color="#ffffff" />
+          )}
         </animated.div>
       </button>
     </animated.div>

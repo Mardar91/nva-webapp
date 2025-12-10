@@ -162,6 +162,8 @@ const CheckIn = () => {
         console.log('[CHECKIN DEBUG] 📥 CHECKIN_PENDING received:', data);
         console.log('[CHECKIN DEBUG] 📱 Current deviceId at PENDING:', deviceId || 'NULL/UNDEFINED');
 
+        const currentBookingRefPending = data.savedBookingRef || data.bookingId || 'unknown';
+
         updateCheckInState({
           status: 'pending',
           bookingId: data.bookingId,
@@ -171,25 +173,45 @@ const CheckIn = () => {
           numberOfGuests: data.numberOfGuests || 1,
           mode: data.mode,
           savedEmail: data.savedEmail,
-          savedBookingRef: data.savedBookingRef
+          savedBookingRef: data.savedBookingRef,
+          // Store apartment data if CM sends it
+          ...(data.apartmentAddress && { apartmentAddress: data.apartmentAddress }),
+          ...(data.apartmentLatitude && { apartmentLatitude: data.apartmentLatitude }),
+          ...(data.apartmentLongitude && { apartmentLongitude: data.apartmentLongitude })
         });
 
-        if (data.checkInDate && deviceId) {
+        // Only schedule notification if:
+        // 1. We have checkInDate and deviceId
+        // 2. Notification was NOT already scheduled for THIS booking
+        // 3. Check-in is NOT already completed
+        const shouldSchedulePending = data.checkInDate &&
+          deviceId &&
+          checkInState.status !== 'completed' &&
+          !(checkInState.notificationScheduled && checkInState.notificationBookingRef === currentBookingRefPending);
+
+        if (shouldSchedulePending) {
           console.log('[CHECKIN DEBUG] ✅ Scheduling reminder with deviceId:', deviceId);
           const result = await scheduleCheckInReminder({
             checkInDate: data.checkInDate,
             deviceId: deviceId,
-            bookingReference: data.savedBookingRef || data.bookingId || 'unknown'
+            bookingReference: currentBookingRefPending
           });
 
           if (result.scheduled) {
             updateCheckInState({
               notificationScheduled: true,
-              notificationSent: false
+              notificationSent: false,
+              notificationBookingRef: currentBookingRefPending
             });
           }
         } else {
-          console.log('[CHECKIN DEBUG] ⚠️ NOT scheduling reminder - checkInDate:', data.checkInDate, 'deviceId:', deviceId);
+          console.log('[CHECKIN DEBUG] ⚠️ NOT scheduling reminder - already scheduled or missing data:', {
+            checkInDate: data.checkInDate,
+            deviceId,
+            alreadyScheduled: checkInState.notificationScheduled,
+            sameBooking: checkInState.notificationBookingRef === currentBookingRefPending,
+            status: checkInState.status
+          });
         }
 
         setTimeout(() => {
@@ -200,6 +222,8 @@ const CheckIn = () => {
       case 'CHECKIN_VALIDATED':
         console.log('Check-in validated:', data);
 
+        const currentBookingRefValidated = data.savedBookingRef || data.bookingId || 'unknown';
+
         updateCheckInState({
           status: 'validated',
           bookingId: data.bookingId,
@@ -209,22 +233,38 @@ const CheckIn = () => {
           numberOfGuests: data.numberOfGuests || 1,
           mode: data.mode,
           savedEmail: data.savedEmail,
-          savedBookingRef: data.savedBookingRef
+          savedBookingRef: data.savedBookingRef,
+          // Store apartment data if CM sends it
+          ...(data.apartmentAddress && { apartmentAddress: data.apartmentAddress }),
+          ...(data.apartmentLatitude && { apartmentLatitude: data.apartmentLatitude }),
+          ...(data.apartmentLongitude && { apartmentLongitude: data.apartmentLongitude })
         });
 
-        if (data.checkInDate && deviceId) {
+        // Only schedule notification if:
+        // 1. We have checkInDate and deviceId
+        // 2. Notification was NOT already scheduled for THIS booking
+        // 3. Check-in is NOT already completed
+        const shouldScheduleValidated = data.checkInDate &&
+          deviceId &&
+          checkInState.status !== 'completed' &&
+          !(checkInState.notificationScheduled && checkInState.notificationBookingRef === currentBookingRefValidated);
+
+        if (shouldScheduleValidated) {
           const result = await scheduleCheckInReminder({
             checkInDate: data.checkInDate,
             deviceId: deviceId,
-            bookingReference: data.savedBookingRef || data.bookingId || 'unknown'
+            bookingReference: currentBookingRefValidated
           });
 
           if (result.scheduled) {
             updateCheckInState({
               notificationScheduled: true,
-              notificationSent: result.sentImmediately || false
+              notificationSent: result.sentImmediately || false,
+              notificationBookingRef: currentBookingRefValidated
             });
           }
+        } else {
+          console.log('[CHECKIN DEBUG] ⚠️ VALIDATED - NOT scheduling reminder - already scheduled or missing data');
         }
         break;
 
@@ -245,8 +285,36 @@ const CheckIn = () => {
           completedAt: data.timestamp,
           ...(data.numberOfGuests && { numberOfGuests: data.numberOfGuests }),
           ...(data.apartmentName && { apartmentName: data.apartmentName }),
-          ...(data.bookingId && { bookingId: data.bookingId })
+          ...(data.bookingId && { bookingId: data.bookingId }),
+          // Store apartment data if CM sends it
+          ...(data.apartmentAddress && { apartmentAddress: data.apartmentAddress }),
+          ...(data.apartmentLatitude && { apartmentLatitude: data.apartmentLatitude }),
+          ...(data.apartmentLongitude && { apartmentLongitude: data.apartmentLongitude }),
+          // Store checkOutDate for checkout reminder
+          ...(data.checkOutDate && { checkOutDate: data.checkOutDate })
         });
+
+        // Schedule checkout reminder notification (1 day before checkout)
+        const checkOutDateForReminder = data.checkOutDate || checkInState.checkOutDate;
+        if (checkOutDateForReminder && deviceId && !checkInState.checkoutNotificationScheduled) {
+          console.log('[CHECKIN] Scheduling checkout reminder for:', checkOutDateForReminder);
+          fetch('/api/checkout-reminder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              deviceId: deviceId,
+              checkOutDate: checkOutDateForReminder,
+              bookingReference: data.bookingReference || checkInState.savedBookingRef || 'unknown'
+            })
+          }).then(res => res.json())
+            .then(result => {
+              if (result.success) {
+                console.log('[CHECKIN] Checkout reminder scheduled successfully');
+                updateCheckInState({ checkoutNotificationScheduled: true });
+              }
+            })
+            .catch(err => console.error('[CHECKIN] Failed to schedule checkout reminder:', err));
+        }
 
         // Auto-login for direct bookings (mode='normal')
         if (data.mode === 'normal' && data.email && checkInState.savedBookingRef) {
@@ -494,10 +562,19 @@ const CheckIn = () => {
                       {booking.apartmentName}
                     </p>
                     {booking.apartmentAddress && (
-                      <div className="flex items-start gap-1.5 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                      <button
+                        onClick={() => {
+                          if (booking.apartmentLatitude && booking.apartmentLongitude) {
+                            openGoogleMapsDirections(booking.apartmentLatitude, booking.apartmentLongitude);
+                          } else {
+                            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.apartmentAddress!)}`, '_blank');
+                          }
+                        }}
+                        className="flex items-start gap-1.5 mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                      >
                         <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                        <span>{booking.apartmentAddress}</span>
-                      </div>
+                        <span className="text-left underline">{booking.apartmentAddress}</span>
+                      </button>
                     )}
                     {booking.apartmentLatitude && booking.apartmentLongitude && (
                       <Button
@@ -601,10 +678,19 @@ const CheckIn = () => {
                       {booking.apartmentName}
                     </p>
                     {booking.apartmentAddress && (
-                      <div className="flex items-start gap-1.5 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                      <button
+                        onClick={() => {
+                          if (booking.apartmentLatitude && booking.apartmentLongitude) {
+                            openGoogleMapsDirections(booking.apartmentLatitude, booking.apartmentLongitude);
+                          } else {
+                            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.apartmentAddress!)}`, '_blank');
+                          }
+                        }}
+                        className="flex items-start gap-1.5 mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                      >
                         <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                        <span>{booking.apartmentAddress}</span>
-                      </div>
+                        <span className="text-left underline">{booking.apartmentAddress}</span>
+                      </button>
                     )}
                     {booking.apartmentLatitude && booking.apartmentLongitude && (
                       <Button
@@ -731,10 +817,19 @@ const CheckIn = () => {
                     {booking.apartmentName}
                   </p>
                   {booking.apartmentAddress && (
-                    <div className="flex items-start gap-1.5 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    <button
+                      onClick={() => {
+                        if (booking.apartmentLatitude && booking.apartmentLongitude) {
+                          openGoogleMapsDirections(booking.apartmentLatitude, booking.apartmentLongitude);
+                        } else {
+                          window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.apartmentAddress!)}`, '_blank');
+                        }
+                      }}
+                      className="flex items-start gap-1.5 mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                    >
                       <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                      <span>{booking.apartmentAddress}</span>
-                    </div>
+                      <span className="text-left underline">{booking.apartmentAddress}</span>
+                    </button>
                   )}
                   {booking.apartmentLatitude && booking.apartmentLongitude && (
                     <Button
@@ -857,6 +952,35 @@ const CheckIn = () => {
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {checkInState.apartmentName}
                     </p>
+                    {/* Show address if available (from CM postMessage) */}
+                    {checkInState.apartmentAddress && (
+                      <button
+                        onClick={() => {
+                          if (checkInState.apartmentLatitude && checkInState.apartmentLongitude) {
+                            openGoogleMapsDirections(checkInState.apartmentLatitude, checkInState.apartmentLongitude);
+                          } else {
+                            // Fallback: search by address
+                            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(checkInState.apartmentAddress!)}`, '_blank');
+                          }
+                        }}
+                        className="flex items-start gap-1.5 mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                      >
+                        <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                        <span className="text-left underline">{checkInState.apartmentAddress}</span>
+                      </button>
+                    )}
+                    {/* Show directions button if coordinates available */}
+                    {checkInState.apartmentLatitude && checkInState.apartmentLongitude && (
+                      <Button
+                        onClick={() => openGoogleMapsDirections(checkInState.apartmentLatitude!, checkInState.apartmentLongitude!)}
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
+                      >
+                        <Navigation className="mr-2 h-4 w-4" />
+                        Get Directions
+                      </Button>
+                    )}
                   </div>
                 )}
 

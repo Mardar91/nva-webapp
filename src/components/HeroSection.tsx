@@ -75,7 +75,7 @@ const HeroSection = () => {
       title: "My Stay",
       subtitle: "Your reservation",
       icon: <Briefcase size={28} strokeWidth={1.5} />,
-      onClick: () => alert("Coming Soon!"),
+      onClick: () => navigate("/my-stay"),
       gradient: "from-sky-400 to-cyan-500",
     },
   ];

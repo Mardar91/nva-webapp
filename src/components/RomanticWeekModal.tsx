@@ -127,7 +127,7 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto p-0 w-[95vw] sm:max-w-[500px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 w-[95vw] sm:max-w-[500px]">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 z-10 w-8 h-8 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm flex items-center justify-center shadow-md transition-transform hover:scale-110"
@@ -154,7 +154,7 @@ const RomanticWeekModal: React.FC<RomanticWeekModalProps> = ({ isOpen, onClose }
         {step === 1 ? (
           <>
             {/* Header with Gradient */}
-            <div className="relative bg-gradient-to-br from-rose-500 via-pink-500 to-red-500 p-6 pt-8 rounded-t-3xl">
+            <div className="relative bg-gradient-to-br from-rose-500 via-pink-500 to-red-500 p-6 pt-8 rounded-t-3xl overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
               <div className="text-center relative">
                 <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">

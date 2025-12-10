@@ -6,7 +6,7 @@ import {
   Gift,
   Heart,
   Dumbbell,
-  Ferris,
+  Smile,
   Car,
   Umbrella,
   MapPin,
@@ -51,7 +51,7 @@ const itemIcons: Record<string, React.ElementType> = {
   "CORDERIA PALMI - APULIA SOUVENIRS": Gift,
   "SELF CARE - MASSAGE & BEAUTY": Heart,
   "ATHENA 2000 - GYM & FITNESS": Dumbbell,
-  "GOMMOLAND - AMUSEMENT PARK": Ferris,
+  "GOMMOLAND - AMUSEMENT PARK": Smile,
   "CAR RENTAL WITH DELIVERY SERVICE": Car,
   "NIRVANA BEACH": Umbrella,
 };

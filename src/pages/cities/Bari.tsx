@@ -7,11 +7,8 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Compass,
   Landmark
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -695,11 +692,11 @@ const Bari: React.FC = () => {
       ref={mainRef}
     >
       <style>{`
-        .shimmer {
+        .shimmer-button {
           position: relative;
           overflow: hidden;
         }
-        .shimmer::after {
+        .shimmer-button::after {
           content: '';
           position: absolute;
           top: 0;
@@ -710,7 +707,7 @@ const Bari: React.FC = () => {
             90deg,
             transparent,
             transparent 40%,
-            rgba(255, 255, 255, 0.3),
+            rgba(255, 255, 255, 0.5),
             transparent
           );
           animation: shimmer 3s infinite;
@@ -769,73 +766,67 @@ const Bari: React.FC = () => {
           <p className="text-gray-100 text-lg mb-8 drop-shadow-md">
             A vibrant city in southern Italy, blending historic charm with modern energy. Known for its stunning old town, beautiful seafront, and delicious cuisine, it offers an unforgettable mix of culture, history, and coastal beauty.
           </p>
-          <Button
+          <button
             onClick={handleExploreClick}
-            variant="outline"
-            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-rose-800 transition-colors"
+            className="shimmer-button inline-flex items-center gap-2 bg-white text-rose-700 font-semibold px-6 py-3 rounded-xl hover:bg-white/90 transition-all hover:scale-105 active:scale-95"
           >
-            Explore the City
-          </Button>
+            <Landmark className="h-5 w-5" />
+            Explore Attractions
+          </button>
         </motion.div>
       </div>
 
-      <div className="bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 py-8">
-          {/* Upcoming Events Section */}
-          <section className="mb-12">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex items-center gap-3 mb-6"
-            >
-              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                <Calendar className="w-5 h-5 text-gray-500" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                Upcoming Events ({events.length})
-              </h2>
-            </motion.div>
-            {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
-            {error && <p className="text-red-600 mb-4">Error: {error}</p>}
-            {!loading && !error && events.length === 0 && (
-                <p className="text-gray-600 mb-4">No upcoming events found</p>
-            )}
-            <div className="grid gap-4">
-                {events.map((event) => (
-                    <EventCard key={event.id} event={event} />
-                ))}
+      <div className="px-5 pb-8">
+        {/* Events Section */}
+        <section className="mb-8">
+          {/* Section Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
-          </section>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{events.length} events in Bari</p>
+            </div>
+          </div>
 
-          {/* Attractions Section */}
-          <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex items-center justify-center gap-3 mb-6"
-            >
-              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                <Compass className="w-5 h-5 text-gray-500" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                Explore the City
-              </h2>
-            </motion.div>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-              {attractions.map((attraction, index) => (
-                <AttractionButton
-                  key={attraction.name}
-                  attraction={attraction}
-                  attractions={attractions}
-                  onOpen={setSelectedAttractionIndex}
-                  index={index}
-                />
-              ))}
+          {loading && <p className="text-gray-600 dark:text-gray-400 mb-4">Loading events...</p>}
+          {error && <p className="text-red-600 mb-4">Error: {error}</p>}
+          {!loading && !error && events.length === 0 && (
+            <p className="text-gray-500 dark:text-gray-400 mb-4">No upcoming events found</p>
+          )}
+          <div className="space-y-3">
+            {events.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </section>
+
+        {/* Attractions Section */}
+        <section ref={scrollToRef} className="mb-8">
+          {/* Section Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+              <Landmark className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
-          </section>
-        </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Explore the City</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Discover local attractions</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {attractions.map((attraction, index) => (
+              <AttractionButton
+                key={attraction.name}
+                attraction={attraction}
+                attractions={attractions}
+                onOpen={(idx) => setSelectedAttractionIndex(idx)}
+                index={index}
+              />
+            ))}
+          </div>
+        </section>
       </div>
 
       {selectedAttractionIndex !== null && (

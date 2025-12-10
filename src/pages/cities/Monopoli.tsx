@@ -70,7 +70,7 @@ const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 50 }}
           transition={{ duration: 0.5 }}
-          className="fixed top-4 right-16 z-50 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
+          className="fixed top-4 right-16 z-50 bg-amber-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
         >
           <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
           <motion.div
@@ -109,7 +109,7 @@ const NextCityButton: React.FC<NextCityButtonProps> = ({ nextCityPath }) => {
         onClick={() => navigate(nextCityPath)}
         onMouseEnter={() => setShowToast(true)}
         onMouseLeave={() => setShowToast(false)}
-        className="fixed top-4 right-4 z-50 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all group"
+        className="fixed top-4 right-4 z-50 bg-amber-500 text-white p-3 rounded-full shadow-lg hover:bg-amber-600 transition-all group"
       >
         <div className="relative flex items-center justify-center">
           <ArrowRight className="h-5 w-5 group-hover:scale-110 transition-transform" />

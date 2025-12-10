@@ -178,7 +178,7 @@ const HeroSection = () => {
         <div className="px-5 pt-6 pb-4">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Nonna Vittoria <span className="text-blue-600 dark:text-blue-400">Apartments</span>
+              Nonna Vittoria Apartments
             </h1>
 
             {/* Reception Badge - Modern Style */}

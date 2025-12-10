@@ -146,121 +146,25 @@ const ServicesSection = () => {
   const [openGameModal, setOpenGameModal] = useState(false);
 
   const services = [
-    {
-      name: "Taxi",
-      icon: Car,
-      gradient: "from-yellow-400 to-amber-500",
-      bgLight: "bg-amber-50",
-      onClick: () => (window.location.href = "/taxi"),
-    },
-    {
-      name: "Wine",
-      icon: Wine,
-      gradient: "from-red-400 to-rose-600",
-      bgLight: "bg-rose-50",
-      onClick: () => setOpenWineModal(true),
-    },
-    {
-      name: "Clean",
-      icon: Sparkles,
-      gradient: "from-cyan-400 to-blue-500",
-      bgLight: "bg-cyan-50",
-      onClick: () => setOpenCleanModal(true),
-    },
-    {
-      name: "Shop",
-      icon: ShoppingBag,
-      gradient: "from-pink-400 to-fuchsia-500",
-      bgLight: "bg-pink-50",
-      onClick: () => window.open("https://store.nonnavittoriaapartments.it", "_blank"),
-    },
-    {
-      name: "Delivery",
-      icon: UtensilsCrossed,
-      gradient: "from-orange-400 to-red-500",
-      bgLight: "bg-orange-50",
-      onClick: () => setOpenDeliveryModal(true),
-    },
-    {
-      name: "Rent Car",
-      icon: Car,
-      gradient: "from-slate-500 to-slate-700",
-      bgLight: "bg-slate-50",
-      onClick: () => setOpenRentCarModal(true),
-    },
-    {
-      name: "Excursions",
-      icon: Sailboat,
-      gradient: "from-sky-400 to-blue-600",
-      bgLight: "bg-sky-50",
-      onClick: () => setOpenExcursionsModal(true),
-    },
-    {
-      name: "Parking",
-      icon: ParkingCircle,
-      gradient: "from-blue-500 to-indigo-600",
-      bgLight: "bg-blue-50",
-      onClick: () => setOpenParkingModal(true),
-    },
-    {
-      name: "Breakfast",
-      icon: Croissant,
-      gradient: "from-amber-400 to-yellow-500",
-      bgLight: "bg-amber-50",
-      onClick: () => setOpenBreakfastModal(true),
-    },
-    {
-      name: "Massage",
-      icon: Heart,
-      gradient: "from-purple-400 to-violet-600",
-      bgLight: "bg-purple-50",
-      onClick: () => setOpenMassageModal(true),
-    },
-    {
-      name: "Rent Bike",
-      icon: Bike,
-      gradient: "from-green-400 to-emerald-600",
-      bgLight: "bg-green-50",
-      onClick: () => setOpenRentBikeModal(true),
-    },
-    {
-      name: "Laundry",
-      icon: WashingMachine,
-      gradient: "from-teal-400 to-cyan-600",
-      bgLight: "bg-teal-50",
-      onClick: () => setOpenLaundryModal(true),
-    },
+    { name: "Taxi", icon: Car, onClick: () => (window.location.href = "/taxi") },
+    { name: "Wine", icon: Wine, onClick: () => setOpenWineModal(true) },
+    { name: "Clean", icon: Sparkles, onClick: () => setOpenCleanModal(true) },
+    { name: "Shop", icon: ShoppingBag, onClick: () => window.open("https://store.nonnavittoriaapartments.it", "_blank") },
+    { name: "Delivery", icon: UtensilsCrossed, onClick: () => setOpenDeliveryModal(true) },
+    { name: "Rent Car", icon: Car, onClick: () => setOpenRentCarModal(true) },
+    { name: "Excursions", icon: Sailboat, onClick: () => setOpenExcursionsModal(true) },
+    { name: "Parking", icon: ParkingCircle, onClick: () => setOpenParkingModal(true) },
+    { name: "Breakfast", icon: Croissant, onClick: () => setOpenBreakfastModal(true) },
+    { name: "Massage", icon: Heart, onClick: () => setOpenMassageModal(true) },
+    { name: "Rent Bike", icon: Bike, onClick: () => setOpenRentBikeModal(true) },
+    { name: "Laundry", icon: WashingMachine, onClick: () => setOpenLaundryModal(true) },
   ];
 
   const utilities = [
-    {
-      name: "Emergency",
-      icon: AlertTriangle,
-      gradient: "from-red-500 to-red-700",
-      bgLight: "bg-red-50",
-      onClick: () => setOpenEmergencyModal(true),
-    },
-    {
-      name: "Pharmacy",
-      icon: Pill,
-      gradient: "from-emerald-400 to-green-600",
-      bgLight: "bg-emerald-50",
-      onClick: () => setOpenPharmacyModal(true),
-    },
-    {
-      name: "Recycle",
-      icon: Recycle,
-      gradient: "from-lime-400 to-green-500",
-      bgLight: "bg-lime-50",
-      onClick: () => setOpenRecycleModal(true),
-    },
-    {
-      name: "Game",
-      icon: Gamepad2,
-      gradient: "from-violet-400 to-purple-600",
-      bgLight: "bg-violet-50",
-      onClick: () => setOpenGameModal(true),
-    },
+    { name: "Emergency", icon: AlertTriangle, accent: "text-red-500", onClick: () => setOpenEmergencyModal(true) },
+    { name: "Pharmacy", icon: Pill, onClick: () => setOpenPharmacyModal(true) },
+    { name: "Recycle", icon: Recycle, onClick: () => setOpenRecycleModal(true) },
+    { name: "Game", icon: Gamepad2, onClick: () => setOpenGameModal(true) },
   ];
 
   const parkingStreets = [
@@ -292,13 +196,13 @@ const ServicesSection = () => {
       <div className="px-5">
         {/* Services Section Header */}
         <div className="flex items-center gap-2 mb-5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-            <Compass className="h-4 w-4 text-white" />
+          <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+            <Compass className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Our Services</h2>
         </div>
 
-        {/* Services Grid - Modern Cards */}
+        {/* Services Grid - Clean Outline Style */}
         <div className="grid grid-cols-4 gap-3 mb-8">
           {services.map((service) => {
             const IconComponent = service.icon;
@@ -306,12 +210,12 @@ const ServicesSection = () => {
               <button
                 key={service.name}
                 onClick={service.onClick}
-                className="group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
+                className="group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all duration-200 active:scale-95"
               >
-                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-2 shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                  <IconComponent className="h-5 w-5 text-white" strokeWidth={1.5} />
+                <div className="w-11 h-11 rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 group-hover:border-blue-400 dark:group-hover:border-blue-500 flex items-center justify-center mb-2 transition-all duration-200">
+                  <IconComponent className="h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" strokeWidth={1.5} />
                 </div>
-                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
+                <span className="text-[11px] font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white text-center leading-tight transition-colors duration-200">
                   {service.name}
                 </span>
               </button>
@@ -321,26 +225,43 @@ const ServicesSection = () => {
 
         {/* Utilities Section Header */}
         <div className="flex items-center gap-2 mb-5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-500 to-slate-700 flex items-center justify-center">
-            <Info className="h-4 w-4 text-white" />
+          <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+            <Info className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Useful Information</h2>
         </div>
 
-        {/* Utilities Grid */}
+        {/* Utilities Grid - Clean Outline Style */}
         <div className="grid grid-cols-4 gap-3">
           {utilities.map((utility) => {
             const IconComponent = utility.icon;
+            const hasAccent = utility.accent;
             return (
               <button
                 key={utility.name}
                 onClick={utility.onClick}
-                className="group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
+                className={`group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border transition-all duration-200 active:scale-95 ${
+                  hasAccent
+                    ? 'border-red-200 dark:border-red-800 hover:border-red-400 dark:hover:border-red-600 hover:bg-red-50/50 dark:hover:bg-red-900/20'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20'
+                }`}
               >
-                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${utility.gradient} flex items-center justify-center mb-2 shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                  <IconComponent className="h-5 w-5 text-white" strokeWidth={1.5} />
+                <div className={`w-11 h-11 rounded-xl border flex items-center justify-center mb-2 transition-all duration-200 ${
+                  hasAccent
+                    ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 group-hover:border-red-400 dark:group-hover:border-red-600'
+                    : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 group-hover:border-blue-400 dark:group-hover:border-blue-500'
+                }`}>
+                  <IconComponent className={`h-5 w-5 transition-colors duration-200 ${
+                    hasAccent
+                      ? 'text-red-500 dark:text-red-400'
+                      : 'text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                  }`} strokeWidth={1.5} />
                 </div>
-                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
+                <span className={`text-[11px] font-medium text-center leading-tight transition-colors duration-200 ${
+                  hasAccent
+                    ? 'text-red-600 dark:text-red-400'
+                    : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                }`}>
                   {utility.name}
                 </span>
               </button>

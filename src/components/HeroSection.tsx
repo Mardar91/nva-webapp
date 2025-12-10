@@ -69,14 +69,14 @@ const HeroSection = () => {
       subtitle: "Online process",
       icon: <LogIn size={28} strokeWidth={1.5} />,
       onClick: () => navigate("/check-in"),
-      gradient: "from-emerald-500 to-emerald-600",
+      gradient: "from-amber-500 to-yellow-500",
     },
     {
       title: "Explore",
       subtitle: "Discover the area",
       icon: <Map size={28} strokeWidth={1.5} />,
       onClick: () => navigate("/explore"),
-      gradient: "from-violet-500 to-violet-600",
+      gradient: "from-sky-400 to-cyan-500",
     },
   ];
 

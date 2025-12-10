@@ -9,7 +9,6 @@ import {
   Facebook,
   Calendar,
   Tag,
-  Percent,
 } from "lucide-react";
 
 interface Restaurant {
@@ -34,9 +33,9 @@ const restaurants: Restaurant[] = [
     address: "Via Bruno Calvani 9, 70042 Mola di Bari",
     phone: "+39 080 4046085",
     website: "www.labarisienne.it",
-    gradient: "from-orange-500 to-red-600",
-    iconBg: "bg-orange-100 dark:bg-orange-900/30",
-    iconColor: "text-orange-600 dark:text-orange-400",
+    gradient: "from-blue-500 to-indigo-600",
+    iconBg: "bg-blue-100 dark:bg-blue-900/30",
+    iconColor: "text-blue-600 dark:text-blue-400",
   },
   {
     name: "RUTHLESS",
@@ -44,9 +43,9 @@ const restaurants: Restaurant[] = [
     address: "Via del Trabaccolo 14, 70042 Mola di Bari",
     phone: "+39 391 154 7728",
     whatsapp: "https://wa.me/393911547728",
-    gradient: "from-amber-500 to-orange-600",
-    iconBg: "bg-amber-100 dark:bg-amber-900/30",
-    iconColor: "text-amber-600 dark:text-amber-400",
+    gradient: "from-blue-500 to-indigo-600",
+    iconBg: "bg-blue-100 dark:bg-blue-900/30",
+    iconColor: "text-blue-600 dark:text-blue-400",
   },
   {
     name: "RISTORANTE VAN WESTERHOUT",
@@ -55,9 +54,9 @@ const restaurants: Restaurant[] = [
     phone: "+39 366 409 6252",
     facebook: "https://www.facebook.com/ristorantevanwesterhout/",
     book: "https://www.quandoo.it/place/ristorante-van-westerhout-103289",
-    gradient: "from-violet-500 to-purple-700",
-    iconBg: "bg-violet-100 dark:bg-violet-900/30",
-    iconColor: "text-violet-600 dark:text-violet-400",
+    gradient: "from-blue-500 to-indigo-600",
+    iconBg: "bg-blue-100 dark:bg-blue-900/30",
+    iconColor: "text-blue-600 dark:text-blue-400",
   },
   {
     name: "PUGLIAINBOCCA",
@@ -66,9 +65,9 @@ const restaurants: Restaurant[] = [
     phone: "+39 080 474 1063",
     website: "www.pugliainbocca.it",
     deliveryCode: "NONNAVITTORIA",
-    gradient: "from-rose-500 to-pink-600",
-    iconBg: "bg-rose-100 dark:bg-rose-900/30",
-    iconColor: "text-rose-600 dark:text-rose-400",
+    gradient: "from-blue-500 to-indigo-600",
+    iconBg: "bg-blue-100 dark:bg-blue-900/30",
+    iconColor: "text-blue-600 dark:text-blue-400",
   },
   {
     name: "CAFFÈ ADRIATICO",
@@ -76,9 +75,9 @@ const restaurants: Restaurant[] = [
     address: "Via Pier Delfino Pesce 7, 70042 Mola di Bari",
     phone: "+39 080 474 1057",
     whatsapp: "https://wa.me/393475610553",
-    gradient: "from-cyan-500 to-blue-600",
-    iconBg: "bg-cyan-100 dark:bg-cyan-900/30",
-    iconColor: "text-cyan-600 dark:text-cyan-400",
+    gradient: "from-blue-500 to-indigo-600",
+    iconBg: "bg-blue-100 dark:bg-blue-900/30",
+    iconColor: "text-blue-600 dark:text-blue-400",
   },
 ];
 
@@ -104,8 +103,8 @@ const RestaurantScreen = () => {
       {/* Section Header */}
       <div className="px-5 pt-6 pb-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
-            <UtensilsCrossed className="h-5 w-5 text-white" strokeWidth={1.5} />
+          <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+            <UtensilsCrossed className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Partner Restaurants</h2>
@@ -119,7 +118,7 @@ const RestaurantScreen = () => {
         {restaurants.map((restaurant, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700"
+            className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 border-blue-200 dark:border-blue-800"
           >
             {/* Card Header with Gradient */}
             <div className={`bg-gradient-to-r ${restaurant.gradient} px-4 py-4`}>
@@ -128,9 +127,10 @@ const RestaurantScreen = () => {
                   <h3 className="font-bold text-white text-lg">{restaurant.name}</h3>
                   <p className="text-white/80 text-sm">{restaurant.subtitle}</p>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1">
-                  <Percent className="h-3.5 w-3.5 text-white" />
-                  <span className="text-white text-xs font-bold">10% OFF</span>
+                <div className="relative bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full overflow-hidden">
+                  <span className="relative z-10 text-white text-xs font-bold">10% OFF</span>
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 </div>
               </div>
             </div>

@@ -11,8 +11,8 @@ const SpecialOffers = () => {
     <div className="px-5">
       {/* Section Header */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-          <Sparkles className="h-4 w-4 text-white" />
+        <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+          <Sparkles className="h-4 w-4 text-gray-500 dark:text-gray-400" />
         </div>
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">Special Offers</h2>
       </div>

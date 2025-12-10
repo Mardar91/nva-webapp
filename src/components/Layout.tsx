@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, UtensilsCrossed, Handshake } from "lucide-react";
+import { Home, UtensilsCrossed, Handshake, Map } from "lucide-react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -50,6 +50,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const navItems = [
     { path: "/", label: "Home", icon: Home },
     { path: "/restaurants", label: "Restaurants", icon: UtensilsCrossed },
+    { path: "/explore", label: "Explore", icon: Map },
     { path: "/partners", label: "Partners", icon: Handshake },
   ];
 
@@ -77,7 +78,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50" />
 
         {/* Nav Content */}
-        <div className="relative flex items-center justify-center gap-8 px-8 py-3 max-w-sm mx-auto">
+        <div className="relative flex items-center justify-center gap-4 px-4 py-3 max-w-md mx-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);

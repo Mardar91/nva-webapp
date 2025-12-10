@@ -6,7 +6,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, LogIn, Map, User, LogOut, ChevronDown, Sparkles } from "lucide-react";
+import { Calendar, LogIn, Briefcase, User, LogOut, ChevronDown, Sparkles } from "lucide-react";
 import { useGuestSession } from "../hooks/useGuestSession";
 import { useNotifications } from "../hooks/useNotifications";
 import GuestLoginModal from "./GuestLoginModal";
@@ -72,10 +72,10 @@ const HeroSection = () => {
       gradient: "from-amber-500 to-yellow-500",
     },
     {
-      title: "Explore",
-      subtitle: "Discover the area",
-      icon: <Map size={28} strokeWidth={1.5} />,
-      onClick: () => navigate("/explore"),
+      title: "My Stay",
+      subtitle: "Your reservation",
+      icon: <Briefcase size={28} strokeWidth={1.5} />,
+      onClick: () => alert("Coming Soon!"),
       gradient: "from-sky-400 to-cyan-500",
     },
   ];
@@ -111,14 +111,13 @@ const HeroSection = () => {
       >
         <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
           <div className="flex items-center justify-between px-4 py-3">
-            {/* Logo/Brand */}
-            <div className="flex items-center gap-2">
+            {/* Logo */}
+            <div className="flex items-center">
               <img
                 src="/icons/logo-512x512.png"
                 alt="NV Logo"
-                className="w-8 h-8 rounded-xl object-cover"
+                className="w-11 h-11 rounded-xl object-cover"
               />
-              <span className="text-white font-semibold text-sm">Nonna Vittoria</span>
             </div>
 
             {/* Login Button */}

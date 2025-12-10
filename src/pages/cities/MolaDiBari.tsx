@@ -6,7 +6,9 @@ import {
   ArrowLeft,
   ArrowRight,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Compass,
+  Landmark
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -162,13 +164,13 @@ const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) =
     );
 };
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-    const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-    }).format(event.startDate) : 'Data non disponibile';
-   
-   const isCurrentEvent = () => {
-        if(!event.startDate) return null;
+  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+  }).format(event.startDate) : 'Data non disponibile';
+
+  const isCurrentEvent = () => {
+    if (!event.startDate) return null;
 
     const now = new Date();
     const start = new Date(event.startDate);
@@ -179,7 +181,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     const tomorrow = new Date();
     tomorrow.setDate(now.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    
+
     const isToday = now >= start && now <= end;
     const isTomorrow =
       start.getDate() === tomorrow.getDate() &&
@@ -200,57 +202,91 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
       transition={{ duration: 0.5 }}
       className="relative"
     >
-      <Card className="hover:shadow-lg transition-shadow duration-200">
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-teal-700 dark:text-teal-400">
-                {event.title}
-              </h3>
-              <div className="flex items-center mt-2 text-gray-600 dark:text-gray-300">
-                <MapPin className="w-4 h-4 mr-1" />
-                <span className="text-sm">{event.city}</span>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 border-teal-200 dark:border-teal-800 hover:shadow-lg transition-all duration-200">
+        {/* Card Header */}
+        <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <Calendar className="h-4 w-4 text-white" />
               </div>
-              {event.link && (
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
-                  More info
-                </a>
-              )}
+              <span className="text-white font-bold">{formattedDate}</span>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1 text-teal-700 dark:text-teal-400" />
-                <span className="text-sm font-medium">{formattedDate}</span>
+            {currentEventType && (
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${currentEventType === 'today' ? 'bg-green-500' : 'bg-orange-500'}`}>
+                {/* Live ping effect */}
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                <span className="text-white text-xs font-bold">
+                  {currentEventType === 'today' ? 'Today' : 'Tomorrow'}
+                </span>
               </div>
-              {currentEventType && <CurrentEventBadge type={currentEventType} />}
-            </div>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Card Content */}
+        <div className="p-4">
+          <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+            {event.title}
+          </h3>
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-3">
+            <div className="w-6 h-6 rounded-lg bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center">
+              <MapPin className="w-3.5 h-3.5 text-teal-500 dark:text-teal-400" />
+            </div>
+            <span className="text-sm">{event.city}</span>
+          </div>
+          {event.link && (
+            <a
+              href={event.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-teal-500 hover:text-teal-600 font-medium"
+            >
+              More info
+              <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          )}
+        </div>
+      </div>
     </motion.div>
   );
 };
 
-const AttractionButton: React.FC<{ 
+const AttractionButton: React.FC<{
   attraction: Attraction;
   attractions: Attraction[];
   onOpen: (index: number) => void;
   index: number;
 }> = ({ attraction, attractions, onOpen, index }) => (
   <Dialog>
-    <DialogTrigger>
+    <DialogTrigger asChild>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full aspect-square"
+        transition={{ duration: 0.5, delay: index * 0.05 }}
+        className="w-full"
       >
-        <button 
+        <button
           onClick={() => onOpen(index)}
-          className="w-full h-full bg-gray-50 dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+          className="group w-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border-2 border-teal-200 dark:border-teal-800 hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
         >
-          <span className="text-[#60A5FA]">{attraction.icon}</span>
-          <span className="text-teal-700 dark:text-teal-400 font-medium text-sm">{attraction.name}</span>
+          {/* Gradient Header */}
+          <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <span className="text-lg">{attraction.icon}</span>
+              </div>
+              <span className="text-white font-semibold text-sm truncate">{attraction.name}</span>
+            </div>
+          </div>
+          {/* Card Body */}
+          <div className="px-3 py-2 flex items-center justify-between">
+            <span className="text-gray-500 dark:text-gray-400 text-xs">Tap to explore</span>
+            <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-teal-500 transition-colors" />
+          </div>
         </button>
       </motion.div>
     </DialogTrigger>
@@ -564,7 +600,7 @@ const handleNextAttraction = () => {
 
   return (
     <div
-      className="absolute inset-0 overflow-y-auto overflow-x-hidden pb-24"
+      className="absolute inset-0 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-gray-900"
       style={{
         bottom: '88px',
         top: 0,
@@ -575,11 +611,11 @@ const handleNextAttraction = () => {
       ref={mainRef}
     >
       <style>{`
-        .shimmer {
+        .shimmer-button {
           position: relative;
           overflow: hidden;
         }
-        .shimmer::after {
+        .shimmer-button::after {
           content: '';
           position: absolute;
           top: 0;
@@ -589,7 +625,6 @@ const handleNextAttraction = () => {
           background: linear-gradient(
             90deg,
             transparent,
-            transparent 40%,
             rgba(255, 255, 255, 0.3),
             transparent
           );
@@ -610,74 +645,92 @@ const handleNextAttraction = () => {
 
       <NextCityButton nextCityPath="/cities/polignano-a-mare" />
 
+      {/* Modern Hero Section */}
       <div
-        className="bg-teal-600 dark:bg-teal-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
-        style={{
-          paddingTop: '4rem',
-          paddingBottom: '4rem',
-          marginBottom: '2rem'
-        }}
+        className="relative w-screen left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] overflow-hidden"
+        style={{ marginBottom: '1.5rem' }}
       >
+        {/* Background Image with Overlay */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: 'url(https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/09/09/12/photo1jpg.jpg?w=1200&h=-1&s=1)',
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-teal-900/80 via-teal-800/70 to-emerald-900/80" />
+
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto px-4 pt-8"
+          className="relative text-center max-w-3xl mx-auto px-5 py-12 pt-16"
         >
-          <h1 className="text-3xl font-bold mb-4">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+            <Compass className="h-4 w-4 text-white" />
+            <span className="text-white/90 text-sm font-medium">Coastal Gem of Puglia</span>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-3">
             Mola di Bari
           </h1>
-          <p className="text-gray-100 text-lg mb-8">
-            A charming coastal town in southern Italy, known for its picturesque seafront, fresh seafood, and vibrant local culture. With its historic architecture and warm hospitality, it's the perfect destination for a relaxing escape.
+          <p className="text-white/80 text-base mb-6">
+            A charming coastal town known for its picturesque seafront, fresh seafood, and vibrant local culture.
           </p>
-          <Button
+          <button
             onClick={handleExploreClick}
-            variant="outline"
-            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-teal-600 transition-colors"
+            className="shimmer-button inline-flex items-center gap-2 bg-white text-teal-700 font-semibold px-6 py-3 rounded-xl hover:bg-white/90 transition-all hover:scale-105 active:scale-95"
           >
-            Explore the City
-          </Button>
+            <Landmark className="h-5 w-5" />
+            Explore Attractions
+          </button>
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <section className="mb-12">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold text-teal-700 dark:text-teal-400 mb-6"
-          >
-            Upcoming Events ({events.length})
-          </motion.h2>
-          {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
+      <div className="px-5 pb-8">
+        {/* Events Section */}
+        <section className="mb-8">
+          {/* Section Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{events.length} events in Mola di Bari</p>
+            </div>
+          </div>
+
+          {loading && <p className="text-gray-600 dark:text-gray-400 mb-4">Loading events...</p>}
           {error && <p className="text-red-600 mb-4">Error: {error}</p>}
           {!loading && !error && events.length === 0 && (
-            <p className="text-gray-600 mb-4">No upcoming events found</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">No upcoming events found</p>
           )}
-          <div className="grid gap-4">
+          <div className="space-y-3">
             {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>
         </section>
 
-        <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold text-teal-700 dark:text-teal-400 mb-6 text-center"
-          >
-            Explore the City
-          </motion.h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        {/* Attractions Section */}
+        <section ref={scrollToRef} className="mb-8">
+          {/* Section Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+              <Landmark className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Explore the City</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Discover local attractions</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
             {attractions.map((attraction, index) => (
               <AttractionButton
                 key={attraction.name}
                 attraction={attraction}
                 attractions={attractions}
-                onOpen={(index) => setSelectedAttractionIndex(index)}
+                onOpen={(idx) => setSelectedAttractionIndex(idx)}
                 index={index}
               />
             ))}

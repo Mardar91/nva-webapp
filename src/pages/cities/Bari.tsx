@@ -162,12 +162,13 @@ const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) =
 };
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-    const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-    }).format(event.startDate) : 'Data non disponibile';
-const isCurrentEvent = () => {
-    if(!event.startDate) return null;
+  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+  }).format(event.startDate) : 'Data non disponibile';
+
+  const isCurrentEvent = () => {
+    if (!event.startDate) return null;
 
     const now = new Date();
     const start = new Date(event.startDate);
@@ -175,15 +176,20 @@ const isCurrentEvent = () => {
     const end = event.endDate ? new Date(event.endDate) : new Date(start);
     end.setHours(23, 59, 59, 999);
 
-    const tomorrow = new Date(now);
+    const tomorrow = new Date();
     tomorrow.setDate(now.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
 
-    if(now >= start && now <= end) return 'today';
-    // Fix per il badge tomorrow - controlla solo per eventi che iniziano esattamente domani
-    if(start.getTime() === tomorrow.getTime()) return 'tomorrow';
+    const isToday = now >= start && now <= end;
+    const isTomorrow =
+      start.getDate() === tomorrow.getDate() &&
+      start.getMonth() === tomorrow.getMonth() &&
+      start.getFullYear() === tomorrow.getFullYear();
+
+    if (isToday) return 'today';
+    if (isTomorrow) return 'tomorrow';
     return null;
-};
+  };
 
   const currentEventType = isCurrentEvent();
 
@@ -194,18 +200,21 @@ const isCurrentEvent = () => {
       transition={{ duration: 0.5 }}
       className="relative"
     >
-      <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 border-purple-200 dark:border-purple-800 hover:shadow-lg transition-all duration-200">
-        {/* Header with gradient */}
-        <div className="bg-gradient-to-r from-purple-500 to-violet-600 px-4 py-3">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 border-rose-200 dark:border-rose-800 hover:shadow-lg transition-all duration-200">
+        {/* Card Header */}
+        <div className="bg-gradient-to-r from-rose-600 to-rose-800 px-4 py-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-white text-lg flex-1 pr-2">
-              {event.title}
-            </h3>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <Calendar className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-white font-bold">{formattedDate}</span>
+            </div>
             {currentEventType && (
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${currentEventType === 'today' ? 'bg-green-500' : 'bg-orange-500'}`}>
                 {/* Live ping effect */}
                 <span className="relative flex h-2 w-2">
-                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-white`}></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                 </span>
                 <span className="text-white text-xs font-bold">
@@ -215,25 +224,29 @@ const isCurrentEvent = () => {
             )}
           </div>
         </div>
-        {/* Content */}
+
+        {/* Card Content */}
         <div className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center text-gray-600 dark:text-gray-300">
-                <MapPin className="w-4 h-4 mr-1 text-purple-500" />
-                <span className="text-sm">{event.city}</span>
-              </div>
-              {event.link && (
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-purple-500 hover:text-purple-600 mt-2 inline-block font-medium">
-                  More info →
-                </a>
-              )}
+          <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+            {event.title}
+          </h3>
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-3">
+            <div className="w-6 h-6 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center">
+              <MapPin className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
             </div>
-            <div className="flex items-center bg-purple-50 dark:bg-purple-900/30 px-3 py-1.5 rounded-full">
-              <Calendar className="w-4 h-4 mr-1.5 text-purple-500" />
-              <span className="text-sm font-medium text-purple-700 dark:text-purple-300">{formattedDate}</span>
-            </div>
+            <span className="text-sm">{event.city}</span>
           </div>
+          {event.link && (
+            <a
+              href={event.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-rose-500 hover:text-rose-600 font-medium"
+            >
+              More info
+              <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          )}
         </div>
       </div>
     </motion.div>
@@ -247,24 +260,30 @@ const AttractionButton: React.FC<{
   index: number;
 }> = ({ attraction, attractions, onOpen, index }) => (
   <Dialog>
-    <DialogTrigger>
+    <DialogTrigger asChild>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, delay: index * 0.05 }}
         className="w-full"
       >
         <button
           onClick={() => onOpen(index)}
-          className="w-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 border-purple-200 dark:border-purple-800 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200"
+          className="group w-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border-2 border-rose-200 dark:border-rose-800 hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
         >
-          {/* Header with gradient */}
-          <div className="bg-gradient-to-r from-purple-500 to-violet-600 px-3 py-2">
-            <span className="text-white text-2xl">{attraction.icon}</span>
+          {/* Gradient Header */}
+          <div className="bg-gradient-to-r from-rose-600 to-rose-800 px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <span className="text-lg">{attraction.icon}</span>
+              </div>
+              <span className="text-white font-semibold text-sm truncate">{attraction.name}</span>
+            </div>
           </div>
-          {/* Name */}
-          <div className="p-3">
-            <span className="text-purple-700 dark:text-purple-300 font-medium text-sm">{attraction.name}</span>
+          {/* Card Body */}
+          <div className="px-3 py-2 flex items-center justify-between">
+            <span className="text-gray-500 dark:text-gray-400 text-xs">Tap to explore</span>
+            <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-rose-500 transition-colors" />
           </div>
         </button>
       </motion.div>
@@ -730,7 +749,7 @@ const Bari: React.FC = () => {
           }}
         />
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/85 via-violet-800/80 to-purple-900/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-rose-900/85 via-rose-800/80 to-rose-900/90" />
 
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -753,7 +772,7 @@ const Bari: React.FC = () => {
           <Button
             onClick={handleExploreClick}
             variant="outline"
-            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-purple-800 transition-colors"
+            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-rose-800 transition-colors"
           >
             Explore the City
           </Button>

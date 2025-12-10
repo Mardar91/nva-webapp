@@ -103,7 +103,7 @@ const HeroSection = () => {
         className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 to-blue-800 dark:from-blue-800 dark:to-blue-900"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        <div className="flex items-center justify-center px-4 py-2">
+        <div className="flex items-center justify-start px-4 py-2">
           {isLoggedIn ? (
             /* Logged in state - Name with dropdown */
             <div className="relative" ref={userMenuRef}>
@@ -120,7 +120,7 @@ const HeroSection = () => {
 
               {/* Dropdown Menu */}
               {showUserMenu && (
-                <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50">
+                <div className="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50">
                   <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"

@@ -19,9 +19,15 @@ export interface CheckInState {
   completedAt?: string;
   notificationScheduled?: boolean;
   notificationSent?: boolean;
+  notificationBookingRef?: string; // Track which booking the notification was sent for
+  checkoutNotificationScheduled?: boolean; // Track if checkout reminder was scheduled
   mode?: 'normal' | 'unassigned_checkin';
   savedEmail?: string;
   savedBookingRef?: string;
+  // Apartment data (will be populated when CM sends it)
+  apartmentAddress?: string;
+  apartmentLatitude?: number;
+  apartmentLongitude?: number;
 }
 
 const STORAGE_KEY = 'nva_checkin_state';

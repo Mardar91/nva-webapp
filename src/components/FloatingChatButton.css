@@ -134,4 +134,101 @@
   .chat-prompt::after {
     border-left-color: #1e293b;
   }
+
+  .chat-menu {
+    background-color: #1e293b;
+  }
+
+  .chat-menu-item {
+    color: white;
+  }
+
+  .chat-menu-item:hover {
+    background-color: #334155;
+  }
+}
+
+/* Chat menu styles */
+.chat-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  min-width: 180px;
+  z-index: 9998;
+  animation: fadeInUp 0.2s ease-out;
+}
+
+.chat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  transition: background-color 0.15s ease;
+}
+
+.chat-menu-item:hover {
+  background-color: #f1f5f9;
+}
+
+.chat-menu-item:first-child {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.chat-menu-badge {
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+
+/* Unread badge on main button */
+.unread-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark mode for menu */
+@media (prefers-color-scheme: dark) {
+  .chat-menu-item:first-child {
+    border-bottom-color: #475569;
+  }
 }

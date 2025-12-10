@@ -186,7 +186,7 @@ const PartnersScreen = () => {
                             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
                               <ItemIcon className="h-5 w-5 text-white" strokeWidth={1.5} />
                             </div>
-                            <h4 className="font-bold text-white text-sm leading-tight truncate">{item.name}</h4>
+                            <h4 className="font-bold text-white text-sm leading-tight line-clamp-2">{item.name}</h4>
                           </div>
                           <div className="relative bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full overflow-hidden flex-shrink-0 ml-2">
                             <span className="relative z-10 text-white text-xs font-bold whitespace-nowrap">10% OFF</span>

@@ -1,12 +1,12 @@
 // ============================================
-// 📱 APP: NVA (React App)
-// 📄 FILE: src/components/HeroSection.tsx
-// 🔧 PURPOSE: Hero section with login bar
+// APP: NVA (React App)
+// FILE: src/components/HeroSection.tsx
+// PURPOSE: Hero section with modern design
 // ============================================
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, LogIn, Map, User, LogOut, ChevronDown } from "lucide-react";
+import { Calendar, LogIn, Map, User, LogOut, ChevronDown, Sparkles } from "lucide-react";
 import { useGuestSession } from "../hooks/useGuestSession";
 import { useNotifications } from "../hooks/useNotifications";
 import GuestLoginModal from "./GuestLoginModal";
@@ -59,18 +59,24 @@ const HeroSection = () => {
   const heroItems = [
     {
       title: "Book Now",
-      icon: <Calendar size={32} color="#60A5FA" />,
+      subtitle: "Reserve your stay",
+      icon: <Calendar size={28} strokeWidth={1.5} />,
       onClick: () => navigate("/book"),
+      gradient: "from-blue-500 to-blue-600",
     },
     {
       title: "Check-in",
-      icon: <LogIn size={32} color="#60A5FA" />,
+      subtitle: "Online process",
+      icon: <LogIn size={28} strokeWidth={1.5} />,
       onClick: () => navigate("/check-in"),
+      gradient: "from-emerald-500 to-emerald-600",
     },
     {
       title: "Explore",
-      icon: <Map size={32} color="#60A5FA" />,
+      subtitle: "Discover the area",
+      icon: <Map size={28} strokeWidth={1.5} />,
       onClick: () => navigate("/explore"),
+      gradient: "from-violet-500 to-violet-600",
     },
   ];
 
@@ -98,89 +104,140 @@ const HeroSection = () => {
 
   return (
     <>
-      {/* Fixed Login Bar - Full width at top */}
+      {/* Modern Header with Gradient */}
       <div
-        className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 to-blue-800 dark:from-blue-800 dark:to-blue-900"
+        className="fixed top-0 left-0 right-0 z-50"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        <div className="flex items-center justify-start px-4 py-2">
-          {isLoggedIn ? (
-            /* Logged in state - Name with dropdown */
-            <div className="relative" ref={userMenuRef}>
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+          <div className="flex items-center justify-between px-4 py-3">
+            {/* Logo/Brand */}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <span className="text-white font-bold text-sm">NV</span>
+              </div>
+              <span className="text-white font-semibold text-sm hidden xs:block">Nonna Vittoria</span>
+            </div>
+
+            {/* Login Button */}
+            {isLoggedIn ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white pl-3 pr-2 py-2 rounded-xl text-sm font-medium transition-all duration-200 border border-white/20"
+                >
+                  <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center">
+                    <User className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="truncate max-w-[80px]">
+                    {guestName || 'Guest'}
+                  </span>
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown Menu */}
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-2xl shadow-xl py-2 z-50 border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4 text-gray-400" />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
               <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+                onClick={handleLoginClick}
+                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border border-white/20"
               >
                 <User className="h-4 w-4" />
-                <span className="truncate max-w-[100px]">
-                  {guestName || 'Guest'}
-                </span>
-                <ChevronDown className={`h-3 w-3 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                Login
               </button>
-
-              {/* Dropdown Menu */}
-              {showUserMenu && (
-                <div className="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Not logged in state */
-            <button
-              onClick={handleLoginClick}
-              className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-            >
-              <User className="h-4 w-4" />
-              Login
-            </button>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Spacer for fixed bar */}
+      {/* Spacer for fixed header */}
       <div
-        className="w-full bg-gradient-to-r from-blue-700 to-blue-800 dark:from-blue-800 dark:to-blue-900"
+        className="w-full"
         style={{
-          height: 'calc(40px + env(safe-area-inset-top))',
-          minHeight: '40px'
+          height: 'calc(56px + env(safe-area-inset-top))',
+          minHeight: '56px'
         }}
       />
 
-      <div className="heroContainer bg-white dark:bg-[#1a1a1a]">
-        {/* Title section */}
-        <div className="titleContainer">
-          <h1 className="welcomeText mb-1 dark:text-[#60A5FA]">Nonna Vittoria Apartments</h1>
-          <div className="subTitleContainer dark:bg-[#064e3b]">
-            <span className="receptionText dark:text-[#34d399]">Online Reception 24h</span>
+      {/* Hero Content */}
+      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+        {/* Welcome Section */}
+        <div className="px-5 pt-6 pb-4">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Nonna Vittoria
+              <span className="block text-blue-600 dark:text-blue-400">Apartments</span>
+            </h1>
+
+            {/* Reception Badge - Modern Style */}
+            <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-2 rounded-full border border-emerald-200 dark:border-emerald-800">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-300 text-sm font-medium">
+                Online Reception 24h
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Hero image */}
-        <img
-          src="https://www.assets.houfy.com/assets/images/weblistings/c15e54c09d867202f5c62c04a6768b2d.jpg"
-          alt="Nonna Vittoria Apartments"
-          className="heroImage"
-        />
+        {/* Hero Image with Overlay */}
+        <div className="px-5 pb-5">
+          <div className="relative rounded-3xl overflow-hidden shadow-xl">
+            <img
+              src="https://www.assets.houfy.com/assets/images/weblistings/c15e54c09d867202f5c62c04a6768b2d.jpg"
+              alt="Nonna Vittoria Apartments"
+              className="w-full h-48 object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
-        {/* Action buttons */}
-        <div className="buttonContainer">
-          {heroItems.map((item, index) => (
-            <button
-              key={index}
-              className="heroButton dark:bg-[#1e293b] dark:hover:bg-[#334155]"
-              onClick={item.onClick}
-            >
-              <span className="heroIcon">{item.icon}</span>
-              <span className="heroText dark:text-[#60A5FA]">{item.title}</span>
-            </button>
-          ))}
+            {/* Floating Badge on Image */}
+            <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Mola di Bari, Puglia</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons - Modern Cards */}
+        <div className="px-5 pb-6">
+          <div className="grid grid-cols-3 gap-3">
+            {heroItems.map((item, index) => (
+              <button
+                key={index}
+                onClick={item.onClick}
+                className="group relative bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden"
+              >
+                {/* Gradient Background on Hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+                {/* Content */}
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-2 text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    {item.icon}
+                  </div>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-white transition-colors duration-300">
+                    {item.title}
+                  </span>
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 group-hover:text-white/80 transition-colors duration-300 mt-0.5">
+                    {item.subtitle}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

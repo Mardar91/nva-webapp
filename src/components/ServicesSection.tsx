@@ -8,6 +8,25 @@ import {
   DialogTitle,
   DialogFooter,
 } from "./ui/dialog";
+import {
+  Car,
+  Wine,
+  Sparkles,
+  ShoppingBag,
+  UtensilsCrossed,
+  Sailboat,
+  ParkingCircle,
+  Croissant,
+  Heart,
+  Bike,
+  WashingMachine,
+  AlertTriangle,
+  Pill,
+  Recycle,
+  Gamepad2,
+  Compass,
+  Info,
+} from "lucide-react";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([
@@ -73,7 +92,7 @@ const MemoryGame = () => {
         <p className="text-lg font-semibold">Moves: {moves}</p>
         {isWon && (
           <div className="mt-4">
-            <p className="text-xl font-bold text-green-600">Congratulations! You won! 🎉</p>
+            <p className="text-xl font-bold text-green-600">Congratulations! You won!</p>
             <Button onClick={resetGame} className="mt-2 bg-blue-600 hover:bg-blue-700 text-white">
               Play Again
             </Button>
@@ -122,62 +141,86 @@ const ServicesSection = () => {
   const services = [
     {
       name: "Taxi",
-      icon: "🚕",
+      icon: Car,
+      gradient: "from-yellow-400 to-amber-500",
+      bgLight: "bg-amber-50",
       onClick: () => (window.location.href = "/taxi"),
     },
     {
       name: "Wine",
-      icon: "🍷",
+      icon: Wine,
+      gradient: "from-red-400 to-rose-600",
+      bgLight: "bg-rose-50",
       onClick: () => setOpenWineModal(true),
     },
     {
       name: "Clean",
-      icon: "🧹",
+      icon: Sparkles,
+      gradient: "from-cyan-400 to-blue-500",
+      bgLight: "bg-cyan-50",
       onClick: () => setOpenCleanModal(true),
     },
     {
       name: "Shop",
-      icon: "🛍️",
+      icon: ShoppingBag,
+      gradient: "from-pink-400 to-fuchsia-500",
+      bgLight: "bg-pink-50",
       onClick: () => window.open("https://store.nonnavittoriaapartments.it", "_blank"),
     },
     {
       name: "Delivery",
-      icon: "🍔",
+      icon: UtensilsCrossed,
+      gradient: "from-orange-400 to-red-500",
+      bgLight: "bg-orange-50",
       onClick: () => setOpenDeliveryModal(true),
     },
     {
-      name: "Rent a Car",
-      icon: "🚗",
+      name: "Rent Car",
+      icon: Car,
+      gradient: "from-slate-500 to-slate-700",
+      bgLight: "bg-slate-50",
       onClick: () => setOpenRentCarModal(true),
     },
     {
       name: "Excursions",
-      icon: "⛵️",
+      icon: Sailboat,
+      gradient: "from-sky-400 to-blue-600",
+      bgLight: "bg-sky-50",
       onClick: () => setOpenExcursionsModal(true),
     },
     {
       name: "Parking",
-      icon: "🅿️",
+      icon: ParkingCircle,
+      gradient: "from-blue-500 to-indigo-600",
+      bgLight: "bg-blue-50",
       onClick: () => setOpenParkingModal(true),
     },
     {
       name: "Breakfast",
-      icon: "🥐",
+      icon: Croissant,
+      gradient: "from-amber-400 to-yellow-500",
+      bgLight: "bg-amber-50",
       onClick: () => setOpenBreakfastModal(true),
     },
     {
       name: "Massage",
-      icon: "💆",
+      icon: Heart,
+      gradient: "from-purple-400 to-violet-600",
+      bgLight: "bg-purple-50",
       onClick: () => setOpenMassageModal(true),
     },
     {
-      name: "Rent a Bike",
-      icon: "🚲",
+      name: "Rent Bike",
+      icon: Bike,
+      gradient: "from-green-400 to-emerald-600",
+      bgLight: "bg-green-50",
       onClick: () => setOpenRentBikeModal(true),
     },
     {
       name: "Laundry",
-      icon: "🧺",
+      icon: WashingMachine,
+      gradient: "from-teal-400 to-cyan-600",
+      bgLight: "bg-teal-50",
       onClick: () => setOpenLaundryModal(true),
     },
   ];
@@ -185,22 +228,30 @@ const ServicesSection = () => {
   const utilities = [
     {
       name: "Emergency",
-      icon: "🚨",
+      icon: AlertTriangle,
+      gradient: "from-red-500 to-red-700",
+      bgLight: "bg-red-50",
       onClick: () => setOpenEmergencyModal(true),
     },
     {
       name: "Pharmacy",
-      icon: "💊",
+      icon: Pill,
+      gradient: "from-emerald-400 to-green-600",
+      bgLight: "bg-emerald-50",
       onClick: () => setOpenPharmacyModal(true),
     },
     {
       name: "Recycle",
-      icon: "♻️",
+      icon: Recycle,
+      gradient: "from-lime-400 to-green-500",
+      bgLight: "bg-lime-50",
       onClick: () => setOpenRecycleModal(true),
     },
     {
       name: "Game",
-      icon: "🎮",
+      icon: Gamepad2,
+      gradient: "from-violet-400 to-purple-600",
+      bgLight: "bg-violet-50",
       onClick: () => setOpenGameModal(true),
     },
   ];
@@ -230,38 +281,66 @@ const ServicesSection = () => {
   };
 
   return (
-  <div className="bg-white mt-5 pt-4">
-    <div className="container mx-auto px-4 flex flex-col" style={{ gap: '1rem' }}>
-      <h2 className="sectionTitle">Our Services</h2>
-      <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg" style={{ marginBottom: '1rem' }}>
-        {services.map((service) => (
-          <Button
-            key={service.name}
-            variant="ghost"
-            onClick={service.onClick}
-            className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
-          >
-            <span className="text-2xl">{service.icon}</span>
-            <span className="text-blue-900 font-medium text-xs mt-1">{service.name}</span>
-          </Button>
-        ))}
-      </div>
+    <div className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 pt-6 pb-8">
+      <div className="px-5">
+        {/* Services Section Header */}
+        <div className="flex items-center gap-2 mb-5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+            <Compass className="h-4 w-4 text-white" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Our Services</h2>
+        </div>
 
-      <h2 className="sectionTitle">Useful Information</h2>
-      <div className="grid grid-cols-4 gap-4 justify-items-center mx-auto max-w-lg pb-4">
-        {utilities.map((utility) => (
-          <Button
-            key={utility.name}
-            variant="ghost"
-            onClick={utility.onClick}
-            className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg hover:shadow-lg h-16 w-16"
-          >
-            <span className="text-2xl">{utility.icon}</span>
-            <span className="text-blue-900 font-medium text-xs mt-1">{utility.name}</span>
-          </Button>
-        ))}
+        {/* Services Grid - Modern Cards */}
+        <div className="grid grid-cols-4 gap-3 mb-8">
+          {services.map((service) => {
+            const IconComponent = service.icon;
+            return (
+              <button
+                key={service.name}
+                onClick={service.onClick}
+                className="group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
+              >
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-2 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                  <IconComponent className="h-5 w-5 text-white" strokeWidth={1.5} />
+                </div>
+                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
+                  {service.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Utilities Section Header */}
+        <div className="flex items-center gap-2 mb-5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-500 to-slate-700 flex items-center justify-center">
+            <Info className="h-4 w-4 text-white" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Useful Information</h2>
+        </div>
+
+        {/* Utilities Grid */}
+        <div className="grid grid-cols-4 gap-3">
+          {utilities.map((utility) => {
+            const IconComponent = utility.icon;
+            return (
+              <button
+                key={utility.name}
+                onClick={utility.onClick}
+                className="group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
+              >
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${utility.gradient} flex items-center justify-center mb-2 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                  <IconComponent className="h-5 w-5 text-white" strokeWidth={1.5} />
+                </div>
+                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
+                  {utility.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
 
       {/* Delivery Modal */}
 <Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>

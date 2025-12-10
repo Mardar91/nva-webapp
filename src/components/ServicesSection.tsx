@@ -206,29 +206,29 @@ const ServicesSection = () => {
         <div className="grid grid-cols-4 gap-3 mb-8">
           {services.map((service) => {
             const IconComponent = service.icon;
-            const colorClasses: Record<string, { border: string; bg: string; icon: string; text: string }> = {
-              amber: { border: "border-amber-300 dark:border-amber-700", bg: "bg-amber-50 dark:bg-amber-900/20", icon: "text-amber-500 dark:text-amber-400", text: "text-amber-700 dark:text-amber-400" },
-              rose: { border: "border-rose-300 dark:border-rose-700", bg: "bg-rose-50 dark:bg-rose-900/20", icon: "text-rose-500 dark:text-rose-400", text: "text-rose-700 dark:text-rose-400" },
-              cyan: { border: "border-cyan-300 dark:border-cyan-700", bg: "bg-cyan-50 dark:bg-cyan-900/20", icon: "text-cyan-500 dark:text-cyan-400", text: "text-cyan-700 dark:text-cyan-400" },
-              violet: { border: "border-violet-300 dark:border-violet-700", bg: "bg-violet-50 dark:bg-violet-900/20", icon: "text-violet-500 dark:text-violet-400", text: "text-violet-700 dark:text-violet-400" },
-              orange: { border: "border-orange-300 dark:border-orange-700", bg: "bg-orange-50 dark:bg-orange-900/20", icon: "text-orange-500 dark:text-orange-400", text: "text-orange-700 dark:text-orange-400" },
-              slate: { border: "border-slate-400 dark:border-slate-600", bg: "bg-slate-100 dark:bg-slate-800/50", icon: "text-slate-500 dark:text-slate-400", text: "text-slate-700 dark:text-slate-400" },
-              sky: { border: "border-sky-300 dark:border-sky-700", bg: "bg-sky-50 dark:bg-sky-900/20", icon: "text-sky-500 dark:text-sky-400", text: "text-sky-700 dark:text-sky-400" },
-              blue: { border: "border-blue-300 dark:border-blue-700", bg: "bg-blue-50 dark:bg-blue-900/20", icon: "text-blue-500 dark:text-blue-400", text: "text-blue-700 dark:text-blue-400" },
-              yellow: { border: "border-yellow-400 dark:border-yellow-600", bg: "bg-yellow-50 dark:bg-yellow-900/20", icon: "text-yellow-500 dark:text-yellow-400", text: "text-yellow-700 dark:text-yellow-400" },
-              pink: { border: "border-pink-300 dark:border-pink-700", bg: "bg-pink-50 dark:bg-pink-900/20", icon: "text-pink-500 dark:text-pink-400", text: "text-pink-700 dark:text-pink-400" },
-              emerald: { border: "border-emerald-300 dark:border-emerald-700", bg: "bg-emerald-50 dark:bg-emerald-900/20", icon: "text-emerald-500 dark:text-emerald-400", text: "text-emerald-700 dark:text-emerald-400" },
-              teal: { border: "border-teal-300 dark:border-teal-700", bg: "bg-teal-50 dark:bg-teal-900/20", icon: "text-teal-500 dark:text-teal-400", text: "text-teal-700 dark:text-teal-400" },
+            const colorClasses: Record<string, { border: string; bg: string; bgHover: string; icon: string; iconHover: string; text: string }> = {
+              amber: { border: "border-amber-300 dark:border-amber-700", bg: "bg-amber-50 dark:bg-amber-900/20", bgHover: "group-hover:bg-amber-500 dark:group-hover:bg-amber-500", icon: "text-amber-500 dark:text-amber-400", iconHover: "group-hover:text-white", text: "text-amber-700 dark:text-amber-400" },
+              rose: { border: "border-rose-300 dark:border-rose-700", bg: "bg-rose-50 dark:bg-rose-900/20", bgHover: "group-hover:bg-rose-500 dark:group-hover:bg-rose-500", icon: "text-rose-500 dark:text-rose-400", iconHover: "group-hover:text-white", text: "text-rose-700 dark:text-rose-400" },
+              cyan: { border: "border-cyan-300 dark:border-cyan-700", bg: "bg-cyan-50 dark:bg-cyan-900/20", bgHover: "group-hover:bg-cyan-500 dark:group-hover:bg-cyan-500", icon: "text-cyan-500 dark:text-cyan-400", iconHover: "group-hover:text-white", text: "text-cyan-700 dark:text-cyan-400" },
+              violet: { border: "border-violet-300 dark:border-violet-700", bg: "bg-violet-50 dark:bg-violet-900/20", bgHover: "group-hover:bg-violet-500 dark:group-hover:bg-violet-500", icon: "text-violet-500 dark:text-violet-400", iconHover: "group-hover:text-white", text: "text-violet-700 dark:text-violet-400" },
+              orange: { border: "border-orange-300 dark:border-orange-700", bg: "bg-orange-50 dark:bg-orange-900/20", bgHover: "group-hover:bg-orange-500 dark:group-hover:bg-orange-500", icon: "text-orange-500 dark:text-orange-400", iconHover: "group-hover:text-white", text: "text-orange-700 dark:text-orange-400" },
+              slate: { border: "border-slate-400 dark:border-slate-600", bg: "bg-slate-100 dark:bg-slate-800/50", bgHover: "group-hover:bg-slate-500 dark:group-hover:bg-slate-500", icon: "text-slate-500 dark:text-slate-400", iconHover: "group-hover:text-white", text: "text-slate-700 dark:text-slate-400" },
+              sky: { border: "border-sky-300 dark:border-sky-700", bg: "bg-sky-50 dark:bg-sky-900/20", bgHover: "group-hover:bg-sky-500 dark:group-hover:bg-sky-500", icon: "text-sky-500 dark:text-sky-400", iconHover: "group-hover:text-white", text: "text-sky-700 dark:text-sky-400" },
+              blue: { border: "border-blue-300 dark:border-blue-700", bg: "bg-blue-50 dark:bg-blue-900/20", bgHover: "group-hover:bg-blue-500 dark:group-hover:bg-blue-500", icon: "text-blue-500 dark:text-blue-400", iconHover: "group-hover:text-white", text: "text-blue-700 dark:text-blue-400" },
+              yellow: { border: "border-yellow-400 dark:border-yellow-600", bg: "bg-yellow-50 dark:bg-yellow-900/20", bgHover: "group-hover:bg-yellow-500 dark:group-hover:bg-yellow-500", icon: "text-yellow-500 dark:text-yellow-400", iconHover: "group-hover:text-white", text: "text-yellow-700 dark:text-yellow-400" },
+              pink: { border: "border-pink-300 dark:border-pink-700", bg: "bg-pink-50 dark:bg-pink-900/20", bgHover: "group-hover:bg-pink-500 dark:group-hover:bg-pink-500", icon: "text-pink-500 dark:text-pink-400", iconHover: "group-hover:text-white", text: "text-pink-700 dark:text-pink-400" },
+              emerald: { border: "border-emerald-300 dark:border-emerald-700", bg: "bg-emerald-50 dark:bg-emerald-900/20", bgHover: "group-hover:bg-emerald-500 dark:group-hover:bg-emerald-500", icon: "text-emerald-500 dark:text-emerald-400", iconHover: "group-hover:text-white", text: "text-emerald-700 dark:text-emerald-400" },
+              teal: { border: "border-teal-300 dark:border-teal-700", bg: "bg-teal-50 dark:bg-teal-900/20", bgHover: "group-hover:bg-teal-500 dark:group-hover:bg-teal-500", icon: "text-teal-500 dark:text-teal-400", iconHover: "group-hover:text-white", text: "text-teal-700 dark:text-teal-400" },
             };
             const colors = colorClasses[service.color] || colorClasses.blue;
             return (
               <button
                 key={service.name}
                 onClick={service.onClick}
-                className={`group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border ${colors.border} transition-all duration-200 active:scale-95`}
+                className={`group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border ${colors.border} transition-all duration-200 hover:scale-105 active:scale-95`}
               >
-                <div className={`w-11 h-11 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center mb-2 transition-all duration-200`}>
-                  <IconComponent className={`h-5 w-5 ${colors.icon} transition-colors duration-200`} strokeWidth={1.5} />
+                <div className={`w-11 h-11 rounded-xl ${colors.bg} ${colors.bgHover} border ${colors.border} flex items-center justify-center mb-2 transition-all duration-200`}>
+                  <IconComponent className={`h-5 w-5 ${colors.icon} ${colors.iconHover} transition-colors duration-200`} strokeWidth={1.5} />
                 </div>
                 <span className={`text-[11px] font-medium ${colors.text} text-center leading-tight transition-colors duration-200`}>
                   {service.name}
@@ -250,21 +250,21 @@ const ServicesSection = () => {
         <div className="grid grid-cols-4 gap-3">
           {utilities.map((utility) => {
             const IconComponent = utility.icon;
-            const colorClasses: Record<string, { border: string; bg: string; icon: string; text: string }> = {
-              red: { border: "border-red-300 dark:border-red-700", bg: "bg-red-50 dark:bg-red-900/20", icon: "text-red-500 dark:text-red-400", text: "text-red-700 dark:text-red-400" },
-              green: { border: "border-green-300 dark:border-green-700", bg: "bg-green-50 dark:bg-green-900/20", icon: "text-green-500 dark:text-green-400", text: "text-green-700 dark:text-green-400" },
-              lime: { border: "border-lime-400 dark:border-lime-600", bg: "bg-lime-50 dark:bg-lime-900/20", icon: "text-lime-500 dark:text-lime-400", text: "text-lime-700 dark:text-lime-400" },
-              purple: { border: "border-purple-300 dark:border-purple-700", bg: "bg-purple-50 dark:bg-purple-900/20", icon: "text-purple-500 dark:text-purple-400", text: "text-purple-700 dark:text-purple-400" },
+            const colorClasses: Record<string, { border: string; bg: string; bgHover: string; icon: string; iconHover: string; text: string }> = {
+              red: { border: "border-red-300 dark:border-red-700", bg: "bg-red-50 dark:bg-red-900/20", bgHover: "group-hover:bg-red-500 dark:group-hover:bg-red-500", icon: "text-red-500 dark:text-red-400", iconHover: "group-hover:text-white", text: "text-red-700 dark:text-red-400" },
+              green: { border: "border-green-300 dark:border-green-700", bg: "bg-green-50 dark:bg-green-900/20", bgHover: "group-hover:bg-green-500 dark:group-hover:bg-green-500", icon: "text-green-500 dark:text-green-400", iconHover: "group-hover:text-white", text: "text-green-700 dark:text-green-400" },
+              lime: { border: "border-lime-400 dark:border-lime-600", bg: "bg-lime-50 dark:bg-lime-900/20", bgHover: "group-hover:bg-lime-500 dark:group-hover:bg-lime-500", icon: "text-lime-500 dark:text-lime-400", iconHover: "group-hover:text-white", text: "text-lime-700 dark:text-lime-400" },
+              purple: { border: "border-purple-300 dark:border-purple-700", bg: "bg-purple-50 dark:bg-purple-900/20", bgHover: "group-hover:bg-purple-500 dark:group-hover:bg-purple-500", icon: "text-purple-500 dark:text-purple-400", iconHover: "group-hover:text-white", text: "text-purple-700 dark:text-purple-400" },
             };
             const colors = colorClasses[utility.color] || colorClasses.red;
             return (
               <button
                 key={utility.name}
                 onClick={utility.onClick}
-                className={`group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border ${colors.border} transition-all duration-200 active:scale-95`}
+                className={`group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border ${colors.border} transition-all duration-200 hover:scale-105 active:scale-95`}
               >
-                <div className={`w-11 h-11 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center mb-2 transition-all duration-200`}>
-                  <IconComponent className={`h-5 w-5 ${colors.icon} transition-colors duration-200`} strokeWidth={1.5} />
+                <div className={`w-11 h-11 rounded-xl ${colors.bg} ${colors.bgHover} border ${colors.border} flex items-center justify-center mb-2 transition-all duration-200`}>
+                  <IconComponent className={`h-5 w-5 ${colors.icon} ${colors.iconHover} transition-colors duration-200`} strokeWidth={1.5} />
                 </div>
                 <span className={`text-[11px] font-medium ${colors.text} text-center leading-tight transition-colors duration-200`}>
                   {utility.name}

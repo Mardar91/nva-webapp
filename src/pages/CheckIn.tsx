@@ -41,7 +41,16 @@ const CheckIn = () => {
     isCheckInAvailable,
     daysUntilCheckIn
   } = useCheckInState();
-  const { deviceId } = useNotifications();
+  const { deviceId, isLoading: notificationsLoading } = useNotifications();
+
+  // 🔍 DEBUG: Log deviceId status on every render
+  useEffect(() => {
+    console.log('[CHECKIN DEBUG] 📱 deviceId status:', {
+      deviceId: deviceId || 'NULL/UNDEFINED',
+      notificationsLoading,
+      timestamp: new Date().toISOString()
+    });
+  }, [deviceId, notificationsLoading]);
   const {
     isLoggedIn,
     token,
@@ -150,7 +159,8 @@ const CheckIn = () => {
         break;
 
       case 'CHECKIN_PENDING':
-        console.log('Check-in pending (not yet available):', data);
+        console.log('[CHECKIN DEBUG] 📥 CHECKIN_PENDING received:', data);
+        console.log('[CHECKIN DEBUG] 📱 Current deviceId at PENDING:', deviceId || 'NULL/UNDEFINED');
 
         updateCheckInState({
           status: 'pending',
@@ -165,6 +175,7 @@ const CheckIn = () => {
         });
 
         if (data.checkInDate && deviceId) {
+          console.log('[CHECKIN DEBUG] ✅ Scheduling reminder with deviceId:', deviceId);
           const result = await scheduleCheckInReminder({
             checkInDate: data.checkInDate,
             deviceId: deviceId,
@@ -177,6 +188,8 @@ const CheckIn = () => {
               notificationSent: false
             });
           }
+        } else {
+          console.log('[CHECKIN DEBUG] ⚠️ NOT scheduling reminder - checkInDate:', data.checkInDate, 'deviceId:', deviceId);
         }
 
         setTimeout(() => {
@@ -284,6 +297,17 @@ const CheckIn = () => {
   }, [handleMessage]);
 
   const handleStartCheckIn = (email?: string, bookingRef?: string) => {
+    // 🔍 DEBUG: Log all values at the moment of click
+    console.log('[CHECKIN DEBUG] 🚀 handleStartCheckIn called:', {
+      deviceId: deviceId || 'NULL/UNDEFINED',
+      notificationsLoading,
+      email: email || 'not provided',
+      bookingRef: bookingRef || 'not provided',
+      checkInState_savedEmail: checkInState.savedEmail || 'not saved',
+      checkInState_savedBookingRef: checkInState.savedBookingRef || 'not saved',
+      timestamp: new Date().toISOString()
+    });
+
     setIsLoading(true);
     setLoadError(false);
     setIframeReady(false);
@@ -301,10 +325,13 @@ const CheckIn = () => {
     }
     if (deviceId) {
       params.set('deviceId', deviceId);
+      console.log('[CHECKIN DEBUG] ✅ deviceId ADDED to URL:', deviceId);
+    } else {
+      console.log('[CHECKIN DEBUG] ⚠️ deviceId NOT ADDED - value is:', deviceId);
     }
 
     const url = `${CHECKIN_CONFIG.IFRAME_URL}?${params.toString()}`;
-    console.log('Opening iframe:', url);
+    console.log('[CHECKIN DEBUG] 📤 Final iframe URL:', url);
 
     setIframeUrl(url);
     setShowIframe(true);

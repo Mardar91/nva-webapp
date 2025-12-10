@@ -38,11 +38,18 @@ export const useNotifications = () => {
         if (isSupported) {
             const fetchStatus = async () => {
                 try {
+                    console.log('[useNotifications DEBUG] 🔄 Fetching subscription status...');
                     const status = await getSubscriptionStatus();
+                    console.log('[useNotifications DEBUG] 📊 Status received:', {
+                        deviceId: status?.deviceId || 'NULL/UNDEFINED',
+                        isSubscribed: status?.isSubscribed,
+                        pushToken: status?.pushToken ? 'EXISTS' : 'NULL'
+                    });
                     setIsSubscribed(!!status?.isSubscribed);
                     setDeviceId(status?.deviceId || null);
                     setIsLoading(false);
                 } catch (err) {
+                    console.error('[useNotifications DEBUG] ❌ Error:', err);
                     setError('Error fetching subscription status.');
                     setIsLoading(false);
                 }

@@ -127,8 +127,8 @@ const RestaurantScreen = () => {
                   <h3 className="font-bold text-white text-lg">{restaurant.name}</h3>
                   <p className="text-white/80 text-sm">{restaurant.subtitle}</p>
                 </div>
-                <div className="relative bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full overflow-hidden">
-                  <span className="relative z-10 text-white text-xs font-bold">10% OFF</span>
+                <div className="relative bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full overflow-hidden flex-shrink-0">
+                  <span className="relative z-10 text-white text-xs font-bold whitespace-nowrap">10% OFF</span>
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 </div>

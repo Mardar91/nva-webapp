@@ -28,13 +28,20 @@ const isOneSignalAvailable = (): boolean => {
 
 // Ottieni l'ID del dispositivo corrente
 const getDeviceId = async (): Promise<string | null> => {
-  if (!isOneSignalAvailable()) return null;
-  
+  console.log('[OneSignal DEBUG] 🔍 getDeviceId called');
+
+  if (!isOneSignalAvailable()) {
+    console.log('[OneSignal DEBUG] ⚠️ OneSignal NOT available');
+    return null;
+  }
+
   try {
+    console.log('[OneSignal DEBUG] 📡 Accessing OneSignal.User.PushSubscription.id...');
     const deviceId = await window.OneSignal.User.PushSubscription.id;
+    console.log('[OneSignal DEBUG] 📱 Raw deviceId from OneSignal:', deviceId || 'NULL/UNDEFINED');
     return deviceId || null;
   } catch (error) {
-    console.error('Error getting device ID:', error);
+    console.error('[OneSignal DEBUG] ❌ Error getting device ID:', error);
     return null;
   }
 };

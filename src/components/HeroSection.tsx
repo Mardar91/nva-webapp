@@ -113,10 +113,12 @@ const HeroSection = () => {
           <div className="flex items-center justify-between px-4 py-3">
             {/* Logo/Brand */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <span className="text-white font-bold text-sm">NV</span>
-              </div>
-              <span className="text-white font-semibold text-sm hidden xs:block">Nonna Vittoria</span>
+              <img
+                src="/icons/logo-512x512.png"
+                alt="NV Logo"
+                className="w-8 h-8 rounded-xl object-cover"
+              />
+              <span className="text-white font-semibold text-sm">Nonna Vittoria</span>
             </div>
 
             {/* Login Button */}
@@ -176,8 +178,7 @@ const HeroSection = () => {
         <div className="px-5 pt-6 pb-4">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Nonna Vittoria
-              <span className="block text-blue-600 dark:text-blue-400">Apartments</span>
+              Nonna Vittoria <span className="text-blue-600 dark:text-blue-400">Apartments</span>
             </h1>
 
             {/* Reception Badge - Modern Style */}

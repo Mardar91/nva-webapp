@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { Home, Pizza, Handshake } from "lucide-react";
+import { Home, UtensilsCrossed, Handshake } from "lucide-react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -47,69 +46,82 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       audioRef.current.play().catch(() => {});
     }
   };
-  
-  const getButtonClass = (path: string) =>
-    location.pathname === path
-      ? "text-[#6699ff]"
-      : "text-blue-900 dark:text-gray-200";
 
-  const isIframePage = ['/taxi', '/shop', '/gift-card'].includes(location.pathname);
+  const navItems = [
+    { path: "/", label: "Home", icon: Home },
+    { path: "/restaurants", label: "Restaurants", icon: UtensilsCrossed },
+    { path: "/partners", label: "Partners", icon: Handshake },
+  ];
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div 
-      className="fixed inset-0 flex flex-col" 
-      style={{ 
-        background: '#f3f4f6',
+    <div
+      className="fixed inset-0 flex flex-col"
+      style={{
+        background: '#f9fafb',
       }}
     >
-      {/* RIMOSSO tutto lo scroll wrapper - lascia che children gestiscano il loro scroll */}
       <div className="flex-1 relative">
         {children}
       </div>
 
-      <nav 
-        className="bg-gray-100 dark:bg-gray-900 fixed bottom-0 left-0 right-0 z-50"
+      {/* Modern Bottom Navigation */}
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50"
         style={{
-          paddingTop: "0.75rem",
-          paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))",
+          paddingBottom: "env(safe-area-inset-bottom)",
           height: "88px",
-          boxShadow: '0 -2px 10px rgba(0,0,0,0.1)'
         }}
       >
-        <div className="flex justify-center space-x-4">
-          <Link to="/" onClick={handleNavClick}>
-            <Button 
-              variant="ghost" 
-              className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"
-            >
-              <div className={`flex flex-col items-center ${getButtonClass("/")}`}>
-                <Home className="w-6 h-6 mb-1" />
-                Home
-              </div>
-            </Button>
-          </Link>
-          <Link to="/restaurants" onClick={handleNavClick}>
-            <Button 
-              variant="ghost"
-              className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"
-            >
-              <div className={`flex flex-col items-center ${getButtonClass("/restaurants")}`}>
-                <Pizza className="w-6 h-6 mb-1" />
-                Restaurants
-              </div>
-            </Button>
-          </Link>
-          <Link to="/partners" onClick={handleNavClick}>
-            <Button 
-              variant="ghost"
-              className="dark:hover:bg-transparent dark:focus:bg-transparent dark:active:bg-transparent"
-            >
-              <div className={`flex flex-col items-center ${getButtonClass("/partners")}`}>
-                <Handshake className="w-6 h-6 mb-1" />
-                Partners
-              </div>
-            </Button>
-          </Link>
+        {/* Glassmorphism Background */}
+        <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50" />
+
+        {/* Nav Content */}
+        <div className="relative h-full flex items-center justify-around px-6 max-w-md mx-auto">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={handleNavClick}
+                className="flex flex-col items-center justify-center py-2 px-4 rounded-2xl transition-all duration-300 active:scale-95"
+              >
+                {/* Icon Container with Active Indicator */}
+                <div className={`relative p-2 rounded-xl transition-all duration-300 ${
+                  active
+                    ? 'bg-blue-100 dark:bg-blue-900/50'
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}>
+                  <Icon
+                    className={`w-6 h-6 transition-colors duration-300 ${
+                      active
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}
+                    strokeWidth={active ? 2.5 : 2}
+                  />
+
+                  {/* Active Dot Indicator */}
+                  {active && (
+                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full" />
+                  )}
+                </div>
+
+                {/* Label */}
+                <span className={`text-[11px] mt-1 font-medium transition-colors duration-300 ${
+                  active
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-gray-500 dark:text-gray-400'
+                }`}>
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </div>

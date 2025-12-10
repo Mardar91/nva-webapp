@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-import { Button } from "../components/ui/button";
-import { cn } from "../lib/utils";
+import { Ticket, Sparkles, Gift } from "lucide-react";
 
 const VipTicketHero = () => {
   useEffect(() => {
     const themeColor = document.querySelector('meta[name="theme-color"]');
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     if (themeColor) {
       themeColor.setAttribute('content', darkModeMediaQuery.matches ? '#1a1a1a' : '#1e3a8a');
     }
@@ -29,11 +28,11 @@ const VipTicketHero = () => {
 
   const handleVipTicket = () => {
     // Rileva iOS/iPadOS in modo più accurato
-    const isAppleDevice = /iPhone|iPad|iPod/.test(navigator.userAgent) && 'maxTouchPoints' in navigator && 
+    const isAppleDevice = /iPhone|iPad|iPod/.test(navigator.userAgent) && 'maxTouchPoints' in navigator &&
       (navigator.maxTouchPoints > 0);
-    
+
     // Rileva macOS (escludendo iPad)
-    const isMacOS = /Macintosh/.test(navigator.userAgent) && 
+    const isMacOS = /Macintosh/.test(navigator.userAgent) &&
       (!('maxTouchPoints' in navigator) || navigator.maxTouchPoints === 0);
 
     if (isAppleDevice || isMacOS) {
@@ -58,22 +57,53 @@ const VipTicketHero = () => {
   };
 
   return (
-    <div className="vipHeroContainer extended-blue-bg bg-[#1e3a8a] dark:bg-[#1a1a1a]">
-      <h2 className="vipHeroTitle">Get Your Free VIP Ticket!</h2>
-      <p className="vipHeroSubtitle">
-        Download your digital VIP Ticket to enjoy exclusive 10% discounts at all
-        our partner locations
-      </p>
-      <Button 
-        className={cn(
-          "vipButton", 
-          "golden-vip-button"
-        )} 
-        onClick={handleVipTicket}
-      >
-        <span className="vipButtonIcon">🎟️</span>
-        Download VIP Ticket
-      </Button>
+    <div className="relative overflow-hidden">
+      {/* Background with gradient */}
+      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-gray-800 dark:via-gray-900 dark:to-gray-900">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+
+        <div className="relative px-5 py-8">
+          {/* Icon badge */}
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg">
+              <Ticket className="h-8 w-8 text-white" strokeWidth={1.5} />
+            </div>
+          </div>
+
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-white text-center mb-2">
+            Get Your Free VIP Ticket!
+          </h2>
+
+          {/* Subtitle */}
+          <p className="text-blue-100 dark:text-gray-300 text-center text-sm mb-6 max-w-xs mx-auto">
+            Download your digital VIP Ticket to enjoy exclusive 10% discounts at all our partner locations
+          </p>
+
+          {/* Features */}
+          <div className="flex justify-center gap-4 mb-6">
+            <div className="flex items-center gap-1.5 text-white/80 text-xs">
+              <Gift className="h-4 w-4 text-amber-400" />
+              <span>10% OFF</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-white/80 text-xs">
+              <Sparkles className="h-4 w-4 text-amber-400" />
+              <span>All Partners</span>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <button
+            onClick={handleVipTicket}
+            className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 font-bold py-4 px-6 rounded-2xl transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
+          >
+            <Ticket className="h-5 w-5" />
+            Download VIP Ticket
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

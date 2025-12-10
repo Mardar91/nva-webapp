@@ -19,6 +19,7 @@ import {
   XCircle,
   RefreshCw,
   Clock,
+  Briefcase,
   Home,
   User,
   CalendarCheck,
@@ -612,13 +613,18 @@ const CheckIn = () => {
                 </div>
 
                 <div className="space-y-3 pt-4">
+                  <div className="bg-sky-50 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-700 rounded-lg p-4">
+                    <p className="text-sky-800 dark:text-sky-300 text-sm">
+                      All your stay information, access code, booking details and services are now available in <strong>My Reservation</strong>.
+                    </p>
+                  </div>
                   <Button
-                    onClick={() => window.location.href = '/'}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    onClick={() => window.location.href = '/my-stay'}
+                    className="w-full bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700"
                     size="lg"
                   >
-                    <Home className="mr-2 h-5 w-5" />
-                    Back to Home
+                    <Briefcase className="mr-2 h-5 w-5" />
+                    Go to My Reservation
                   </Button>
                 </div>
               </CardContent>
@@ -736,13 +742,18 @@ const CheckIn = () => {
                 )}
 
                 <div className="space-y-3 pt-4">
+                  <div className="bg-sky-50 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-700 rounded-lg p-4">
+                    <p className="text-sky-800 dark:text-sky-300 text-sm">
+                      All your stay information, access code, booking details and services are now available in <strong>My Reservation</strong>.
+                    </p>
+                  </div>
                   <Button
-                    onClick={() => window.location.href = '/'}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    onClick={() => window.location.href = '/my-stay'}
+                    className="w-full bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700"
                     size="lg"
                   >
-                    <Home className="mr-2 h-5 w-5" />
-                    Back to Home
+                    <Briefcase className="mr-2 h-5 w-5" />
+                    Go to My Reservation
                   </Button>
                 </div>
               </CardContent>

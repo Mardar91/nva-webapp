@@ -33,7 +33,17 @@ import {
   Clock,
   FileText,
   X,
+  Check,
+  CreditCard,
+  Banknote,
+  Send,
+  Calendar,
+  Minus,
+  Plus,
+  Trash2,
 } from "lucide-react";
+import { useGuestSession } from "../hooks/useGuestSession";
+import { sendChatMessage } from "../lib/guestApi";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([
@@ -130,6 +140,8 @@ const MemoryGame = () => {
 };
 
 const ServicesSection = () => {
+  const { isLoggedIn, token, booking } = useGuestSession();
+
   const [openWineModal, setOpenWineModal] = useState(false);
   const [openCleanModal, setOpenCleanModal] = useState(false);
   const [openDeliveryModal, setOpenDeliveryModal] = useState(false);
@@ -144,6 +156,101 @@ const ServicesSection = () => {
   const [openPharmacyModal, setOpenPharmacyModal] = useState(false);
   const [openRecycleModal, setOpenRecycleModal] = useState(false);
   const [openGameModal, setOpenGameModal] = useState(false);
+
+  // Form states for logged users
+  const [wineType, setWineType] = useState<'wine' | 'prosecco'>('prosecco');
+  const [cleanDate, setCleanDate] = useState('');
+  const [cleanPayment, setCleanPayment] = useState<'cash' | 'transfer'>('cash');
+  const [coffeePods, setCoffeePods] = useState(0);
+  const [croissants, setCroissants] = useState(0);
+  const [breakfastOffer, setBreakfastOffer] = useState(false);
+  const [breakfastPayment, setBreakfastPayment] = useState<'cash' | 'transfer'>('cash');
+  const [bikeCount, setBikeCount] = useState(1);
+  const [bikeDate, setBikeDate] = useState('');
+  const [recycleBags, setRecycleBags] = useState(1);
+  const [recycleTypes, setRecycleTypes] = useState<string[]>([]);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
+
+  // Helper to get valid dates for cleaning (day after check-in to day before checkout)
+  const getCleaningDateRange = () => {
+    if (!booking?.checkIn || !booking?.checkOut) return { min: '', max: '' };
+    const checkIn = new Date(booking.checkIn);
+    const checkOut = new Date(booking.checkOut);
+    const minDate = new Date(checkIn);
+    minDate.setDate(minDate.getDate() + 1); // Day after check-in
+    const maxDate = new Date(checkOut);
+    maxDate.setDate(maxDate.getDate() - 1); // Day before checkout
+    return {
+      min: minDate.toISOString().split('T')[0],
+      max: maxDate.toISOString().split('T')[0]
+    };
+  };
+
+  // Helper to get valid dates for bike rental (from check-in day to checkout)
+  const getBikeDateRange = () => {
+    if (!booking?.checkIn || !booking?.checkOut) return { min: '', max: '' };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkIn = new Date(booking.checkIn);
+    const checkOut = new Date(booking.checkOut);
+    // Start from today or check-in, whichever is later
+    const minDate = today > checkIn ? today : checkIn;
+    return {
+      min: minDate.toISOString().split('T')[0],
+      max: checkOut.toISOString().split('T')[0]
+    };
+  };
+
+  // Format date for display
+  const formatDateDisplay = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('en-US', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).format(date);
+  };
+
+  // Send message via chat
+  const handleSendChatMessage = async (message: string, closeModal: () => void) => {
+    if (!token) return;
+    setSendingMessage(true);
+    try {
+      const result = await sendChatMessage(token, message);
+      if (result.success) {
+        setMessageSent(true);
+        setTimeout(() => {
+          setMessageSent(false);
+          closeModal();
+          // Reset form states
+          setWineType('prosecco');
+          setCleanDate('');
+          setCleanPayment('cash');
+          setCoffeePods(0);
+          setCroissants(0);
+          setBreakfastOffer(false);
+          setBreakfastPayment('cash');
+          setBikeCount(1);
+          setBikeDate('');
+          setRecycleBags(1);
+          setRecycleTypes([]);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    } finally {
+      setSendingMessage(false);
+    }
+  };
+
+  // Calculate breakfast total
+  const calculateBreakfastTotal = () => {
+    if (breakfastOffer) return 7;
+    return coffeePods + croissants;
+  };
 
   const services = [
     { name: "Taxi", icon: Car, color: "amber", onClick: () => (window.location.href = "/taxi") },
@@ -385,19 +492,92 @@ const ServicesSection = () => {
             </DialogHeader>
           </div>
           <div className="p-6">
-            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Request a bottle of wine or prosecco to be available upon arrival at a special price (subject to availability). To place an order, contact us on WhatsApp.
-            </p>
-            <button
-              onClick={() => {
-                window.location.href = "https://wa.me/+393458381107";
-                setOpenWineModal(false);
-              }}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Contact us on WhatsApp
-            </button>
+            {messageSent ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8 text-green-600" />
+                </div>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">Request Sent!</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll get back to you soon.</p>
+              </div>
+            ) : isLoggedIn ? (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+                  Request a bottle of wine or prosecco for your apartment (subject to availability).
+                </p>
+
+                {/* Wine Type Selection */}
+                <div className="space-y-3 mb-6">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Select beverage:</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setWineType('wine')}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        wineType === 'wine'
+                          ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-rose-300'
+                      }`}
+                    >
+                      <span className="text-2xl mb-2 block">🍷</span>
+                      <span className={`font-semibold ${wineType === 'wine' ? 'text-rose-600' : 'text-gray-700 dark:text-gray-300'}`}>Wine</span>
+                    </button>
+                    <button
+                      onClick={() => setWineType('prosecco')}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        wineType === 'prosecco'
+                          ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-rose-300'
+                      }`}
+                    >
+                      <span className="text-2xl mb-2 block">🥂</span>
+                      <span className={`font-semibold ${wineType === 'prosecco' ? 'text-rose-600' : 'text-gray-700 dark:text-gray-300'}`}>Prosecco</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Preview Message */}
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                    "I would like to request a bottle of <strong>{wineType === 'wine' ? 'Wine' : 'Prosecco'}</strong> for <strong>{booking?.apartmentName}</strong>. Is it available?"
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const message = `I would like to request a bottle of ${wineType === 'wine' ? 'Wine' : 'Prosecco'} for ${booking?.apartmentName}. Is it available?`;
+                    handleSendChatMessage(message, () => setOpenWineModal(false));
+                  }}
+                  disabled={sendingMessage}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
+                >
+                  {sendingMessage ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Send Request
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
+                  Request a bottle of wine or prosecco to be available upon arrival at a special price (subject to availability). To place an order, contact us on WhatsApp.
+                </p>
+                <button
+                  onClick={() => {
+                    window.location.href = "https://wa.me/+393458381107";
+                    setOpenWineModal(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Contact us on WhatsApp
+                </button>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -414,24 +594,119 @@ const ServicesSection = () => {
             </DialogHeader>
           </div>
           <div className="p-6">
-            <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-xl p-4 mb-6 text-center border border-cyan-200 dark:border-cyan-800">
+            <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-xl p-4 mb-4 text-center border border-cyan-200 dark:border-cyan-800">
               <p className="text-gray-600 dark:text-gray-400 text-sm">Service price</p>
               <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">€20</p>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Request a cleaning service during your stay.
-            </p>
-            <button
-              onClick={() => {
-                const message = encodeURIComponent("Hello, I would like to request a cleaning service for my apartment. Please let me know the available time slots.");
-                window.location.href = `https://wa.me/+393458381107?text=${message}`;
-                setOpenCleanModal(false);
-              }}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Request on WhatsApp
-            </button>
+
+            {messageSent ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8 text-green-600" />
+                </div>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">Request Sent!</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll confirm your cleaning appointment.</p>
+              </div>
+            ) : isLoggedIn ? (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+                  Request a cleaning service during your stay.
+                </p>
+
+                {/* Date Selection */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Select date:</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="date"
+                      value={cleanDate}
+                      onChange={(e) => setCleanDate(e.target.value)}
+                      min={getCleaningDateRange().min}
+                      max={getCleaningDateRange().max}
+                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+                  </div>
+                  {cleanDate && (
+                    <p className="text-sm text-cyan-600 dark:text-cyan-400">{formatDateDisplay(cleanDate)}</p>
+                  )}
+                </div>
+
+                {/* Payment Method */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Payment method:</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setCleanPayment('cash')}
+                      className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
+                        cleanPayment === 'cash'
+                          ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20'
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <Banknote className={`h-5 w-5 ${cleanPayment === 'cash' ? 'text-cyan-600' : 'text-gray-500'}`} />
+                      <span className={`font-medium ${cleanPayment === 'cash' ? 'text-cyan-600' : 'text-gray-700 dark:text-gray-300'}`}>Cash</span>
+                    </button>
+                    <button
+                      onClick={() => setCleanPayment('transfer')}
+                      className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
+                        cleanPayment === 'transfer'
+                          ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20'
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <CreditCard className={`h-5 w-5 ${cleanPayment === 'transfer' ? 'text-cyan-600' : 'text-gray-500'}`} />
+                      <span className={`font-medium ${cleanPayment === 'transfer' ? 'text-cyan-600' : 'text-gray-700 dark:text-gray-300'}`}>Transfer</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Preview Message */}
+                {cleanDate && (
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                      "I would like to request a cleaning service for <strong>{booking?.apartmentName}</strong> on <strong>{formatDateDisplay(cleanDate)}</strong>. Payment method: <strong>{cleanPayment === 'cash' ? 'Cash' : 'Instant Bank Transfer'}</strong>."
+                    </p>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => {
+                    const message = `I would like to request a cleaning service for ${booking?.apartmentName} on ${formatDateDisplay(cleanDate)}. Payment method: ${cleanPayment === 'cash' ? 'Cash' : 'Instant Bank Transfer'}.`;
+                    handleSendChatMessage(message, () => setOpenCleanModal(false));
+                  }}
+                  disabled={sendingMessage || !cleanDate}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
+                >
+                  {sendingMessage ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Send Request
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
+                  Request a cleaning service during your stay.
+                </p>
+                <button
+                  onClick={() => {
+                    const message = encodeURIComponent("Hello, I would like to request a cleaning service for my apartment. Please let me know the available time slots.");
+                    window.location.href = `https://wa.me/+393458381107?text=${message}`;
+                    setOpenCleanModal(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Request on WhatsApp
+                </button>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -497,7 +772,7 @@ const ServicesSection = () => {
 
       {/* Breakfast Modal */}
       <Dialog open={openBreakfastModal} onOpenChange={setOpenBreakfastModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-amber-500 to-yellow-600 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Croissant className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -507,34 +782,231 @@ const ServicesSection = () => {
             </DialogHeader>
           </div>
           <div className="p-6">
-            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-              In our apartments, we offer complimentary coffee pods and croissants upon arrival. If you would like to order more, use the button below to place an order, price varies based on quantity (subject to availability).
-            </p>
+            {messageSent ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8 text-green-600" />
+                </div>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">Order Sent!</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll prepare your breakfast.</p>
+              </div>
+            ) : isLoggedIn ? (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-4 text-sm">
+                  Order coffee pods and croissants for your apartment.
+                </p>
 
-            <button
-              onClick={() => {
-                const message = encodeURIComponent("I would like to order coffee pods and croissants.");
-                window.location.href = `https://wa.me/393458381107?text=${message}`;
-              }}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg mb-4"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Order on WhatsApp
-            </button>
+                {/* Special Offer */}
+                <button
+                  onClick={() => {
+                    setBreakfastOffer(!breakfastOffer);
+                    if (!breakfastOffer) {
+                      setCoffeePods(5);
+                      setCroissants(5);
+                    }
+                  }}
+                  className={`w-full p-4 rounded-xl border-2 mb-4 transition-all ${
+                    breakfastOffer
+                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-amber-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <p className={`font-semibold ${breakfastOffer ? 'text-amber-600' : 'text-gray-700 dark:text-gray-300'}`}>
+                        ⭐ Special Offer
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">5 coffee pods + 5 croissants</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-amber-600">€7</p>
+                      <p className="text-xs text-gray-400 line-through">€10</p>
+                    </div>
+                  </div>
+                </button>
 
-            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">If you prefer to have breakfast outside, we recommend:</p>
-              <button
-                onClick={() => {
-                  const address = encodeURIComponent("Café L'Incontro, Piazza Risorgimento, 70042 Mola di Bari BA, Italia");
-                  window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
-                }}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white font-semibold py-3 px-4 rounded-xl transition-all"
-              >
-                <MapPin className="h-4 w-4" />
-                Caffè l'Incontro
-              </button>
-            </div>
+                {!breakfastOffer && (
+                  <>
+                    {/* Coffee Pods */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">☕</span>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">Coffee Pods</p>
+                          <p className="text-xs text-gray-500">€1 each</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setCoffeePods(Math.max(0, coffeePods - 1))}
+                          className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600"
+                        >
+                          <Minus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                        </button>
+                        <span className="w-8 text-center font-semibold text-gray-900 dark:text-white">{coffeePods}</span>
+                        <button
+                          onClick={() => setCoffeePods(coffeePods + 1)}
+                          className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center hover:bg-amber-600"
+                        >
+                          <Plus className="h-4 w-4 text-white" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Croissants */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl mb-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">🥐</span>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">Croissants</p>
+                          <p className="text-xs text-gray-500">€1 each</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setCroissants(Math.max(0, croissants - 1))}
+                          className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600"
+                        >
+                          <Minus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                        </button>
+                        <span className="w-8 text-center font-semibold text-gray-900 dark:text-white">{croissants}</span>
+                        <button
+                          onClick={() => setCroissants(croissants + 1)}
+                          className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center hover:bg-amber-600"
+                        >
+                          <Plus className="h-4 w-4 text-white" />
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Total */}
+                {(coffeePods > 0 || croissants > 0 || breakfastOffer) && (
+                  <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 mb-4 border border-amber-200 dark:border-amber-800">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-700 dark:text-gray-300">Total:</span>
+                      <span className="text-xl font-bold text-amber-600">€{calculateBreakfastTotal()}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Payment Method */}
+                {(coffeePods > 0 || croissants > 0 || breakfastOffer) && (
+                  <div className="space-y-3 mb-4">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Payment method:</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => setBreakfastPayment('cash')}
+                        className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
+                          breakfastPayment === 'cash'
+                            ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
+                            : 'border-gray-200 dark:border-gray-700'
+                        }`}
+                      >
+                        <Banknote className={`h-5 w-5 ${breakfastPayment === 'cash' ? 'text-amber-600' : 'text-gray-500'}`} />
+                        <span className={`font-medium ${breakfastPayment === 'cash' ? 'text-amber-600' : 'text-gray-700 dark:text-gray-300'}`}>Cash</span>
+                      </button>
+                      <button
+                        onClick={() => setBreakfastPayment('transfer')}
+                        className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
+                          breakfastPayment === 'transfer'
+                            ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
+                            : 'border-gray-200 dark:border-gray-700'
+                        }`}
+                      >
+                        <CreditCard className={`h-5 w-5 ${breakfastPayment === 'transfer' ? 'text-amber-600' : 'text-gray-500'}`} />
+                        <span className={`font-medium ${breakfastPayment === 'transfer' ? 'text-amber-600' : 'text-gray-700 dark:text-gray-300'}`}>Transfer</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Preview & Send */}
+                {(coffeePods > 0 || croissants > 0 || breakfastOffer) && (
+                  <>
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                        "I would like to order breakfast for <strong>{booking?.apartmentName}</strong>:
+                        {breakfastOffer ? (
+                          <> <strong>5 coffee pods</strong> and <strong>5 croissants</strong> (Special offer €7)</>
+                        ) : (
+                          <> <strong>{coffeePods} coffee pod{coffeePods !== 1 ? 's' : ''}</strong> and <strong>{croissants} croissant{croissants !== 1 ? 's' : ''}</strong> (€{calculateBreakfastTotal()})</>
+                        )}
+                        . Payment method: <strong>{breakfastPayment === 'cash' ? 'Cash' : 'Instant Bank Transfer'}</strong>."
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        const orderDetails = breakfastOffer
+                          ? '5 coffee pods and 5 croissants (Special offer €7)'
+                          : `${coffeePods} coffee pod${coffeePods !== 1 ? 's' : ''} and ${croissants} croissant${croissants !== 1 ? 's' : ''} (€${calculateBreakfastTotal()})`;
+                        const message = `I would like to order breakfast for ${booking?.apartmentName}: ${orderDetails}. Payment method: ${breakfastPayment === 'cash' ? 'Cash' : 'Instant Bank Transfer'}.`;
+                        handleSendChatMessage(message, () => setOpenBreakfastModal(false));
+                      }}
+                      disabled={sendingMessage}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
+                    >
+                      {sendingMessage ? (
+                        <span>Sending...</span>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4" />
+                          Send Order
+                        </>
+                      )}
+                    </button>
+                  </>
+                )}
+
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">Prefer breakfast outside?</p>
+                  <button
+                    onClick={() => {
+                      const address = encodeURIComponent("Café L'Incontro, Piazza Risorgimento, 70042 Mola di Bari BA, Italia");
+                      window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-xl transition-colors"
+                  >
+                    <MapPin className="h-4 w-4" />
+                    Caffè l'Incontro
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+                  In our apartments, we offer complimentary coffee pods and croissants upon arrival. If you would like to order more, use the button below to place an order, price varies based on quantity (subject to availability).
+                </p>
+
+                <button
+                  onClick={() => {
+                    const message = encodeURIComponent("I would like to order coffee pods and croissants.");
+                    window.location.href = `https://wa.me/393458381107?text=${message}`;
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg mb-4"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Order on WhatsApp
+                </button>
+
+                <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">If you prefer to have breakfast outside, we recommend:</p>
+                  <button
+                    onClick={() => {
+                      const address = encodeURIComponent("Café L'Incontro, Piazza Risorgimento, 70042 Mola di Bari BA, Italia");
+                      window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white font-semibold py-3 px-4 rounded-xl transition-all"
+                  >
+                    <MapPin className="h-4 w-4" />
+                    Caffè l'Incontro
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -586,16 +1058,108 @@ const ServicesSection = () => {
             </DialogHeader>
           </div>
           <div className="p-6">
-            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Rent a bicycle for convenient and efficient transportation. Availability upon request.
-            </p>
-            <button
-              onClick={() => window.location.href = "https://wa.me/393458381107"}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Check Availability on WhatsApp
-            </button>
+            {messageSent ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8 text-green-600" />
+                </div>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">Request Sent!</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll confirm availability soon.</p>
+              </div>
+            ) : isLoggedIn ? (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+                  Rent bicycles for convenient exploration. Availability upon request.
+                </p>
+
+                {/* Number of Bikes */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Number of bicycles:</label>
+                  <div className="flex items-center justify-center gap-4">
+                    <button
+                      onClick={() => setBikeCount(Math.max(1, bikeCount - 1))}
+                      className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600"
+                    >
+                      <Minus className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                    </button>
+                    <span className="text-3xl font-bold text-emerald-600 w-12 text-center">{bikeCount}</span>
+                    <button
+                      onClick={() => setBikeCount(Math.min(4, bikeCount + 1))}
+                      className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center hover:bg-emerald-600"
+                    >
+                      <Plus className="h-5 w-5 text-white" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Start Date */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Starting date:</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="date"
+                      value={bikeDate}
+                      onChange={(e) => setBikeDate(e.target.value)}
+                      min={getBikeDateRange().min}
+                      max={getBikeDateRange().max}
+                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                  {bikeDate && (
+                    <p className="text-sm text-emerald-600 dark:text-emerald-400">{formatDateDisplay(bikeDate)}</p>
+                  )}
+                </div>
+
+                {/* Info Note */}
+                <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 mb-4 border border-amber-200 dark:border-amber-800">
+                  <p className="text-sm text-amber-800 dark:text-amber-200 text-center">
+                    ⚠️ This is a request. We will confirm availability.
+                  </p>
+                </div>
+
+                {/* Preview Message */}
+                {bikeDate && (
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                      "I would like to rent <strong>{bikeCount} bicycle{bikeCount > 1 ? 's' : ''}</strong> for <strong>{booking?.apartmentName}</strong> starting from <strong>{formatDateDisplay(bikeDate)}</strong>. Please confirm availability."
+                    </p>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => {
+                    const message = `I would like to rent ${bikeCount} bicycle${bikeCount > 1 ? 's' : ''} for ${booking?.apartmentName} starting from ${formatDateDisplay(bikeDate)}. Please confirm availability.`;
+                    handleSendChatMessage(message, () => setOpenRentBikeModal(false));
+                  }}
+                  disabled={sendingMessage || !bikeDate}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
+                >
+                  {sendingMessage ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Send Request
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
+                  Rent a bicycle for convenient and efficient transportation. Availability upon request.
+                </p>
+                <button
+                  onClick={() => window.location.href = "https://wa.me/393458381107"}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Check Availability on WhatsApp
+                </button>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -738,37 +1302,146 @@ const ServicesSection = () => {
               <Recycle className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Recycling Information</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">Recycling Collection</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
-            <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-              Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.
-            </p>
-            <div className="bg-lime-50 dark:bg-lime-900/20 rounded-xl p-4 mb-4 border border-lime-200 dark:border-lime-800">
-              <p className="font-semibold text-gray-900 dark:text-white mb-3">Separate the waste as follows:</p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-lg">🍌</span>
-                  <span className="text-gray-700 dark:text-gray-300">Organic waste</span>
+            {messageSent ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8 text-green-600" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-lg">🥫</span>
-                  <span className="text-gray-700 dark:text-gray-300">Plastic and cans</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-lg">🧻</span>
-                  <span className="text-gray-700 dark:text-gray-300">Paper</span>
-                </div>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">Request Sent!</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll collect your waste soon.</p>
               </div>
-            </div>
-            <button
-              onClick={() => window.location.href = "https://wa.me/393458381107"}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Schedule a Collection
-            </button>
+            ) : isLoggedIn ? (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-4 text-sm">
+                  Request a waste collection from your apartment.
+                </p>
+
+                {/* Number of Bags */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Number of bags:</label>
+                  <div className="flex items-center justify-center gap-4">
+                    <button
+                      onClick={() => setRecycleBags(Math.max(1, recycleBags - 1))}
+                      className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600"
+                    >
+                      <Minus className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                    </button>
+                    <span className="text-3xl font-bold text-lime-600 w-12 text-center">{recycleBags}</span>
+                    <button
+                      onClick={() => setRecycleBags(Math.min(10, recycleBags + 1))}
+                      className="w-10 h-10 rounded-lg bg-lime-500 flex items-center justify-center hover:bg-lime-600"
+                    >
+                      <Plus className="h-5 w-5 text-white" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Waste Types */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Waste type(s):</label>
+                  <div className="space-y-2">
+                    {[
+                      { id: 'organic', emoji: '🍌', label: 'Organic', bg: 'bg-amber-100 dark:bg-amber-900/30' },
+                      { id: 'plastic', emoji: '🥫', label: 'Plastic & Cans', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
+                      { id: 'paper', emoji: '🧻', label: 'Paper', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+                    ].map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => {
+                          if (recycleTypes.includes(type.id)) {
+                            setRecycleTypes(recycleTypes.filter(t => t !== type.id));
+                          } else {
+                            setRecycleTypes([...recycleTypes, type.id]);
+                          }
+                        }}
+                        className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                          recycleTypes.includes(type.id)
+                            ? 'border-lime-500 bg-lime-50 dark:bg-lime-900/20'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-lime-300'
+                        }`}
+                      >
+                        <span className={`w-8 h-8 rounded-lg ${type.bg} flex items-center justify-center text-lg`}>
+                          {type.emoji}
+                        </span>
+                        <span className={`font-medium ${recycleTypes.includes(type.id) ? 'text-lime-600' : 'text-gray-700 dark:text-gray-300'}`}>
+                          {type.label}
+                        </span>
+                        {recycleTypes.includes(type.id) && (
+                          <Check className="h-5 w-5 text-lime-600 ml-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Preview Message */}
+                {recycleTypes.length > 0 && (
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                      "I would like to request a collection of <strong>{recycleBags} bag{recycleBags > 1 ? 's' : ''}</strong> of <strong>{recycleTypes.map(t =>
+                        t === 'organic' ? 'Organic' : t === 'plastic' ? 'Plastic & Cans' : 'Paper'
+                      ).join(', ')}</strong> waste from <strong>{booking?.apartmentName}</strong>."
+                    </p>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => {
+                    const wasteTypeNames = recycleTypes.map(t =>
+                      t === 'organic' ? 'Organic' : t === 'plastic' ? 'Plastic & Cans' : 'Paper'
+                    ).join(', ');
+                    const message = `I would like to request a collection of ${recycleBags} bag${recycleBags > 1 ? 's' : ''} of ${wasteTypeNames} waste from ${booking?.apartmentName}.`;
+                    handleSendChatMessage(message, () => setOpenRecycleModal(false));
+                  }}
+                  disabled={sendingMessage || recycleTypes.length === 0}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
+                >
+                  {sendingMessage ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Request Collection
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+                  Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.
+                </p>
+                <div className="bg-lime-50 dark:bg-lime-900/20 rounded-xl p-4 mb-4 border border-lime-200 dark:border-lime-800">
+                  <p className="font-semibold text-gray-900 dark:text-white mb-3">Separate the waste as follows:</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-lg">🍌</span>
+                      <span className="text-gray-700 dark:text-gray-300">Organic waste</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-lg">🥫</span>
+                      <span className="text-gray-700 dark:text-gray-300">Plastic and cans</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-lg">🧻</span>
+                      <span className="text-gray-700 dark:text-gray-300">Paper</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => window.location.href = "https://wa.me/393458381107"}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Schedule a Collection
+                </button>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

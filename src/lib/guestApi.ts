@@ -12,6 +12,9 @@ export interface GuestBooking {
   guestName: string;
   guestEmail: string;
   apartmentName: string;
+  apartmentAddress?: string;
+  apartmentLatitude?: number | null;
+  apartmentLongitude?: number | null;
   checkIn: string;
   checkOut: string;
   numberOfGuests: number;
@@ -24,6 +27,9 @@ export interface GuestBooking {
 
 export interface AccessCodeApartment {
   apartmentName: string;
+  apartmentAddress?: string;
+  apartmentLatitude?: number | null;
+  apartmentLongitude?: number | null;
   accessCode: string;
   validFrom: string;
   validUntil: string;
@@ -33,6 +39,9 @@ export interface AccessCodeResponse {
   success: boolean;
   accessCode?: string;
   apartmentName?: string;
+  apartmentAddress?: string;
+  apartmentLatitude?: number | null;
+  apartmentLongitude?: number | null;
   validFrom?: string;
   validUntil?: string;
   isGroupBooking?: boolean;

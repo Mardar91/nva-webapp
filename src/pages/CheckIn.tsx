@@ -22,7 +22,9 @@ import {
   Home,
   User,
   CalendarCheck,
-  Loader2
+  Loader2,
+  MapPin,
+  Navigation
 } from "lucide-react";
 import { useCheckInState } from '../hooks/useCheckInState';
 import { useNotifications } from '../hooks/useNotifications';
@@ -347,6 +349,11 @@ const CheckIn = () => {
     });
   };
 
+  const openGoogleMapsDirections = (lat: number, lng: number) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    window.open(url, '_blank');
+  };
+
   // ========== IFRAME RENDERING ==========
   if (showIframe) {
     return (
@@ -459,6 +466,23 @@ const CheckIn = () => {
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {booking.apartmentName}
                     </p>
+                    {booking.apartmentAddress && (
+                      <div className="flex items-start gap-1.5 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                        <span>{booking.apartmentAddress}</span>
+                      </div>
+                    )}
+                    {booking.apartmentLatitude && booking.apartmentLongitude && (
+                      <Button
+                        onClick={() => openGoogleMapsDirections(booking.apartmentLatitude!, booking.apartmentLongitude!)}
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
+                      >
+                        <Navigation className="mr-2 h-4 w-4" />
+                        Get Directions
+                      </Button>
+                    )}
                   </div>
 
                   <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
@@ -549,6 +573,23 @@ const CheckIn = () => {
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {booking.apartmentName}
                     </p>
+                    {booking.apartmentAddress && (
+                      <div className="flex items-start gap-1.5 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                        <span>{booking.apartmentAddress}</span>
+                      </div>
+                    )}
+                    {booking.apartmentLatitude && booking.apartmentLongitude && (
+                      <Button
+                        onClick={() => openGoogleMapsDirections(booking.apartmentLatitude!, booking.apartmentLongitude!)}
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
+                      >
+                        <Navigation className="mr-2 h-4 w-4" />
+                        Get Directions
+                      </Button>
+                    )}
                   </div>
 
                   <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
@@ -662,6 +703,23 @@ const CheckIn = () => {
                   <p className="font-semibold text-gray-900 dark:text-white">
                     {booking.apartmentName}
                   </p>
+                  {booking.apartmentAddress && (
+                    <div className="flex items-start gap-1.5 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                      <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                      <span>{booking.apartmentAddress}</span>
+                    </div>
+                  )}
+                  {booking.apartmentLatitude && booking.apartmentLongitude && (
+                    <Button
+                      onClick={() => openGoogleMapsDirections(booking.apartmentLatitude!, booking.apartmentLongitude!)}
+                      variant="outline"
+                      size="sm"
+                      className="mt-3 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
+                    >
+                      <Navigation className="mr-2 h-4 w-4" />
+                      Get Directions
+                    </Button>
+                  )}
                 </div>
 
                 <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">

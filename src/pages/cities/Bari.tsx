@@ -6,7 +6,9 @@ import {
   ArrowLeft,
   ArrowRight,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Compass,
+  Landmark
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -192,38 +194,53 @@ const isCurrentEvent = () => {
       transition={{ duration: 0.5 }}
       className="relative"
     >
-      <Card className="hover:shadow-lg transition-shadow duration-200">
-        <CardContent className="p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 border-purple-200 dark:border-purple-800 hover:shadow-lg transition-all duration-200">
+        {/* Header with gradient */}
+        <div className="bg-gradient-to-r from-purple-500 to-violet-600 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-white text-lg flex-1 pr-2">
+              {event.title}
+            </h3>
+            {currentEventType && (
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${currentEventType === 'today' ? 'bg-green-500' : 'bg-orange-500'}`}>
+                {/* Live ping effect */}
+                <span className="relative flex h-2 w-2">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-white`}></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                <span className="text-white text-xs font-bold">
+                  {currentEventType === 'today' ? 'Today' : 'Tomorrow'}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Content */}
+        <div className="p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="font-semibold text-lg text-rose-800 dark:text-rose-400">
-                {event.title}
-              </h3>
-              <div className="flex items-center mt-2 text-gray-600 dark:text-gray-300">
-                <MapPin className="w-4 h-4 mr-1" />
+              <div className="flex items-center text-gray-600 dark:text-gray-300">
+                <MapPin className="w-4 h-4 mr-1 text-purple-500" />
                 <span className="text-sm">{event.city}</span>
               </div>
-                {event.link && (
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 mt-1 block">
-                  More info
+              {event.link && (
+                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-purple-500 hover:text-purple-600 mt-2 inline-block font-medium">
+                  More info →
                 </a>
               )}
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1 text-rose-800 dark:text-rose-400" />
-                <span className="text-sm font-medium">{formattedDate}</span>
-              </div>
-                {currentEventType && <CurrentEventBadge type={currentEventType} />}
+            <div className="flex items-center bg-purple-50 dark:bg-purple-900/30 px-3 py-1.5 rounded-full">
+              <Calendar className="w-4 h-4 mr-1.5 text-purple-500" />
+              <span className="text-sm font-medium text-purple-700 dark:text-purple-300">{formattedDate}</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 };
 
-const AttractionButton: React.FC<{ 
+const AttractionButton: React.FC<{
   attraction: Attraction;
   attractions: Attraction[];
   onOpen: (index: number) => void;
@@ -235,14 +252,20 @@ const AttractionButton: React.FC<{
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full aspect-square"
+        className="w-full"
       >
-        <button 
+        <button
           onClick={() => onOpen(index)}
-          className="w-full h-full bg-gray-50 dark:bg-gray-800 rounded-xl flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+          className="w-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border-2 border-purple-200 dark:border-purple-800 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200"
         >
-          <span className="text-[#60A5FA]">{attraction.icon}</span>
-          <span className="text-rose-800 dark:text-rose-400 font-medium text-sm">{attraction.name}</span>
+          {/* Header with gradient */}
+          <div className="bg-gradient-to-r from-purple-500 to-violet-600 px-3 py-2">
+            <span className="text-white text-2xl">{attraction.icon}</span>
+          </div>
+          {/* Name */}
+          <div className="p-3">
+            <span className="text-purple-700 dark:text-purple-300 font-medium text-sm">{attraction.name}</span>
+          </div>
         </button>
       </motion.div>
     </DialogTrigger>
@@ -692,46 +715,68 @@ const Bari: React.FC = () => {
 
       {/* Hero Section */}
       <div
-        className="bg-rose-800 dark:bg-rose-900 text-white w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]"
+        className="relative text-white w-screen left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] overflow-hidden"
         style={{
           paddingTop: '4rem',
           paddingBottom: '4rem',
-          marginBottom: '2rem'
+          marginBottom: '0'
         }}
       >
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: 'url(https://www.giovannicarrieri.com/photography/italy/bari/1140/bari-grande-albergo-delle-nazioni.webp)',
+          }}
+        />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/85 via-violet-800/80 to-purple-900/90" />
+
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto px-4 pt-8"
+          className="relative z-10 text-center max-w-3xl mx-auto px-4 pt-8"
         >
-          <h1 className="text-3xl font-bold mb-4">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+            <Landmark className="w-4 h-4" />
+            <span className="text-sm font-medium">Capital of Puglia</span>
+          </div>
+
+          <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">
             Bari
           </h1>
-          <p className="text-gray-100 text-lg mb-8">
+          <p className="text-gray-100 text-lg mb-8 drop-shadow-md">
             A vibrant city in southern Italy, blending historic charm with modern energy. Known for its stunning old town, beautiful seafront, and delicious cuisine, it offers an unforgettable mix of culture, history, and coastal beauty.
           </p>
           <Button
             onClick={handleExploreClick}
             variant="outline"
-            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-rose-800 transition-colors"
+            className="shimmer bg-transparent border-white text-white hover:bg-white hover:text-purple-800 transition-colors"
           >
             Explore the City
           </Button>
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Upcoming Events Section */}
-        <section className="mb-12">
-            <motion.h2
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-2xl font-bold text-rose-800 dark:text-rose-400 mb-6"
+      <div className="bg-gray-50 dark:bg-gray-900">
+        <div className="container mx-auto px-4 py-8">
+          {/* Upcoming Events Section */}
+          <section className="mb-12">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex items-center gap-3 mb-6"
             >
+              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <Calendar className="w-5 h-5 text-gray-500" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                 Upcoming Events ({events.length})
-            </motion.h2>
+              </h2>
+            </motion.div>
             {loading && <p className="text-gray-600 mb-4">Loading events...</p>}
             {error && <p className="text-red-600 mb-4">Error: {error}</p>}
             {!loading && !error && events.length === 0 && (
@@ -742,30 +787,36 @@ const Bari: React.FC = () => {
                     <EventCard key={event.id} event={event} />
                 ))}
             </div>
-        </section>
+          </section>
 
-        {/* Attractions Section */}
-        <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold text-rose-800 dark:text-rose-400 mb-6 text-center"
-          >
-            Explore the City
-          </motion.h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {attractions.map((attraction, index) => (
-              <AttractionButton
-                key={attraction.name}
-                attraction={attraction}
-                attractions={attractions}
-                onOpen={setSelectedAttractionIndex}
-                index={index}
-              />
-            ))}
-          </div>
-        </section>
+          {/* Attractions Section */}
+          <section ref={scrollToRef} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex items-center justify-center gap-3 mb-6"
+            >
+              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <Compass className="w-5 h-5 text-gray-500" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                Explore the City
+              </h2>
+            </motion.div>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+              {attractions.map((attraction, index) => (
+                <AttractionButton
+                  key={attraction.name}
+                  attraction={attraction}
+                  attractions={attractions}
+                  onOpen={setSelectedAttractionIndex}
+                  index={index}
+                />
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
 
       {selectedAttractionIndex !== null && (

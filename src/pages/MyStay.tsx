@@ -738,9 +738,9 @@ const MyStay: React.FC = () => {
                   <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.checkIn')}</span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.checkOut')}</span>
                 </div>
-                <div className="relative">
+                <div className="relative h-3">
                   {/* Progress bar track */}
-                  <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     {/* Animated gradient progress bar */}
                     <motion.div
                       initial={{ width: 0 }}

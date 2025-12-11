@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./styles.css";
 import "./i18n";
 import {
@@ -76,6 +77,7 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
 };
 
 const AppContent: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <Layout>
       <Routes>
@@ -97,7 +99,7 @@ const AppContent: React.FC = () => {
           element={
             <IframeView
               src="https://meet.brevo.com/nonnavittoria-transfer"
-              title="Taxi Service"
+              title={t('app.taxiService')}
             />
           }
         />
@@ -106,7 +108,7 @@ const AppContent: React.FC = () => {
           element={
             <IframeView
               src="https://book.nonnavittoriaapartments.it/gift-cards?embedded=true"
-              title="Gift Card"
+              title={t('app.giftCard')}
             />
           }
         />

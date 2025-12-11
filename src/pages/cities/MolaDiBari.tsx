@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Calendar,
   MapPin,
@@ -25,6 +26,7 @@ import * as cheerio from 'cheerio';
 
 // Tutorial component for swipe gestures
 const SwipeTutorial: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -40,14 +42,14 @@ const SwipeTutorial: React.FC = () => {
       >
         <motion.div
           animate={{ opacity: [0, 1, 1, 0] }}
-          transition={{ 
+          transition={{
             duration: 2,
             times: [0, 0.2, 0.8, 1],
           }}
         >
           <div className="flex items-center justify-center gap-4">
             <ChevronLeft size={24} />
-            <span className="text-lg font-medium">Swipe to navigate</span>
+            <span className="text-lg font-medium">{t('cities.swipeToNavigate')}</span>
             <ChevronRight size={24} />
           </div>
         </motion.div>
@@ -61,8 +63,9 @@ interface NextCityToastProps {
   show: boolean;
 }
 
-const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
-  <>
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => {
+  const { t } = useTranslation();
+  return (
     <AnimatePresence>
       {show && (
         <motion.div
@@ -72,7 +75,7 @@ const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
           transition={{ duration: 0.5 }}
           className="fixed top-4 right-16 z-50 bg-teal-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
         >
-          <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+          <span className="text-sm font-medium whitespace-nowrap">{t('cities.goToNextCity')}</span>
           <motion.div
             animate={{ x: [0, 10, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
@@ -83,8 +86,8 @@ const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
         </motion.div>
       )}
     </AnimatePresence>
-  </>
-);
+  );
+};
 
 interface NextCityButtonProps {
   nextCityPath: string;
@@ -145,12 +148,13 @@ interface Attraction {
 }
 
 const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
+    const { t } = useTranslation();
     let color = "bg-green-500";
-    let text = "Today";
+    let text = t('common.today');
 
     if (type === 'tomorrow') {
         color = "bg-orange-500";
-        text = "Tomorrow";
+        text = t('common.tomorrow');
     }
 
     return (
@@ -164,10 +168,11 @@ const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) =
     );
 };
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+  const { t, i18n } = useTranslation();
+  const formattedDate = event.startDate ? new Intl.DateTimeFormat(i18n.language === 'it' ? 'it-IT' : 'en-US', {
     month: 'short',
     day: 'numeric',
-  }).format(event.startDate) : 'Data non disponibile';
+  }).format(event.startDate) : t('common.notAvailable');
 
   const isCurrentEvent = () => {
     if (!event.startDate) return null;
@@ -220,7 +225,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                 </span>
                 <span className="text-white text-xs font-bold">
-                  {currentEventType === 'today' ? 'Today' : 'Tomorrow'}
+                  {currentEventType === 'today' ? t('common.today') : t('common.tomorrow')}
                 </span>
               </div>
             )}
@@ -245,7 +250,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-teal-500 hover:text-teal-600 font-medium"
             >
-              More info
+              {t('common.moreInfo')}
               <ArrowRight className="h-3.5 w-3.5" />
             </a>
           )}
@@ -260,38 +265,41 @@ const AttractionButton: React.FC<{
   attractions: Attraction[];
   onOpen: (index: number) => void;
   index: number;
-}> = ({ attraction, attractions, onOpen, index }) => (
-  <Dialog>
-    <DialogTrigger asChild>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: index * 0.05 }}
-        className="w-full"
-      >
-        <button
-          onClick={() => onOpen(index)}
-          className="group w-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border-2 border-teal-200 dark:border-teal-800 hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+}> = ({ attraction, attractions, onOpen, index }) => {
+  const { t } = useTranslation();
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: index * 0.05 }}
+          className="w-full"
         >
-          {/* Gradient Header */}
-          <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-3 py-2.5">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <span className="text-lg">{attraction.icon}</span>
+          <button
+            onClick={() => onOpen(index)}
+            className="group w-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border-2 border-teal-200 dark:border-teal-800 hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            {/* Gradient Header */}
+            <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-3 py-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <span className="text-lg">{attraction.icon}</span>
+                </div>
+                <span className="text-white font-semibold text-sm truncate">{attraction.name}</span>
               </div>
-              <span className="text-white font-semibold text-sm truncate">{attraction.name}</span>
             </div>
-          </div>
-          {/* Card Body */}
-          <div className="px-3 py-2 flex items-center justify-between">
-            <span className="text-gray-500 dark:text-gray-400 text-xs">Tap to explore</span>
-            <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-teal-500 transition-colors" />
-          </div>
-        </button>
-      </motion.div>
-    </DialogTrigger>
-  </Dialog>
-);
+            {/* Card Body */}
+            <div className="px-3 py-2 flex items-center justify-between">
+              <span className="text-gray-500 dark:text-gray-400 text-xs">{t('cities.tapToExplore')}</span>
+              <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-teal-500 transition-colors" />
+            </div>
+          </button>
+        </motion.div>
+      </DialogTrigger>
+    </Dialog>
+  );
+};
 
 const AttractionModal: React.FC<{
   attraction: Attraction;
@@ -300,6 +308,7 @@ const AttractionModal: React.FC<{
   onPrevious: () => void;
   onNext: () => void;
 }> = ({ attraction, isOpen, onClose, onPrevious, onNext }) => {
+  const { t } = useTranslation();
   const [showTutorial, setShowTutorial] = useState(true);
   const [dragStart, setDragStart] = useState<number>(0);
   const dragThreshold = 50;
@@ -353,16 +362,16 @@ const AttractionModal: React.FC<{
                 />
               )}
               <DialogDescription>
-                {attraction.description || "Coming soon..."}
+                {attraction.description || t('cities.comingSoon')}
               </DialogDescription>
               {attraction.mapUrl && (
                 <div className="mt-4">
-                  <Button 
+                  <Button
                     asChild
                     className="bg-[#0d9488] hover:bg-[#0d9488]/90 text-white"
                   >
                     <a href={attraction.mapUrl} target="_blank" rel="noopener noreferrer">
-                      View on Map
+                      {t('cities.viewOnMap')}
                     </a>
                   </Button>
                 </div>
@@ -371,7 +380,7 @@ const AttractionModal: React.FC<{
                 <div className="mt-2">
                   <Button asChild variant="outline">
                     <a href={`tel:${attraction.bookingNumber}`}>
-                      Call to Book: {attraction.bookingNumber}
+                      {t('cities.callToBook')}: {attraction.bookingNumber}
                     </a>
                   </Button>
                 </div>
@@ -380,7 +389,7 @@ const AttractionModal: React.FC<{
                 <div className="mt-2">
                   <Button asChild variant="secondary">
                     <a href={attraction.eventsUrl} target="_blank" rel="noopener noreferrer">
-                      View Events
+                      {t('cities.viewEvents')}
                     </a>
                   </Button>
                 </div>
@@ -394,6 +403,7 @@ const AttractionModal: React.FC<{
 };
 
 const MolaDiBari: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const mainRef = useRef<HTMLDivElement>(null);
@@ -680,7 +690,7 @@ const handleNextAttraction = () => {
             className="shimmer-button inline-flex items-center gap-2 bg-white text-teal-700 font-semibold px-6 py-3 rounded-xl hover:bg-white/90 transition-all hover:scale-105 active:scale-95"
           >
             <Landmark className="h-5 w-5" />
-            Explore Attractions
+            {t('cities.exploreAttractions')}
           </button>
         </motion.div>
       </div>
@@ -694,15 +704,15 @@ const handleNextAttraction = () => {
               <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{events.length} events in Mola di Bari</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('cities.upcomingEvents')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('cities.eventsInCity', { count: events.length, city: 'Mola di Bari' })}</p>
             </div>
           </div>
 
-          {loading && <p className="text-gray-600 dark:text-gray-400 mb-4">Loading events...</p>}
-          {error && <p className="text-red-600 mb-4">Error: {error}</p>}
+          {loading && <p className="text-gray-600 dark:text-gray-400 mb-4">{t('explore.loadingEvents')}</p>}
+          {error && <p className="text-red-600 mb-4">{t('common.error')}: {error}</p>}
           {!loading && !error && events.length === 0 && (
-            <p className="text-gray-500 dark:text-gray-400 mb-4">No upcoming events found</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">{t('cities.noEvents')}</p>
           )}
           <div className="space-y-3">
             {events.map((event) => (
@@ -719,8 +729,8 @@ const handleNextAttraction = () => {
               <Landmark className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Explore the City</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Discover local attractions</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('cities.exploreTheCity')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('cities.discoverAttractions')}</p>
             </div>
           </div>
 

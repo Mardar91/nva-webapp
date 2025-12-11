@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Calendar,
   MapPin,
@@ -52,28 +53,31 @@ interface NextCityToastProps {
   show: boolean;
 }
 
-const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => (
-  <AnimatePresence>
-    {show && (
-      <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 50 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
-      >
-        <span className="text-sm font-medium whitespace-nowrap">Go to the next city</span>
+const NextCityToast: React.FC<NextCityToastProps> = ({ show }) => {
+  const { t } = useTranslation();
+  return (
+    <AnimatePresence>
+      {show && (
         <motion.div
-          animate={{ x: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="ml-2"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 50 }}
+          transition={{ duration: 0.5 }}
+          className="fixed top-4 right-16 z-50 bg-rose-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
         >
-          →
+          <span className="text-sm font-medium whitespace-nowrap">{t('explore.goToNextCity')}</span>
+          <motion.div
+            animate={{ x: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="ml-2"
+          >
+            →
+          </motion.div>
         </motion.div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
+      )}
+    </AnimatePresence>
+  );
+};
 
 interface NextCityButtonProps {
   nextCityPath: string;
@@ -130,12 +134,13 @@ interface Attraction {
 
 
 const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) => {
+    const { t } = useTranslation();
     let color = "bg-green-500";
-    let text = "Today";
+    let text = t('common.today');
 
     if (type === 'tomorrow') {
         color = "bg-orange-500";
-        text = "Tomorrow";
+        text = t('common.tomorrow');
     }
 
     return (
@@ -150,10 +155,11 @@ const CurrentEventBadge: React.FC<{ type: 'today' | 'tomorrow' }> = ({ type }) =
 };
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  const formattedDate = event.startDate ? new Intl.DateTimeFormat('en-US', {
+  const { t, i18n } = useTranslation();
+  const formattedDate = event.startDate ? new Intl.DateTimeFormat(i18n.language === 'it' ? 'it-IT' : 'en-US', {
     month: 'short',
     day: 'numeric',
-  }).format(event.startDate) : 'Data non disponibile';
+  }).format(event.startDate) : t('common.notAvailable');
 
   const isCurrentEvent = () => {
     if (!event.startDate) return null;
@@ -200,7 +206,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                 </span>
                 <span className="text-white text-xs font-bold">
-                  {currentEventType === 'today' ? 'Today' : 'Tomorrow'}
+                  {currentEventType === 'today' ? t('common.today') : t('common.tomorrow')}
                 </span>
               </div>
             )}
@@ -225,7 +231,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-rose-500 hover:text-rose-600 font-medium"
             >
-              More info
+              {t('common.moreInfo')}
               <ArrowRight className="h-3.5 w-3.5" />
             </a>
           )}
@@ -265,6 +271,7 @@ const CityButton: React.FC<{
   onClick: () => void;
   delay: number;
 }> = ({ city, icon, onClick, delay }) => {
+  const { t } = useTranslation();
   const config = cityConfig[city] || cityConfig["Mola di Bari"];
 
   return (
@@ -289,7 +296,7 @@ const CityButton: React.FC<{
         </div>
         {/* Card Body */}
         <div className="px-4 py-3 flex items-center justify-between">
-          <span className="text-gray-500 dark:text-gray-400 text-sm">Discover the city</span>
+          <span className="text-gray-500 dark:text-gray-400 text-sm">{t('explore.discoverCity')}</span>
           <ArrowRight className="h-4 w-4 text-gray-400" />
         </div>
       </button>
@@ -298,6 +305,7 @@ const CityButton: React.FC<{
 };
 // Note Card component con nuovo sistema di swipe-to-delete
 const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ note, onDelete }) => {
+  const { t } = useTranslation();
   const [showDeleteButton, setShowDeleteButton] = useState(false);
   const [dragX, setDragX] = useState(0);
 
@@ -333,7 +341,7 @@ const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ no
             onClick={() => onDelete(note.id)}
           >
             <Trash2 className="h-5 w-5" />
-            Delete
+            {t('common.delete')}
           </motion.button>
         )}
       </AnimatePresence>
@@ -357,6 +365,7 @@ const NoteCard: React.FC<{ note: Note; onDelete: (id: string) => void }> = ({ no
 
 // Notes Dialog Content Component (extracted for reuse)
 const NotesDialogContent: React.FC = () => {
+  const { t } = useTranslation();
   const [notes, setNotes] = useState<Note[]>(() => {
     const savedNotes = localStorage.getItem('travel-notes');
     return savedNotes ? JSON.parse(savedNotes) : [];
@@ -392,13 +401,13 @@ const NotesDialogContent: React.FC = () => {
     <div className="space-y-4">
       <div>
         <Input
-          placeholder="Note title"
+          placeholder={t('explore.noteTitle')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="mb-2"
         />
         <Textarea
-          placeholder="Write your note here..."
+          placeholder={t('explore.writeNoteHere')}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="min-h-[100px]"
@@ -407,7 +416,7 @@ const NotesDialogContent: React.FC = () => {
           onClick={saveNote}
           className="mt-2 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white"
         >
-          Save Note
+          {t('explore.saveNote')}
         </Button>
       </div>
       <div className="space-y-4 max-h-[400px] overflow-y-auto">
@@ -425,18 +434,19 @@ const NotesDialogContent: React.FC = () => {
 
 // Notes Dialog Component (kept for backward compatibility)
 const NotesDialog: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <Dialog>
       <DialogTrigger asChild>
         <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <PenLine size={24} className="text-[#60A5FA] mb-1" />
-          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Notes</span>
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">{t('explore.notes')}</span>
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Travel Notes</DialogTitle>
-          <DialogDescription>Add and manage your travel notes</DialogDescription>
+          <DialogTitle>{t('explore.travelNotes')}</DialogTitle>
+          <DialogDescription>{t('explore.addManageNotes')}</DialogDescription>
         </DialogHeader>
         <NotesDialogContent />
       </DialogContent>
@@ -519,18 +529,19 @@ const CurrencyDialogContent: React.FC = () => {
 
 // Currency Converter Component (kept for backward compatibility)
 const CurrencyConverter: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <Dialog>
       <DialogTrigger asChild>
         <button className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <DollarSign size={24} className="text-[#60A5FA] mb-1" />
-          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Currency</span>
+          <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">{t('explore.currency')}</span>
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Currency Converter</DialogTitle>
-          <DialogDescription>Convert between different currencies</DialogDescription>
+          <DialogTitle>{t('explore.currencyConverter')}</DialogTitle>
+          <DialogDescription>{t('explore.convertCurrencies')}</DialogDescription>
         </DialogHeader>
         <CurrencyDialogContent />
       </DialogContent>
@@ -540,6 +551,7 @@ const CurrencyConverter: React.FC = () => {
 
 
 const WeatherWidget: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
+  const { t } = useTranslation();
   return (
     <Button
       variant="ghost"
@@ -547,13 +559,14 @@ const WeatherWidget: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
       className="flex flex-col items-center justify-center w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
     >
       <Cloud size={24} className="text-[#60A5FA] mb-1" />
-      <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">Weather</span>
+      <span className="text-[#1e3a8a] dark:text-[#60A5FA] text-xs">{t('explore.weather')}</span>
     </Button>
   );
 };
 
 
 const Explore: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollToRef = useRef<HTMLDivElement>(null);
   const [showMap, setShowMap] = useState(false);
@@ -828,20 +841,20 @@ if (showWeather) {
         >
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
             <Compass className="h-4 w-4 text-white" />
-            <span className="text-white/90 text-sm font-medium">Your adventure starts here</span>
+            <span className="text-white/90 text-sm font-medium">{t('explore.adventureStarts')}</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-3">
-            Explore Puglia
+            {t('explore.title')}
           </h1>
           <p className="text-white/80 text-base mb-6">
-            Discover magnificent cultural cities and unforgettable events in the surroundings.
+            {t('explore.subtitle')}
           </p>
           <button
             onClick={() => scrollToRef.current?.scrollIntoView({ behavior: 'smooth' })}
             className="shimmer-button inline-flex items-center gap-2 bg-white text-blue-900 font-semibold px-6 py-3 rounded-xl hover:bg-white/90 transition-all hover:scale-105 active:scale-95"
           >
             <Building2 className="h-5 w-5" />
-            Go to Cities
+            {t('explore.goToCities')}
           </button>
         </motion.div>
       </div>
@@ -855,13 +868,13 @@ if (showWeather) {
               <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">What's happening nearby</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('explore.upcomingEvents')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('explore.whatsHappening')}</p>
             </div>
           </div>
 
-          {loading && <p className="text-gray-600 dark:text-gray-400 mb-4">Loading events...</p>}
-          {error && <p className="text-red-600 mb-4">Error: {error}</p>}
+          {loading && <p className="text-gray-600 dark:text-gray-400 mb-4">{t('explore.loadingEvents')}</p>}
+          {error && <p className="text-red-600 mb-4">{t('common.error')}: {error}</p>}
           <div className="space-y-3">
             {events.map((event) => (
               <EventCard key={event.id} event={event} />
@@ -877,8 +890,8 @@ if (showWeather) {
               <Building2 className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Cities to Explore</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Discover the beauty of Puglia</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('explore.citiesToExplore')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('explore.discoverPuglia')}</p>
             </div>
           </div>
 
@@ -903,8 +916,8 @@ if (showWeather) {
       <Sparkles className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
     </div>
     <div>
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Utilities</h2>
-      <p className="text-sm text-gray-500 dark:text-gray-400">Useful tools for your trip</p>
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('explore.utilities')}</h2>
+      <p className="text-sm text-gray-500 dark:text-gray-400">{t('explore.usefulTools')}</p>
     </div>
   </div>
 
@@ -921,14 +934,14 @@ if (showWeather) {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Travel Notes</DialogTitle>
-                <DialogDescription>Add and manage your travel notes</DialogDescription>
+                <DialogTitle>{t('explore.travelNotes')}</DialogTitle>
+                <DialogDescription>{t('explore.addManageNotes')}</DialogDescription>
               </DialogHeader>
               <NotesDialogContent />
             </DialogContent>
           </Dialog>
         </div>
-        <span className="text-purple-700 dark:text-purple-400 text-xs font-medium">Notes</span>
+        <span className="text-purple-700 dark:text-purple-400 text-xs font-medium">{t('explore.notes')}</span>
       </div>
     </div>
 
@@ -940,7 +953,7 @@ if (showWeather) {
       <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 group-hover:bg-blue-500 dark:group-hover:bg-blue-500 flex items-center justify-center mb-1 transition-colors">
         <Map className="h-5 w-5 text-blue-500 dark:text-blue-400 group-hover:text-white transition-colors" />
       </div>
-      <span className="text-blue-700 dark:text-blue-400 text-xs font-medium">Maps</span>
+      <span className="text-blue-700 dark:text-blue-400 text-xs font-medium">{t('explore.maps')}</span>
     </button>
 
     {/* Currency */}
@@ -955,14 +968,14 @@ if (showWeather) {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Currency Converter</DialogTitle>
-                <DialogDescription>Convert between different currencies</DialogDescription>
+                <DialogTitle>{t('explore.currencyConverter')}</DialogTitle>
+                <DialogDescription>{t('explore.convertCurrencies')}</DialogDescription>
               </DialogHeader>
               <CurrencyDialogContent />
             </DialogContent>
           </Dialog>
         </div>
-        <span className="text-green-700 dark:text-green-400 text-xs font-medium">Currency</span>
+        <span className="text-green-700 dark:text-green-400 text-xs font-medium">{t('explore.currency')}</span>
       </div>
     </div>
 
@@ -974,7 +987,7 @@ if (showWeather) {
       <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-900/20 group-hover:bg-cyan-500 dark:group-hover:bg-cyan-500 flex items-center justify-center mb-1 transition-colors">
         <Cloud className="h-5 w-5 text-cyan-500 dark:text-cyan-400 group-hover:text-white transition-colors" />
       </div>
-      <span className="text-cyan-700 dark:text-cyan-400 text-xs font-medium">Weather</span>
+      <span className="text-cyan-700 dark:text-cyan-400 text-xs font-medium">{t('explore.weather')}</span>
     </button>
   </div>
 </section>

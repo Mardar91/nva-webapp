@@ -104,7 +104,7 @@ const AppContent: React.FC = () => {
           path="/gift-card"
           element={
             <IframeView
-              src="https://giftup.app/place-order/4bed8e87-1ecc-466c-4d3d-08db98c3a095"
+              src="https://book.nonnavittoriaapartments.it/gift-cards?embedded=true"
               title="Gift Card"
             />
           }

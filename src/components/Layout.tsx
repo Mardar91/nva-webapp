@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, UtensilsCrossed, Handshake, Map } from "lucide-react";
+import { Home, UtensilsCrossed, Handshake, Map, Briefcase } from "lucide-react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -52,6 +52,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     { path: "/restaurants", label: "Restaurants", icon: UtensilsCrossed },
     { path: "/partners", label: "Partners", icon: Handshake },
     { path: "/explore", label: "Explore", icon: Map },
+    { path: "/my-stay", label: "My Stay", icon: Briefcase },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -78,7 +79,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50" />
 
         {/* Nav Content */}
-        <div className="relative flex items-center justify-center gap-4 px-4 py-3 max-w-md mx-auto">
+        <div className="relative flex items-center justify-center gap-2 px-3 py-2 max-w-lg mx-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -88,7 +89,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 key={item.path}
                 to={item.path}
                 onClick={handleNavClick}
-                className="flex flex-col items-center justify-center min-w-[64px] transition-all duration-200 active:scale-95"
+                className="flex flex-col items-center justify-center min-w-[56px] transition-all duration-200 active:scale-95"
               >
                 {/* Icon Container */}
                 <div className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 ${

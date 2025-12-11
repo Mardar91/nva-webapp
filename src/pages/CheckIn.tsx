@@ -453,7 +453,7 @@ const CheckIn = () => {
   // ========== IFRAME RENDERING ==========
   if (showIframe) {
     return (
-      <div className="fixed inset-0 z-40 bg-white dark:bg-[#1a1a1a]" style={{ bottom: '88px' }}>
+      <div className="fixed inset-0 z-40 bg-white dark:bg-[#1a1a1a]" style={{ bottom: 'calc(72px + env(safe-area-inset-bottom))' }}>
         {isLoading && !loadError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 dark:bg-[#1a1a1a]/95 z-10">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
@@ -506,7 +506,7 @@ const CheckIn = () => {
     return (
       <div
         className="absolute inset-0 overflow-y-auto overflow-x-hidden"
-        style={{ bottom: '88px', top: 0 }}
+        style={{ bottom: 'calc(72px + env(safe-area-inset-bottom))', top: 0 }}
       >
         <div className="container mx-auto px-4 py-8 pb-24 flex items-center justify-center min-h-full">
           <div className="text-center">
@@ -529,7 +529,7 @@ const CheckIn = () => {
       return (
         <div
           className="absolute inset-0 overflow-y-auto overflow-x-hidden"
-          style={{ bottom: '88px', top: 0, WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+          style={{ bottom: 'calc(72px + env(safe-area-inset-bottom))', top: 0, WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
         >
           <div className="container mx-auto px-4 py-8 pb-24">
             <Card className="max-w-2xl mx-auto border-gray-200 dark:border-gray-700">
@@ -639,7 +639,7 @@ const CheckIn = () => {
       return (
         <div
           className="absolute inset-0 overflow-y-auto overflow-x-hidden"
-          style={{ bottom: '88px', top: 0, WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+          style={{ bottom: 'calc(72px + env(safe-area-inset-bottom))', top: 0, WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
         >
           <div className="container mx-auto px-4 py-8 pb-24">
             <Card className="max-w-2xl mx-auto border-green-200 dark:border-green-800">
@@ -767,7 +767,7 @@ const CheckIn = () => {
     return (
       <div
         className="absolute inset-0 overflow-y-auto overflow-x-hidden"
-        style={{ bottom: '88px', top: 0, WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+        style={{ bottom: 'calc(72px + env(safe-area-inset-bottom))', top: 0, WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
       >
         <div className="container mx-auto px-4 py-8 pb-24">
           <Card className="max-w-2xl mx-auto">
@@ -927,7 +927,7 @@ const CheckIn = () => {
     <div
       className="absolute inset-0 overflow-y-auto overflow-x-hidden"
       style={{
-        bottom: '88px',
+        bottom: 'calc(72px + env(safe-area-inset-bottom))',
         top: 0,
         WebkitOverflowScrolling: 'touch',
         overscrollBehavior: 'contain',

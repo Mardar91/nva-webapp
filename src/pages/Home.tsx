@@ -24,7 +24,7 @@ const Home: React.FC = () => {
     <div
       className="absolute inset-0 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-gray-900"
       style={{
-        bottom: '88px',
+        bottom: 'calc(72px + env(safe-area-inset-bottom))',
         top: 0,
         WebkitOverflowScrolling: 'touch',
         overscrollBehavior: 'contain',

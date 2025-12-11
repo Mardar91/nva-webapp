@@ -1,4 +1,8 @@
 {
+  "app": {
+    "taxiService": "Taxi Service",
+    "giftCard": "Gift Card"
+  },
   "common": {
     "appName": "Nonna Vittoria Apartments",
     "loading": "Loading...",
@@ -29,7 +33,8 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "apartment": "Apartment",
-    "verifying": "Verifying..."
+    "verifying": "Verifying...",
+    "notAvailable": "Data not available"
   },
   "navigation": {
     "home": "Home",
@@ -206,8 +211,11 @@
     "usefulShortcuts": "Useful shortcuts",
     "vipTicket": "VIP Ticket",
     "vipTicketDesc": "10% OFF partners",
+    "discountPartners": "10% OFF partners",
     "chat": "Chat",
     "chatDesc": "Contact reception",
+    "contactReception": "Contact reception",
+    "getDirections": "Get Directions",
     "stayPhases": {
       "preFar": {
         "title": "Your Trip is Coming Up!",
@@ -694,7 +702,34 @@
     "nextCity": "Next city",
     "attractions": "Attractions",
     "events": "Events",
-    "noEvents": "No upcoming events",
-    "goToNextCity": "Go to the next city"
+    "noEvents": "No upcoming events found",
+    "goToNextCity": "Go to the next city",
+    "tapToExplore": "Tap to explore",
+    "viewOnMap": "View on Map",
+    "callToBook": "Call to Book",
+    "viewEvents": "View Events",
+    "comingSoon": "Coming soon...",
+    "exploreAttractions": "Explore Attractions",
+    "eventsInCity": "{{count}} events in {{city}}",
+    "upcomingEvents": "Upcoming Events",
+    "exploreTheCity": "Explore the City",
+    "discoverAttractions": "Discover local attractions"
+  },
+  "privateSettings": {
+    "title": "Private Access",
+    "username": "Username",
+    "password": "Password",
+    "enterUsername": "Enter username",
+    "enterPassword": "Enter password",
+    "login": "Login",
+    "invalidCredentials": "Invalid credentials",
+    "apiError": "API error",
+    "notificationsManagement": "Notifications Management",
+    "checkNotifications": "Check Notifications",
+    "scheduleNotifications": "Schedule Notifications",
+    "updateNotifications": "Update Notifications",
+    "deleteAllNotifications": "Delete All Notifications",
+    "apiResponse": "API Response",
+    "debugLog": "Debug Log"
   }
 }

@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Briefcase,
   Calendar,
@@ -50,6 +51,7 @@ import GuestChatDrawer from "../components/GuestChatDrawer";
 import { useNotifications } from "../hooks/useNotifications";
 
 const MyStay: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const {
     isLoggedIn,
@@ -97,7 +99,7 @@ const MyStay: React.FC = () => {
   const formatDate = (dateString: string) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(i18n.language === 'it' ? 'it-IT' : 'en-US', {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
@@ -213,77 +215,83 @@ const MyStay: React.FC = () => {
   const getPhaseContent = (phase: StayPhase, daysUntilCheckin: number, daysIntoStay: number, daysUntilCheckout: number, totalNights: number) => {
     const currentHour = new Date().getHours();
 
+    const getEarlyStayTitle = () => {
+      if (currentHour < 12) return t('myStay.stayPhases.earlyStay.title');
+      if (currentHour < 18) return t('myStay.stayPhases.earlyStay.titleAfternoon');
+      return t('myStay.stayPhases.earlyStay.titleEvening');
+    };
+
     const phaseMessages: Record<StayPhase, { icon: React.ReactNode; title: string; message: string; color: string }> = {
       pre_checkin_far: {
         icon: <Calendar className="h-5 w-5" />,
-        title: "Your Trip is Coming Up!",
-        message: `${daysUntilCheckin} days until your arrival. Start planning your Puglia adventure!`,
+        title: t('myStay.stayPhases.preFar.title'),
+        message: t('myStay.stayPhases.preFar.message', { days: daysUntilCheckin }),
         color: "from-blue-500 to-indigo-600"
       },
       pre_checkin_soon: {
         icon: <Sparkle className="h-5 w-5" />,
-        title: "Almost Time!",
-        message: `Only ${daysUntilCheckin} days to go! We're preparing everything for your arrival.`,
+        title: t('myStay.stayPhases.preSoon.title'),
+        message: t('myStay.stayPhases.preSoon.message', { days: daysUntilCheckin }),
         color: "from-cyan-500 to-blue-600"
       },
       pre_checkin_tomorrow: {
         icon: <Sunrise className="h-5 w-5" />,
-        title: "See You Tomorrow!",
-        message: "Your stay begins tomorrow! Don't forget to complete your online check-in.",
+        title: t('myStay.stayPhases.preTomorrow.title'),
+        message: t('myStay.stayPhases.preTomorrow.message'),
         color: "from-amber-500 to-orange-600"
       },
       checkin_morning: {
         icon: <Sun className="h-5 w-5" />,
-        title: "Today's the Day!",
-        message: "Check-in is from 3 PM. Explore Mola di Bari while you wait!",
+        title: t('myStay.stayPhases.checkinMorning.title'),
+        message: t('myStay.stayPhases.checkinMorning.message'),
         color: "from-yellow-500 to-amber-600"
       },
       checkin_afternoon: {
         icon: <Key className="h-5 w-5" />,
-        title: "Welcome!",
-        message: "Check-in time is here! Get your access code and make yourself at home.",
+        title: t('myStay.stayPhases.checkinAfternoon.title'),
+        message: t('myStay.stayPhases.checkinAfternoon.message'),
         color: "from-green-500 to-emerald-600"
       },
       first_night: {
         icon: <Moon className="h-5 w-5" />,
-        title: "Good Morning!",
-        message: "Hope you had a great first night! Ready to explore?",
+        title: t('myStay.stayPhases.firstNight.title'),
+        message: t('myStay.stayPhases.firstNight.message'),
         color: "from-indigo-500 to-purple-600"
       },
       early_stay: {
         icon: <Coffee className="h-5 w-5" />,
-        title: currentHour < 12 ? "Good Morning!" : currentHour < 18 ? "Good Afternoon!" : "Good Evening!",
-        message: `Day ${daysIntoStay + 1} of ${totalNights} nights. Enjoy discovering Puglia!`,
+        title: getEarlyStayTitle(),
+        message: t('myStay.stayPhases.earlyStay.message', { current: daysIntoStay + 1, total: totalNights }),
         color: "from-teal-500 to-cyan-600"
       },
       mid_stay: {
         icon: <Sparkles className="h-5 w-5" />,
-        title: "You're Halfway There!",
-        message: `${daysUntilCheckout} days left to explore. Make the most of it!`,
+        title: t('myStay.stayPhases.midStay.title'),
+        message: t('myStay.stayPhases.midStay.message', { days: daysUntilCheckout }),
         color: "from-purple-500 to-pink-600"
       },
       late_stay: {
         icon: <Sunset className="h-5 w-5" />,
-        title: "Final Days",
-        message: `Only ${daysUntilCheckout} days remaining. Visited all your must-sees?`,
+        title: t('myStay.stayPhases.lateStay.title'),
+        message: t('myStay.stayPhases.lateStay.message', { days: daysUntilCheckout }),
         color: "from-orange-500 to-rose-600"
       },
       pre_checkout: {
         icon: <Clock className="h-5 w-5" />,
-        title: "Last Night",
-        message: "Tomorrow is checkout day. Enjoy your final evening in Puglia!",
+        title: t('myStay.stayPhases.preCheckout.title'),
+        message: t('myStay.stayPhases.preCheckout.message'),
         color: "from-rose-500 to-pink-600"
       },
       checkout_day: {
         icon: <Home className="h-5 w-5" />,
-        title: "Checkout Day",
-        message: "Check-out is by 10 AM. Thank you for staying with us!",
+        title: t('myStay.stayPhases.checkoutDay.title'),
+        message: t('myStay.stayPhases.checkoutDay.message'),
         color: "from-gray-500 to-gray-700"
       },
       post_checkout: {
         icon: <CheckCircle2 className="h-5 w-5" />,
-        title: "Thank You!",
-        message: "We hope you enjoyed your stay. See you next time!",
+        title: t('myStay.stayPhases.postCheckout.title'),
+        message: t('myStay.stayPhases.postCheckout.message'),
         color: "from-emerald-500 to-teal-600"
       }
     };
@@ -299,14 +307,14 @@ const MyStay: React.FC = () => {
     if (phase.startsWith('pre_checkin')) {
       tips.push({
         icon: <Ticket className="h-4 w-4" />,
-        title: "Get Your VIP Ticket",
-        description: "10% discount at our partner restaurants and shops",
+        title: t('myStay.tips.vipTicket.title'),
+        description: t('myStay.tips.vipTicket.description'),
         action: "/partners"
       });
       tips.push({
         icon: <MapPin className="h-4 w-4" />,
-        title: "Explore the Area",
-        description: "Discover attractions near your apartment",
+        title: t('myStay.tips.exploreArea.title'),
+        description: t('myStay.tips.exploreArea.description'),
         action: "/explore"
       });
     }
@@ -315,15 +323,15 @@ const MyStay: React.FC = () => {
     if (phase === 'checkin_morning' || phase === 'checkin_afternoon') {
       tips.push({
         icon: <Wine className="h-4 w-4" />,
-        title: "Welcome Drink",
-        description: "Order a bottle of local wine or prosecco",
+        title: t('myStay.tips.welcomeDrink.title'),
+        description: t('myStay.tips.welcomeDrink.description'),
         service: "wine"
       });
       if (phase === 'checkin_afternoon') {
         tips.push({
           icon: <Key className="h-4 w-4" />,
-          title: "Get Access Code",
-          description: "Retrieve your apartment door code",
+          title: t('myStay.tips.getAccessCode.title'),
+          description: t('myStay.tips.getAccessCode.description'),
           action: "access_code"
         });
       }
@@ -333,14 +341,14 @@ const MyStay: React.FC = () => {
     if (phase === 'first_night') {
       tips.push({
         icon: <Croissant className="h-4 w-4" />,
-        title: "Breakfast Delivery",
-        description: "Coffee pods and fresh croissants at your door",
+        title: t('myStay.tips.breakfast.title'),
+        description: t('myStay.tips.breakfast.description'),
         service: "breakfast"
       });
       tips.push({
         icon: <Bike className="h-4 w-4" />,
-        title: "Rent a Bike",
-        description: "Explore the coast on two wheels",
+        title: t('myStay.tips.rentBike.title'),
+        description: t('myStay.tips.rentBike.description'),
         service: "bike"
       });
     }
@@ -350,21 +358,21 @@ const MyStay: React.FC = () => {
       if (totalNights >= 3) {
         tips.push({
           icon: <Sparkle className="h-4 w-4" />,
-          title: "Mid-Stay Cleaning",
-          description: "Request a cleaning service during your stay",
+          title: t('myStay.tips.midStayCleaning.title'),
+          description: t('myStay.tips.midStayCleaning.description'),
           service: "clean"
         });
       }
       tips.push({
         icon: <Bike className="h-4 w-4" />,
-        title: "Bike Tour",
-        description: "Explore hidden beaches and coastal paths",
+        title: t('myStay.tips.bikeTour.title'),
+        description: t('myStay.tips.bikeTour.description'),
         service: "bike"
       });
       tips.push({
         icon: <Wine className="h-4 w-4" />,
-        title: "Local Wine",
-        description: "Enjoy authentic Puglia wine in your apartment",
+        title: t('myStay.tips.localWine.title'),
+        description: t('myStay.tips.localWine.description'),
         service: "wine"
       });
     }
@@ -373,14 +381,14 @@ const MyStay: React.FC = () => {
     if (phase === 'late_stay' || phase === 'pre_checkout') {
       tips.push({
         icon: <Recycle className="h-4 w-4" />,
-        title: "Waste Collection",
-        description: "Request extra trash bags before checkout",
+        title: t('myStay.tips.wasteCollection.title'),
+        description: t('myStay.tips.wasteCollection.description'),
         service: "recycle"
       });
       tips.push({
         icon: <MessageCircle className="h-4 w-4" />,
-        title: "Need Anything?",
-        description: "Contact us if you need late checkout",
+        title: t('myStay.tips.needAnything.title'),
+        description: t('myStay.tips.needAnything.description'),
         action: "chat"
       });
     }
@@ -389,14 +397,14 @@ const MyStay: React.FC = () => {
     if (phase === 'checkout_day') {
       tips.push({
         icon: <Clock className="h-4 w-4" />,
-        title: "Check-out by 10 AM",
-        description: "Leave the keys inside the apartment",
+        title: t('myStay.tips.checkoutTime.title'),
+        description: t('myStay.tips.checkoutTime.description'),
         action: "info"
       });
       tips.push({
         icon: <MessageCircle className="h-4 w-4" />,
-        title: "Late Checkout?",
-        description: "Contact us to arrange a later departure",
+        title: t('myStay.tips.lateCheckout.title'),
+        description: t('myStay.tips.lateCheckout.description'),
         action: "chat"
       });
     }
@@ -439,12 +447,12 @@ const MyStay: React.FC = () => {
     setEmailError(null);
 
     if (!emailInput.trim()) {
-      setEmailError("Please enter your email");
+      setEmailError(t('accessCode.errors.enterEmail'));
       return;
     }
 
     if (emailInput.toLowerCase().trim() !== booking?.guestEmail?.toLowerCase()) {
-      setEmailError("Email does not match booking");
+      setEmailError(t('accessCode.errors.emailNoMatch'));
       return;
     }
 
@@ -457,10 +465,10 @@ const MyStay: React.FC = () => {
         setAccessCodeData(result);
         setShowAccessCode(true);
       } else {
-        setAccessCodeError(result.error || "Failed to get access code");
+        setAccessCodeError(result.error || t('accessCode.errors.fetchFailed'));
       }
     } catch (err) {
-      setAccessCodeError("Connection error. Please try again.");
+      setAccessCodeError(t('accessCode.errors.connectionError'));
     } finally {
       setAccessCodeLoading(false);
     }
@@ -522,10 +530,10 @@ const MyStay: React.FC = () => {
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-2">
-                My Stay
+                {t('myStay.title')}
               </h1>
               <p className="text-white/80 text-sm max-w-xs mx-auto">
-                Log in to access your booking details, check-in status, and apartment access code
+                {t('myStay.subtitle')}
               </p>
             </div>
           </div>
@@ -538,19 +546,19 @@ const MyStay: React.FC = () => {
               <Sparkles className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Guest Benefits</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">What you can access after login</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('myStay.guestBenefits')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('myStay.whatYouCanAccess')}</p>
             </div>
           </div>
 
           <div className="space-y-3">
             {[
-              { icon: Calendar, title: "Booking Details", desc: "View your reservation info" },
-              { icon: CheckCircle2, title: "Check-in Status", desc: "Track your online check-in" },
-              { icon: Key, title: "Access Code", desc: "Get your apartment door code" },
-              { icon: MapPin, title: "Navigation", desc: "Find your apartment easily" },
-              { icon: MessageCircle, title: "Direct Chat", desc: "Message our reception" },
-              { icon: Ticket, title: "VIP Ticket", desc: "Download your discount pass" },
+              { icon: Calendar, title: t('myStay.benefits.bookingDetails'), desc: t('myStay.benefits.viewReservation') },
+              { icon: CheckCircle2, title: t('myStay.benefits.checkInStatus'), desc: t('myStay.benefits.trackCheckIn') },
+              { icon: Key, title: t('myStay.benefits.accessCode'), desc: t('myStay.benefits.getAccessCode') },
+              { icon: MapPin, title: t('myStay.benefits.navigation'), desc: t('myStay.benefits.findApartment') },
+              { icon: MessageCircle, title: t('myStay.benefits.directChat'), desc: t('myStay.benefits.messageReception') },
+              { icon: Ticket, title: t('myStay.benefits.vipTicket'), desc: t('myStay.benefits.downloadPass') },
             ].map((item, index) => (
               <motion.div
                 key={item.title}
@@ -576,11 +584,11 @@ const MyStay: React.FC = () => {
             className="w-full mt-6 flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
           >
             <LogIn className="h-5 w-5" />
-            Log In to Your Booking
+            {t('myStay.loginToBooking')}
           </button>
 
           <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-4">
-            Use your booking reference and email to log in
+            {t('myStay.loginHint')}
           </p>
         </div>
 
@@ -618,14 +626,14 @@ const MyStay: React.FC = () => {
             <div className="text-center">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-3">
                 <Sparkles className="h-4 w-4 text-amber-400" />
-                <span className="text-white/90 text-sm font-medium">Welcome back!</span>
+                <span className="text-white/90 text-sm font-medium">{t('myStay.welcomeBack')}</span>
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-1">
-                Hello, {guestName || 'Guest'}
+                {t('myStay.hello', { name: guestName || t('common.guest') })}
               </h1>
               <p className="text-white/80 text-sm">
-                {booking?.apartmentName || 'Your Apartment'}
+                {booking?.apartmentName || t('common.apartment')}
               </p>
             </div>
           </div>
@@ -640,8 +648,8 @@ const MyStay: React.FC = () => {
               <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Booking Details</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Ref: {booking?.bookingReference}</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('myStay.bookingDetails')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('myStay.ref', { ref: booking?.bookingReference })}</p>
             </div>
           </div>
 
@@ -653,7 +661,7 @@ const MyStay: React.FC = () => {
                   <div className="w-6 h-6 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                     <Calendar className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
                   </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Check-in</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.checkIn')}</span>
                 </div>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm">
                   {formatDate(booking?.checkIn || '')}
@@ -664,7 +672,7 @@ const MyStay: React.FC = () => {
                   <div className="w-6 h-6 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
                     <Calendar className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
                   </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Check-out</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.checkOut')}</span>
                 </div>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm">
                   {formatDate(booking?.checkOut || '')}
@@ -679,10 +687,10 @@ const MyStay: React.FC = () => {
                   <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                     <Users className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Guests</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('common.guests')}</span>
                 </div>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                  {booking?.numberOfGuests || 1} {(booking?.numberOfGuests || 1) > 1 ? 'Guests' : 'Guest'}
+                  {booking?.numberOfGuests || 1} {(booking?.numberOfGuests || 1) > 1 ? t('common.guests') : t('common.guest')}
                 </p>
               </div>
               <div className="p-4">
@@ -690,10 +698,10 @@ const MyStay: React.FC = () => {
                   <div className="w-6 h-6 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
                     <Clock className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Duration</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('myStay.duration')}</span>
                 </div>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                  {calculateNights()} {calculateNights() > 1 ? 'Nights' : 'Night'}
+                  {calculateNights()} {calculateNights() > 1 ? t('common.nights') : t('common.night')}
                 </p>
               </div>
             </div>
@@ -707,8 +715,8 @@ const MyStay: React.FC = () => {
               <Sparkles className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Your Journey</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Stay progress & tips</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('myStay.yourJourney')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('myStay.stayProgressTips')}</p>
             </div>
           </div>
 
@@ -727,8 +735,8 @@ const MyStay: React.FC = () => {
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Check-in</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Check-out</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.checkIn')}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.checkOut')}</span>
                 </div>
                 <div className="relative h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                   {/* Animated gradient progress bar */}
@@ -784,7 +792,7 @@ const MyStay: React.FC = () => {
               {stayTips.length > 0 && (
                 <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
-                    Suggestions for you
+                    {t('myStay.suggestionsForYou')}
                   </p>
                   <div className="space-y-2">
                     {stayTips.map((tip, index) => (
@@ -835,8 +843,8 @@ const MyStay: React.FC = () => {
               )}
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Check-in Status</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Online check-in process</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('myStay.checkInStatus')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('myStay.onlineCheckInProcess')}</p>
             </div>
           </div>
 
@@ -859,7 +867,7 @@ const MyStay: React.FC = () => {
                   )}
                 </div>
                 <span className="text-white font-bold">
-                  {booking?.onlineCheckInCompleted ? 'Check-in Completed' : 'Check-in Pending'}
+                  {booking?.onlineCheckInCompleted ? t('checkIn.status.completed') : t('checkIn.status.pending')}
                 </span>
               </div>
             </div>
@@ -872,11 +880,11 @@ const MyStay: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Your online check-in is complete!
+                      {t('myStay.checkInComplete')}
                     </p>
                     {booking?.onlineCheckInCompletedAt && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Completed on {formatDate(booking.onlineCheckInCompletedAt)}
+                        {t('myStay.completedOn', { date: formatDate(booking.onlineCheckInCompletedAt) })}
                       </p>
                     )}
                   </div>
@@ -884,13 +892,13 @@ const MyStay: React.FC = () => {
               ) : (
                 <>
                   <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                    Please complete your online check-in to get your apartment access code.
+                    {t('myStay.completeCheckInMessage')}
                   </p>
                   <button
                     onClick={() => navigate('/check-in')}
                     className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-4 rounded-xl transition-all"
                   >
-                    Complete Check-in
+                    {t('myStay.completeCheckIn')}
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </>
@@ -907,8 +915,8 @@ const MyStay: React.FC = () => {
                 <Key className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Access Code</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Apartment door code</p>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('accessCode.title')}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('accessCode.subtitle')}</p>
               </div>
             </div>
 
@@ -918,7 +926,7 @@ const MyStay: React.FC = () => {
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                     <Shield className="h-4 w-4 text-white" />
                   </div>
-                  <span className="text-white font-bold">Secure Access</span>
+                  <span className="text-white font-bold">{t('accessCode.secureAccess')}</span>
                 </div>
               </div>
 
@@ -928,14 +936,14 @@ const MyStay: React.FC = () => {
                     <div className="flex items-start gap-3 mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
                       <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-amber-800 dark:text-amber-200">
-                        For security, please verify your email to view the access code.
+                        {t('accessCode.verifyEmail')}
                       </p>
                     </div>
 
                     <div className="space-y-3">
                       <div>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">
-                          Booking Email
+                          {t('accessCode.bookingEmail')}
                         </label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -946,7 +954,7 @@ const MyStay: React.FC = () => {
                               setEmailInput(e.target.value);
                               setEmailError(null);
                             }}
-                            placeholder="Enter your booking email"
+                            placeholder={t('accessCode.enterEmail')}
                             className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           />
                         </div>
@@ -961,11 +969,11 @@ const MyStay: React.FC = () => {
                         className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl transition-all disabled:opacity-50"
                       >
                         {accessCodeLoading ? (
-                          <span>Verifying...</span>
+                          <span>{t('common.verifying')}</span>
                         ) : (
                           <>
                             <Eye className="h-4 w-4" />
-                            Verify & Show Code
+                            {t('accessCode.verifyShow')}
                           </>
                         )}
                       </button>
@@ -1023,7 +1031,7 @@ const MyStay: React.FC = () => {
                       className="w-full flex items-center justify-center gap-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 py-2 text-sm"
                     >
                       <EyeOff className="h-4 w-4" />
-                      Hide Access Codes
+                      {t('accessCode.hideMultiple')}
                     </button>
                   </div>
                 ) : (
@@ -1059,7 +1067,7 @@ const MyStay: React.FC = () => {
                       className="flex items-center justify-center gap-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 py-2 text-sm mx-auto"
                     >
                       <EyeOff className="h-4 w-4" />
-                      Hide Access Code
+                      {t('accessCode.hide')}
                     </button>
                   </div>
                 )}
@@ -1076,8 +1084,8 @@ const MyStay: React.FC = () => {
                 <MapPin className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Apartment Location</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Find your way</p>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('myStay.apartmentLocation')}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('myStay.findYourWay')}</p>
               </div>
             </div>
 
@@ -1103,7 +1111,7 @@ const MyStay: React.FC = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold py-3 px-4 rounded-xl transition-all"
                 >
                   <Navigation className="h-4 w-4" />
-                  Get Directions
+                  {t('myStay.getDirections')}
                   <ExternalLink className="h-4 w-4" />
                 </button>
               </div>
@@ -1118,8 +1126,8 @@ const MyStay: React.FC = () => {
               <Sparkles className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Quick Actions</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Useful shortcuts</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('myStay.quickActions')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('myStay.usefulShortcuts')}</p>
             </div>
           </div>
 
@@ -1131,8 +1139,8 @@ const MyStay: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center mb-3 mx-auto">
                 <Ticket className="h-6 w-6 text-white" />
               </div>
-              <h3 className="font-semibold text-gray-900 dark:text-white text-sm text-center">VIP Ticket</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">10% OFF partners</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm text-center">{t('myStay.vipTicket')}</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">{t('myStay.discountPartners')}</p>
             </button>
 
             <button
@@ -1142,8 +1150,8 @@ const MyStay: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-3 mx-auto">
                 <MessageCircle className="h-6 w-6 text-white" />
               </div>
-              <h3 className="font-semibold text-gray-900 dark:text-white text-sm text-center">Chat</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">Contact reception</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm text-center">{t('myStay.chat')}</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">{t('myStay.contactReception')}</p>
             </button>
           </div>
         </section>

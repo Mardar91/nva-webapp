@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 const PrivateSettings = () => {
+  const { t } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +21,7 @@ const PrivateSettings = () => {
       setError('');
       addDebugLog('Login successful');
     } else {
-      setError('Credenziali non valide');
+      setError(t('privateSettings.invalidCredentials'));
       addDebugLog('Login failed - Invalid credentials');
     }
   };
@@ -58,7 +60,7 @@ const PrivateSettings = () => {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      setError(`Errore nella chiamata API: ${errorMessage}`);
+      setError(`${t('privateSettings.apiError')}: ${errorMessage}`);
       addDebugLog(`Error occurred: ${errorMessage}`);
       console.error('API Error:', err);
     } finally {
@@ -72,36 +74,36 @@ const PrivateSettings = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <Card className="w-[350px]">
           <CardHeader>
-            <CardTitle>Accesso Privato</CardTitle>
+            <CardTitle>{t('privateSettings.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">{t('privateSettings.username')}</Label>
                 <Input
                   id="username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Inserisci username"
+                  placeholder={t('privateSettings.enterUsername')}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('privateSettings.password')}</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Inserisci password"
+                  placeholder={t('privateSettings.enterPassword')}
                 />
               </div>
               {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={handleLogin}
               >
-                Accedi
+                {t('privateSettings.login')}
               </Button>
             </div>
           </CardContent>
@@ -114,57 +116,57 @@ const PrivateSettings = () => {
     <div className="container mx-auto p-8">
       <Card>
         <CardHeader>
-          <CardTitle>Gestione Notifiche</CardTitle>
+          <CardTitle>{t('privateSettings.notificationsManagement')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             <div className="flex flex-wrap gap-4">
-              <Button 
+              <Button
                 onClick={() => handleApiCall('GET')}
                 disabled={loading}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                Verifica Notifiche
+                {t('privateSettings.checkNotifications')}
               </Button>
-              <Button 
+              <Button
                 onClick={() => handleApiCall('POST')}
                 disabled={loading}
                 className="bg-green-600 hover:bg-green-700"
               >
-                Programma Nuove Notifiche
+                {t('privateSettings.scheduleNotifications')}
               </Button>
-              <Button 
+              <Button
                 onClick={() => handleApiCall('PUT')}
                 disabled={loading}
                 className="bg-yellow-600 hover:bg-yellow-700"
               >
-                Aggiorna Notifiche
+                {t('privateSettings.updateNotifications')}
               </Button>
-              <Button 
+              <Button
                 onClick={() => handleApiCall('DELETE')}
                 disabled={loading}
                 className="bg-red-600 hover:bg-red-700"
               >
-                Cancella Tutte le Notifiche
+                {t('privateSettings.deleteAllNotifications')}
               </Button>
             </div>
 
             {loading && (
               <div className="text-center py-4">
-                <p className="text-blue-600 font-semibold">Caricamento in corso...</p>
+                <p className="text-blue-600 font-semibold">{t('common.loading')}</p>
               </div>
             )}
 
             {error && (
               <div className="p-4 bg-red-100 text-red-700 rounded border border-red-300">
-                <p className="font-semibold">Errore:</p>
+                <p className="font-semibold">{t('common.error')}:</p>
                 <p>{error}</p>
               </div>
             )}
 
             {apiResponse && (
               <div className="mt-4">
-                <h3 className="font-semibold mb-2">Risposta API:</h3>
+                <h3 className="font-semibold mb-2">{t('privateSettings.apiResponse')}:</h3>
                 <pre className="bg-gray-100 p-4 rounded overflow-auto max-h-[400px] whitespace-pre-wrap break-words">
                   {JSON.stringify(apiResponse, null, 2)}
                 </pre>
@@ -172,7 +174,7 @@ const PrivateSettings = () => {
             )}
 
             <div className="mt-6">
-              <h3 className="font-semibold mb-2">Log di Debug:</h3>
+              <h3 className="font-semibold mb-2">{t('privateSettings.debugLog')}:</h3>
               <div className="bg-gray-100 p-4 rounded overflow-auto max-h-[200px]">
                 {debugInfo.map((log, index) => (
                   <div key={index} className="text-sm font-mono">

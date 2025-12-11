@@ -648,15 +648,15 @@ const ServicesSection = () => {
                 {/* Date Selection */}
                 <div className="space-y-3 mb-4">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Select date:</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <div className="relative overflow-hidden date-input-container">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
                     <input
                       type="date"
                       value={cleanDate}
                       onChange={(e) => setCleanDate(e.target.value)}
                       min={getCleaningDateRange().min}
                       max={getCleaningDateRange().max}
-                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 box-border"
                     />
                   </div>
                   {cleanDate && (
@@ -1127,15 +1127,15 @@ const ServicesSection = () => {
                 {/* Start Date */}
                 <div className="space-y-3 mb-4">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Starting date:</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <div className="relative overflow-hidden date-input-container">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
                     <input
                       type="date"
                       value={bikeDate}
                       onChange={(e) => setBikeDate(e.target.value)}
                       min={getBikeDateRange().min}
                       max={getBikeDateRange().max}
-                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 box-border"
                     />
                   </div>
                   {bikeDate && (

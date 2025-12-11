@@ -24,6 +24,7 @@ import {
   CheckCircle2,
   X,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { ChatMessage, fetchChatMessages, sendChatMessage, markMessagesAsRead } from '../lib/guestApi';
 
 interface GuestChatDrawerProps {
@@ -43,6 +44,7 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
   guestName,
   onSessionExpired,
 }) => {
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -137,16 +139,17 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
     const date = new Date(dateString);
     const now = new Date();
     const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    const locale = i18n.language === 'it' ? 'it-IT' : 'en-US';
 
     if (diffDays === 0) {
-      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     } else if (diffDays === 1) {
-      return 'Yesterday ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      return t('guestChat.yesterday') + ' ' + date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     } else if (diffDays < 7) {
-      return date.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-        date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleDateString(locale, { weekday: 'short' }) + ' ' +
+        date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     } else {
-      return date.toLocaleDateString('en-US', {
+      return date.toLocaleDateString(locale, {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
@@ -185,7 +188,7 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
               <MessageCircle className="h-3 w-3" />
             )}
             <span className="text-xs font-medium">
-              {isGuest ? 'You' : msg.senderName || 'Nonna Vittoria'}
+              {isGuest ? t('guestChat.you') : msg.senderName || 'Nonna Vittoria'}
             </span>
             <span className="text-xs">
               {formatDate(msg.createdAt)}
@@ -222,7 +225,7 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2 text-blue-900 dark:text-blue-400">
               <MessageCircle className="h-5 w-5" />
-              Chat
+              {t('guestChat.title')}
             </SheetTitle>
             <div className="flex items-center gap-1">
               <Button
@@ -246,7 +249,7 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
           </div>
           {guestName && (
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Logged in as {guestName}
+              {t('guestChat.loggedInAs', { name: guestName })}
             </p>
           )}
         </SheetHeader>
@@ -256,7 +259,7 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
           {isLoading && messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-500">
               <Loader2 className="h-8 w-8 animate-spin mb-2" />
-              <p>Loading messages...</p>
+              <p>{t('guestChat.loading')}</p>
             </div>
           ) : error && messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-500">
@@ -268,15 +271,15 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
                 onClick={() => loadMessages()}
                 className="mt-2"
               >
-                Try again
+                {t('guestChat.tryAgain')}
               </Button>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-500">
               <CheckCircle2 className="h-8 w-8 mb-2 text-green-500" />
-              <p className="text-center">No messages yet.</p>
+              <p className="text-center">{t('guestChat.noMessages')}</p>
               <p className="text-center text-sm mt-1">
-                Send us a message if you need any help!
+                {t('guestChat.sendUsMessage')}
               </p>
             </div>
           ) : (
@@ -301,7 +304,7 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
         <div className="p-4 border-t dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
           <div className="flex gap-2">
             <Input
-              placeholder="Type a message..."
+              placeholder={t('guestChat.placeholder')}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -321,7 +324,7 @@ const GuestChatDrawer: React.FC<GuestChatDrawerProps> = ({
             </Button>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-            Messages are checked every 30 seconds
+            {t('guestChat.pollingMessage')}
           </p>
         </div>
       </SheetContent>

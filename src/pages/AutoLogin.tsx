@@ -6,12 +6,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useGuestSession } from '../hooks/useGuestSession';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 type LoginStatus = 'loading' | 'success' | 'error';
 
 const AutoLogin: React.FC = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { loginWithToken, isLoggedIn } = useGuestSession();
@@ -24,7 +26,7 @@ const AutoLogin: React.FC = () => {
 
       if (!token) {
         setStatus('error');
-        setErrorMessage('Missing authentication token');
+        setErrorMessage(t('autoLogin.missingToken'));
         // Redirect to home after delay
         setTimeout(() => navigate('/', { replace: true }), 3000);
         return;
@@ -51,13 +53,13 @@ const AutoLogin: React.FC = () => {
         } else {
           console.warn('⚠️ Auto-login from email failed');
           setStatus('error');
-          setErrorMessage('Login failed. The link may have expired.');
+          setErrorMessage(t('autoLogin.loginFailed'));
           setTimeout(() => navigate('/', { replace: true }), 3000);
         }
       } catch (err) {
         console.error('❌ Auto-login error:', err);
         setStatus('error');
-        setErrorMessage('Connection error. Please try again.');
+        setErrorMessage(t('accessCodeSection.connectionError'));
         setTimeout(() => navigate('/', { replace: true }), 3000);
       }
     };
@@ -72,10 +74,10 @@ const AutoLogin: React.FC = () => {
           <>
             <Loader2 className="h-16 w-16 text-blue-500 animate-spin mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Signing you in...
+              {t('autoLogin.signingIn')}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              Please wait while we verify your access.
+              {t('autoLogin.pleaseWait')}
             </p>
           </>
         )}
@@ -84,10 +86,10 @@ const AutoLogin: React.FC = () => {
           <>
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Welcome!
+              {t('autoLogin.welcome')}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              You're now signed in. Redirecting...
+              {t('autoLogin.signedIn')}
             </p>
           </>
         )}
@@ -96,13 +98,13 @@ const AutoLogin: React.FC = () => {
           <>
             <XCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Login Failed
+              {t('autoLogin.loginFailed')}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               {errorMessage}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-500">
-              Redirecting to home...
+              {t('autoLogin.redirecting')}
             </p>
           </>
         )}

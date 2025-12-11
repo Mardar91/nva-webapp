@@ -392,5 +392,141 @@
   "dates": {
     "checkIn": "Check-in",
     "checkOut": "Check-out"
+  },
+  "specialOffers": {
+    "title": "Special Offers",
+    "giftCard": {
+      "badge": "+10% FREE",
+      "title": "Gift Card",
+      "description": "Get an extra 10% bonus on gift card purchases for future stays",
+      "cta": "Learn more"
+    },
+    "romanticWeek": {
+      "badge": "SPECIAL PRICE",
+      "title": "Romantic Week",
+      "description": "2 people, 6 nights + welcome wine bottle",
+      "price": "Only €380",
+      "cta": "View details"
+    }
+  },
+  "vipTicketHero": {
+    "title": "Get Your Free VIP Ticket!",
+    "subtitle": "Download your digital VIP Ticket to enjoy exclusive 10% discounts at all our partner locations",
+    "discount": "10% OFF",
+    "allPartners": "All Partners",
+    "downloadButton": "Download VIP Ticket",
+    "loginRequired": "Log in to download your VIP Ticket"
+  },
+  "floatingChat": {
+    "needHelp": "Need help? Chat with us!",
+    "greeting": "Hi, how can I help?",
+    "hereForYou": "I'm here if you need me!",
+    "chatWithUs": "Chat with Us",
+    "aiAssistant": "AI Assistant"
+  },
+  "romanticWeek": {
+    "title": "Romantic Week",
+    "subtitle": "Exclusive offer for couples",
+    "price": "Only €380",
+    "whatsIncluded": "What's Included",
+    "features": {
+      "sixNights": "6-night stay for two",
+      "earlyCheckin": "Early check-in from 12:00 PM",
+      "welcomeWine": "Welcome wine or Prosecco",
+      "vipTicket": "VIP ticket with 10% discount",
+      "lateCheckout": "Late check-out until 11:00 AM",
+      "coffeePads": "12 premium coffee pads"
+    },
+    "amenitiesTitle": "Apartment Amenities",
+    "amenities": {
+      "airConditioning": "Air conditioning",
+      "smartTv": "42\" Smart TV",
+      "wifi": "High-speed WiFi"
+    },
+    "requestToBook": "Request to Book",
+    "bookYourStay": "Book Your Stay",
+    "fillDetails": "Fill in your details",
+    "form": {
+      "checkInDate": "Check-in Date",
+      "selectCheckIn": "Select check-in date",
+      "checkOut": "Check-out: {{date}}",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "surname": "Surname",
+      "surnamePlaceholder": "Your surname",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+39 123 456 7890",
+      "message": "Message (Optional)",
+      "messagePlaceholder": "Any special requests?",
+      "sending": "Sending...",
+      "sendRequest": "Send Request"
+    },
+    "success": {
+      "title": "Request Sent Successfully!",
+      "message": "We will respond as soon as possible."
+    },
+    "errors": {
+      "selectCheckIn": "Please select a check-in date",
+      "sendFailed": "Failed to send request",
+      "generic": "An error occurred"
+    }
+  },
+  "autoLogin": {
+    "missingToken": "Missing authentication token",
+    "signingIn": "Signing you in...",
+    "pleaseWait": "Please wait while we verify your access.",
+    "welcome": "Welcome!",
+    "signedIn": "You're now signed in. Redirecting...",
+    "loginFailed": "Login Failed",
+    "redirecting": "Redirecting to home..."
+  },
+  "accessCodeSection": {
+    "title": "Access Code",
+    "notAvailable": "The access code will be available after completing the online check-in.",
+    "emailVerified": "Email verified!",
+    "yourAccessCode": "Your Access Code",
+    "validPeriod": "Valid: {{from}} - {{to}}",
+    "hideCode": "Hide Code",
+    "securityMessage": "For security, enter your booking email to view the access code:",
+    "verifying": "Verifying...",
+    "viewAccessCode": "View Access Code",
+    "enterEmail": "Please enter your email",
+    "emailNoMatch": "Email does not match the booking. Please use the email used for the reservation.",
+    "checkInRequired": "Online check-in has not been completed yet. Please complete the check-in first.",
+    "fetchFailed": "Unable to retrieve access code",
+    "connectionError": "Connection error. Please try again."
+  },
+  "guestChat": {
+    "title": "Chat",
+    "loading": "Loading messages...",
+    "error": "Error loading messages",
+    "refresh": "Refresh",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "sessionExpired": "Session expired. Please log in again.",
+    "sendError": "Failed to send message",
+    "newMessages": "New messages",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "loggedInAs": "Logged in as {{name}}",
+    "tryAgain": "Try again",
+    "noMessages": "No messages yet.",
+    "sendUsMessage": "Send us a message if you need any help!",
+    "pollingMessage": "Messages are checked every 30 seconds",
+    "you": "You"
+  },
+  "weatherWidget": {
+    "title": "Weather in the surrounding area"
+  },
+  "cities": {
+    "swipeToNavigate": "Swipe to navigate",
+    "previousCity": "Previous city",
+    "nextCity": "Next city",
+    "attractions": "Attractions",
+    "events": "Events",
+    "noEvents": "No upcoming events",
+    "goToNextCity": "Go to the next city"
   }
 }

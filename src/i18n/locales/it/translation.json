@@ -392,5 +392,141 @@
   "dates": {
     "checkIn": "Check-in",
     "checkOut": "Check-out"
+  },
+  "specialOffers": {
+    "title": "Offerte Speciali",
+    "giftCard": {
+      "badge": "+10% GRATIS",
+      "title": "Gift Card",
+      "description": "Ottieni un bonus extra del 10% sugli acquisti di gift card per soggiorni futuri",
+      "cta": "Scopri di più"
+    },
+    "romanticWeek": {
+      "badge": "PREZZO SPECIALE",
+      "title": "Settimana Romantica",
+      "description": "2 persone, 6 notti + bottiglia di vino di benvenuto",
+      "price": "Solo €380",
+      "cta": "Vedi dettagli"
+    }
+  },
+  "vipTicketHero": {
+    "title": "Ottieni il tuo VIP Ticket Gratuito!",
+    "subtitle": "Scarica il tuo VIP Ticket digitale per usufruire di sconti esclusivi del 10% presso tutti i nostri partner",
+    "discount": "10% SCONTO",
+    "allPartners": "Tutti i Partner",
+    "downloadButton": "Scarica VIP Ticket",
+    "loginRequired": "Accedi per scaricare il tuo VIP Ticket"
+  },
+  "floatingChat": {
+    "needHelp": "Hai bisogno di aiuto? Chatta con noi!",
+    "greeting": "Ciao, come posso aiutarti?",
+    "hereForYou": "Sono qui se hai bisogno!",
+    "chatWithUs": "Chatta con Noi",
+    "aiAssistant": "Assistente AI"
+  },
+  "romanticWeek": {
+    "title": "Settimana Romantica",
+    "subtitle": "Offerta esclusiva per coppie",
+    "price": "Solo €380",
+    "whatsIncluded": "Cosa Include",
+    "features": {
+      "sixNights": "Soggiorno di 6 notti per due",
+      "earlyCheckin": "Check-in anticipato dalle 12:00",
+      "welcomeWine": "Vino o Prosecco di benvenuto",
+      "vipTicket": "VIP ticket con sconto del 10%",
+      "lateCheckout": "Check-out posticipato fino alle 11:00",
+      "coffeePads": "12 cialde caffè premium"
+    },
+    "amenitiesTitle": "Dotazioni Appartamento",
+    "amenities": {
+      "airConditioning": "Aria condizionata",
+      "smartTv": "Smart TV 42\"",
+      "wifi": "WiFi ad alta velocità"
+    },
+    "requestToBook": "Richiedi Prenotazione",
+    "bookYourStay": "Prenota il Soggiorno",
+    "fillDetails": "Inserisci i tuoi dati",
+    "form": {
+      "checkInDate": "Data Check-in",
+      "selectCheckIn": "Seleziona data check-in",
+      "checkOut": "Check-out: {{date}}",
+      "name": "Nome",
+      "namePlaceholder": "Il tuo nome",
+      "surname": "Cognome",
+      "surnamePlaceholder": "Il tuo cognome",
+      "email": "Email",
+      "emailPlaceholder": "tua@email.com",
+      "phone": "Telefono",
+      "phonePlaceholder": "+39 123 456 7890",
+      "message": "Messaggio (Opzionale)",
+      "messagePlaceholder": "Richieste particolari?",
+      "sending": "Invio in corso...",
+      "sendRequest": "Invia Richiesta"
+    },
+    "success": {
+      "title": "Richiesta Inviata con Successo!",
+      "message": "Ti risponderemo il prima possibile."
+    },
+    "errors": {
+      "selectCheckIn": "Seleziona una data di check-in",
+      "sendFailed": "Invio richiesta fallito",
+      "generic": "Si è verificato un errore"
+    }
+  },
+  "autoLogin": {
+    "missingToken": "Token di autenticazione mancante",
+    "signingIn": "Accesso in corso...",
+    "pleaseWait": "Attendere mentre verifichiamo il tuo accesso.",
+    "welcome": "Benvenuto!",
+    "signedIn": "Accesso effettuato. Reindirizzamento...",
+    "loginFailed": "Accesso Fallito",
+    "redirecting": "Reindirizzamento alla home..."
+  },
+  "accessCodeSection": {
+    "title": "Codice di Accesso",
+    "notAvailable": "Il codice di accesso sarà disponibile dopo aver completato il check-in online.",
+    "emailVerified": "Email verificata!",
+    "yourAccessCode": "Il Tuo Codice di Accesso",
+    "validPeriod": "Valido: {{from}} - {{to}}",
+    "hideCode": "Nascondi Codice",
+    "securityMessage": "Per sicurezza, inserisci l'email della prenotazione per visualizzare il codice:",
+    "verifying": "Verifica in corso...",
+    "viewAccessCode": "Visualizza Codice di Accesso",
+    "enterEmail": "Inserisci la tua email",
+    "emailNoMatch": "L'email non corrisponde alla prenotazione. Usa l'email utilizzata per la prenotazione.",
+    "checkInRequired": "Il check-in online non è ancora stato completato. Completa prima il check-in.",
+    "fetchFailed": "Impossibile recuperare il codice di accesso",
+    "connectionError": "Errore di connessione. Riprova."
+  },
+  "guestChat": {
+    "title": "Chat",
+    "loading": "Caricamento messaggi...",
+    "error": "Errore nel caricamento messaggi",
+    "refresh": "Aggiorna",
+    "placeholder": "Scrivi un messaggio...",
+    "send": "Invia",
+    "sessionExpired": "Sessione scaduta. Effettua nuovamente l'accesso.",
+    "sendError": "Invio messaggio fallito",
+    "newMessages": "Nuovi messaggi",
+    "today": "Oggi",
+    "yesterday": "Ieri",
+    "loggedInAs": "Connesso come {{name}}",
+    "tryAgain": "Riprova",
+    "noMessages": "Nessun messaggio.",
+    "sendUsMessage": "Inviaci un messaggio se hai bisogno di aiuto!",
+    "pollingMessage": "I messaggi vengono controllati ogni 30 secondi",
+    "you": "Tu"
+  },
+  "weatherWidget": {
+    "title": "Meteo nei dintorni"
+  },
+  "cities": {
+    "swipeToNavigate": "Scorri per navigare",
+    "previousCity": "Città precedente",
+    "nextCity": "Città successiva",
+    "attractions": "Attrazioni",
+    "events": "Eventi",
+    "noEvents": "Nessun evento in programma",
+    "goToNextCity": "Vai alla prossima città"
   }
 }

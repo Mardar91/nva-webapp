@@ -7,6 +7,7 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
 import { FaRobot, FaComments } from "react-icons/fa";
 import { useSpring, animated } from "react-spring";
+import { useTranslation } from "react-i18next";
 import { useGuestSession } from "../hooks/useGuestSession";
 import "./FloatingChatButton.css";
 
@@ -16,6 +17,7 @@ interface FloatingChatButtonProps {
 }
 
 const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress, unreadCount = 0 }) => {
+  const { t } = useTranslation();
   const { isLoggedIn } = useGuestSession();
   const [panX, setPanX] = useState(0);
   const [scale, setScale] = useState(1);
@@ -168,7 +170,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress, unread
           >
             ×
           </button>
-          {isLoggedIn ? "Need help? Chat with us!" : "Hi, how can I help?"}
+          {isLoggedIn ? t('floatingChat.needHelp') : t('floatingChat.greeting')}
         </div>
       )}
       {showSecondPrompt && !showPrompt && !showMenu && (
@@ -182,7 +184,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress, unread
           >
             ×
           </button>
-          I'm here if you need me!
+          {t('floatingChat.hereForYou')}
         </div>
       )}
 
@@ -194,7 +196,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress, unread
             onClick={openGuestChat}
           >
             <FaComments size={18} />
-            <span>Chat with Us</span>
+            <span>{t('floatingChat.chatWithUs')}</span>
             {unreadCount > 0 && (
               <span className="chat-menu-badge">{unreadCount}</span>
             )}
@@ -204,7 +206,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress, unread
             onClick={openChatbot}
           >
             <FaRobot size={18} />
-            <span>AI Assistant</span>
+            <span>{t('floatingChat.aiAssistant')}</span>
           </button>
         </div>
       )}

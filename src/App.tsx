@@ -50,7 +50,7 @@ const IframeView: React.FC<{ src: string; title: string }> = ({
       top: 0,
       left: 0,
       right: 0,
-      bottom: '88px',
+      bottom: 'calc(72px + env(safe-area-inset-bottom))',
       overflow: 'hidden',
       WebkitOverflowScrolling: 'touch',
     }}>

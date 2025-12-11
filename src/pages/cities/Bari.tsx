@@ -684,7 +684,7 @@ const Bari: React.FC = () => {
     <div
       className="absolute inset-0 overflow-y-auto overflow-x-hidden pb-24"
       style={{
-        bottom: '88px',
+        bottom: 'calc(72px + env(safe-area-inset-bottom))',
         top: 0,
         WebkitOverflowScrolling: 'touch',
         overscrollBehavior: 'contain',

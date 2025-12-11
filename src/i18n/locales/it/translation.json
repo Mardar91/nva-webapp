@@ -372,10 +372,178 @@
   "services": {
     "title": "I Nostri Servizi",
     "subtitle": "Migliora il tuo soggiorno",
+    "usefulInfo": "Informazioni Utili",
     "memoryGame": {
-      "moves": "Mosse:",
+      "moves": "Mosse: {{count}}",
       "congratulations": "Congratulazioni! Hai vinto!",
       "playAgain": "Gioca Ancora"
+    },
+    "names": {
+      "taxi": "Taxi",
+      "wine": "Vino",
+      "clean": "Pulizia",
+      "shop": "Shop",
+      "delivery": "Consegna",
+      "rentCar": "Auto",
+      "excursions": "Escursioni",
+      "parking": "Parcheggio",
+      "breakfast": "Colazione",
+      "massage": "Massaggio",
+      "rentBike": "Bici",
+      "laundry": "Lavanderia",
+      "emergency": "Emergenze",
+      "pharmacy": "Farmacia",
+      "recycle": "Rifiuti",
+      "game": "Gioco"
+    },
+    "delivery": {
+      "title": "Servizio Consegna",
+      "description": "Ordina il tuo cibo online e fallo consegnare direttamente al tuo appartamento tutti i giorni tranne il mercoledì.",
+      "mondaySaturday": "Lunedì - Sabato",
+      "mondaySaturdayHours": "10:00 - 14:30 & 18:30 - 00:00",
+      "sunday": "Domenica",
+      "sundayHours": "9:00 - 15:00 & 19:00 - 00:00",
+      "viewMenu": "Vedi Menu",
+      "callNow": "Chiama",
+      "orderOnlineWith": "Ordina online con il codice:",
+      "getDiscount": "e ottieni il 5% di sconto",
+      "downloadApp": "Scarica l'App"
+    },
+    "rentCar": {
+      "title": "Noleggio Auto",
+      "description": "Noleggia un'auto a tariffe esclusive attraverso il nostro partner di fiducia. Goditi la comodità di avere il veicolo consegnato direttamente a te.",
+      "callNow": "Chiama"
+    },
+    "excursions": {
+      "title": "Scopri Escursioni Fantastiche",
+      "description": "Vivi avventure incredibili e momenti indimenticabili nella nostra bellissima regione.",
+      "boatTours": "Tour in Barca"
+    },
+    "parking": {
+      "title": "Informazioni Parcheggio",
+      "description": "Nonna Vittoria Apartments attualmente non dispone di parcheggio privato. Tuttavia, ci sono diverse opzioni di parcheggio gratuite e sicure nelle strade circostanti:"
+    },
+    "wine": {
+      "title": "Servizio in Camera",
+      "requestSent": "Richiesta Inviata!",
+      "wellGetBack": "Ti risponderemo presto.",
+      "descriptionLogged": "Richiedi una bottiglia di vino o prosecco per il tuo appartamento (soggetto a disponibilità).",
+      "selectBeverage": "Seleziona bevanda:",
+      "wineOption": "Vino",
+      "proseccoOption": "Prosecco",
+      "messagePreview": "Anteprima messaggio:",
+      "messageLogged": "Vorrei richiedere una bottiglia di <strong>{{type}}</strong> per <strong>{{apartment}}</strong>. È disponibile?",
+      "sendRequest": "Invia Richiesta",
+      "descriptionNotLogged": "Richiedi una bottiglia di vino o prosecco disponibile al tuo arrivo a un prezzo speciale (soggetto a disponibilità). Per ordinare, contattaci su WhatsApp.",
+      "contactWhatsApp": "Contattaci su WhatsApp"
+    },
+    "clean": {
+      "title": "Servizio Pulizia",
+      "servicePrice": "Prezzo del servizio",
+      "requestSent": "Richiesta Inviata!",
+      "wellConfirm": "Confermeremo il tuo appuntamento per la pulizia.",
+      "descriptionLogged": "Richiedi un servizio di pulizia durante il tuo soggiorno.",
+      "selectDate": "Seleziona data:",
+      "paymentMethod": "Metodo di pagamento:",
+      "cash": "Contanti",
+      "transfer": "Bonifico",
+      "messagePreview": "Anteprima messaggio:",
+      "messageLogged": "Vorrei richiedere un servizio di pulizia per <strong>{{apartment}}</strong> il <strong>{{date}}</strong>. Metodo di pagamento: <strong>{{payment}}</strong>.",
+      "instantBankTransfer": "Bonifico Istantaneo",
+      "sendRequest": "Invia Richiesta",
+      "descriptionNotLogged": "Richiedi un servizio di pulizia durante il tuo soggiorno.",
+      "requestWhatsApp": "Richiedi su WhatsApp"
+    },
+    "breakfast": {
+      "title": "Servizio Colazione",
+      "orderSent": "Ordine Inviato!",
+      "wellPrepare": "Prepareremo la tua colazione.",
+      "descriptionLogged": "Ordina cialde caffè e cornetti per il tuo appartamento.",
+      "specialOffer": "⭐ Offerta Speciale",
+      "specialOfferDesc": "5 cialde caffè + 5 cornetti",
+      "coffeePods": "Cialde Caffè",
+      "perPodPrice": "€1 ciascuna",
+      "croissants": "Cornetti",
+      "perCroissantPrice": "€1 ciascuno",
+      "total": "Totale:",
+      "paymentMethod": "Metodo di pagamento:",
+      "cash": "Contanti",
+      "transfer": "Bonifico",
+      "messagePreview": "Anteprima messaggio:",
+      "messageLogged": "Vorrei ordinare la colazione per <strong>{{apartment}}</strong>: {{items}}. Metodo di pagamento: <strong>{{payment}}</strong>.",
+      "specialOfferItems": "<strong>5 cialde caffè</strong> e <strong>5 cornetti</strong> (Offerta speciale €7)",
+      "regularItems": "<strong>{{pods}} ciald{{podsPlural}}</strong> e <strong>{{croissants}} cornett{{croissantsPlural}}</strong> (€{{total}})",
+      "sendOrder": "Invia Ordine",
+      "preferOutside": "Preferisci fare colazione fuori?",
+      "descriptionNotLogged": "Nei nostri appartamenti offriamo cialde caffè e cornetti omaggio all'arrivo. Se desideri ordinarne altri, usa il pulsante qui sotto, il prezzo varia in base alla quantità (soggetto a disponibilità).",
+      "orderWhatsApp": "Ordina su WhatsApp",
+      "preferOutsideRecommend": "Se preferisci fare colazione fuori, ti consigliamo:"
+    },
+    "massage": {
+      "title": "Servizio Massaggi",
+      "description": "Goditi la comodità di prenotare un massaggio direttamente nel tuo appartamento, soggetto a disponibilità.",
+      "viewPriceList": "Vedi Listino Prezzi",
+      "contactWhatsApp": "Contatta su WhatsApp"
+    },
+    "bike": {
+      "title": "Noleggio Bici",
+      "requestSent": "Richiesta Inviata!",
+      "wellConfirmAvailability": "Confermeremo la disponibilità a breve.",
+      "descriptionLogged": "Noleggia biciclette per esplorare comodamente. Disponibilità su richiesta.",
+      "numberOfBicycles": "Numero di biciclette:",
+      "startingDate": "Data di inizio:",
+      "availabilityWarning": "⚠️ Questa è una richiesta. Confermeremo la disponibilità.",
+      "messagePreview": "Anteprima messaggio:",
+      "messageLogged": "Vorrei noleggiare <strong>{{count}} biciclett{{plural}}</strong> per <strong>{{apartment}}</strong> a partire dal <strong>{{date}}</strong>. Per favore confermate la disponibilità.",
+      "sendRequest": "Invia Richiesta",
+      "descriptionNotLogged": "Noleggia una bicicletta per un trasporto comodo ed efficiente. Disponibilità su richiesta.",
+      "checkAvailabilityWhatsApp": "Verifica Disponibilità su WhatsApp"
+    },
+    "laundry": {
+      "title": "Servizi Lavanderia",
+      "description": "Per servizi di lavanderia professionali, visita:",
+      "callNow": "Chiama"
+    },
+    "emergency": {
+      "title": "Numeri di Emergenza",
+      "description": "Se hai bisogno di aiuto, ecco tutti i numeri utili:",
+      "police": "Polizia",
+      "ambulance": "Ambulanza",
+      "fireDepartment": "Vigili del Fuoco"
+    },
+    "pharmacy": {
+      "title": "Informazioni Farmacia",
+      "description": "Qui puoi vedere le farmacie di turno:",
+      "viewOnDuty": "Vedi Farmacie di Turno"
+    },
+    "recycle": {
+      "title": "Raccolta Rifiuti",
+      "requestSent": "Richiesta Inviata!",
+      "wellCollect": "Ritireremo i tuoi rifiuti a breve.",
+      "descriptionLogged": "Richiedi un ritiro rifiuti dal tuo appartamento.",
+      "numberOfBags": "Numero di sacchetti:",
+      "wasteTypes": "Tipo/i di rifiuti:",
+      "organic": "Organico",
+      "plasticCans": "Plastica e Lattine",
+      "paper": "Carta",
+      "messagePreview": "Anteprima messaggio:",
+      "messageLogged": "Vorrei richiedere un ritiro di <strong>{{count}} sacchet{{plural}}</strong> di rifiuti <strong>{{types}}</strong> da <strong>{{apartment}}</strong>.",
+      "requestCollection": "Richiedi Ritiro",
+      "descriptionNotLogged": "Qui puoi trovare tutte le informazioni sulla raccolta rifiuti. Per favore separa i rifiuti e mettili nei sacchetti. Ci occuperemo noi del ritiro.",
+      "separateAsFollows": "Separa i rifiuti come segue:",
+      "organicWaste": "Rifiuti organici",
+      "plasticAndCans": "Plastica e lattine",
+      "paperWaste": "Carta",
+      "scheduleCollection": "Programma un Ritiro"
+    },
+    "game": {
+      "title": "Memory Game",
+      "description": "Trova tutte le coppie! Clicca sulle carte per girarle e cerca di abbinarle con meno mosse possibili."
+    },
+    "common": {
+      "sending": "Invio in corso...",
+      "requestSent": "Richiesta inviata!",
+      "close": "Chiudi"
     }
   },
   "vipTicket": {

@@ -372,10 +372,178 @@
   "services": {
     "title": "Our Services",
     "subtitle": "Enhance your stay",
+    "usefulInfo": "Useful Information",
     "memoryGame": {
-      "moves": "Moves:",
+      "moves": "Moves: {{count}}",
       "congratulations": "Congratulations! You won!",
       "playAgain": "Play Again"
+    },
+    "names": {
+      "taxi": "Taxi",
+      "wine": "Wine",
+      "clean": "Clean",
+      "shop": "Shop",
+      "delivery": "Delivery",
+      "rentCar": "Rent Car",
+      "excursions": "Excursions",
+      "parking": "Parking",
+      "breakfast": "Breakfast",
+      "massage": "Massage",
+      "rentBike": "Rent Bike",
+      "laundry": "Laundry",
+      "emergency": "Emergency",
+      "pharmacy": "Pharmacy",
+      "recycle": "Recycle",
+      "game": "Game"
+    },
+    "delivery": {
+      "title": "Delivery Service",
+      "description": "Order your food online and have it delivered directly to your apartment every day except Wednesday.",
+      "mondaySaturday": "Monday - Saturday",
+      "mondaySaturdayHours": "10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM",
+      "sunday": "Sunday",
+      "sundayHours": "9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM",
+      "viewMenu": "View Menu",
+      "callNow": "Call Now",
+      "orderOnlineWith": "Order online with the code:",
+      "getDiscount": "and get 5% OFF",
+      "downloadApp": "Download the App"
+    },
+    "rentCar": {
+      "title": "Rent a Car",
+      "description": "Rent a car at exclusive rates through our trusted partner. Enjoy the convenience of having the vehicle delivered directly to your location.",
+      "callNow": "Call Now"
+    },
+    "excursions": {
+      "title": "Discover Amazing Excursions",
+      "description": "Experience incredible adventures and unforgettable moments in our beautiful region.",
+      "boatTours": "Boat Tours"
+    },
+    "parking": {
+      "title": "Parking Information",
+      "description": "Nonna Vittoria Apartments does not currently provide private parking. However, there are several secure, free parking options on the surrounding streets:"
+    },
+    "wine": {
+      "title": "Room Service",
+      "requestSent": "Request Sent!",
+      "wellGetBack": "We'll get back to you soon.",
+      "descriptionLogged": "Request a bottle of wine or prosecco for your apartment (subject to availability).",
+      "selectBeverage": "Select beverage:",
+      "wineOption": "Wine",
+      "proseccoOption": "Prosecco",
+      "messagePreview": "Message preview:",
+      "messageLogged": "I would like to request a bottle of <strong>{{type}}</strong> for <strong>{{apartment}}</strong>. Is it available?",
+      "sendRequest": "Send Request",
+      "descriptionNotLogged": "Request a bottle of wine or prosecco to be available upon arrival at a special price (subject to availability). To place an order, contact us on WhatsApp.",
+      "contactWhatsApp": "Contact us on WhatsApp"
+    },
+    "clean": {
+      "title": "Cleaning Service",
+      "servicePrice": "Service price",
+      "requestSent": "Request Sent!",
+      "wellConfirm": "We'll confirm your cleaning appointment.",
+      "descriptionLogged": "Request a cleaning service during your stay.",
+      "selectDate": "Select date:",
+      "paymentMethod": "Payment method:",
+      "cash": "Cash",
+      "transfer": "Transfer",
+      "messagePreview": "Message preview:",
+      "messageLogged": "I would like to request a cleaning service for <strong>{{apartment}}</strong> on <strong>{{date}}</strong>. Payment method: <strong>{{payment}}</strong>.",
+      "instantBankTransfer": "Instant Bank Transfer",
+      "sendRequest": "Send Request",
+      "descriptionNotLogged": "Request a cleaning service during your stay.",
+      "requestWhatsApp": "Request on WhatsApp"
+    },
+    "breakfast": {
+      "title": "Breakfast Service",
+      "orderSent": "Order Sent!",
+      "wellPrepare": "We'll prepare your breakfast.",
+      "descriptionLogged": "Order coffee pods and croissants for your apartment.",
+      "specialOffer": "⭐ Special Offer",
+      "specialOfferDesc": "5 coffee pods + 5 croissants",
+      "coffeePods": "Coffee Pods",
+      "perPodPrice": "€1 each",
+      "croissants": "Croissants",
+      "perCroissantPrice": "€1 each",
+      "total": "Total:",
+      "paymentMethod": "Payment method:",
+      "cash": "Cash",
+      "transfer": "Transfer",
+      "messagePreview": "Message preview:",
+      "messageLogged": "I would like to order breakfast for <strong>{{apartment}}</strong>: {{items}}. Payment method: <strong>{{payment}}</strong>.",
+      "specialOfferItems": "<strong>5 coffee pods</strong> and <strong>5 croissants</strong> (Special offer €7)",
+      "regularItems": "<strong>{{pods}} coffee pod{{podsPlural}}</strong> and <strong>{{croissants}} croissant{{croissantsPlural}}</strong> (€{{total}})",
+      "sendOrder": "Send Order",
+      "preferOutside": "Prefer breakfast outside?",
+      "descriptionNotLogged": "In our apartments, we offer complimentary coffee pods and croissants upon arrival. If you would like to order more, use the button below to place an order, price varies based on quantity (subject to availability).",
+      "orderWhatsApp": "Order on WhatsApp",
+      "preferOutsideRecommend": "If you prefer to have breakfast outside, we recommend:"
+    },
+    "massage": {
+      "title": "Massage Service",
+      "description": "Enjoy the convenience of booking a massage directly in your apartment, subject to availability.",
+      "viewPriceList": "View Price List",
+      "contactWhatsApp": "Contact on WhatsApp"
+    },
+    "bike": {
+      "title": "Rent a Bike",
+      "requestSent": "Request Sent!",
+      "wellConfirmAvailability": "We'll confirm availability soon.",
+      "descriptionLogged": "Rent bicycles for convenient exploration. Availability upon request.",
+      "numberOfBicycles": "Number of bicycles:",
+      "startingDate": "Starting date:",
+      "availabilityWarning": "⚠️ This is a request. We will confirm availability.",
+      "messagePreview": "Message preview:",
+      "messageLogged": "I would like to rent <strong>{{count}} bicycle{{plural}}</strong> for <strong>{{apartment}}</strong> starting from <strong>{{date}}</strong>. Please confirm availability.",
+      "sendRequest": "Send Request",
+      "descriptionNotLogged": "Rent a bicycle for convenient and efficient transportation. Availability upon request.",
+      "checkAvailabilityWhatsApp": "Check Availability on WhatsApp"
+    },
+    "laundry": {
+      "title": "Laundry Services",
+      "description": "For professional laundry services, visit:",
+      "callNow": "Call Now"
+    },
+    "emergency": {
+      "title": "Emergency Numbers",
+      "description": "If you need help, here are all the useful numbers:",
+      "police": "Police",
+      "ambulance": "Ambulance",
+      "fireDepartment": "Fire Department"
+    },
+    "pharmacy": {
+      "title": "Pharmacy Information",
+      "description": "Here you can view the pharmacies on duty:",
+      "viewOnDuty": "View On-Duty Pharmacies"
+    },
+    "recycle": {
+      "title": "Recycling Collection",
+      "requestSent": "Request Sent!",
+      "wellCollect": "We'll collect your waste soon.",
+      "descriptionLogged": "Request a waste collection from your apartment.",
+      "numberOfBags": "Number of bags:",
+      "wasteTypes": "Waste type(s):",
+      "organic": "Organic",
+      "plasticCans": "Plastic & Cans",
+      "paper": "Paper",
+      "messagePreview": "Message preview:",
+      "messageLogged": "I would like to request a collection of <strong>{{count}} bag{{plural}}</strong> of <strong>{{types}}</strong> waste from <strong>{{apartment}}</strong>.",
+      "requestCollection": "Request Collection",
+      "descriptionNotLogged": "Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.",
+      "separateAsFollows": "Separate the waste as follows:",
+      "organicWaste": "Organic waste",
+      "plasticAndCans": "Plastic and cans",
+      "paperWaste": "Paper",
+      "scheduleCollection": "Schedule a Collection"
+    },
+    "game": {
+      "title": "Memory Game",
+      "description": "Find all the matching pairs! Click on the cards to flip them and try to match them with as few moves as possible."
+    },
+    "common": {
+      "sending": "Sending...",
+      "requestSent": "Request sent!",
+      "close": "Close"
     }
   },
   "vipTicket": {

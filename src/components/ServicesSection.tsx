@@ -420,7 +420,7 @@ const ServicesSection = () => {
 
       {/* Delivery Modal */}
       <Dialog open={openDeliveryModal} onOpenChange={setOpenDeliveryModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           {/* Header with gradient */}
           <div className="bg-gradient-to-br from-orange-500 to-red-600 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
@@ -492,7 +492,7 @@ const ServicesSection = () => {
 
       {/* Rent Car Modal */}
       <Dialog open={openRentCarModal} onOpenChange={setOpenRentCarModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-slate-600 to-slate-800 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Car className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -518,7 +518,7 @@ const ServicesSection = () => {
 
       {/* Wine Modal */}
       <Dialog open={openWineModal} onOpenChange={setOpenWineModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-red-500 to-rose-700 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Wine className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -653,7 +653,7 @@ const ServicesSection = () => {
 
       {/* Clean Modal */}
       <Dialog open={openCleanModal} onOpenChange={setOpenCleanModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-cyan-500 to-blue-600 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Sparkles className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -780,7 +780,7 @@ const ServicesSection = () => {
 
       {/* Excursions Modal */}
       <Dialog open={openExcursionsModal} onOpenChange={setOpenExcursionsModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-sky-500 to-blue-700 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Sailboat className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -806,7 +806,7 @@ const ServicesSection = () => {
 
       {/* Parking Modal */}
       <Dialog open={openParkingModal} onOpenChange={setOpenParkingModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-blue-600 to-indigo-700 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <ParkingCircle className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -839,7 +839,7 @@ const ServicesSection = () => {
 
       {/* Breakfast Modal */}
       <Dialog open={openBreakfastModal} onOpenChange={setOpenBreakfastModal}>
-        <DialogContent className="p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-amber-500 to-yellow-600 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Croissant className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -1080,7 +1080,7 @@ const ServicesSection = () => {
 
       {/* Massage Modal */}
       <Dialog open={openMassageModal} onOpenChange={setOpenMassageModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-purple-500 to-violet-700 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Heart className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -1115,7 +1115,7 @@ const ServicesSection = () => {
 
       {/* Rent a Bike Modal */}
       <Dialog open={openRentBikeModal} onOpenChange={setOpenRentBikeModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-green-500 to-emerald-700 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Bike className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -1233,7 +1233,7 @@ const ServicesSection = () => {
 
       {/* Laundry Modal */}
       <Dialog open={openLaundryModal} onOpenChange={setOpenLaundryModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-teal-500 to-cyan-700 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <WashingMachine className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -1268,7 +1268,7 @@ const ServicesSection = () => {
 
       {/* Emergency Modal */}
       <Dialog open={openEmergencyModal} onOpenChange={setOpenEmergencyModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-red-600 to-red-800 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <AlertTriangle className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -1337,7 +1337,7 @@ const ServicesSection = () => {
 
       {/* Pharmacy Modal */}
       <Dialog open={openPharmacyModal} onOpenChange={setOpenPharmacyModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-emerald-500 to-green-700 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Pill className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -1363,7 +1363,7 @@ const ServicesSection = () => {
 
       {/* Recycle Modal */}
       <Dialog open={openRecycleModal} onOpenChange={setOpenRecycleModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-lime-500 to-green-600 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Recycle className="h-8 w-8 text-white" strokeWidth={1.5} />
@@ -1515,7 +1515,7 @@ const ServicesSection = () => {
 
       {/* Game Modal */}
       <Dialog open={openGameModal} onOpenChange={setOpenGameModal}>
-        <DialogContent className="p-0 overflow-hidden">
+        <DialogContent className="p-0 max-h-[85vh] overflow-y-auto">
           <div className="bg-gradient-to-br from-violet-500 to-purple-700 px-6 py-8 text-center">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
               <Gamepad2 className="h-8 w-8 text-white" strokeWidth={1.5} />

@@ -165,6 +165,7 @@ const ServicesSection = () => {
 
   // Form states for logged users
   const [wineType, setWineType] = useState<'wine' | 'prosecco'>('prosecco');
+  const [winePayment, setWinePayment] = useState<'cash' | 'transfer'>('cash');
   const [cleanDate, setCleanDate] = useState('');
   const [cleanPayment, setCleanPayment] = useState<'cash' | 'transfer'>('cash');
   const [coffeePods, setCoffeePods] = useState(0);
@@ -537,12 +538,18 @@ const ServicesSection = () => {
               </div>
             ) : isLoggedIn ? (
               <>
+                {/* Price Box */}
+                <div className="bg-rose-50 dark:bg-rose-900/20 rounded-xl p-4 mb-4 text-center border border-rose-200 dark:border-rose-800">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">{t('services.wine.servicePrice')}</p>
+                  <p className="text-2xl font-bold text-rose-600 dark:text-rose-400">€15</p>
+                </div>
+
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
                   {t('services.wine.descriptionLogged')}
                 </p>
 
                 {/* Wine Type Selection */}
-                <div className="space-y-3 mb-6">
+                <div className="space-y-3 mb-4">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.wine.selectBeverage')}</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
@@ -570,15 +577,44 @@ const ServicesSection = () => {
                   </div>
                 </div>
 
+                {/* Payment Method */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.wine.paymentMethod')}</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setWinePayment('cash')}
+                      className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
+                        winePayment === 'cash'
+                          ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20'
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <Banknote className={`h-5 w-5 ${winePayment === 'cash' ? 'text-rose-600' : 'text-gray-500'}`} />
+                      <span className={`font-medium ${winePayment === 'cash' ? 'text-rose-600' : 'text-gray-700 dark:text-gray-300'}`}>{t('services.wine.cash')}</span>
+                    </button>
+                    <button
+                      onClick={() => setWinePayment('transfer')}
+                      className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
+                        winePayment === 'transfer'
+                          ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20'
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <CreditCard className={`h-5 w-5 ${winePayment === 'transfer' ? 'text-rose-600' : 'text-gray-500'}`} />
+                      <span className={`font-medium ${winePayment === 'transfer' ? 'text-rose-600' : 'text-gray-700 dark:text-gray-300'}`}>{t('services.wine.transfer')}</span>
+                    </button>
+                  </div>
+                </div>
+
                 {/* Preview Message */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('services.wine.messagePreview')}</p>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 italic" dangerouslySetInnerHTML={{ __html: `"${t('services.wine.messageLogged', { type: wineType === 'wine' ? t('services.wine.wineOption') : t('services.wine.proseccoOption'), apartment: booking?.apartmentName })}"` }} />
+                  <p className="text-sm text-gray-700 dark:text-gray-300 italic" dangerouslySetInnerHTML={{ __html: `"${t('services.wine.messageLogged', { type: wineType === 'wine' ? t('services.wine.wineOption') : t('services.wine.proseccoOption'), apartment: booking?.apartmentName, payment: winePayment === 'cash' ? t('services.wine.cash') : t('services.wine.instantBankTransfer') })}"` }} />
                 </div>
 
                 <button
                   onClick={() => {
-                    const message = `I would like to request a bottle of ${wineType === 'wine' ? 'Wine' : 'Prosecco'} for ${booking?.apartmentName}. Is it available?`;
+                    const message = `I would like to request a bottle of ${wineType === 'wine' ? 'Wine' : 'Prosecco'} for ${booking?.apartmentName}. Payment method: ${winePayment === 'cash' ? 'Cash' : 'Instant Bank Transfer'}.`;
                     handleSendChatMessage(message, () => setOpenWineModal(false));
                   }}
                   disabled={sendingMessage}

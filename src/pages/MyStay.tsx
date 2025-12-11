@@ -649,7 +649,7 @@ const MyStay: React.FC = () => {
             </div>
             <div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('myStay.bookingDetails')}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t('myStay.ref', { ref: booking?.bookingReference })}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('myStay.ref', { ref: booking?.id?.substring(0, 8) })}</p>
             </div>
           </div>
 
@@ -738,35 +738,38 @@ const MyStay: React.FC = () => {
                   <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.checkIn')}</span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.checkOut')}</span>
                 </div>
-                <div className="relative h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                  {/* Animated gradient progress bar */}
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${stayProgress.progress}%` }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                    className="absolute inset-y-0 left-0 rounded-full"
-                    style={{
-                      background: 'linear-gradient(90deg, #06b6d4, #8b5cf6, #ec4899, #f59e0b)',
-                      backgroundSize: '200% 100%',
-                    }}
-                  >
+                <div className="relative">
+                  {/* Progress bar track */}
+                  <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                    {/* Animated gradient progress bar */}
                     <motion.div
-                      className="absolute inset-0 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${stayProgress.progress}%` }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className="absolute inset-y-0 left-0 rounded-full"
                       style={{
                         background: 'linear-gradient(90deg, #06b6d4, #8b5cf6, #ec4899, #f59e0b)',
                         backgroundSize: '200% 100%',
                       }}
-                      animate={{
-                        backgroundPosition: ['0% 0%', '100% 0%', '0% 0%'],
-                      }}
-                      transition={{
-                        duration: 3,
-                        ease: "linear",
-                        repeat: Infinity,
-                      }}
-                    />
-                  </motion.div>
-                  {/* Progress indicator */}
+                    >
+                      <motion.div
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          background: 'linear-gradient(90deg, #06b6d4, #8b5cf6, #ec4899, #f59e0b)',
+                          backgroundSize: '200% 100%',
+                        }}
+                        animate={{
+                          backgroundPosition: ['0% 0%', '100% 0%', '0% 0%'],
+                        }}
+                        transition={{
+                          duration: 3,
+                          ease: "linear",
+                          repeat: Infinity,
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+                  {/* Progress indicator - outside overflow-hidden container */}
                   {stayProgress.progress > 0 && stayProgress.progress < 100 && (
                     <motion.div
                       initial={{ scale: 0 }}

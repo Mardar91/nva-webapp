@@ -107,10 +107,8 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
                 </div>
                 <p className="text-sm text-red-700 dark:text-red-300 pt-1">{displayError}</p>
               </div>
-              {/* Show hint for external booking portals when credentials are invalid */}
-              {(displayError === t('login.errors.invalidCredentials') ||
-                displayError === 'Credenziali non valide' ||
-                displayError === 'Invalid credentials') && (
+              {/* Show hint for external booking portals when there's an API error (not local validation error) */}
+              {!localError && error && (
                 <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-800/50 flex items-center justify-center flex-shrink-0">

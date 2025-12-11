@@ -254,7 +254,7 @@ const BookNow: React.FC = () => {
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600 dark:text-gray-400">Total Paid</span>
                     <span className="font-bold text-green-600 dark:text-green-400 text-lg">
-                      {bookingData.currency} {bookingData.amount.toFixed(2)}
+                      {bookingData.currency} {(bookingData.amount / 100).toFixed(2)}
                     </span>
                   </div>
                 )}

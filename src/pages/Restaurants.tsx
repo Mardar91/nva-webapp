@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import VipTicketHero from "../components/VipTicketHero";
 import {
   UtensilsCrossed,
@@ -82,6 +83,8 @@ const restaurants: Restaurant[] = [
 ];
 
 const RestaurantScreen = () => {
+  const { t } = useTranslation();
+
   const openInMaps = (address: string) => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
     window.open(url, '_blank');
@@ -107,8 +110,8 @@ const RestaurantScreen = () => {
             <UtensilsCrossed className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Partner Restaurants</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Exclusive discounts for our guests</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('restaurants.title')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('restaurants.subtitle')}</p>
           </div>
         </div>
       </div>
@@ -128,7 +131,7 @@ const RestaurantScreen = () => {
                   <p className="text-white/80 text-sm">{restaurant.subtitle}</p>
                 </div>
                 <div className="relative bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full overflow-hidden flex-shrink-0">
-                  <span className="relative z-10 text-white text-xs font-bold whitespace-nowrap">10% OFF</span>
+                  <span className="relative z-10 text-white text-xs font-bold whitespace-nowrap">{t('restaurants.discount')}</span>
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 </div>
@@ -153,7 +156,7 @@ const RestaurantScreen = () => {
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-3 mb-3 border border-green-200 dark:border-green-800">
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4 text-green-600 dark:text-green-400" />
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Delivery discount code:</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('restaurants.deliveryCode')}</span>
                     <span className="font-bold text-green-600 dark:text-green-400">{restaurant.deliveryCode}</span>
                   </div>
                 </div>
@@ -167,7 +170,7 @@ const RestaurantScreen = () => {
                   className={`flex items-center justify-center gap-2 bg-gradient-to-r ${restaurant.gradient} text-white font-medium py-2.5 px-3 rounded-xl transition-all hover:opacity-90 active:scale-[0.98]`}
                 >
                   <Phone className="h-4 w-4" />
-                  <span className="text-sm">Call</span>
+                  <span className="text-sm">{t('common.call')}</span>
                 </button>
 
                 {/* Secondary action based on available options */}
@@ -177,7 +180,7 @@ const RestaurantScreen = () => {
                     className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2.5 px-3 rounded-xl transition-all hover:bg-gray-200 dark:hover:bg-gray-600"
                   >
                     <Globe className="h-4 w-4" />
-                    <span className="text-sm">Website</span>
+                    <span className="text-sm">{t('common.website')}</span>
                   </button>
                 )}
                 {restaurant.whatsapp && !restaurant.website && (
@@ -186,7 +189,7 @@ const RestaurantScreen = () => {
                     className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2.5 px-3 rounded-xl transition-all"
                   >
                     <MessageCircle className="h-4 w-4" />
-                    <span className="text-sm">WhatsApp</span>
+                    <span className="text-sm">{t('common.whatsapp')}</span>
                   </button>
                 )}
                 {restaurant.book && !restaurant.website && !restaurant.whatsapp && (
@@ -195,7 +198,7 @@ const RestaurantScreen = () => {
                     className="flex items-center justify-center gap-2 bg-violet-500 hover:bg-violet-600 text-white font-medium py-2.5 px-3 rounded-xl transition-all"
                   >
                     <Calendar className="h-4 w-4" />
-                    <span className="text-sm">Book</span>
+                    <span className="text-sm">{t('restaurants.book')}</span>
                   </button>
                 )}
               </div>
@@ -209,7 +212,7 @@ const RestaurantScreen = () => {
                       className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-3 rounded-xl transition-all"
                     >
                       <Facebook className="h-4 w-4" />
-                      <span className="text-sm">Facebook</span>
+                      <span className="text-sm">{t('common.facebook')}</span>
                     </button>
                   )}
                   {restaurant.book && (
@@ -218,7 +221,7 @@ const RestaurantScreen = () => {
                       className="flex items-center justify-center gap-2 bg-violet-500 hover:bg-violet-600 text-white font-medium py-2.5 px-3 rounded-xl transition-all"
                     >
                       <Calendar className="h-4 w-4" />
-                      <span className="text-sm">Book Table</span>
+                      <span className="text-sm">{t('restaurants.bookTable')}</span>
                     </button>
                   )}
                 </div>
@@ -231,7 +234,7 @@ const RestaurantScreen = () => {
                   className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2.5 px-3 rounded-xl transition-all mt-2"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  <span className="text-sm">Contact on WhatsApp</span>
+                  <span className="text-sm">{t('restaurants.contactWhatsApp')}</span>
                 </button>
               )}
             </div>

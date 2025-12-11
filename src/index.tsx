@@ -5,7 +5,7 @@ import App from "./App";
 import * as serviceWorkerRegistration from './lib/serviceWorkerRegistration';
 
 // Versioning
-const APP_VERSION = '1.2.6';
+const APP_VERSION = '1.2.7';
 
 // Definizione del tipo BeforeInstallPromptEvent
 interface BeforeInstallPromptEvent extends Event {
@@ -307,6 +307,12 @@ if (typeof window !== 'undefined') {
     window.addEventListener('load', async () => {
       if ((window.navigator as any).standalone) {
         localStorage.setItem('pwa-installed', 'true');
+        // Force version check on iOS PWA load
+        const needsUpdate = await checkForUpdates();
+        if (needsUpdate) {
+          console.log('[iOS PWA] Version mismatch, reloading...');
+          window.location.reload();
+        }
       }
     });
 
@@ -314,6 +320,15 @@ if (typeof window !== 'undefined') {
       if (document.visibilityState === 'visible') {
         if ((window.navigator as any).standalone) {
           localStorage.setItem('pwa-installed', 'true');
+          // Force version check when iOS PWA comes to foreground
+          const storedVersion = localStorage.getItem('app-version');
+          if (storedVersion !== APP_VERSION) {
+            console.log('[iOS PWA] New version detected on resume, clearing cache...');
+            await clearCache();
+            localStorage.setItem('app-version', APP_VERSION);
+            window.location.reload();
+            return;
+          }
         }
         setTimeout(async () => {
           await attemptPWARedirect();

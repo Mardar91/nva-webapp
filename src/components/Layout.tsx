@@ -73,13 +73,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         className="fixed bottom-0 left-0 right-0 z-50"
         style={{
           paddingBottom: "env(safe-area-inset-bottom)",
+          paddingLeft: "env(safe-area-inset-left)",
+          paddingRight: "env(safe-area-inset-right)",
         }}
       >
         {/* Glassmorphism Background */}
         <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50" />
 
         {/* Nav Content */}
-        <div className="relative flex items-center justify-center gap-2 px-3 py-2 max-w-lg mx-auto">
+        <div className="relative flex items-center justify-around px-2 py-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -92,13 +94,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 className="flex flex-col items-center justify-center min-w-[56px] transition-all duration-200 active:scale-95"
               >
                 {/* Icon Container */}
-                <div className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 ${
+                <div className={`relative w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-200 ${
                   active
                     ? 'bg-blue-100 dark:bg-blue-900/50'
                     : ''
                 }`}>
                   <Icon
-                    className={`w-5 h-5 transition-colors duration-200 ${
+                    className={`w-6 h-6 transition-colors duration-200 ${
                       active
                         ? 'text-blue-600 dark:text-blue-400'
                         : 'text-gray-500 dark:text-gray-400'

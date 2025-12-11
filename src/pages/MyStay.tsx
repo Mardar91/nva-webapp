@@ -775,8 +775,12 @@ const MyStay: React.FC = () => {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 1.2, duration: 0.3 }}
-                      className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white dark:bg-gray-800 rounded-full border-2 border-purple-500 shadow-lg"
-                      style={{ left: `calc(${stayProgress.progress}% - 10px)` }}
+                      className="absolute w-5 h-5 bg-white dark:bg-gray-800 rounded-full border-2 border-purple-500 shadow-lg"
+                      style={{
+                        left: `calc(${stayProgress.progress}% - 10px)`,
+                        top: '50%',
+                        marginTop: '-10px'
+                      }}
                     >
                       <motion.div
                         className="absolute inset-1 bg-purple-500 rounded-full"

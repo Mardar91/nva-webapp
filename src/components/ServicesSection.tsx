@@ -854,13 +854,13 @@ const ServicesSection = () => {
                 <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
                   <Check className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">Order Sent!</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll prepare your breakfast.</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{t('services.breakfast.orderSent')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{t('services.breakfast.wellPrepare')}</p>
               </div>
             ) : isLoggedIn ? (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4 text-sm">
-                  Order coffee pods and croissants for your apartment.
+                  {t('services.breakfast.descriptionLogged')}
                 </p>
 
                 {/* Special Offer */}
@@ -881,9 +881,9 @@ const ServicesSection = () => {
                   <div className="flex items-center justify-between">
                     <div className="text-left">
                       <p className={`font-semibold ${breakfastOffer ? 'text-amber-600' : 'text-gray-700 dark:text-gray-300'}`}>
-                        ⭐ Special Offer
+                        {t('services.breakfast.specialOffer')}
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">5 coffee pods + 5 croissants</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{t('services.breakfast.specialOfferDesc')}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-bold text-amber-600">€7</p>
@@ -899,8 +899,8 @@ const ServicesSection = () => {
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">☕</span>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">Coffee Pods</p>
-                          <p className="text-xs text-gray-500">€1 each</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{t('services.breakfast.coffeePods')}</p>
+                          <p className="text-xs text-gray-500">{t('services.breakfast.perPodPrice')}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -925,8 +925,8 @@ const ServicesSection = () => {
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">🥐</span>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">Croissants</p>
-                          <p className="text-xs text-gray-500">€1 each</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{t('services.breakfast.croissants')}</p>
+                          <p className="text-xs text-gray-500">{t('services.breakfast.perCroissantPrice')}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -952,7 +952,7 @@ const ServicesSection = () => {
                 {(coffeePods > 0 || croissants > 0 || breakfastOffer) && (
                   <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 mb-4 border border-amber-200 dark:border-amber-800">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-700 dark:text-gray-300">Total:</span>
+                      <span className="font-medium text-gray-700 dark:text-gray-300">{t('services.breakfast.total')}</span>
                       <span className="text-xl font-bold text-amber-600">€{calculateBreakfastTotal()}</span>
                     </div>
                   </div>
@@ -961,7 +961,7 @@ const ServicesSection = () => {
                 {/* Payment Method */}
                 {(coffeePods > 0 || croissants > 0 || breakfastOffer) && (
                   <div className="space-y-3 mb-4">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Payment method:</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.breakfast.paymentMethod')}</label>
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => setBreakfastPayment('cash')}
@@ -972,7 +972,7 @@ const ServicesSection = () => {
                         }`}
                       >
                         <Banknote className={`h-5 w-5 ${breakfastPayment === 'cash' ? 'text-amber-600' : 'text-gray-500'}`} />
-                        <span className={`font-medium ${breakfastPayment === 'cash' ? 'text-amber-600' : 'text-gray-700 dark:text-gray-300'}`}>Cash</span>
+                        <span className={`font-medium ${breakfastPayment === 'cash' ? 'text-amber-600' : 'text-gray-700 dark:text-gray-300'}`}>{t('services.breakfast.cash')}</span>
                       </button>
                       <button
                         onClick={() => setBreakfastPayment('transfer')}
@@ -983,7 +983,7 @@ const ServicesSection = () => {
                         }`}
                       >
                         <CreditCard className={`h-5 w-5 ${breakfastPayment === 'transfer' ? 'text-amber-600' : 'text-gray-500'}`} />
-                        <span className={`font-medium ${breakfastPayment === 'transfer' ? 'text-amber-600' : 'text-gray-700 dark:text-gray-300'}`}>Transfer</span>
+                        <span className={`font-medium ${breakfastPayment === 'transfer' ? 'text-amber-600' : 'text-gray-700 dark:text-gray-300'}`}>{t('services.breakfast.transfer')}</span>
                       </button>
                     </div>
                   </div>
@@ -993,16 +993,20 @@ const ServicesSection = () => {
                 {(coffeePods > 0 || croissants > 0 || breakfastOffer) && (
                   <>
                     <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 italic">
-                        "I would like to order breakfast for <strong>{booking?.apartmentName}</strong>:
-                        {breakfastOffer ? (
-                          <> <strong>5 coffee pods</strong> and <strong>5 croissants</strong> (Special offer €7)</>
-                        ) : (
-                          <> <strong>{coffeePods} coffee pod{coffeePods !== 1 ? 's' : ''}</strong> and <strong>{croissants} croissant{croissants !== 1 ? 's' : ''}</strong> (€{calculateBreakfastTotal()})</>
-                        )}
-                        . Payment method: <strong>{breakfastPayment === 'cash' ? 'Cash' : 'Instant Bank Transfer'}</strong>."
-                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('services.breakfast.messagePreview')}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 italic" dangerouslySetInnerHTML={{ __html: `"${t('services.breakfast.messageLogged', {
+                        apartment: booking?.apartmentName,
+                        items: breakfastOffer
+                          ? t('services.breakfast.specialOfferItems')
+                          : t('services.breakfast.regularItems', {
+                              pods: coffeePods,
+                              podsPlural: coffeePods !== 1 ? 'e' : 'a',
+                              croissants: croissants,
+                              croissantsPlural: croissants !== 1 ? 'i' : 'o',
+                              total: calculateBreakfastTotal()
+                            }),
+                        payment: breakfastPayment === 'cash' ? t('services.breakfast.cash') : t('services.clean.instantBankTransfer')
+                      })}"` }} />
                     </div>
 
                     <button
@@ -1017,11 +1021,11 @@ const ServicesSection = () => {
                       className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
                     >
                       {sendingMessage ? (
-                        <span>Sending...</span>
+                        <span>{t('services.common.sending')}</span>
                       ) : (
                         <>
                           <Send className="h-4 w-4" />
-                          Send Order
+                          {t('services.breakfast.sendOrder')}
                         </>
                       )}
                     </button>
@@ -1029,7 +1033,7 @@ const ServicesSection = () => {
                 )}
 
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">Prefer breakfast outside?</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">{t('services.breakfast.preferOutside')}</p>
                   <button
                     onClick={() => {
                       const address = encodeURIComponent("Café L'Incontro, Piazza Risorgimento, 70042 Mola di Bari BA, Italia");
@@ -1045,7 +1049,7 @@ const ServicesSection = () => {
             ) : (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-                  In our apartments, we offer complimentary coffee pods and croissants upon arrival. If you would like to order more, use the button below to place an order, price varies based on quantity (subject to availability).
+                  {t('services.breakfast.descriptionNotLogged')}
                 </p>
 
                 <button
@@ -1056,7 +1060,7 @@ const ServicesSection = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg mb-4"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Order on WhatsApp
+                  {t('services.breakfast.orderWhatsApp')}
                 </button>
 
                 <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
@@ -1130,18 +1134,18 @@ const ServicesSection = () => {
                 <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
                   <Check className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">Request Sent!</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll confirm availability soon.</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{t('services.bike.requestSent')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{t('services.bike.wellConfirmAvailability')}</p>
               </div>
             ) : isLoggedIn ? (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-                  Rent bicycles for convenient exploration. Availability upon request.
+                  {t('services.bike.descriptionLogged')}
                 </p>
 
                 {/* Number of Bikes */}
                 <div className="space-y-3 mb-4">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Number of bicycles:</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.bike.numberOfBicycles')}</label>
                   <div className="flex items-center justify-center gap-4">
                     <button
                       onClick={() => setBikeCount(Math.max(1, bikeCount - 1))}
@@ -1161,7 +1165,7 @@ const ServicesSection = () => {
 
                 {/* Start Date */}
                 <div className="space-y-3 mb-4">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Starting date:</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.bike.startingDate')}</label>
                   <div className="relative overflow-hidden date-input-container">
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
                     <input
@@ -1181,17 +1185,15 @@ const ServicesSection = () => {
                 {/* Info Note */}
                 <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 mb-4 border border-amber-200 dark:border-amber-800">
                   <p className="text-sm text-amber-800 dark:text-amber-200 text-center">
-                    ⚠️ This is a request. We will confirm availability.
+                    {t('services.bike.availabilityWarning')}
                   </p>
                 </div>
 
                 {/* Preview Message */}
                 {bikeDate && (
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 italic">
-                      "I would like to rent <strong>{bikeCount} bicycle{bikeCount > 1 ? 's' : ''}</strong> for <strong>{booking?.apartmentName}</strong> starting from <strong>{formatDateDisplay(bikeDate)}</strong>. Please confirm availability."
-                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('services.bike.messagePreview')}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 italic" dangerouslySetInnerHTML={{ __html: `"${t('services.bike.messageLogged', { count: bikeCount, plural: bikeCount > 1 ? 'e' : 'a', apartment: booking?.apartmentName, date: formatDateDisplay(bikeDate) })}"` }} />
                   </div>
                 )}
 
@@ -1204,11 +1206,11 @@ const ServicesSection = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
                 >
                   {sendingMessage ? (
-                    <span>Sending...</span>
+                    <span>{t('services.common.sending')}</span>
                   ) : (
                     <>
                       <Send className="h-4 w-4" />
-                      Send Request
+                      {t('services.bike.sendRequest')}
                     </>
                   )}
                 </button>
@@ -1216,14 +1218,14 @@ const ServicesSection = () => {
             ) : (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-                  Rent a bicycle for convenient and efficient transportation. Availability upon request.
+                  {t('services.bike.descriptionNotLogged')}
                 </p>
                 <button
                   onClick={() => window.location.href = "https://wa.me/393458381107"}
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Check Availability on WhatsApp
+                  {t('services.bike.checkAvailabilityWhatsApp')}
                 </button>
               </>
             )}
@@ -1244,7 +1246,7 @@ const ServicesSection = () => {
           </div>
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-              For professional laundry services, visit:
+              {t('services.laundry.description')}
             </p>
             <button
               onClick={() => openInMaps("Via G. Salvemini, 5/B, 70042 Mola di Bari")}
@@ -1260,7 +1262,7 @@ const ServicesSection = () => {
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-700 hover:from-teal-600 hover:to-cyan-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
               <Phone className="h-4 w-4" />
-              Call Now
+              {t('services.laundry.callNow')}
             </button>
           </div>
         </DialogContent>
@@ -1279,7 +1281,7 @@ const ServicesSection = () => {
           </div>
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-              If you need help, here are all the useful numbers:
+              {t('services.emergency.description')}
             </p>
             <div className="space-y-2">
               <button
@@ -1290,7 +1292,7 @@ const ServicesSection = () => {
                   <Phone className="h-5 w-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-900 dark:text-white">Police</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{t('services.emergency.police')}</p>
                   <p className="text-red-600 dark:text-red-400 font-bold">112</p>
                 </div>
               </button>
@@ -1302,7 +1304,7 @@ const ServicesSection = () => {
                   <Phone className="h-5 w-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-900 dark:text-white">Ambulance</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{t('services.emergency.ambulance')}</p>
                   <p className="text-red-600 dark:text-red-400 font-bold">118</p>
                 </div>
               </button>
@@ -1314,7 +1316,7 @@ const ServicesSection = () => {
                   <Phone className="h-5 w-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-900 dark:text-white">Fire Department</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{t('services.emergency.fireDepartment')}</p>
                   <p className="text-red-600 dark:text-red-400 font-bold">115</p>
                 </div>
               </button>
@@ -1348,14 +1350,14 @@ const ServicesSection = () => {
           </div>
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Here you can view the pharmacies on duty:
+              {t('services.pharmacy.description')}
             </p>
             <button
               onClick={() => window.open("https://www.farmaciediturno.org/comune.asp?cod=72028", "_blank")}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-700 hover:from-emerald-600 hover:to-green-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
               <ExternalLink className="h-4 w-4" />
-              View On-Duty Pharmacies
+              {t('services.pharmacy.viewOnDuty')}
             </button>
           </div>
         </DialogContent>
@@ -1378,18 +1380,18 @@ const ServicesSection = () => {
                 <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
                   <Check className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">Request Sent!</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll collect your waste soon.</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{t('services.recycle.requestSent')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{t('services.recycle.wellCollect')}</p>
               </div>
             ) : isLoggedIn ? (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4 text-sm">
-                  Request a waste collection from your apartment.
+                  {t('services.recycle.descriptionLogged')}
                 </p>
 
                 {/* Number of Bags */}
                 <div className="space-y-3 mb-4">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Number of bags:</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.recycle.numberOfBags')}</label>
                   <div className="flex items-center justify-center gap-4">
                     <button
                       onClick={() => setRecycleBags(Math.max(1, recycleBags - 1))}
@@ -1409,12 +1411,12 @@ const ServicesSection = () => {
 
                 {/* Waste Types */}
                 <div className="space-y-3 mb-4">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Waste type(s):</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.recycle.wasteTypes')}</label>
                   <div className="space-y-2">
                     {[
-                      { id: 'organic', emoji: '🍌', label: 'Organic', bg: 'bg-amber-100 dark:bg-amber-900/30' },
-                      { id: 'plastic', emoji: '🥫', label: 'Plastic & Cans', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
-                      { id: 'paper', emoji: '🧻', label: 'Paper', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+                      { id: 'organic', emoji: '🍌', labelKey: 'services.recycle.organic', bg: 'bg-amber-100 dark:bg-amber-900/30' },
+                      { id: 'plastic', emoji: '🥫', labelKey: 'services.recycle.plasticCans', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
+                      { id: 'paper', emoji: '🧻', labelKey: 'services.recycle.paper', bg: 'bg-blue-100 dark:bg-blue-900/30' },
                     ].map((type) => (
                       <button
                         key={type.id}
@@ -1435,7 +1437,7 @@ const ServicesSection = () => {
                           {type.emoji}
                         </span>
                         <span className={`font-medium ${recycleTypes.includes(type.id) ? 'text-lime-600' : 'text-gray-700 dark:text-gray-300'}`}>
-                          {type.label}
+                          {t(type.labelKey)}
                         </span>
                         {recycleTypes.includes(type.id) && (
                           <Check className="h-5 w-5 text-lime-600 ml-auto" />
@@ -1448,12 +1450,15 @@ const ServicesSection = () => {
                 {/* Preview Message */}
                 {recycleTypes.length > 0 && (
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 italic">
-                      "I would like to request a collection of <strong>{recycleBags} bag{recycleBags > 1 ? 's' : ''}</strong> of <strong>{recycleTypes.map(t =>
-                        t === 'organic' ? 'Organic' : t === 'plastic' ? 'Plastic & Cans' : 'Paper'
-                      ).join(', ')}</strong> waste from <strong>{booking?.apartmentName}</strong>."
-                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('services.recycle.messagePreview')}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 italic" dangerouslySetInnerHTML={{ __html: `"${t('services.recycle.messageLogged', {
+                      count: recycleBags,
+                      plural: recycleBags > 1 ? 'i' : 'o',
+                      types: recycleTypes.map(type =>
+                        t(`services.recycle.${type === 'plastic' ? 'plasticCans' : type}`)
+                      ).join(', '),
+                      apartment: booking?.apartmentName
+                    })}"` }} />
                   </div>
                 )}
 
@@ -1469,11 +1474,11 @@ const ServicesSection = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
                 >
                   {sendingMessage ? (
-                    <span>Sending...</span>
+                    <span>{t('services.common.sending')}</span>
                   ) : (
                     <>
                       <Send className="h-4 w-4" />
-                      Request Collection
+                      {t('services.recycle.requestCollection')}
                     </>
                   )}
                 </button>
@@ -1481,22 +1486,22 @@ const ServicesSection = () => {
             ) : (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-                  Here you can find all the information about waste collection. Please separate your waste and put it in bags. We will take care of collecting them.
+                  {t('services.recycle.descriptionNotLogged')}
                 </p>
                 <div className="bg-lime-50 dark:bg-lime-900/20 rounded-xl p-4 mb-4 border border-lime-200 dark:border-lime-800">
-                  <p className="font-semibold text-gray-900 dark:text-white mb-3">Separate the waste as follows:</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-3">{t('services.recycle.separateAsFollows')}</p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-lg">🍌</span>
-                      <span className="text-gray-700 dark:text-gray-300">Organic waste</span>
+                      <span className="text-gray-700 dark:text-gray-300">{t('services.recycle.organic')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-lg">🥫</span>
-                      <span className="text-gray-700 dark:text-gray-300">Plastic and cans</span>
+                      <span className="text-gray-700 dark:text-gray-300">{t('services.recycle.plasticCans')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-lg">🧻</span>
-                      <span className="text-gray-700 dark:text-gray-300">Paper</span>
+                      <span className="text-gray-700 dark:text-gray-300">{t('services.recycle.paper')}</span>
                     </div>
                   </div>
                 </div>
@@ -1505,7 +1510,7 @@ const ServicesSection = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Schedule a Collection
+                  {t('services.recycle.scheduleCollection')}
                 </button>
               </>
             )}

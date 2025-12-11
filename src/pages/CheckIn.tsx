@@ -514,7 +514,7 @@ const CheckIn = () => {
         <div className="container mx-auto px-4 py-8 pb-24 flex items-center justify-center min-h-full">
           <div className="text-center">
             <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">Loading your booking...</p>
+            <p className="text-gray-600 dark:text-gray-400">{t('checkIn.loadingBooking')}</p>
           </div>
         </div>
       </div>
@@ -540,28 +540,28 @@ const CheckIn = () => {
                 <div className="flex items-center gap-3">
                   <CalendarCheck className="h-10 w-10 text-gray-500 dark:text-gray-400" />
                   <CardTitle className="text-2xl text-gray-700 dark:text-gray-300">
-                    Stay Completed
+                    {t('checkIn.stayCompleted')}
                   </CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6 pt-6">
                 <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-4">
                   <User className="h-5 w-5" />
-                  <span>Welcome back, <strong>{guestName}</strong>!</span>
+                  <span dangerouslySetInnerHTML={{ __html: t('checkIn.welcomeBack', { name: guestName }) }} />
                 </div>
 
                 <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                   <p className="text-gray-700 dark:text-gray-300 font-medium">
-                    Thank you for staying with us!
+                    {t('checkIn.thankYouStay')}
                   </p>
                   <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
-                    Your stay at Nonna Vittoria Apartments has ended. We hope you had a wonderful time!
+                    {t('checkIn.stayEndedMessage')}
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Apartment</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.apartment')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {booking.apartmentName}
                     </p>
@@ -588,27 +588,27 @@ const CheckIn = () => {
                         className="mt-3 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
                       >
                         <Navigation className="mr-2 h-4 w-4" />
-                        Get Directions
+                        {t('common.getDirections')}
                       </Button>
                     )}
                   </div>
 
                   <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Check-in Date</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.checkInDate')}</p>
                     <p className="font-semibold text-blue-900 dark:text-blue-300">
                       {formatDate(booking.checkIn)}
                     </p>
                   </div>
 
                   <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Check-out Date</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.checkOutDate')}</p>
                     <p className="font-semibold text-blue-900 dark:text-blue-300">
                       {formatDate(booking.checkOut)}
                     </p>
                   </div>
 
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Number of Guests</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.numberOfGuests')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {booking.numberOfGuests}
                     </p>
@@ -617,9 +617,7 @@ const CheckIn = () => {
 
                 <div className="space-y-3 pt-4">
                   <div className="bg-sky-50 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-700 rounded-lg p-4">
-                    <p className="text-sky-800 dark:text-sky-300 text-sm">
-                      All your stay information, access code, booking details and services are now available in <strong>My Reservation</strong>.
-                    </p>
+                    <p className="text-sky-800 dark:text-sky-300 text-sm" dangerouslySetInnerHTML={{ __html: t('checkIn.allInfoAvailable') }} />
                   </div>
                   <Button
                     onClick={() => window.location.href = '/my-stay'}
@@ -627,7 +625,7 @@ const CheckIn = () => {
                     size="lg"
                   >
                     <Briefcase className="mr-2 h-5 w-5" />
-                    Go to My Reservation
+                    {t('checkIn.goToMyReservation')}
                   </Button>
                 </div>
               </CardContent>
@@ -650,22 +648,22 @@ const CheckIn = () => {
                 <div className="flex items-center gap-3">
                   <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
                   <CardTitle className="text-2xl text-green-800 dark:text-green-300">
-                    Check-in Completed!
+                    {t('checkIn.completed')}
                   </CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6 pt-6">
                 <div className="flex items-center gap-2 text-green-700 dark:text-green-400 mb-4">
                   <User className="h-5 w-5" />
-                  <span>Welcome, <strong>{guestName}</strong>!</span>
+                  <span dangerouslySetInnerHTML={{ __html: t('checkIn.welcome', { name: guestName }) }} />
                 </div>
 
                 <div className="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-lg p-4">
                   <p className="text-green-800 dark:text-green-300 font-medium">
-                    Your online check-in has been completed successfully.
+                    {t('checkIn.checkInCompletedSuccess')}
                   </p>
                   <p className="text-green-700 dark:text-green-400 text-sm mt-2">
-                    You can view your access code below. Have a wonderful stay!
+                    {t('checkIn.viewAccessCode')}
                   </p>
                 </div>
 
@@ -675,14 +673,14 @@ const CheckIn = () => {
                       {daysUntil}
                     </p>
                     <p className="text-gray-700 dark:text-gray-300 font-medium">
-                      {daysUntil === 1 ? 'day until your arrival' : 'days until your arrival'}
+                      {daysUntil === 1 ? t('checkIn.dayUntilArrival') : t('checkIn.daysUntilArrival')}
                     </p>
                   </div>
                 )}
 
                 <div className="space-y-3">
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Apartment</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.apartment')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {booking.apartmentName}
                     </p>
@@ -709,27 +707,27 @@ const CheckIn = () => {
                         className="mt-3 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
                       >
                         <Navigation className="mr-2 h-4 w-4" />
-                        Get Directions
+                        {t('common.getDirections')}
                       </Button>
                     )}
                   </div>
 
                   <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Check-in Date</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.checkInDate')}</p>
                     <p className="font-semibold text-blue-900 dark:text-blue-300">
                       {formatDate(booking.checkIn)}
                     </p>
                   </div>
 
                   <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Check-out Date</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.checkOutDate')}</p>
                     <p className="font-semibold text-blue-900 dark:text-blue-300">
                       {formatDate(booking.checkOut)}
                     </p>
                   </div>
 
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Number of Guests</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.numberOfGuests')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {booking.numberOfGuests}
                     </p>
@@ -746,9 +744,7 @@ const CheckIn = () => {
 
                 <div className="space-y-3 pt-4">
                   <div className="bg-sky-50 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-700 rounded-lg p-4">
-                    <p className="text-sky-800 dark:text-sky-300 text-sm">
-                      All your stay information, access code, booking details and services are now available in <strong>My Reservation</strong>.
-                    </p>
+                    <p className="text-sky-800 dark:text-sky-300 text-sm" dangerouslySetInnerHTML={{ __html: t('checkIn.allInfoAvailable') }} />
                   </div>
                   <Button
                     onClick={() => window.location.href = '/my-stay'}
@@ -756,7 +752,7 @@ const CheckIn = () => {
                     size="lg"
                   >
                     <Briefcase className="mr-2 h-5 w-5" />
-                    Go to My Reservation
+                    {t('checkIn.goToMyReservation')}
                   </Button>
                 </div>
               </CardContent>
@@ -778,34 +774,34 @@ const CheckIn = () => {
               <div className="flex items-center gap-3">
                 <CalendarIcon className="h-8 w-8 text-blue-500" />
                 <CardTitle className="text-2xl">
-                  {checkInAvailable ? 'Complete Your Check-in' : 'Your Upcoming Stay'}
+                  {checkInAvailable ? t('checkIn.completeYourCheckIn') : t('checkIn.yourUpcomingStay')}
                 </CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 mb-4">
                 <User className="h-5 w-5" />
-                <span>Welcome, <strong>{guestName}</strong>!</span>
+                <span dangerouslySetInnerHTML={{ __html: t('checkIn.welcome', { name: guestName }) }} />
               </div>
 
               {checkInAvailable ? (
                 <div className="bg-green-50 dark:bg-green-900/50 border-2 border-green-300 dark:border-green-700 rounded-lg p-4">
                   <p className="text-green-800 dark:text-green-300 font-semibold flex items-center gap-2">
                     <CheckCircle className="h-5 w-5" />
-                    Online check-in is now available!
+                    {t('checkIn.availableNow')}
                   </p>
                   <p className="text-green-700 dark:text-green-400 text-sm mt-2">
-                    Complete your check-in now to receive your access code.
+                    {t('checkIn.availableNowDesc')}
                   </p>
                 </div>
               ) : (
                 <div className="bg-yellow-50 dark:bg-yellow-900/30 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-4">
                   <p className="text-yellow-800 dark:text-yellow-300 font-semibold flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    Check-in not yet available
+                    {t('checkIn.notYetAvailable')}
                   </p>
                   <p className="text-yellow-700 dark:text-yellow-400 text-sm mt-2">
-                    Online check-in will be available 7 days before your arrival.
+                    {t('checkIn.notYetAvailableDesc')}
                   </p>
                 </div>
               )}
@@ -816,17 +812,17 @@ const CheckIn = () => {
                     {daysUntil}
                   </p>
                   <p className="text-gray-700 dark:text-gray-300 font-medium">
-                    {daysUntil === 1 ? 'day remaining' : 'days remaining'}
+                    {daysUntil === 1 ? t('checkIn.dayRemaining') : t('checkIn.daysRemaining')}
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                    until your arrival
+                    {t('checkIn.untilArrival')}
                   </p>
                 </div>
               )}
 
               <div className="space-y-3">
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Apartment</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.apartment')}</p>
                   <p className="font-semibold text-gray-900 dark:text-white">
                     {booking.apartmentName}
                   </p>
@@ -853,27 +849,27 @@ const CheckIn = () => {
                       className="mt-3 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
                     >
                       <Navigation className="mr-2 h-4 w-4" />
-                      Get Directions
+                      {t('common.getDirections')}
                     </Button>
                   )}
                 </div>
 
                 <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Check-in Date</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.checkInDate')}</p>
                   <p className="font-semibold text-blue-900 dark:text-blue-300">
                     {formatDate(booking.checkIn)}
                   </p>
                 </div>
 
                 <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Check-out Date</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.checkOutDate')}</p>
                   <p className="font-semibold text-blue-900 dark:text-blue-300">
                     {formatDate(booking.checkOut)}
                   </p>
                 </div>
 
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Number of Guests</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.numberOfGuests')}</p>
                   <p className="font-semibold text-gray-900 dark:text-white">
                     {booking.numberOfGuests}
                   </p>
@@ -896,7 +892,7 @@ const CheckIn = () => {
                     size="lg"
                   >
                     <LogIn className="mr-2 h-5 w-5" />
-                    Complete Check-in Now
+                    {t('checkIn.completeNow')}
                   </Button>
                 ) : (
                   <Button
@@ -905,7 +901,7 @@ const CheckIn = () => {
                     size="lg"
                   >
                     <Clock className="mr-2 h-5 w-5" />
-                    Check-in not yet available
+                    {t('checkIn.notYetAvailable')}
                   </Button>
                 )}
 
@@ -915,7 +911,7 @@ const CheckIn = () => {
                   className="w-full"
                 >
                   <Home className="mr-2 h-5 w-5" />
-                  Back to Home
+                  {t('common.backToHome')}
                 </Button>
               </div>
             </CardContent>
@@ -946,23 +942,23 @@ const CheckIn = () => {
               <div className="flex items-center gap-3">
                 <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
                 <CardTitle className="text-2xl text-green-800 dark:text-green-300">
-                  Check-in Completed!
+                  {t('checkIn.completed')}
                 </CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
               <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-4">
                 <p className="text-green-800 dark:text-green-300 font-medium">
-                  Your check-in has been completed successfully.
+                  {t('checkIn.completedMessage')}
                 </p>
                 <p className="text-green-700 dark:text-green-400 text-sm mt-2">
-                  You will receive a confirmation email with all the information for your stay.
+                  {t('checkIn.completedConfirmation')}
                 </p>
               </div>
               <div className="space-y-3">
                 {checkInState.apartmentName && (
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Apartment</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.apartment')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {checkInState.apartmentName}
                     </p>
@@ -992,7 +988,7 @@ const CheckIn = () => {
                         className="mt-3 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
                       >
                         <Navigation className="mr-2 h-4 w-4" />
-                        Get Directions
+                        {t('common.getDirections')}
                       </Button>
                     )}
                   </div>
@@ -1000,7 +996,7 @@ const CheckIn = () => {
 
                 {checkInState.checkInDate && (
                   <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Check-in Date</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.checkInDate')}</p>
                     <p className="font-semibold text-blue-900 dark:text-blue-300">
                       {formatDate(checkInState.checkInDate)}
                     </p>
@@ -1009,7 +1005,7 @@ const CheckIn = () => {
 
                 {checkInState.checkOutDate && (
                   <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Check-out Date</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.checkOutDate')}</p>
                     <p className="font-semibold text-blue-900 dark:text-blue-300">
                       {formatDate(checkInState.checkOutDate)}
                     </p>
@@ -1018,7 +1014,7 @@ const CheckIn = () => {
 
                 {checkInState.numberOfGuests && (
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Number of Guests</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.numberOfGuests')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {checkInState.numberOfGuests}
                     </p>
@@ -1033,7 +1029,7 @@ const CheckIn = () => {
                   size="lg"
                 >
                   <Home className="mr-2 h-5 w-5" />
-                  Back to Home
+                  {t('common.backToHome')}
                 </Button>
 
                 <Button
@@ -1042,7 +1038,7 @@ const CheckIn = () => {
                   className="w-full"
                   size="lg"
                 >
-                  New Check-in
+                  {t('checkIn.newCheckIn')}
                 </Button>
               </div>
             </CardContent>
@@ -1057,8 +1053,8 @@ const CheckIn = () => {
                 <CalendarIcon className="h-8 w-8 text-blue-500" />
                 <CardTitle className="text-2xl">
                   {checkInState.status === 'pending'
-                    ? 'Check-in Saved'
-                    : (isCheckInAvailable ? 'Check-in Available!' : 'Check-in Saved')
+                    ? t('checkIn.saved')
+                    : (isCheckInAvailable ? t('checkIn.available') : t('checkIn.saved'))
                   }
                 </CardTitle>
               </div>
@@ -1068,30 +1064,30 @@ const CheckIn = () => {
                 <div className="bg-blue-50 dark:bg-blue-900 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4">
                   <p className="text-blue-800 dark:text-blue-300 font-semibold flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    Your booking has been saved!
+                    {t('checkIn.bookingSaved')}
                   </p>
                   <p className="text-blue-700 dark:text-blue-400 text-sm mt-2">
-                    Check-in will be available 7 days before your arrival. We'll notify you when it's ready!
+                    {t('checkIn.bookingSavedDesc')}
                   </p>
                 </div>
               ) : isCheckInAvailable ? (
                 <div className="bg-green-50 dark:bg-green-900 border-2 border-green-300 dark:border-green-700 rounded-lg p-4">
                   <p className="text-green-800 dark:text-green-300 font-semibold flex items-center gap-2">
                     <CheckCircle className="h-5 w-5" />
-                    Online check-in is now available!
+                    {t('checkIn.onlineAvailable')}
                   </p>
                   <p className="text-green-700 dark:text-green-400 text-sm mt-2">
-                    You can complete your check-in anytime before your arrival date.
+                    {t('checkIn.onlineAvailableDesc')}
                   </p>
                 </div>
               ) : (
                 <div className="bg-yellow-50 dark:bg-yellow-900 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-4">
                   <p className="text-yellow-800 dark:text-yellow-300 font-semibold flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    Check-in not yet available
+                    {t('checkIn.notYetAvailable')}
                   </p>
                   <p className="text-yellow-700 dark:text-yellow-400 text-sm mt-2">
-                    Check-in will be available 7 days before your arrival.
+                    {t('checkIn.notYetAvailableDesc')}
                   </p>
                 </div>
               )}
@@ -1102,10 +1098,10 @@ const CheckIn = () => {
                     {daysUntilCheckIn}
                   </p>
                   <p className="text-gray-700 dark:text-gray-300 font-medium">
-                    {daysUntilCheckIn === 1 ? 'day remaining' : 'days remaining'}
+                    {daysUntilCheckIn === 1 ? t('checkIn.dayRemaining') : t('checkIn.daysRemaining')}
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                    until your arrival
+                    {t('checkIn.untilArrival')}
                   </p>
                 </div>
               )}
@@ -1113,7 +1109,7 @@ const CheckIn = () => {
               <div className="space-y-3">
                 {checkInState.apartmentName && (
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Apartment</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.apartment')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {checkInState.apartmentName}
                     </p>
@@ -1122,7 +1118,7 @@ const CheckIn = () => {
 
                 {checkInState.checkInDate && (
                   <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Expected arrival date</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.expectedArrival')}</p>
                     <p className="font-semibold text-blue-900 dark:text-blue-300">
                       {formatDate(checkInState.checkInDate)}
                     </p>
@@ -1131,7 +1127,7 @@ const CheckIn = () => {
 
                 {checkInState.checkOutDate && (
                   <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Expected departure date</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('checkIn.expectedDeparture')}</p>
                     <p className="font-semibold text-blue-900 dark:text-blue-300">
                       {formatDate(checkInState.checkOutDate)}
                     </p>
@@ -1143,7 +1139,7 @@ const CheckIn = () => {
                 <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-4">
                   <p className="text-green-800 dark:text-green-300 text-sm flex items-center gap-2">
                     <CheckCircle className="h-4 w-4" />
-                    We sent you a notification because check-in is available!
+                    {t('checkIn.notificationSent')}
                   </p>
                 </div>
               )}
@@ -1151,7 +1147,7 @@ const CheckIn = () => {
                 <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
                   <p className="text-blue-800 dark:text-blue-300 text-sm flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    We'll send you a notification when check-in becomes available
+                    {t('checkIn.notificationScheduled')}
                   </p>
                 </div>
               )}
@@ -1164,7 +1160,7 @@ const CheckIn = () => {
                     size="lg"
                   >
                     <LogIn className="mr-2 h-5 w-5" />
-                    Complete Check-in Now
+                    {t('checkIn.completeNow')}
                   </Button>
                 ) : (
                   <Button
@@ -1173,7 +1169,7 @@ const CheckIn = () => {
                     size="lg"
                   >
                     <Clock className="mr-2 h-5 w-5" />
-                    Check-in not yet available
+                    {t('checkIn.notYetAvailable')}
                   </Button>
                 )}
 
@@ -1182,7 +1178,7 @@ const CheckIn = () => {
                   variant="outline"
                   className="w-full"
                 >
-                  Cancel / Change Booking
+                  {t('checkIn.cancelChange')}
                 </Button>
               </div>
             </CardContent>
@@ -1194,7 +1190,7 @@ const CheckIn = () => {
           <Card className="max-w-2xl mx-auto">
             <CardHeader>
               <CardTitle className="text-2xl text-blue-900 dark:text-blue-400 text-center">
-                Online Check-in
+                {t('checkIn.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -1203,36 +1199,30 @@ const CheckIn = () => {
                   <LogIn className="h-12 w-12 text-blue-600 dark:text-blue-400" />
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 text-lg">
-                  Complete your online check-in quickly and easily
+                  {t('checkIn.completeOnlineQuickly')}
                 </p>
               </div>
               <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
                 <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-4 text-lg">
-                  Benefits of Online Check-in:
+                  {t('checkIn.benefits.title')}
                 </h3>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-blue-800 dark:text-blue-300">
-                      Receive your <strong>access code</strong> directly via email
-                    </span>
+                    <span className="text-blue-800 dark:text-blue-300" dangerouslySetInnerHTML={{ __html: t('checkIn.benefits.accessCode') }} />
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-blue-800 dark:text-blue-300" dangerouslySetInnerHTML={{ __html: t('checkIn.benefits.noQueues') }} />
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-blue-800 dark:text-blue-300" dangerouslySetInnerHTML={{ __html: t('checkIn.benefits.available247') }} />
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                     <span className="text-blue-800 dark:text-blue-300">
-                      <strong>Avoid queues and waiting</strong> upon arrival
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-blue-800 dark:text-blue-300">
-                      Available <strong>24/7</strong>, whenever you want
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-blue-800 dark:text-blue-300">
-                      We'll remind you when it's time to check in
+                      {t('checkIn.benefits.reminder')}
                     </span>
                   </li>
                 </ul>
@@ -1244,16 +1234,16 @@ const CheckIn = () => {
                 size="lg"
               >
                 <LogIn className="mr-2 h-5 w-5" />
-                Start Online Check-in
+                {t('checkIn.startCheckIn')}
               </Button>
 
               <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2">
                   <AlertCircle className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />
                   <span>
-                    Online check-in is available from <strong>7 days before</strong> your expected arrival date.
+                    <span dangerouslySetInnerHTML={{ __html: t('checkIn.note') }} />
                     <span className="block mt-2 text-xs text-gray-500 dark:text-gray-500">
-                      Please note: on-site check-in has a cost of 39 EUR
+                      {t('checkIn.onsiteFee')}
                     </span>
                   </span>
                 </p>

@@ -770,14 +770,14 @@ const Bari: React.FC = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
             <Landmark className="w-4 h-4" />
-            <span className="text-sm font-medium">Capital of Puglia</span>
+            <span className="text-sm font-medium">{t('cities.bari.badge')}</span>
           </div>
 
           <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">
             Bari
           </h1>
           <p className="text-gray-100 text-lg mb-8 drop-shadow-md">
-            A vibrant city in southern Italy, blending historic charm with modern energy. Known for its stunning old town, beautiful seafront, and delicious cuisine, it offers an unforgettable mix of culture, history, and coastal beauty.
+            {t('cities.bari.description')}
           </p>
           <button
             onClick={handleExploreClick}

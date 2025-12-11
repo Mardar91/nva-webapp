@@ -16,7 +16,7 @@ import {
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { AlertCircle, LogIn, Loader2, KeyRound, Mail } from 'lucide-react';
+import { AlertCircle, LogIn, Loader2, KeyRound, Mail, Info, ArrowRight } from 'lucide-react';
 
 interface GuestLoginModalProps {
   isOpen: boolean;
@@ -100,12 +100,42 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-5 mt-2">
           {displayError && (
-            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-800/50 flex items-center justify-center flex-shrink-0">
-                <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+            <>
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-800/50 flex items-center justify-center flex-shrink-0">
+                  <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                </div>
+                <p className="text-sm text-red-700 dark:text-red-300 pt-1">{displayError}</p>
               </div>
-              <p className="text-sm text-red-700 dark:text-red-300 pt-1">{displayError}</p>
-            </div>
+              {/* Show hint for external booking portals when credentials are invalid */}
+              {(displayError === t('login.errors.invalidCredentials') ||
+                displayError === 'Credenziali non valide' ||
+                displayError === 'Invalid credentials') && (
+                <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-800/50 flex items-center justify-center flex-shrink-0">
+                      <Info className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-amber-700 dark:text-amber-300">
+                        {t('login.externalBookingHint')}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleClose();
+                          window.location.href = '/check-in';
+                        }}
+                        className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-200 transition-colors"
+                      >
+                        {t('login.goToCheckIn')}
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           <div className="space-y-2">

@@ -688,13 +688,13 @@ const PoliganoAMare: React.FC = () => {
         >
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
             <Compass className="h-4 w-4 text-white" />
-            <span className="text-white/90 text-sm font-medium">Pearl of the Adriatic</span>
+            <span className="text-white/90 text-sm font-medium">{t('cities.polignano.badge')}</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-3">
             Polignano a Mare
           </h1>
           <p className="text-white/80 text-base mb-6">
-            Famous for its dramatic cliffs, crystal-clear waters, and charming historic center.
+            {t('cities.polignano.description')}
           </p>
           <button
             onClick={handleExploreClick}

@@ -887,6 +887,37 @@ iframe {
   .vipHeroContainer {
     padding-bottom: calc(20px + env(safe-area-inset-bottom));
   }
+
+  /* Fix per input date su iOS - previene overflow */
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    font-size: 16px; /* Previene zoom automatico su iOS */
+  }
+
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+    padding-right: 0;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
+    cursor: pointer;
+  }
+
+  /* Container per input date */
+  .date-input-container {
+    overflow: hidden !important;
+    max-width: 100% !important;
+  }
 }
 
 @media all and (display-mode: standalone) {

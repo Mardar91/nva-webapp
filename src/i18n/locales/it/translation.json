@@ -68,6 +68,8 @@
     "emailHint": "L'email usata per la prenotazione",
     "loginButton": "Accedi",
     "loggingIn": "Accesso in corso...",
+    "externalBookingHint": "Se hai prenotato tramite un portale esterno (Booking, Airbnb, ecc.), effettua prima il check-in online dalla pagina principale.",
+    "goToCheckIn": "Vai al Check-in",
     "errors": {
       "enterBookingRef": "Inserisci il codice prenotazione",
       "enterEmail": "Inserisci la tua email",
@@ -98,6 +100,11 @@
   "checkIn": {
     "title": "Check-in Online",
     "loading": "Caricamento check-in...",
+    "loadingBooking": "Caricamento prenotazione...",
+    "completeOnlineQuickly": "Completa il tuo check-in online in modo semplice e veloce",
+    "apartment": "Appartamento",
+    "checkInDate": "Data Check-in",
+    "checkOutDate": "Data Check-out",
     "loadError": "Errore di Caricamento",
     "loadErrorDesc": "Impossibile caricare la pagina di check-in. Controlla la connessione e riprova.",
     "completed": "Check-in Completato!",
@@ -713,7 +720,23 @@
     "eventsInCity": "{{count}} eventi a {{city}}",
     "upcomingEvents": "Prossimi Eventi",
     "exploreTheCity": "Esplora la Città",
-    "discoverAttractions": "Scopri le attrazioni locali"
+    "discoverAttractions": "Scopri le attrazioni locali",
+    "bari": {
+      "badge": "Capoluogo della Puglia",
+      "description": "Una città vibrante nel sud Italia, che fonde il fascino storico con l'energia moderna. Conosciuta per il suo splendido centro storico, il lungomare suggestivo e la deliziosa cucina, offre un mix indimenticabile di cultura, storia e bellezza costiera."
+    },
+    "monopoli": {
+      "badge": "Città Storica del Porto",
+      "description": "Spiagge mozzafiato, porto vivace e un affascinante centro storico con architettura d'epoca."
+    },
+    "polignano": {
+      "badge": "Perla dell'Adriatico",
+      "description": "Famosa per le sue scogliere spettacolari, acque cristalline e affascinante centro storico."
+    },
+    "mola": {
+      "badge": "Gioiello Costiero della Puglia",
+      "description": "Un'affascinante cittadina costiera conosciuta per il pittoresco lungomare, il pesce fresco e la vivace cultura locale."
+    }
   },
   "privateSettings": {
     "title": "Accesso Privato",

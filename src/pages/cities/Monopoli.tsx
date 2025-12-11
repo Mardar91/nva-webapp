@@ -700,13 +700,13 @@ const Monopoli: React.FC = () => {
         >
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
             <Compass className="h-4 w-4 text-white" />
-            <span className="text-white/90 text-sm font-medium">Historic Harbor Town</span>
+            <span className="text-white/90 text-sm font-medium">{t('cities.monopoli.badge')}</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-3">
             Monopoli
           </h1>
           <p className="text-white/80 text-base mb-6">
-            Stunning beaches, vibrant harbor, and a charming old town with historic architecture.
+            {t('cities.monopoli.description')}
           </p>
           <button
             onClick={handleExploreClick}

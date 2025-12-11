@@ -68,6 +68,8 @@
     "emailHint": "The email used for your booking",
     "loginButton": "Login",
     "loggingIn": "Logging in...",
+    "externalBookingHint": "If you booked through an external portal (Booking, Airbnb, etc.), please complete the online check-in first from the main page.",
+    "goToCheckIn": "Go to Check-in",
     "errors": {
       "enterBookingRef": "Please enter your booking reference",
       "enterEmail": "Please enter your email",
@@ -98,6 +100,11 @@
   "checkIn": {
     "title": "Online Check-in",
     "loading": "Loading check-in...",
+    "loadingBooking": "Loading your booking...",
+    "completeOnlineQuickly": "Complete your online check-in quickly and easily",
+    "apartment": "Apartment",
+    "checkInDate": "Check-in Date",
+    "checkOutDate": "Check-out Date",
     "loadError": "Loading Error",
     "loadErrorDesc": "Unable to load the check-in page. Please check your connection and try again.",
     "completed": "Check-in Completed!",
@@ -713,7 +720,23 @@
     "eventsInCity": "{{count}} events in {{city}}",
     "upcomingEvents": "Upcoming Events",
     "exploreTheCity": "Explore the City",
-    "discoverAttractions": "Discover local attractions"
+    "discoverAttractions": "Discover local attractions",
+    "bari": {
+      "badge": "Capital of Puglia",
+      "description": "A vibrant city in southern Italy, blending historic charm with modern energy. Known for its stunning old town, beautiful seafront, and delicious cuisine, it offers an unforgettable mix of culture, history, and coastal beauty."
+    },
+    "monopoli": {
+      "badge": "Historic Harbor Town",
+      "description": "Stunning beaches, vibrant harbor, and a charming old town with historic architecture."
+    },
+    "polignano": {
+      "badge": "Pearl of the Adriatic",
+      "description": "Famous for its dramatic cliffs, crystal-clear waters, and charming historic center."
+    },
+    "mola": {
+      "badge": "Coastal Gem of Puglia",
+      "description": "A charming coastal town known for its picturesque seafront, fresh seafood, and vibrant local culture."
+    }
   },
   "privateSettings": {
     "title": "Private Access",

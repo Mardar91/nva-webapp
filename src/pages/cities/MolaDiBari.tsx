@@ -677,13 +677,13 @@ const handleNextAttraction = () => {
         >
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
             <Compass className="h-4 w-4 text-white" />
-            <span className="text-white/90 text-sm font-medium">Coastal Gem of Puglia</span>
+            <span className="text-white/90 text-sm font-medium">{t('cities.mola.badge')}</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-3">
             Mola di Bari
           </h1>
           <p className="text-white/80 text-base mb-6">
-            A charming coastal town known for its picturesque seafront, fresh seafood, and vibrant local culture.
+            {t('cities.mola.description')}
           </p>
           <button
             onClick={handleExploreClick}

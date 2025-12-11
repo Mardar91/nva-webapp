@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "../components/ui/button";
 import {
   Calendar,
@@ -21,6 +22,7 @@ import { useNotifications } from '../hooks/useNotifications';
 import { BOOKING_CONFIG, isAllowedBookingOrigin } from '../config/booking';
 
 const BookNow: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -163,7 +165,8 @@ const BookNow: React.FC = () => {
 
   // Format date helper
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'it' ? 'it-IT' : 'en-US';
+    return new Date(dateString).toLocaleDateString(locale, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -190,10 +193,10 @@ const BookNow: React.FC = () => {
                 <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
               </div>
               <h1 className="text-3xl font-bold text-green-800 dark:text-green-300 mb-2">
-                Booking Confirmed!
+                {t('booking.confirmed')}
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
-                Thank you for your reservation
+                {t('booking.thankYou')}
               </p>
             </div>
 
@@ -202,14 +205,14 @@ const BookNow: React.FC = () => {
               <div className="flex items-center gap-2 mb-4">
                 <Calendar className="h-5 w-5 text-blue-600" />
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Booking Details
+                  {t('booking.details')}
                 </h2>
               </div>
 
               <div className="space-y-4">
                 {bookingData.guestName && (
                   <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-600 dark:text-gray-400">Guest</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('common.guest')}</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {bookingData.guestName}
                     </span>
@@ -218,7 +221,7 @@ const BookNow: React.FC = () => {
 
                 {bookingData.apartmentName && (
                   <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-600 dark:text-gray-400">Apartment</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('common.apartment')}</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {bookingData.apartmentName}
                     </span>
@@ -227,7 +230,7 @@ const BookNow: React.FC = () => {
 
                 {bookingData.checkIn && (
                   <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-600 dark:text-gray-400">Check-in</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('dates.checkIn')}</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {formatDate(bookingData.checkIn)}
                     </span>
@@ -236,7 +239,7 @@ const BookNow: React.FC = () => {
 
                 {bookingData.checkOut && (
                   <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-600 dark:text-gray-400">Check-out</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('dates.checkOut')}</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {formatDate(bookingData.checkOut)}
                     </span>
@@ -244,7 +247,7 @@ const BookNow: React.FC = () => {
                 )}
 
                 <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                  <span className="text-gray-600 dark:text-gray-400">Booking Reference</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('booking.reference')}</span>
                   <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
                     {bookingData.bookingReference}
                   </span>
@@ -252,7 +255,7 @@ const BookNow: React.FC = () => {
 
                 {bookingData.amount && (
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600 dark:text-gray-400">Total Paid</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('booking.totalPaid')}</span>
                     <span className="font-bold text-green-600 dark:text-green-400 text-lg">
                       {bookingData.currency} {(bookingData.amount / 100).toFixed(2)}
                     </span>
@@ -274,10 +277,10 @@ const BookNow: React.FC = () => {
                   <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
                   <div>
                     <p className="font-medium text-green-800 dark:text-green-300">
-                      You're now logged in!
+                      {t('booking.loggedIn')}
                     </p>
                     <p className="text-sm text-green-700 dark:text-green-400">
-                      Redirecting to My Reservation...
+                      {t('booking.redirecting')}
                     </p>
                   </div>
                 </div>
@@ -286,10 +289,10 @@ const BookNow: React.FC = () => {
                   <Loader2 className="h-6 w-6 text-blue-600 dark:text-blue-400 animate-spin" />
                   <div>
                     <p className="font-medium text-blue-800 dark:text-blue-300">
-                      Setting up your account...
+                      {t('booking.settingUp')}
                     </p>
                     <p className="text-sm text-blue-700 dark:text-blue-400">
-                      Please wait a moment
+                      {t('booking.waitMoment')}
                     </p>
                   </div>
                 </div>
@@ -298,10 +301,10 @@ const BookNow: React.FC = () => {
                   <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                   <div>
                     <p className="font-medium text-yellow-800 dark:text-yellow-300">
-                      Auto-login was not completed
+                      {t('booking.autoLoginFailed')}
                     </p>
                     <p className="text-sm text-yellow-700 dark:text-yellow-400">
-                      You can login manually using your booking reference and email
+                      {t('booking.autoLoginFailedDesc')}
                     </p>
                   </div>
                 </div>
@@ -317,7 +320,7 @@ const BookNow: React.FC = () => {
                   size="lg"
                 >
                   <CreditCard className="mr-2 h-5 w-5" />
-                  Go to My Reservation
+                  {t('booking.goToReservation')}
                 </Button>
                 <Button
                   onClick={() => navigate('/')}
@@ -325,7 +328,7 @@ const BookNow: React.FC = () => {
                   className="w-full"
                 >
                   <Home className="mr-2 h-5 w-5" />
-                  Back to Home
+                  {t('common.backToHome')}
                 </Button>
               </div>
             )}
@@ -345,8 +348,8 @@ const BookNow: React.FC = () => {
       {isLoading && !loadError && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 dark:bg-[#1a1a1a]/95 z-10">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
-          <p className="text-gray-700 dark:text-gray-300 font-medium">Loading booking page...</p>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">Please wait</p>
+          <p className="text-gray-700 dark:text-gray-300 font-medium">{t('booking.loadingPage')}</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">{t('common.pleaseWait')}</p>
         </div>
       )}
 
@@ -355,10 +358,10 @@ const BookNow: React.FC = () => {
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-[#1a1a1a] z-10 p-6">
           <XCircle className="h-16 w-16 text-red-500 mb-4" />
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            Loading Error
+            {t('booking.loadError')}
           </h3>
           <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-            Unable to load the booking page. Please check your connection and try again.
+            {t('booking.loadErrorDesc')}
           </p>
           <div className="flex gap-3">
             <Button
@@ -366,13 +369,13 @@ const BookNow: React.FC = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
-              Reload
+              {t('common.reload')}
             </Button>
             <Button
               onClick={() => navigate('/')}
               variant="outline"
             >
-              Back to Home
+              {t('common.backToHome')}
             </Button>
           </div>
         </div>

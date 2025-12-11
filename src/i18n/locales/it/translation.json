@@ -1,0 +1,396 @@
+{
+  "common": {
+    "appName": "Nonna Vittoria Apartments",
+    "loading": "Caricamento...",
+    "pleaseWait": "Attendere prego",
+    "error": "Errore",
+    "success": "Successo",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "save": "Salva",
+    "delete": "Elimina",
+    "back": "Indietro",
+    "next": "Avanti",
+    "confirm": "Conferma",
+    "reload": "Ricarica",
+    "backToHome": "Torna alla Home",
+    "call": "Chiama",
+    "website": "Sito Web",
+    "whatsapp": "WhatsApp",
+    "facebook": "Facebook",
+    "moreInfo": "Maggiori info",
+    "getDirections": "Indicazioni",
+    "guest": "Ospite",
+    "guests": "Ospiti",
+    "night": "Notte",
+    "nights": "Notti",
+    "day": "giorno",
+    "days": "giorni",
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "apartment": "Appartamento",
+    "verifying": "Verifica in corso..."
+  },
+  "navigation": {
+    "home": "Home",
+    "restaurants": "Ristoranti",
+    "partners": "Partner",
+    "explore": "Esplora",
+    "myStay": "Soggiorno"
+  },
+  "hero": {
+    "title": "Nonna Vittoria Apartments",
+    "onlineReception": "Reception Online 24h",
+    "bookNow": "Prenota",
+    "reserveYourStay": "Prenota il tuo soggiorno",
+    "checkIn": "Check-in",
+    "onlineProcess": "Procedura online",
+    "myStay": "Soggiorno",
+    "yourReservation": "La tua prenotazione",
+    "login": "Accedi",
+    "logout": "Esci",
+    "myReservation": "La Mia Prenotazione"
+  },
+  "login": {
+    "title": "Accedi alla Prenotazione",
+    "description": "Inserisci i dati della tua prenotazione per accedere",
+    "descriptionChat": "Accedi per visualizzare la chat e i tuoi messaggi",
+    "bookingReference": "Codice Prenotazione",
+    "bookingRefPlaceholder": "es. BK-ABC123",
+    "bookingRefHint": "Lo trovi nell'email di conferma",
+    "emailAddress": "Indirizzo Email",
+    "emailPlaceholder": "tua@email.com",
+    "emailHint": "L'email usata per la prenotazione",
+    "loginButton": "Accedi",
+    "loggingIn": "Accesso in corso...",
+    "errors": {
+      "enterBookingRef": "Inserisci il codice prenotazione",
+      "enterEmail": "Inserisci la tua email",
+      "invalidEmail": "Inserisci un indirizzo email valido",
+      "invalidCredentials": "Credenziali non valide",
+      "apiError": "Errore API"
+    }
+  },
+  "booking": {
+    "confirmed": "Prenotazione Confermata!",
+    "thankYou": "Grazie per la tua prenotazione",
+    "details": "Dettagli Prenotazione",
+    "reference": "Codice Prenotazione",
+    "checkInDate": "Check-in",
+    "checkOutDate": "Check-out",
+    "totalPaid": "Totale Pagato",
+    "loggedIn": "Accesso effettuato!",
+    "redirecting": "Reindirizzamento alla Prenotazione...",
+    "settingUp": "Configurazione account in corso...",
+    "waitMoment": "Attendere un momento",
+    "loadingPage": "Caricamento pagina prenotazione...",
+    "loadError": "Errore di Caricamento",
+    "loadErrorDesc": "Impossibile caricare la pagina di prenotazione. Controlla la connessione e riprova.",
+    "goToReservation": "Vai alla Prenotazione",
+    "autoLoginFailed": "Accesso automatico non completato",
+    "autoLoginFailedDesc": "Puoi accedere manualmente usando il codice prenotazione e l'email"
+  },
+  "checkIn": {
+    "title": "Check-in Online",
+    "loading": "Caricamento check-in...",
+    "loadError": "Errore di Caricamento",
+    "loadErrorDesc": "Impossibile caricare la pagina di check-in. Controlla la connessione e riprova.",
+    "completed": "Check-in Completato!",
+    "completedMessage": "Il tuo check-in è stato completato con successo.",
+    "completedConfirmation": "Riceverai un'email di conferma con tutte le informazioni per il tuo soggiorno.",
+    "viewAccessCode": "Puoi visualizzare il codice di accesso qui sotto. Buon soggiorno!",
+    "newCheckIn": "Nuovo Check-in",
+    "completeNow": "Completa Check-in Ora",
+    "startCheckIn": "Inizia Check-in Online",
+    "saved": "Check-in Salvato",
+    "available": "Check-in Disponibile!",
+    "notYetAvailable": "Check-in non ancora disponibile",
+    "notYetAvailableDesc": "Il check-in online sarà disponibile 7 giorni prima del tuo arrivo.",
+    "bookingSaved": "La tua prenotazione è stata salvata!",
+    "bookingSavedDesc": "Il check-in sarà disponibile 7 giorni prima del tuo arrivo. Ti avviseremo quando sarà pronto!",
+    "onlineAvailable": "Il check-in online è ora disponibile!",
+    "onlineAvailableDesc": "Puoi completare il check-in in qualsiasi momento prima del tuo arrivo.",
+    "completeYourCheckIn": "Completa il tuo Check-in",
+    "yourUpcomingStay": "Il Tuo Prossimo Soggiorno",
+    "availableNow": "Il check-in online è ora disponibile!",
+    "availableNowDesc": "Completa il check-in ora per ricevere il tuo codice di accesso.",
+    "cancelChange": "Annulla / Modifica Prenotazione",
+    "daysRemaining": "giorni rimanenti",
+    "dayRemaining": "giorno rimanente",
+    "untilArrival": "al tuo arrivo",
+    "daysUntilArrival": "giorni al tuo arrivo",
+    "dayUntilArrival": "giorno al tuo arrivo",
+    "expectedArrival": "Data di arrivo prevista",
+    "expectedDeparture": "Data di partenza prevista",
+    "numberOfGuests": "Numero di Ospiti",
+    "benefits": {
+      "title": "Vantaggi del Check-in Online:",
+      "accessCode": "Ricevi il tuo <strong>codice di accesso</strong> direttamente via email",
+      "noQueues": "<strong>Evita code e attese</strong> al tuo arrivo",
+      "available247": "Disponibile <strong>24/7</strong>, quando vuoi",
+      "reminder": "Ti avviseremo quando sarà il momento di fare il check-in"
+    },
+    "note": "Il check-in online è disponibile da <strong>7 giorni prima</strong> della data di arrivo prevista.",
+    "onsiteFee": "Nota: il check-in in loco ha un costo di 39 EUR",
+    "notificationSent": "Ti abbiamo inviato una notifica perché il check-in è disponibile!",
+    "notificationScheduled": "Ti invieremo una notifica quando il check-in sarà disponibile",
+    "stayCompleted": "Soggiorno Completato",
+    "welcomeBack": "Bentornato/a, <strong>{{name}}</strong>!",
+    "thankYouStay": "Grazie per aver soggiornato con noi!",
+    "stayEndedMessage": "Il tuo soggiorno presso Nonna Vittoria Apartments è terminato. Speriamo che tu abbia trascorso un periodo meraviglioso!",
+    "allInfoAvailable": "Tutte le informazioni sul soggiorno, codice di accesso, dettagli prenotazione e servizi sono ora disponibili in <strong>La Mia Prenotazione</strong>.",
+    "goToMyReservation": "Vai alla Prenotazione",
+    "welcome": "Benvenuto/a, <strong>{{name}}</strong>!",
+    "checkInCompletedSuccess": "Il tuo check-in online è stato completato con successo.",
+    "status": {
+      "completed": "Check-in Completato",
+      "pending": "Check-in in Attesa"
+    }
+  },
+  "accessCode": {
+    "title": "Codice di Accesso",
+    "subtitle": "Codice porta appartamento",
+    "secureAccess": "Accesso Sicuro",
+    "verifyEmail": "Per sicurezza, verifica la tua email per visualizzare il codice di accesso.",
+    "bookingEmail": "Email Prenotazione",
+    "enterEmail": "Inserisci l'email della prenotazione",
+    "verifyShow": "Verifica e Mostra Codice",
+    "hide": "Nascondi Codice di Accesso",
+    "hideMultiple": "Nascondi Codici di Accesso",
+    "errors": {
+      "enterEmail": "Inserisci la tua email",
+      "emailNoMatch": "L'email non corrisponde alla prenotazione",
+      "checkInRequired": "Il check-in online non è ancora stato completato. Completa prima il check-in.",
+      "fetchFailed": "Impossibile recuperare il codice di accesso",
+      "connectionError": "Errore di connessione. Riprova."
+    }
+  },
+  "myStay": {
+    "title": "Il Mio Soggiorno",
+    "subtitle": "Accedi per visualizzare i dettagli della prenotazione, lo stato del check-in e il codice di accesso",
+    "welcomeBack": "Bentornato/a!",
+    "hello": "Ciao, {{name}}",
+    "guestBenefits": "Vantaggi Ospite",
+    "whatYouCanAccess": "Cosa puoi vedere dopo l'accesso",
+    "benefits": {
+      "bookingDetails": "Dettagli Prenotazione",
+      "viewReservation": "Visualizza info prenotazione",
+      "checkInStatus": "Stato Check-in",
+      "trackCheckIn": "Monitora il tuo check-in online",
+      "accessCode": "Codice di Accesso",
+      "getAccessCode": "Ottieni il codice porta",
+      "navigation": "Navigazione",
+      "findApartment": "Trova facilmente l'appartamento",
+      "directChat": "Chat Diretta",
+      "messageReception": "Scrivi alla reception",
+      "vipTicket": "VIP Ticket",
+      "downloadPass": "Scarica il tuo pass sconto"
+    },
+    "loginToBooking": "Accedi alla Prenotazione",
+    "loginHint": "Usa il codice prenotazione e l'email per accedere",
+    "bookingDetails": "Dettagli Prenotazione",
+    "ref": "Rif: {{ref}}",
+    "duration": "Durata",
+    "yourJourney": "Il Tuo Viaggio",
+    "stayProgressTips": "Progressi e consigli",
+    "suggestionsForYou": "Suggerimenti per te",
+    "checkInStatus": "Stato Check-in",
+    "onlineCheckInProcess": "Procedura check-in online",
+    "checkInComplete": "Il tuo check-in online è completo!",
+    "completedOn": "Completato il {{date}}",
+    "completeCheckInMessage": "Completa il check-in online per ottenere il codice di accesso all'appartamento.",
+    "completeCheckIn": "Completa Check-in",
+    "apartmentLocation": "Posizione Appartamento",
+    "findYourWay": "Trova la strada",
+    "quickActions": "Azioni Rapide",
+    "usefulShortcuts": "Scorciatoie utili",
+    "vipTicket": "VIP Ticket",
+    "vipTicketDesc": "10% di sconto partner",
+    "chat": "Chat",
+    "chatDesc": "Contatta la reception",
+    "stayPhases": {
+      "preFar": {
+        "title": "Il Tuo Viaggio si Avvicina!",
+        "message": "{{days}} giorni al tuo arrivo. Inizia a pianificare la tua avventura in Puglia!"
+      },
+      "preSoon": {
+        "title": "Quasi Arrivato!",
+        "message": "Solo {{days}} giorni! Stiamo preparando tutto per il tuo arrivo."
+      },
+      "preTomorrow": {
+        "title": "Ci Vediamo Domani!",
+        "message": "Il tuo soggiorno inizia domani! Non dimenticare di completare il check-in online."
+      },
+      "checkinMorning": {
+        "title": "È il Grande Giorno!",
+        "message": "Il check-in è dalle 15:00. Esplora Mola di Bari nel frattempo!"
+      },
+      "checkinAfternoon": {
+        "title": "Benvenuto/a!",
+        "message": "È ora del check-in! Ottieni il codice di accesso e mettiti comodo/a."
+      },
+      "firstNight": {
+        "title": "Buongiorno!",
+        "message": "Speriamo tu abbia dormito bene! Pronto/a ad esplorare?"
+      },
+      "earlyStay": {
+        "title": "Buongiorno!",
+        "titleAfternoon": "Buon Pomeriggio!",
+        "titleEvening": "Buonasera!",
+        "message": "Giorno {{current}} di {{total}} notti. Goditi la scoperta della Puglia!"
+      },
+      "midStay": {
+        "title": "Sei a Metà!",
+        "message": "{{days}} giorni ancora da esplorare. Sfruttali al massimo!"
+      },
+      "lateStay": {
+        "title": "Ultimi Giorni",
+        "message": "Solo {{days}} giorni rimasti. Hai visitato tutto quello che volevi?"
+      },
+      "preCheckout": {
+        "title": "Ultima Notte",
+        "message": "Domani è il giorno del checkout. Goditi la tua ultima serata in Puglia!"
+      },
+      "checkoutDay": {
+        "title": "Giorno del Checkout",
+        "message": "Il checkout è entro le 10:00. Grazie per aver soggiornato con noi!"
+      },
+      "postCheckout": {
+        "title": "Grazie!",
+        "message": "Speriamo tu abbia apprezzato il soggiorno. Alla prossima!"
+      }
+    },
+    "tips": {
+      "vipTicket": {
+        "title": "Ottieni il VIP Ticket",
+        "description": "10% di sconto nei ristoranti e negozi partner"
+      },
+      "exploreArea": {
+        "title": "Esplora la Zona",
+        "description": "Scopri le attrazioni vicino al tuo appartamento"
+      },
+      "welcomeDrink": {
+        "title": "Drink di Benvenuto",
+        "description": "Ordina una bottiglia di vino locale o prosecco"
+      },
+      "getAccessCode": {
+        "title": "Ottieni Codice Accesso",
+        "description": "Recupera il codice della porta dell'appartamento"
+      },
+      "breakfast": {
+        "title": "Colazione a Domicilio",
+        "description": "Cialde caffè e cornetti freschi alla tua porta"
+      },
+      "rentBike": {
+        "title": "Noleggia una Bici",
+        "description": "Esplora la costa su due ruote"
+      },
+      "midStayCleaning": {
+        "title": "Pulizia Intermedia",
+        "description": "Richiedi un servizio di pulizia durante il soggiorno"
+      },
+      "bikeTour": {
+        "title": "Tour in Bici",
+        "description": "Scopri spiagge nascoste e sentieri costieri"
+      },
+      "localWine": {
+        "title": "Vino Locale",
+        "description": "Gusta l'autentico vino pugliese nel tuo appartamento"
+      },
+      "wasteCollection": {
+        "title": "Raccolta Rifiuti",
+        "description": "Richiedi sacchetti extra prima del checkout"
+      },
+      "needAnything": {
+        "title": "Hai Bisogno di Qualcosa?",
+        "description": "Contattaci se hai bisogno di late checkout"
+      },
+      "checkoutTime": {
+        "title": "Check-out entro le 10:00",
+        "description": "Lascia le chiavi dentro l'appartamento"
+      },
+      "lateCheckout": {
+        "title": "Late Checkout?",
+        "description": "Contattaci per organizzare una partenza posticipata"
+      }
+    }
+  },
+  "restaurants": {
+    "title": "Ristoranti Partner",
+    "subtitle": "Sconti esclusivi per i nostri ospiti",
+    "discount": "10% SCONTO",
+    "deliveryCode": "Codice sconto delivery:",
+    "book": "Prenota",
+    "bookTable": "Prenota Tavolo",
+    "contactWhatsApp": "Contatta su WhatsApp"
+  },
+  "partners": {
+    "title": "I Nostri Partner",
+    "subtitle": "Vantaggi esclusivi per i nostri ospiti",
+    "discount": "10% SCONTO",
+    "categories": {
+      "shopping": "Shopping & Souvenir",
+      "wellness": "Benessere & Fitness",
+      "entertainment": "Intrattenimento & Servizi",
+      "beaches": "Spiagge"
+    }
+  },
+  "explore": {
+    "adventureStarts": "La tua avventura inizia qui",
+    "title": "Esplora la Puglia",
+    "subtitle": "Scopri magnifiche città culturali ed eventi indimenticabili nei dintorni.",
+    "goToCities": "Vai alle Città",
+    "upcomingEvents": "Prossimi Eventi",
+    "whatsHappening": "Cosa succede nei dintorni",
+    "loadingEvents": "Caricamento eventi...",
+    "citiesToExplore": "Città da Esplorare",
+    "discoverPuglia": "Scopri la bellezza della Puglia",
+    "discoverCity": "Scopri la città",
+    "goToNextCity": "Vai alla prossima città",
+    "utilities": "Utilità",
+    "usefulTools": "Strumenti utili per il tuo viaggio",
+    "notes": "Note",
+    "maps": "Mappe",
+    "currency": "Valuta",
+    "weather": "Meteo",
+    "travelNotes": "Note di Viaggio",
+    "addManageNotes": "Aggiungi e gestisci le tue note di viaggio",
+    "noteTitle": "Titolo nota",
+    "writeNoteHere": "Scrivi la tua nota qui...",
+    "saveNote": "Salva Nota",
+    "currencyConverter": "Convertitore Valuta",
+    "convertCurrencies": "Converti tra diverse valute"
+  },
+  "pwa": {
+    "installTitle": "Installa Nonna Vittoria Apartments",
+    "installMessage": "Per la migliore esperienza e un accesso più rapido al check-in",
+    "notNow": "Non ora",
+    "install": "Installa",
+    "iosStep1": "1. Tocca il pulsante Condividi",
+    "iosStep2": "2. Scegli \"Aggiungi a Home\""
+  },
+  "services": {
+    "title": "I Nostri Servizi",
+    "subtitle": "Migliora il tuo soggiorno",
+    "memoryGame": {
+      "moves": "Mosse:",
+      "congratulations": "Congratulazioni! Hai vinto!",
+      "playAgain": "Gioca Ancora"
+    }
+  },
+  "vipTicket": {
+    "title": "VIP Ticket",
+    "subtitle": "Mostra questo ticket per ottenere il 10% di sconto",
+    "validFor": "Valido per tutte le attività partner",
+    "download": "Scarica Ticket"
+  },
+  "chat": {
+    "title": "Chat",
+    "typeMessage": "Scrivi un messaggio...",
+    "send": "Invia"
+  },
+  "dates": {
+    "checkIn": "Check-in",
+    "checkOut": "Check-out"
+  }
+}

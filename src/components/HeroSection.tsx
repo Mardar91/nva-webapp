@@ -7,12 +7,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, LogIn, Briefcase, User, LogOut, ChevronDown, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useGuestSession } from "../hooks/useGuestSession";
 import { useNotifications } from "../hooks/useNotifications";
 import GuestLoginModal from "./GuestLoginModal";
 import GuestChatDrawer from "./GuestChatDrawer";
+import LanguageSelector from "./LanguageSelector";
 
 const HeroSection = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const {
     isLoggedIn,
@@ -58,22 +61,22 @@ const HeroSection = () => {
 
   const heroItems = [
     {
-      title: "Book Now",
-      subtitle: "Reserve your stay",
+      title: t('hero.bookNow'),
+      subtitle: t('hero.reserveYourStay'),
       icon: <Calendar size={28} strokeWidth={1.5} />,
       onClick: () => navigate("/book"),
       gradient: "from-blue-500 to-blue-600",
     },
     {
-      title: "Check-in",
-      subtitle: "Online process",
+      title: t('hero.checkIn'),
+      subtitle: t('hero.onlineProcess'),
       icon: <LogIn size={28} strokeWidth={1.5} />,
       onClick: () => navigate("/check-in"),
       gradient: "from-amber-500 to-yellow-500",
     },
     {
-      title: "My Stay",
-      subtitle: "Your reservation",
+      title: t('hero.myStay'),
+      subtitle: t('hero.yourReservation'),
       icon: <Briefcase size={28} strokeWidth={1.5} />,
       onClick: () => navigate("/my-stay"),
       gradient: "from-sky-400 to-cyan-500",
@@ -131,7 +134,7 @@ const HeroSection = () => {
                     <User className="h-3.5 w-3.5" />
                   </div>
                   <span className="truncate max-w-[80px]">
-                    {guestName || 'Guest'}
+                    {guestName || t('common.guest')}
                   </span>
                   <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} />
                 </button>
@@ -147,7 +150,7 @@ const HeroSection = () => {
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <Briefcase className="h-4 w-4 text-gray-400" />
-                      My Reservation
+                      {t('hero.myReservation')}
                     </button>
                     <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
                     <button
@@ -155,19 +158,22 @@ const HeroSection = () => {
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <LogOut className="h-4 w-4 text-gray-400" />
-                      Logout
+                      {t('hero.logout')}
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <button
-                onClick={handleLoginClick}
-                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border border-white/20"
-              >
-                <User className="h-4 w-4" />
-                Login
-              </button>
+              <div className="flex items-center gap-2">
+                <LanguageSelector />
+                <button
+                  onClick={handleLoginClick}
+                  className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border border-white/20"
+                >
+                  <User className="h-4 w-4" />
+                  {t('hero.login')}
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -188,7 +194,7 @@ const HeroSection = () => {
         <div className="px-5 pt-6 pb-4">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Nonna Vittoria Apartments
+              {t('hero.title')}
             </h1>
 
             {/* Reception Badge - Modern Style */}
@@ -198,7 +204,7 @@ const HeroSection = () => {
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
               <span className="text-emerald-700 dark:text-emerald-300 text-sm font-medium">
-                Online Reception 24h
+                {t('hero.onlineReception')}
               </span>
             </div>
           </div>

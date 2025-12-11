@@ -4,6 +4,7 @@
 // ============================================
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -35,6 +36,7 @@ import { CHECKIN_CONFIG, isAllowedOrigin } from '../config/checkin';
 import AccessCodeSection from '../components/AccessCodeSection';
 
 const CheckIn = () => {
+  const { t, i18n } = useTranslation();
   const {
     checkInState,
     updateCheckInState,
@@ -437,7 +439,8 @@ const CheckIn = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'it' ? 'it-IT' : 'en-US';
+    return new Date(dateString).toLocaleDateString(locale, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -457,8 +460,8 @@ const CheckIn = () => {
         {isLoading && !loadError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 dark:bg-[#1a1a1a]/95 z-10">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
-            <p className="text-gray-700 dark:text-gray-300 font-medium">Loading check-in...</p>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">Please wait</p>
+            <p className="text-gray-700 dark:text-gray-300 font-medium">{t('checkIn.loading')}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">{t('common.pleaseWait')}</p>
           </div>
         )}
 
@@ -466,10 +469,10 @@ const CheckIn = () => {
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-[#1a1a1a] z-10 p-6">
             <XCircle className="h-16 w-16 text-red-500 mb-4" />
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Loading Error
+              {t('checkIn.loadError')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Unable to load the check-in page. Please check your connection and try again.
+              {t('checkIn.loadErrorDesc')}
             </p>
             <div className="flex gap-3">
               <Button
@@ -477,13 +480,13 @@ const CheckIn = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Reload
+                {t('common.reload')}
               </Button>
               <Button
                 onClick={handleCloseIframe}
                 variant="outline"
               >
-                Close
+                {t('common.close')}
               </Button>
             </div>
           </div>

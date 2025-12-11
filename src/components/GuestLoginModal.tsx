@@ -5,6 +5,7 @@
 // ============================================
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -34,6 +35,7 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
   error,
   redirectToChat = false,
 }) => {
+  const { t } = useTranslation();
   const [bookingReference, setBookingReference] = useState('');
   const [email, setEmail] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
@@ -44,15 +46,15 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
 
     // Validation
     if (!bookingReference.trim()) {
-      setLocalError('Please enter your booking reference');
+      setLocalError(t('login.errors.enterBookingRef'));
       return;
     }
     if (!email.trim()) {
-      setLocalError('Please enter your email');
+      setLocalError(t('login.errors.enterEmail'));
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setLocalError('Please enter a valid email address');
+      setLocalError(t('login.errors.invalidEmail'));
       return;
     }
 
@@ -87,12 +89,12 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
             <LogIn className="h-8 w-8 text-white" strokeWidth={1.5} />
           </div>
           <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">
-            Access Your Booking
+            {t('login.title')}
           </DialogTitle>
           <DialogDescription className="text-gray-500 dark:text-gray-400 mt-2">
             {redirectToChat
-              ? 'Login to access the chat and view your messages'
-              : 'Enter your booking details to access your reservation'}
+              ? t('login.descriptionChat')
+              : t('login.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -108,7 +110,7 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
 
           <div className="space-y-2">
             <Label htmlFor="bookingRef" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Booking Reference
+              {t('login.bookingReference')}
             </Label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -117,7 +119,7 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
               <Input
                 id="bookingRef"
                 type="text"
-                placeholder="e.g., BK-ABC123"
+                placeholder={t('login.bookingRefPlaceholder')}
                 value={bookingReference}
                 onChange={(e) => setBookingReference(e.target.value.toUpperCase())}
                 disabled={isLoading}
@@ -126,13 +128,13 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
               />
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 pl-1">
-              You can find this in your confirmation email
+              {t('login.bookingRefHint')}
             </p>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Email Address
+              {t('login.emailAddress')}
             </Label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -141,7 +143,7 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
               <Input
                 id="email"
                 type="email"
-                placeholder="your@email.com"
+                placeholder={t('login.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
@@ -150,7 +152,7 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
               />
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 pl-1">
-              The email used for your booking
+              {t('login.emailHint')}
             </p>
           </div>
 
@@ -162,7 +164,7 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
               disabled={isLoading}
               className="flex-1 h-12 rounded-xl font-semibold border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type="submit"
@@ -172,12 +174,12 @@ const GuestLoginModal: React.FC<GuestLoginModalProps> = ({
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Logging in...
+                  {t('login.loggingIn')}
                 </>
               ) : (
                 <>
                   <LogIn className="mr-2 h-5 w-5" />
-                  Login
+                  {t('login.loginButton')}
                 </>
               )}
             </Button>

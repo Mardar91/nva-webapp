@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, UtensilsCrossed, Handshake, Map, Briefcase } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isIOS = useRef(/iPad|iPhone|iPod/.test(navigator.userAgent));
@@ -48,11 +50,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   const navItems = [
-    { path: "/", label: "Home", icon: Home },
-    { path: "/restaurants", label: "Restaurants", icon: UtensilsCrossed },
-    { path: "/partners", label: "Partners", icon: Handshake },
-    { path: "/explore", label: "Explore", icon: Map },
-    { path: "/my-stay", label: "My Stay", icon: Briefcase },
+    { path: "/", labelKey: "navigation.home", icon: Home },
+    { path: "/restaurants", labelKey: "navigation.restaurants", icon: UtensilsCrossed },
+    { path: "/partners", labelKey: "navigation.partners", icon: Handshake },
+    { path: "/explore", labelKey: "navigation.explore", icon: Map },
+    { path: "/my-stay", labelKey: "navigation.myStay", icon: Briefcase },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -115,7 +117,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     ? 'text-blue-600 dark:text-blue-400'
                     : 'text-gray-500 dark:text-gray-400'
                 }`}>
-                  {item.label}
+                  {t(item.labelKey)}
                 </span>
               </Link>
             );

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import VipTicketHero from "../components/VipTicketHero";
 import {
   ShoppingBag,
@@ -126,6 +127,8 @@ const openInMaps = (address: string) => {
 };
 
 const PartnersScreen = () => {
+  const { t } = useTranslation();
+
   return (
     <div
       className="absolute inset-0 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-gray-900"
@@ -146,8 +149,8 @@ const PartnersScreen = () => {
             <Sparkles className="h-5 w-5 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Our Partners</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Exclusive benefits for our guests</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('partners.title')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('partners.subtitle')}</p>
           </div>
         </div>
       </div>
@@ -189,7 +192,7 @@ const PartnersScreen = () => {
                             <h4 className="font-bold text-white text-sm leading-tight line-clamp-2">{item.name}</h4>
                           </div>
                           <div className="relative bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full overflow-hidden flex-shrink-0 ml-2">
-                            <span className="relative z-10 text-white text-xs font-bold whitespace-nowrap">10% OFF</span>
+                            <span className="relative z-10 text-white text-xs font-bold whitespace-nowrap">{t('partners.discount')}</span>
                             {/* Shimmer effect */}
                             <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                           </div>
@@ -216,7 +219,7 @@ const PartnersScreen = () => {
                             className={`flex items-center justify-center gap-2 bg-gradient-to-r ${itemConfig.gradient} text-white font-medium py-2.5 px-3 rounded-xl transition-all hover:opacity-90 active:scale-[0.98]`}
                           >
                             <Phone className="h-4 w-4" />
-                            <span className="text-sm">Call</span>
+                            <span className="text-sm">{t('common.call')}</span>
                           </button>
 
                           {'website' in item && item.website && (
@@ -225,7 +228,7 @@ const PartnersScreen = () => {
                               className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2.5 px-3 rounded-xl transition-all hover:bg-gray-200 dark:hover:bg-gray-600"
                             >
                               <Globe className="h-4 w-4" />
-                              <span className="text-sm">Website</span>
+                              <span className="text-sm">{t('common.website')}</span>
                             </button>
                           )}
 
@@ -235,7 +238,7 @@ const PartnersScreen = () => {
                               className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2.5 px-3 rounded-xl transition-all"
                             >
                               <MessageCircle className="h-4 w-4" />
-                              <span className="text-sm">WhatsApp</span>
+                              <span className="text-sm">{t('common.whatsapp')}</span>
                             </button>
                           )}
                         </div>
@@ -247,7 +250,7 @@ const PartnersScreen = () => {
                             className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2.5 px-3 rounded-xl transition-all mt-2"
                           >
                             <MessageCircle className="h-4 w-4" />
-                            <span className="text-sm">Contact on WhatsApp</span>
+                            <span className="text-sm">{t('restaurants.contactWhatsApp')}</span>
                           </button>
                         )}
                       </div>

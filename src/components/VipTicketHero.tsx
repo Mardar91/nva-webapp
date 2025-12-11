@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Ticket, Sparkles, Gift, Lock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useGuestSession } from "../hooks/useGuestSession";
 
 const VipTicketHero = () => {
+  const { t } = useTranslation();
   const { isLoggedIn } = useGuestSession();
   const [showToast, setShowToast] = useState(false);
   useEffect(() => {
@@ -73,7 +75,7 @@ const VipTicketHero = () => {
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-lg">
             <Lock className="h-4 w-4 text-amber-400" />
-            <span className="text-sm font-medium">Log in to download your VIP Ticket</span>
+            <span className="text-sm font-medium">{t('vipTicketHero.loginRequired')}</span>
           </div>
         </div>
       )}
@@ -94,23 +96,23 @@ const VipTicketHero = () => {
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-white text-center mb-2">
-            Get Your Free VIP Ticket!
+            {t('vipTicketHero.title')}
           </h2>
 
           {/* Subtitle */}
           <p className="text-blue-100 dark:text-gray-300 text-center text-sm mb-6 max-w-xs mx-auto">
-            Download your digital VIP Ticket to enjoy exclusive 10% discounts at all our partner locations
+            {t('vipTicketHero.subtitle')}
           </p>
 
           {/* Features */}
           <div className="flex justify-center gap-4 mb-6">
             <div className="flex items-center gap-1.5 text-white/80 text-xs">
               <Gift className="h-4 w-4 text-amber-400" />
-              <span>10% OFF</span>
+              <span>{t('vipTicketHero.discount')}</span>
             </div>
             <div className="flex items-center gap-1.5 text-white/80 text-xs">
               <Sparkles className="h-4 w-4 text-amber-400" />
-              <span>All Partners</span>
+              <span>{t('vipTicketHero.allPartners')}</span>
             </div>
           </div>
 
@@ -120,7 +122,7 @@ const VipTicketHero = () => {
             className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 font-bold py-4 px-6 rounded-2xl transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
           >
             <Ticket className="h-5 w-5" />
-            Download VIP Ticket
+            {t('vipTicketHero.downloadButton')}
           </button>
         </div>
       </div>

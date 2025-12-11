@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Cloud } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 declare global {
   interface Window {
@@ -10,6 +11,8 @@ declare global {
 }
 
 const WeatherWidgetFullscreen: React.FC = () => {
+  const { t, i18n } = useTranslation();
+
   useEffect(() => {
     const loadScript = () => {
       const script = document.createElement('script');
@@ -76,7 +79,7 @@ const WeatherWidgetFullscreen: React.FC = () => {
       <div className="text-center py-6 flex items-center justify-center gap-3">
         <Cloud className="floating-cloud text-[#1e3a8a] dark:text-[#60A5FA]" size={28} />
         <h2 className="weather-title text-2xl font-bold text-[#1e3a8a] dark:text-[#60A5FA]">
-          Weather in the surrounding area
+          {t('weatherWidget.title')}
         </h2>
         <Cloud className="floating-cloud text-[#1e3a8a] dark:text-[#60A5FA]" size={28} />
       </div>
@@ -86,7 +89,7 @@ const WeatherWidgetFullscreen: React.FC = () => {
         <div
           className="tomorrow"
           data-location-id="140209,058790,140296,137215,140213,135365"
-          data-language="EN"
+          data-language={i18n.language === 'it' ? 'IT' : 'EN'}
           data-unit-system="METRIC"
           data-skin="light"
           data-widget-type="aqi6"

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Gift, Heart, Sparkles, ArrowRight, Wine } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import RomanticWeekModal from "./RomanticWeekModal";
 
 const SpecialOffers = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isRomanticWeekOpen, setIsRomanticWeekOpen] = useState(false);
 
@@ -14,7 +16,7 @@ const SpecialOffers = () => {
         <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
           <Sparkles className="h-4 w-4 text-gray-500 dark:text-gray-400" />
         </div>
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Special Offers</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('specialOffers.title')}</h2>
       </div>
 
       {/* Offers Container */}
@@ -41,12 +43,12 @@ const SpecialOffers = () => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
                   </span>
-                  <span className="text-white text-xs font-semibold">+10% FREE</span>
+                  <span className="text-white text-xs font-semibold">{t('specialOffers.giftCard.badge')}</span>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-1">Gift Card</h3>
+                <h3 className="text-xl font-bold text-white mb-1">{t('specialOffers.giftCard.title')}</h3>
                 <p className="text-white/80 text-sm leading-relaxed">
-                  Get an extra 10% bonus on gift card purchases for future stays
+                  {t('specialOffers.giftCard.description')}
                 </p>
               </div>
 
@@ -58,7 +60,7 @@ const SpecialOffers = () => {
 
             {/* CTA */}
             <div className="flex items-center gap-2 mt-4 text-white/90 group-hover:text-white transition-colors">
-              <span className="text-sm font-medium">Learn more</span>
+              <span className="text-sm font-medium">{t('specialOffers.giftCard.cta')}</span>
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
@@ -83,18 +85,18 @@ const SpecialOffers = () => {
                 {/* Badge */}
                 <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full mb-3">
                   <Heart className="h-3 w-3 text-white fill-white" />
-                  <span className="text-white text-xs font-semibold">SPECIAL PRICE</span>
+                  <span className="text-white text-xs font-semibold">{t('specialOffers.romanticWeek.badge')}</span>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-1">Romantic Week</h3>
+                <h3 className="text-xl font-bold text-white mb-1">{t('specialOffers.romanticWeek.title')}</h3>
                 <p className="text-white/80 text-sm leading-relaxed">
-                  2 people, 6 nights + welcome wine bottle
+                  {t('specialOffers.romanticWeek.description')}
                 </p>
 
                 {/* Price Tag */}
                 <div className="inline-flex items-center gap-2 mt-3 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-xl">
                   <Wine className="h-4 w-4 text-white" />
-                  <span className="text-white font-bold">Only €380</span>
+                  <span className="text-white font-bold">{t('specialOffers.romanticWeek.price')}</span>
                 </div>
               </div>
 
@@ -106,7 +108,7 @@ const SpecialOffers = () => {
 
             {/* CTA */}
             <div className="flex items-center gap-2 mt-4 text-white/90 group-hover:text-white transition-colors">
-              <span className="text-sm font-medium">View details</span>
+              <span className="text-sm font-medium">{t('specialOffers.romanticWeek.cta')}</span>
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -47,6 +48,7 @@ import { useGuestSession } from "../hooks/useGuestSession";
 import { sendChatMessage } from "../lib/guestApi";
 
 const MemoryGame = () => {
+  const { t } = useTranslation();
   const [cards, setCards] = useState([
     { id: 1, emoji: "🍕", isFlipped: false, isMatched: false },
     { id: 2, emoji: "🍕", isFlipped: false, isMatched: false },
@@ -107,12 +109,12 @@ const MemoryGame = () => {
   return (
     <div className="flex flex-col items-center gap-4 p-4 max-w-md mx-auto w-full">
       <div className="text-center mb-4 w-full">
-        <p className="text-lg font-semibold">Moves: {moves}</p>
+        <p className="text-lg font-semibold">{t('services.memoryGame.moves', { count: moves })}</p>
         {isWon && (
           <div className="mt-4">
-            <p className="text-xl font-bold text-green-600">Congratulations! You won!</p>
+            <p className="text-xl font-bold text-green-600">{t('services.memoryGame.congratulations')}</p>
             <Button onClick={resetGame} className="mt-2 bg-blue-600 hover:bg-blue-700 text-white">
-              Play Again
+              {t('services.memoryGame.playAgain')}
             </Button>
           </div>
         )}
@@ -141,6 +143,7 @@ const MemoryGame = () => {
 };
 
 const ServicesSection = () => {
+  const { t, i18n } = useTranslation();
   const { isLoggedIn, token, booking } = useGuestSession();
   const location = useLocation();
   const navigate = useNavigate();
@@ -234,11 +237,11 @@ const ServicesSection = () => {
     };
   };
 
-  // Format date for display
+  // Format date for display (locale-aware)
   const formatDateDisplay = (dateStr: string) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(i18n.language === 'it' ? 'it-IT' : 'en-US', {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
@@ -285,25 +288,25 @@ const ServicesSection = () => {
   };
 
   const services = [
-    { name: "Taxi", icon: Car, color: "amber", onClick: () => (window.location.href = "/taxi") },
-    { name: "Wine", icon: Wine, color: "rose", onClick: () => setOpenWineModal(true) },
-    { name: "Clean", icon: Sparkles, color: "cyan", onClick: () => setOpenCleanModal(true) },
-    { name: "Shop", icon: ShoppingBag, color: "violet", onClick: () => window.open("https://store.nonnavittoriaapartments.it", "_blank") },
-    { name: "Delivery", icon: UtensilsCrossed, color: "orange", onClick: () => setOpenDeliveryModal(true) },
-    { name: "Rent Car", icon: Car, color: "slate", onClick: () => setOpenRentCarModal(true) },
-    { name: "Excursions", icon: Sailboat, color: "sky", onClick: () => setOpenExcursionsModal(true) },
-    { name: "Parking", icon: ParkingCircle, color: "blue", onClick: () => setOpenParkingModal(true) },
-    { name: "Breakfast", icon: Croissant, color: "yellow", onClick: () => setOpenBreakfastModal(true) },
-    { name: "Massage", icon: Heart, color: "pink", onClick: () => setOpenMassageModal(true) },
-    { name: "Rent Bike", icon: Bike, color: "emerald", onClick: () => setOpenRentBikeModal(true) },
-    { name: "Laundry", icon: WashingMachine, color: "teal", onClick: () => setOpenLaundryModal(true) },
+    { nameKey: "taxi", icon: Car, color: "amber", onClick: () => (window.location.href = "/taxi") },
+    { nameKey: "wine", icon: Wine, color: "rose", onClick: () => setOpenWineModal(true) },
+    { nameKey: "clean", icon: Sparkles, color: "cyan", onClick: () => setOpenCleanModal(true) },
+    { nameKey: "shop", icon: ShoppingBag, color: "violet", onClick: () => window.open("https://store.nonnavittoriaapartments.it", "_blank") },
+    { nameKey: "delivery", icon: UtensilsCrossed, color: "orange", onClick: () => setOpenDeliveryModal(true) },
+    { nameKey: "rentCar", icon: Car, color: "slate", onClick: () => setOpenRentCarModal(true) },
+    { nameKey: "excursions", icon: Sailboat, color: "sky", onClick: () => setOpenExcursionsModal(true) },
+    { nameKey: "parking", icon: ParkingCircle, color: "blue", onClick: () => setOpenParkingModal(true) },
+    { nameKey: "breakfast", icon: Croissant, color: "yellow", onClick: () => setOpenBreakfastModal(true) },
+    { nameKey: "massage", icon: Heart, color: "pink", onClick: () => setOpenMassageModal(true) },
+    { nameKey: "rentBike", icon: Bike, color: "emerald", onClick: () => setOpenRentBikeModal(true) },
+    { nameKey: "laundry", icon: WashingMachine, color: "teal", onClick: () => setOpenLaundryModal(true) },
   ];
 
   const utilities = [
-    { name: "Emergency", icon: AlertTriangle, color: "red", onClick: () => setOpenEmergencyModal(true) },
-    { name: "Pharmacy", icon: Pill, color: "green", onClick: () => setOpenPharmacyModal(true) },
-    { name: "Recycle", icon: Recycle, color: "lime", onClick: () => setOpenRecycleModal(true) },
-    { name: "Game", icon: Gamepad2, color: "purple", onClick: () => setOpenGameModal(true) },
+    { nameKey: "emergency", icon: AlertTriangle, color: "red", onClick: () => setOpenEmergencyModal(true) },
+    { nameKey: "pharmacy", icon: Pill, color: "green", onClick: () => setOpenPharmacyModal(true) },
+    { nameKey: "recycle", icon: Recycle, color: "lime", onClick: () => setOpenRecycleModal(true) },
+    { nameKey: "game", icon: Gamepad2, color: "purple", onClick: () => setOpenGameModal(true) },
   ];
 
   const parkingStreets = [
@@ -338,7 +341,7 @@ const ServicesSection = () => {
           <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
             <Compass className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Our Services</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('services.title')}</h2>
         </div>
 
         {/* Services Grid - Clean Outline Style with Color Accents */}
@@ -362,7 +365,7 @@ const ServicesSection = () => {
             const colors = colorClasses[service.color] || colorClasses.blue;
             return (
               <button
-                key={service.name}
+                key={service.nameKey}
                 onClick={service.onClick}
                 className={`group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border ${colors.border} transition-all duration-200 hover:scale-105 active:scale-95`}
               >
@@ -370,7 +373,7 @@ const ServicesSection = () => {
                   <IconComponent className={`h-5 w-5 ${colors.icon} ${colors.iconHover} transition-colors duration-200`} strokeWidth={1.5} />
                 </div>
                 <span className={`text-[11px] font-medium ${colors.text} text-center leading-tight transition-colors duration-200`}>
-                  {service.name}
+                  {t(`services.names.${service.nameKey}`)}
                 </span>
               </button>
             );
@@ -382,7 +385,7 @@ const ServicesSection = () => {
           <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
             <Info className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Useful Information</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('services.usefulInfo')}</h2>
         </div>
 
         {/* Utilities Grid - Clean Outline Style with Color Accents */}
@@ -398,7 +401,7 @@ const ServicesSection = () => {
             const colors = colorClasses[utility.color] || colorClasses.red;
             return (
               <button
-                key={utility.name}
+                key={utility.nameKey}
                 onClick={utility.onClick}
                 className={`group flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-gray-800 border ${colors.border} transition-all duration-200 hover:scale-105 active:scale-95`}
               >
@@ -406,7 +409,7 @@ const ServicesSection = () => {
                   <IconComponent className={`h-5 w-5 ${colors.icon} ${colors.iconHover} transition-colors duration-200`} strokeWidth={1.5} />
                 </div>
                 <span className={`text-[11px] font-medium ${colors.text} text-center leading-tight transition-colors duration-200`}>
-                  {utility.name}
+                  {t(`services.names.${utility.nameKey}`)}
                 </span>
               </button>
             );
@@ -423,13 +426,13 @@ const ServicesSection = () => {
               <UtensilsCrossed className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Delivery Service</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.delivery.title')}</DialogTitle>
             </DialogHeader>
           </div>
 
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-              Order your food online and have it delivered directly to your apartment every day except Wednesday.
+              {t('services.delivery.description')}
             </p>
 
             {/* Schedule */}
@@ -437,15 +440,15 @@ const ServicesSection = () => {
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-orange-500" />
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Monday - Saturday</p>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">10:00 AM - 2:30 PM & 6:30 PM - 12:00 AM</p>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">{t('services.delivery.mondaySaturday')}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">{t('services.delivery.mondaySaturdayHours')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-orange-500" />
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Sunday</p>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">9:00 AM - 3:00 PM & 7:00 PM - 12:00 AM</p>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">{t('services.delivery.sunday')}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">{t('services.delivery.sundayHours')}</p>
                 </div>
               </div>
             </div>
@@ -457,22 +460,22 @@ const ServicesSection = () => {
                 className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-xl transition-colors"
               >
                 <FileText className="h-4 w-4" />
-                View Menu
+                {t('services.delivery.viewMenu')}
               </button>
               <button
                 onClick={() => window.location.href = "tel:+390804741063"}
                 className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-xl transition-colors"
               >
                 <Phone className="h-4 w-4" />
-                Call Now
+                {t('services.delivery.callNow')}
               </button>
             </div>
 
             {/* Discount Code */}
             <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-4 mb-4 text-center border border-orange-200 dark:border-orange-800">
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Order online with the code:</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">{t('services.delivery.orderOnlineWith')}</p>
               <p className="font-bold text-orange-600 dark:text-orange-400 text-xl mb-1">NONNAVITTORIA</p>
-              <p className="text-green-600 dark:text-green-400 text-sm font-medium">and get 5% OFF</p>
+              <p className="text-green-600 dark:text-green-400 text-sm font-medium">{t('services.delivery.getDiscount')}</p>
             </div>
 
             <button
@@ -480,7 +483,7 @@ const ServicesSection = () => {
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
               <ExternalLink className="h-4 w-4" />
-              Download the App
+              {t('services.delivery.downloadApp')}
             </button>
           </div>
         </DialogContent>
@@ -494,19 +497,19 @@ const ServicesSection = () => {
               <Car className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Rent a Car</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.rentCar.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Rent a car at exclusive rates through our trusted partner. Enjoy the convenience of having the vehicle delivered directly to your location.
+              {t('services.rentCar.description')}
             </p>
             <button
               onClick={() => window.location.href = "tel:+393493425023"}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-700 hover:to-slate-900 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
               <Phone className="h-4 w-4" />
-              Call Now
+              {t('services.rentCar.callNow')}
             </button>
           </div>
         </DialogContent>
@@ -520,7 +523,7 @@ const ServicesSection = () => {
               <Wine className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Room Service</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.wine.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
@@ -529,18 +532,18 @@ const ServicesSection = () => {
                 <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
                   <Check className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">Request Sent!</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll get back to you soon.</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{t('services.wine.requestSent')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{t('services.wine.wellGetBack')}</p>
               </div>
             ) : isLoggedIn ? (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-                  Request a bottle of wine or prosecco for your apartment (subject to availability).
+                  {t('services.wine.descriptionLogged')}
                 </p>
 
                 {/* Wine Type Selection */}
                 <div className="space-y-3 mb-6">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Select beverage:</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.wine.selectBeverage')}</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => setWineType('wine')}
@@ -551,7 +554,7 @@ const ServicesSection = () => {
                       }`}
                     >
                       <span className="text-2xl mb-2 block">🍷</span>
-                      <span className={`font-semibold ${wineType === 'wine' ? 'text-rose-600' : 'text-gray-700 dark:text-gray-300'}`}>Wine</span>
+                      <span className={`font-semibold ${wineType === 'wine' ? 'text-rose-600' : 'text-gray-700 dark:text-gray-300'}`}>{t('services.wine.wineOption')}</span>
                     </button>
                     <button
                       onClick={() => setWineType('prosecco')}
@@ -562,17 +565,15 @@ const ServicesSection = () => {
                       }`}
                     >
                       <span className="text-2xl mb-2 block">🥂</span>
-                      <span className={`font-semibold ${wineType === 'prosecco' ? 'text-rose-600' : 'text-gray-700 dark:text-gray-300'}`}>Prosecco</span>
+                      <span className={`font-semibold ${wineType === 'prosecco' ? 'text-rose-600' : 'text-gray-700 dark:text-gray-300'}`}>{t('services.wine.proseccoOption')}</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Preview Message */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 italic">
-                    "I would like to request a bottle of <strong>{wineType === 'wine' ? 'Wine' : 'Prosecco'}</strong> for <strong>{booking?.apartmentName}</strong>. Is it available?"
-                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('services.wine.messagePreview')}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 italic" dangerouslySetInnerHTML={{ __html: `"${t('services.wine.messageLogged', { type: wineType === 'wine' ? t('services.wine.wineOption') : t('services.wine.proseccoOption'), apartment: booking?.apartmentName })}"` }} />
                 </div>
 
                 <button
@@ -584,11 +585,11 @@ const ServicesSection = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
                 >
                   {sendingMessage ? (
-                    <span>Sending...</span>
+                    <span>{t('services.common.sending')}</span>
                   ) : (
                     <>
                       <Send className="h-4 w-4" />
-                      Send Request
+                      {t('services.wine.sendRequest')}
                     </>
                   )}
                 </button>
@@ -596,7 +597,7 @@ const ServicesSection = () => {
             ) : (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-                  Request a bottle of wine or prosecco to be available upon arrival at a special price (subject to availability). To place an order, contact us on WhatsApp.
+                  {t('services.wine.descriptionNotLogged')}
                 </p>
                 <button
                   onClick={() => {
@@ -606,7 +607,7 @@ const ServicesSection = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Contact us on WhatsApp
+                  {t('services.wine.contactWhatsApp')}
                 </button>
               </>
             )}
@@ -622,12 +623,12 @@ const ServicesSection = () => {
               <Sparkles className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Cleaning Service</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.clean.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
             <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-xl p-4 mb-4 text-center border border-cyan-200 dark:border-cyan-800">
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Service price</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">{t('services.clean.servicePrice')}</p>
               <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">€20</p>
             </div>
 
@@ -636,18 +637,18 @@ const ServicesSection = () => {
                 <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
                   <Check className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">Request Sent!</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">We'll confirm your cleaning appointment.</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{t('services.clean.requestSent')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{t('services.clean.wellConfirm')}</p>
               </div>
             ) : isLoggedIn ? (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-                  Request a cleaning service during your stay.
+                  {t('services.clean.descriptionLogged')}
                 </p>
 
                 {/* Date Selection */}
                 <div className="space-y-3 mb-4">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Select date:</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.clean.selectDate')}</label>
                   <div className="relative overflow-hidden date-input-container">
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
                     <input
@@ -666,7 +667,7 @@ const ServicesSection = () => {
 
                 {/* Payment Method */}
                 <div className="space-y-3 mb-4">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Payment method:</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('services.clean.paymentMethod')}</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => setCleanPayment('cash')}
@@ -677,7 +678,7 @@ const ServicesSection = () => {
                       }`}
                     >
                       <Banknote className={`h-5 w-5 ${cleanPayment === 'cash' ? 'text-cyan-600' : 'text-gray-500'}`} />
-                      <span className={`font-medium ${cleanPayment === 'cash' ? 'text-cyan-600' : 'text-gray-700 dark:text-gray-300'}`}>Cash</span>
+                      <span className={`font-medium ${cleanPayment === 'cash' ? 'text-cyan-600' : 'text-gray-700 dark:text-gray-300'}`}>{t('services.clean.cash')}</span>
                     </button>
                     <button
                       onClick={() => setCleanPayment('transfer')}
@@ -688,7 +689,7 @@ const ServicesSection = () => {
                       }`}
                     >
                       <CreditCard className={`h-5 w-5 ${cleanPayment === 'transfer' ? 'text-cyan-600' : 'text-gray-500'}`} />
-                      <span className={`font-medium ${cleanPayment === 'transfer' ? 'text-cyan-600' : 'text-gray-700 dark:text-gray-300'}`}>Transfer</span>
+                      <span className={`font-medium ${cleanPayment === 'transfer' ? 'text-cyan-600' : 'text-gray-700 dark:text-gray-300'}`}>{t('services.clean.transfer')}</span>
                     </button>
                   </div>
                 </div>
@@ -696,10 +697,8 @@ const ServicesSection = () => {
                 {/* Preview Message */}
                 {cleanDate && (
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Message preview:</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 italic">
-                      "I would like to request a cleaning service for <strong>{booking?.apartmentName}</strong> on <strong>{formatDateDisplay(cleanDate)}</strong>. Payment method: <strong>{cleanPayment === 'cash' ? 'Cash' : 'Instant Bank Transfer'}</strong>."
-                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('services.clean.messagePreview')}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 italic" dangerouslySetInnerHTML={{ __html: `"${t('services.clean.messageLogged', { apartment: booking?.apartmentName, date: formatDateDisplay(cleanDate), payment: cleanPayment === 'cash' ? t('services.clean.cash') : t('services.clean.instantBankTransfer') })}"` }} />
                   </div>
                 )}
 
@@ -712,11 +711,11 @@ const ServicesSection = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg disabled:opacity-50"
                 >
                   {sendingMessage ? (
-                    <span>Sending...</span>
+                    <span>{t('services.common.sending')}</span>
                   ) : (
                     <>
                       <Send className="h-4 w-4" />
-                      Send Request
+                      {t('services.clean.sendRequest')}
                     </>
                   )}
                 </button>
@@ -724,7 +723,7 @@ const ServicesSection = () => {
             ) : (
               <>
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-                  Request a cleaning service during your stay.
+                  {t('services.clean.descriptionNotLogged')}
                 </p>
                 <button
                   onClick={() => {
@@ -735,7 +734,7 @@ const ServicesSection = () => {
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Request on WhatsApp
+                  {t('services.clean.requestWhatsApp')}
                 </button>
               </>
             )}
@@ -751,19 +750,19 @@ const ServicesSection = () => {
               <Sailboat className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Discover Amazing Excursions</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.excursions.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Experience incredible adventures and unforgettable moments in our beautiful region.
+              {t('services.excursions.description')}
             </p>
             <button
               onClick={() => window.open("https://www.getyourguide.com/monopoli-l98256/polignano-a-mare-tour-privato-in-barca-con-aperitivo-t787847", "_blank")}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-blue-700 hover:from-sky-600 hover:to-blue-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
             >
               <Sailboat className="h-4 w-4" />
-              Boat Tours
+              {t('services.excursions.boatTours')}
             </button>
           </div>
         </DialogContent>
@@ -777,12 +776,12 @@ const ServicesSection = () => {
               <ParkingCircle className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Parking Information</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.parking.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-              Nonna Vittoria Apartments does not currently provide private parking. However, there are several secure, free parking options on the surrounding streets:
+              {t('services.parking.description')}
             </p>
             <div className="space-y-2">
               {parkingStreets.map((street) => (
@@ -810,7 +809,7 @@ const ServicesSection = () => {
               <Croissant className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Breakfast Service</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.breakfast.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
@@ -1051,12 +1050,12 @@ const ServicesSection = () => {
               <Heart className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Massage Service</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.massage.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Enjoy the convenience of booking a massage directly in your apartment, subject to availability.
+              {t('services.massage.description')}
             </p>
             <div className="space-y-3">
               <button
@@ -1064,14 +1063,14 @@ const ServicesSection = () => {
                 className="w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-xl transition-colors"
               >
                 <FileText className="h-4 w-4" />
-                View Price List
+                {t('services.massage.viewPriceList')}
               </button>
               <button
                 onClick={() => window.location.href = "https://wa.me/491794265253"}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg"
               >
                 <MessageCircle className="h-4 w-4" />
-                Contact on WhatsApp
+                {t('services.massage.contactWhatsApp')}
               </button>
             </div>
           </div>
@@ -1086,7 +1085,7 @@ const ServicesSection = () => {
               <Bike className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Rent a Bike</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.bike.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
@@ -1204,7 +1203,7 @@ const ServicesSection = () => {
               <WashingMachine className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Laundry Services</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.laundry.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
@@ -1239,7 +1238,7 @@ const ServicesSection = () => {
               <AlertTriangle className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Emergency Numbers</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.emergency.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
@@ -1308,7 +1307,7 @@ const ServicesSection = () => {
               <Pill className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Pharmacy Information</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.pharmacy.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
@@ -1334,7 +1333,7 @@ const ServicesSection = () => {
               <Recycle className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Recycling Collection</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.recycle.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
@@ -1486,12 +1485,12 @@ const ServicesSection = () => {
               <Gamepad2 className="h-8 w-8 text-white" strokeWidth={1.5} />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">Memory Game</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white">{t('services.game.title')}</DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-              Find all the matching pairs! Click on the cards to flip them and try to match them with as few moves as possible.
+              {t('services.game.description')}
             </p>
             <MemoryGame />
           </div>

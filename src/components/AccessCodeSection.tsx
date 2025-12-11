@@ -20,6 +20,7 @@ import {
   MapPin,
   Navigation
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fetchAccessCode, AccessCodeApartment } from '../lib/guestApi';
 
 interface AccessCodeSectionProps {
@@ -41,6 +42,7 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
   token,
   checkInCompleted
 }) => {
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +63,7 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
     e.preventDefault();
 
     if (!email.trim()) {
-      setError('Please enter your email');
+      setError(t('accessCodeSection.enterEmail'));
       return;
     }
 
@@ -86,15 +88,15 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
         setShowCode(true);
       } else {
         if (result.error === 'Email does not match booking') {
-          setError('Email does not match the booking. Please use the email used for the reservation.');
+          setError(t('accessCodeSection.emailNoMatch'));
         } else if (result.error === 'Online check-in not completed yet') {
-          setError('Online check-in has not been completed yet. Please complete the check-in first.');
+          setError(t('accessCodeSection.checkInRequired'));
         } else {
-          setError(result.error || 'Unable to retrieve access code');
+          setError(result.error || t('accessCodeSection.fetchFailed'));
         }
       }
     } catch {
-      setError('Connection error. Please try again.');
+      setError(t('accessCodeSection.connectionError'));
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +104,7 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
+    return date.toLocaleString(i18n.language === 'it' ? 'it-IT' : 'en-US', {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
@@ -124,10 +126,10 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
           <Key className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-yellow-800 dark:text-yellow-300 font-medium">
-              Access Code
+              {t('accessCodeSection.title')}
             </p>
             <p className="text-yellow-700 dark:text-yellow-400 text-sm mt-1">
-              The access code will be available after completing the online check-in.
+              {t('accessCodeSection.notAvailable')}
             </p>
           </div>
         </div>
@@ -161,7 +163,7 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
           <CheckCircle className="h-5 w-5" />
-          <span className="font-medium">Email verified!</span>
+          <span className="font-medium">{t('accessCodeSection.emailVerified')}</span>
         </div>
 
         {apartments.map((apt, index) => (
@@ -193,13 +195,13 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
                 className="mb-4 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400"
               >
                 <Navigation className="mr-2 h-4 w-4" />
-                Get Directions
+                {t('common.getDirections')}
               </Button>
             )}
 
             <div className="text-center mb-4">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                Your Access Code
+                {t('accessCodeSection.yourAccessCode')}
               </p>
               <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-inner">
                 <div className="flex justify-center gap-2">
@@ -218,7 +220,7 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <Clock className="h-4 w-4" />
               <span>
-                Valid: {formatDateTime(apt.validFrom)} - {formatDateTime(apt.validUntil)}
+                {t('accessCodeSection.validPeriod', { from: formatDateTime(apt.validFrom), to: formatDateTime(apt.validUntil) })}
               </span>
             </div>
           </div>
@@ -234,7 +236,7 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
           className="w-full"
         >
           <EyeOff className="mr-2 h-4 w-4" />
-          Hide Code
+          {t('accessCodeSection.hideCode')}
         </Button>
       </div>
     );
@@ -246,12 +248,12 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
       <div className="flex items-center gap-2 mb-4">
         <Key className="h-5 w-5 text-blue-600 dark:text-blue-400" />
         <span className="font-semibold text-gray-900 dark:text-white">
-          Access Code
+          {t('accessCodeSection.title')}
         </span>
       </div>
 
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        For security, enter your booking email to view the access code:
+        {t('accessCodeSection.securityMessage')}
       </p>
 
       <form onSubmit={handleVerifyEmail} className="space-y-4">
@@ -285,12 +287,12 @@ const AccessCodeSection: React.FC<AccessCodeSectionProps> = ({
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Verifying...
+              {t('accessCodeSection.verifying')}
             </>
           ) : (
             <>
               <Eye className="mr-2 h-4 w-4" />
-              View Access Code
+              {t('accessCodeSection.viewAccessCode')}
             </>
           )}
         </Button>

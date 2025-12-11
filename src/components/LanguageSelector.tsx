@@ -3,17 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 
 interface LanguageSelectorProps {
-  variant?: 'header' | 'minimal';
+  variant?: 'header' | 'minimal' | 'dropdown';
 }
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ variant = 'header' }) => {
   const { i18n } = useTranslation();
 
   const currentLang = i18n.language?.startsWith('it') ? 'it' : 'en';
+  const otherLang = currentLang === 'en' ? 'it' : 'en';
 
   const toggleLanguage = () => {
-    const newLang = currentLang === 'en' ? 'it' : 'en';
-    i18n.changeLanguage(newLang);
+    i18n.changeLanguage(otherLang);
   };
 
   if (variant === 'minimal') {
@@ -24,6 +24,18 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ variant = 'header' 
       >
         <Globe className="h-3.5 w-3.5" />
         <span className="uppercase">{currentLang}</span>
+      </button>
+    );
+  }
+
+  if (variant === 'dropdown') {
+    return (
+      <button
+        onClick={toggleLanguage}
+        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+      >
+        <Globe className="h-4 w-4 text-gray-400" />
+        <span>{currentLang === 'en' ? 'Italiano' : 'English'}</span>
       </button>
     );
   }

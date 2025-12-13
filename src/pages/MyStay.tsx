@@ -5,6 +5,7 @@
 // ============================================
 
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -1362,20 +1363,21 @@ const MyStay: React.FC = () => {
         onSessionExpired={handleSessionExpired}
       />
 
-      {/* Five Star Promo Modal */}
-      <AnimatePresence>
-        {showFiveStarModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-            onClick={() => {
-              if (!fiveStarSent) {
-                setShowFiveStarModal(false);
-              }
-            }}
-          >
+      {/* Five Star Promo Modal - Rendered in Portal */}
+      {ReactDOM.createPortal(
+        <AnimatePresence>
+          {showFiveStarModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+              onClick={() => {
+                if (!fiveStarSent) {
+                  setShowFiveStarModal(false);
+                }
+              }}
+            >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -1529,7 +1531,9 @@ const MyStay: React.FC = () => {
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+    )}
     </div>
   );
 };

@@ -24,6 +24,7 @@ import Monopoli from "./pages/cities/Monopoli";
 import Bari from "./pages/cities/Bari";
 import MyStay from "./pages/MyStay";
 import GiftCards from "./pages/GiftCards";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 interface ExternalRedirectProps {
   to: string;
@@ -105,6 +106,7 @@ const AppContent: React.FC = () => {
           }
         />
         <Route path="/gift-card" element={<GiftCards />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

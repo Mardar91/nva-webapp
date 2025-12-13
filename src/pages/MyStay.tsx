@@ -83,6 +83,18 @@ const MyStay: React.FC = () => {
   const [fiveStarSent, setFiveStarSent] = useState(false);
   const [fiveStarLoading, setFiveStarLoading] = useState(false);
 
+  // Block scroll when modal is open
+  useEffect(() => {
+    if (showFiveStarModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showFiveStarModal]);
+
   // Refresh booking info on mount
   useEffect(() => {
     if (isLoggedIn && token) {
@@ -1357,7 +1369,7 @@ const MyStay: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
             onClick={() => {
               if (!fiveStarSent) {
                 setShowFiveStarModal(false);

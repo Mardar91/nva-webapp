@@ -12,6 +12,35 @@ import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 type LoginStatus = 'loading' | 'success' | 'error';
 
+/**
+ * Validates and sanitizes the redirect parameter to prevent Open Redirect attacks.
+ * Only allows internal paths that start with '/' and don't contain protocol indicators.
+ *
+ * @param redirect - The redirect path from URL parameter
+ * @returns A safe internal path, defaults to '/' if invalid
+ */
+const getSafeRedirectPath = (redirect: string | null): string => {
+  if (!redirect) return '/';
+
+  // Must start with a single '/' (not '//' which could be protocol-relative URL)
+  if (!redirect.startsWith('/') || redirect.startsWith('//')) {
+    return '/';
+  }
+
+  // Block any attempt to include protocol or external URLs
+  if (redirect.includes(':') || redirect.includes('\\')) {
+    return '/';
+  }
+
+  // Block encoded characters that could bypass validation
+  if (redirect.includes('%2f') || redirect.includes('%2F') ||
+      redirect.includes('%5c') || redirect.includes('%5C')) {
+    return '/';
+  }
+
+  return redirect;
+};
+
 const AutoLogin: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -23,6 +52,8 @@ const AutoLogin: React.FC = () => {
   useEffect(() => {
     const processAutoLogin = async () => {
       const token = searchParams.get('token');
+      const redirectParam = searchParams.get('redirect');
+      const safeRedirect = getSafeRedirectPath(redirectParam);
 
       if (!token) {
         setStatus('error');
@@ -32,15 +63,16 @@ const AutoLogin: React.FC = () => {
         return;
       }
 
-      // If already logged in, just redirect
+      // If already logged in, just redirect to the target page
       if (isLoggedIn) {
-        console.log('🔐 Already logged in, redirecting...');
+        console.log('🔐 Already logged in, redirecting to:', safeRedirect);
         setStatus('success');
-        setTimeout(() => navigate('/', { replace: true }), 1500);
+        setTimeout(() => navigate(safeRedirect, { replace: true }), 1500);
         return;
       }
 
       console.log('🔐 Processing auto-login from email link...');
+      console.log('🔀 Redirect target after login:', safeRedirect);
 
       try {
         const success = await loginWithToken(token);
@@ -48,8 +80,8 @@ const AutoLogin: React.FC = () => {
         if (success) {
           console.log('✅ Auto-login from email successful');
           setStatus('success');
-          // Redirect to home after brief success message
-          setTimeout(() => navigate('/', { replace: true }), 1500);
+          // Redirect to target page after brief success message
+          setTimeout(() => navigate(safeRedirect, { replace: true }), 1500);
         } else {
           console.warn('⚠️ Auto-login from email failed');
           setStatus('error');

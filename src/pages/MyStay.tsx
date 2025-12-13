@@ -42,12 +42,16 @@ import {
   Sparkle,
   Croissant,
   Recycle,
-  ArrowRight
+  ArrowRight,
+  Star,
+  Gift,
+  X
 } from "lucide-react";
 import { useGuestSession } from "../hooks/useGuestSession";
-import { fetchAccessCode, AccessCodeResponse, AccessCodeApartment } from "../lib/guestApi";
+import { fetchAccessCode, AccessCodeResponse, AccessCodeApartment, sendChatMessage } from "../lib/guestApi";
 import GuestLoginModal from "../components/GuestLoginModal";
 import GuestChatDrawer from "../components/GuestChatDrawer";
+import { AnimatePresence } from "framer-motion";
 import { useNotifications } from "../hooks/useNotifications";
 
 const MyStay: React.FC = () => {
@@ -75,6 +79,9 @@ const MyStay: React.FC = () => {
   const [emailInput, setEmailInput] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [showFiveStarModal, setShowFiveStarModal] = useState(false);
+  const [fiveStarSent, setFiveStarSent] = useState(false);
+  const [fiveStarLoading, setFiveStarLoading] = useState(false);
 
   // Refresh booking info on mount
   useEffect(() => {
@@ -120,14 +127,22 @@ const MyStay: React.FC = () => {
   type StayPhase =
     | 'pre_checkin_far'
     | 'pre_checkin_soon'
+    | 'pre_checkin_two_days'
     | 'pre_checkin_tomorrow'
+    | 'checkin_early_morning'
     | 'checkin_morning'
+    | 'checkin_midday'
     | 'checkin_afternoon'
+    | 'checkin_evening'
+    | 'checkin_night'
     | 'first_night'
     | 'early_stay'
     | 'mid_stay'
     | 'late_stay'
-    | 'pre_checkout'
+    | 'pre_checkout_evening'
+    | 'pre_checkout_night'
+    | 'checkout_early_morning'
+    | 'checkout_morning'
     | 'checkout_day'
     | 'post_checkout';
 
@@ -154,12 +169,46 @@ const MyStay: React.FC = () => {
     let phase: StayPhase;
     let progress: number;
 
+    // After checkout (check first to fix 1-night booking bug)
+    if (daysUntilCheckout < 0 || (daysUntilCheckout === 0 && currentHour >= 10)) {
+      phase = 'post_checkout';
+      progress = 100;
+    }
+    // Checkout day (before 10 AM)
+    else if (daysUntilCheckout === 0) {
+      if (currentHour < 5) {
+        phase = 'pre_checkout_night';
+        progress = 92;
+      } else if (currentHour < 8) {
+        phase = 'checkout_early_morning';
+        progress = 94;
+      } else {
+        phase = 'checkout_morning';
+        progress = 97;
+      }
+    }
+    // Day before checkout
+    else if (daysUntilCheckout === 1) {
+      if (currentHour >= 18) {
+        phase = 'pre_checkout_evening';
+        progress = 88;
+      } else if (currentHour < 6) {
+        phase = 'pre_checkout_night';
+        progress = 85;
+      } else {
+        phase = 'late_stay';
+        progress = 85;
+      }
+    }
     // Before check-in
-    if (daysUntilCheckin > 7) {
+    else if (daysUntilCheckin > 7) {
       phase = 'pre_checkin_far';
       progress = 0;
-    } else if (daysUntilCheckin > 1) {
+    } else if (daysUntilCheckin > 2) {
       phase = 'pre_checkin_soon';
+      progress = 0;
+    } else if (daysUntilCheckin === 2) {
+      phase = 'pre_checkin_two_days';
       progress = 0;
     } else if (daysUntilCheckin === 1) {
       phase = 'pre_checkin_tomorrow';
@@ -167,15 +216,27 @@ const MyStay: React.FC = () => {
     }
     // Check-in day
     else if (daysUntilCheckin === 0 && daysIntoStay === 0) {
-      if (currentHour < 15) {
+      if (currentHour < 8) {
+        phase = 'checkin_early_morning';
+        progress = 3;
+      } else if (currentHour < 12) {
         phase = 'checkin_morning';
         progress = 5;
-      } else {
+      } else if (currentHour < 15) {
+        phase = 'checkin_midday';
+        progress = 8;
+      } else if (currentHour < 18) {
         phase = 'checkin_afternoon';
         progress = 10;
+      } else if (currentHour < 21) {
+        phase = 'checkin_evening';
+        progress = 12;
+      } else {
+        phase = 'checkin_night';
+        progress = 14;
       }
     }
-    // First night (after check-in day)
+    // First night (morning after check-in day)
     else if (daysIntoStay === 1 && currentHour < 12) {
       phase = 'first_night';
       progress = Math.min(15, (1 / totalNights) * 100);
@@ -193,17 +254,7 @@ const MyStay: React.FC = () => {
         phase = 'late_stay';
       }
     }
-    // Day before checkout
-    else if (daysUntilCheckout === 1) {
-      phase = 'pre_checkout';
-      progress = 90;
-    }
-    // Checkout day
-    else if (daysUntilCheckout === 0) {
-      phase = 'checkout_day';
-      progress = currentHour < 10 ? 95 : 100;
-    }
-    // After checkout
+    // Fallback
     else {
       phase = 'post_checkout';
       progress = 100;
@@ -215,11 +266,47 @@ const MyStay: React.FC = () => {
   const getPhaseContent = (phase: StayPhase, daysUntilCheckin: number, daysIntoStay: number, daysUntilCheckout: number, totalNights: number) => {
     const currentHour = new Date().getHours();
 
-    const getEarlyStayTitle = () => {
-      if (currentHour < 12) return t('myStay.stayPhases.earlyStay.title');
-      if (currentHour < 18) return t('myStay.stayPhases.earlyStay.titleAfternoon');
-      return t('myStay.stayPhases.earlyStay.titleEvening');
+    // Helper to get time-based title and message for early_stay
+    const getEarlyStayContent = () => {
+      if (currentHour < 6) {
+        return {
+          title: t('myStay.stayPhases.earlyStay.titleNight'),
+          message: t('myStay.stayPhases.earlyStay.messageNight')
+        };
+      } else if (currentHour < 9) {
+        return {
+          title: t('myStay.stayPhases.earlyStay.titleEarlyMorning'),
+          message: t('myStay.stayPhases.earlyStay.messageEarlyMorning', { current: daysIntoStay + 1, total: totalNights })
+        };
+      } else if (currentHour < 12) {
+        return {
+          title: t('myStay.stayPhases.earlyStay.titleMorning'),
+          message: t('myStay.stayPhases.earlyStay.messageMorning', { current: daysIntoStay + 1, total: totalNights })
+        };
+      } else if (currentHour < 15) {
+        return {
+          title: t('myStay.stayPhases.earlyStay.titleMidday'),
+          message: t('myStay.stayPhases.earlyStay.messageMidday')
+        };
+      } else if (currentHour < 18) {
+        return {
+          title: t('myStay.stayPhases.earlyStay.titleAfternoon'),
+          message: t('myStay.stayPhases.earlyStay.messageAfternoon', { current: daysIntoStay + 1, total: totalNights })
+        };
+      } else if (currentHour < 21) {
+        return {
+          title: t('myStay.stayPhases.earlyStay.titleEvening'),
+          message: t('myStay.stayPhases.earlyStay.messageEvening')
+        };
+      } else {
+        return {
+          title: t('myStay.stayPhases.earlyStay.titleNight'),
+          message: t('myStay.stayPhases.earlyStay.messageNight')
+        };
+      }
     };
+
+    const earlyStayContent = getEarlyStayContent();
 
     const phaseMessages: Record<StayPhase, { icon: React.ReactNode; title: string; message: string; color: string }> = {
       pre_checkin_far: {
@@ -234,11 +321,23 @@ const MyStay: React.FC = () => {
         message: t('myStay.stayPhases.preSoon.message', { days: daysUntilCheckin }),
         color: "from-cyan-500 to-blue-600"
       },
+      pre_checkin_two_days: {
+        icon: <Sparkle className="h-5 w-5" />,
+        title: t('myStay.stayPhases.preTwoDays.title'),
+        message: t('myStay.stayPhases.preTwoDays.message'),
+        color: "from-cyan-500 to-blue-600"
+      },
       pre_checkin_tomorrow: {
         icon: <Sunrise className="h-5 w-5" />,
         title: t('myStay.stayPhases.preTomorrow.title'),
         message: t('myStay.stayPhases.preTomorrow.message'),
         color: "from-amber-500 to-orange-600"
+      },
+      checkin_early_morning: {
+        icon: <Sunrise className="h-5 w-5" />,
+        title: t('myStay.stayPhases.checkinEarlyMorning.title'),
+        message: t('myStay.stayPhases.checkinEarlyMorning.message'),
+        color: "from-amber-400 to-yellow-500"
       },
       checkin_morning: {
         icon: <Sun className="h-5 w-5" />,
@@ -246,23 +345,41 @@ const MyStay: React.FC = () => {
         message: t('myStay.stayPhases.checkinMorning.message'),
         color: "from-yellow-500 to-amber-600"
       },
+      checkin_midday: {
+        icon: <Sun className="h-5 w-5" />,
+        title: t('myStay.stayPhases.checkinMidday.title'),
+        message: t('myStay.stayPhases.checkinMidday.message'),
+        color: "from-orange-400 to-amber-500"
+      },
       checkin_afternoon: {
         icon: <Key className="h-5 w-5" />,
         title: t('myStay.stayPhases.checkinAfternoon.title'),
         message: t('myStay.stayPhases.checkinAfternoon.message'),
         color: "from-green-500 to-emerald-600"
       },
-      first_night: {
+      checkin_evening: {
+        icon: <Sunset className="h-5 w-5" />,
+        title: t('myStay.stayPhases.checkinEvening.title'),
+        message: t('myStay.stayPhases.checkinEvening.message'),
+        color: "from-orange-500 to-rose-600"
+      },
+      checkin_night: {
         icon: <Moon className="h-5 w-5" />,
-        title: t('myStay.stayPhases.firstNight.title'),
-        message: t('myStay.stayPhases.firstNight.message'),
+        title: t('myStay.stayPhases.checkinNight.title'),
+        message: t('myStay.stayPhases.checkinNight.message'),
         color: "from-indigo-500 to-purple-600"
       },
-      early_stay: {
+      first_night: {
         icon: <Coffee className="h-5 w-5" />,
-        title: getEarlyStayTitle(),
-        message: t('myStay.stayPhases.earlyStay.message', { current: daysIntoStay + 1, total: totalNights }),
+        title: t('myStay.stayPhases.firstNight.title'),
+        message: t('myStay.stayPhases.firstNight.message'),
         color: "from-teal-500 to-cyan-600"
+      },
+      early_stay: {
+        icon: currentHour < 12 ? <Coffee className="h-5 w-5" /> : currentHour < 18 ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />,
+        title: earlyStayContent.title,
+        message: earlyStayContent.message,
+        color: currentHour < 12 ? "from-teal-500 to-cyan-600" : currentHour < 18 ? "from-amber-500 to-orange-500" : "from-indigo-500 to-purple-600"
       },
       mid_stay: {
         icon: <Sparkles className="h-5 w-5" />,
@@ -276,11 +393,29 @@ const MyStay: React.FC = () => {
         message: t('myStay.stayPhases.lateStay.message', { days: daysUntilCheckout }),
         color: "from-orange-500 to-rose-600"
       },
-      pre_checkout: {
-        icon: <Clock className="h-5 w-5" />,
-        title: t('myStay.stayPhases.preCheckout.title'),
-        message: t('myStay.stayPhases.preCheckout.message'),
+      pre_checkout_evening: {
+        icon: <Sunset className="h-5 w-5" />,
+        title: t('myStay.stayPhases.preCheckoutEvening.title'),
+        message: t('myStay.stayPhases.preCheckoutEvening.message'),
         color: "from-rose-500 to-pink-600"
+      },
+      pre_checkout_night: {
+        icon: <Moon className="h-5 w-5" />,
+        title: t('myStay.stayPhases.preCheckoutNight.title'),
+        message: t('myStay.stayPhases.preCheckoutNight.message'),
+        color: "from-indigo-500 to-purple-600"
+      },
+      checkout_early_morning: {
+        icon: <Sunrise className="h-5 w-5" />,
+        title: t('myStay.stayPhases.checkoutEarlyMorning.title'),
+        message: t('myStay.stayPhases.checkoutEarlyMorning.message'),
+        color: "from-amber-500 to-orange-600"
+      },
+      checkout_morning: {
+        icon: <Clock className="h-5 w-5" />,
+        title: t('myStay.stayPhases.checkoutMorning.title'),
+        message: t('myStay.stayPhases.checkoutMorning.message'),
+        color: "from-red-500 to-rose-600"
       },
       checkout_day: {
         icon: <Home className="h-5 w-5" />,
@@ -362,6 +497,12 @@ const MyStay: React.FC = () => {
           description: t('myStay.tips.midStayCleaning.description'),
           service: "clean"
         });
+        tips.push({
+          icon: <Recycle className="h-4 w-4" />,
+          title: t('myStay.tips.midStayWaste.title'),
+          description: t('myStay.tips.midStayWaste.description'),
+          service: "recycle"
+        });
       }
       tips.push({
         icon: <Bike className="h-4 w-4" />,
@@ -378,7 +519,7 @@ const MyStay: React.FC = () => {
     }
 
     // Late stay / Pre-checkout
-    if (phase === 'late_stay' || phase === 'pre_checkout') {
+    if (phase === 'late_stay' || phase === 'pre_checkout_evening' || phase === 'pre_checkout_night') {
       tips.push({
         icon: <Recycle className="h-4 w-4" />,
         title: t('myStay.tips.wasteCollection.title'),
@@ -394,7 +535,7 @@ const MyStay: React.FC = () => {
     }
 
     // Checkout day
-    if (phase === 'checkout_day') {
+    if (phase === 'checkout_day' || phase === 'checkout_early_morning' || phase === 'checkout_morning') {
       tips.push({
         icon: <Clock className="h-4 w-4" />,
         title: t('myStay.tips.checkoutTime.title'),
@@ -403,9 +544,19 @@ const MyStay: React.FC = () => {
       });
       tips.push({
         icon: <MessageCircle className="h-4 w-4" />,
-        title: t('myStay.tips.lateCheckout.title'),
-        description: t('myStay.tips.lateCheckout.description'),
+        title: t('myStay.tips.extendStay.title'),
+        description: t('myStay.tips.extendStay.description'),
         action: "chat"
+      });
+    }
+
+    // Post-checkout
+    if (phase === 'post_checkout') {
+      tips.push({
+        icon: <Star className="h-4 w-4" />,
+        title: t('myStay.tips.fiveStarReview.title'),
+        description: t('myStay.tips.fiveStarReview.description'),
+        action: "five_star_promo"
       });
     }
 
@@ -422,10 +573,36 @@ const MyStay: React.FC = () => {
       // Scroll to access code section
       const element = document.getElementById('access-code-section');
       element?.scrollIntoView({ behavior: 'smooth' });
+    } else if (action === 'five_star_promo') {
+      setShowFiveStarModal(true);
     } else if (action === 'info') {
       // Just informational, no action
     } else if (action) {
       navigate(action);
+    }
+  };
+
+  // Handle 5-star promo participation
+  const handleFiveStarParticipate = async () => {
+    if (!token) return;
+
+    setFiveStarLoading(true);
+
+    try {
+      const message = t('myStay.fiveStarPromo.autoMessage', {
+        name: guestName || 'Guest',
+        apartment: booking?.apartmentName || 'Apartment'
+      });
+
+      const response = await sendChatMessage(token, message);
+
+      if (response.success) {
+        setFiveStarSent(true);
+      }
+    } catch (error) {
+      console.error('Error sending five star promo message:', error);
+    } finally {
+      setFiveStarLoading(false);
     }
   };
 
@@ -1172,6 +1349,175 @@ const MyStay: React.FC = () => {
         guestName={guestName}
         onSessionExpired={handleSessionExpired}
       />
+
+      {/* Five Star Promo Modal */}
+      <AnimatePresence>
+        {showFiveStarModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => {
+              if (!fiveStarSent) {
+                setShowFiveStarModal(false);
+              }
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 px-5 py-4 rounded-t-2xl relative">
+                <button
+                  onClick={() => {
+                    setShowFiveStarModal(false);
+                    if (fiveStarSent) {
+                      setFiveStarSent(false);
+                    }
+                  }}
+                  className="absolute top-3 right-3 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                    <Star className="h-6 w-6 text-white fill-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">
+                      {t('myStay.fiveStarPromo.title')}
+                    </h2>
+                    <p className="text-white/90 text-sm">
+                      {t('myStay.fiveStarPromo.subtitle')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5">
+                {fiveStarSent ? (
+                  /* Success State */
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-center py-6"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      {t('myStay.fiveStarPromo.messageSent')}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {t('myStay.fiveStarPromo.messageConfirmation')}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setShowFiveStarModal(false);
+                        setFiveStarSent(false);
+                      }}
+                      className="mt-6 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all"
+                    >
+                      {t('myStay.fiveStarPromo.close')}
+                    </button>
+                  </motion.div>
+                ) : (
+                  /* Promo Content */
+                  <>
+                    <p className="text-gray-700 dark:text-gray-300 mb-4">
+                      {t('myStay.fiveStarPromo.description')}
+                    </p>
+
+                    {/* Benefits */}
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                        <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+                          <Ticket className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <p className="text-gray-800 dark:text-gray-200 text-sm">
+                          {t('myStay.fiveStarPromo.benefit1')}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                        <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                          <Wine className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <p className="text-gray-800 dark:text-gray-200 text-sm">
+                          {t('myStay.fiveStarPromo.benefit2')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* How it works */}
+                    <div className="mb-6">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                        {t('myStay.fiveStarPromo.howItWorks')}
+                      </h4>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                            1
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
+                            {t('myStay.fiveStarPromo.step1')}
+                          </p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                            2
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
+                            {t('myStay.fiveStarPromo.step2')}
+                          </p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                            3
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
+                            {t('myStay.fiveStarPromo.step3')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Disclaimer */}
+                    <div className="p-3 bg-gray-100 dark:bg-gray-700/50 rounded-xl mb-6">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="h-5 w-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          {t('myStay.fiveStarPromo.disclaimer')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <button
+                      onClick={handleFiveStarParticipate}
+                      disabled={fiveStarLoading}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50"
+                    >
+                      {fiveStarLoading ? (
+                        <span>{t('common.loading')}</span>
+                      ) : (
+                        <>
+                          <Gift className="h-5 w-5" />
+                          {t('myStay.fiveStarPromo.participate')}
+                        </>
+                      )}
+                    </button>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

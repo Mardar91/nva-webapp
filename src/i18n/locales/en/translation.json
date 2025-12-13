@@ -229,30 +229,58 @@
         "message": "{{days}} days until your arrival. Start planning your Puglia adventure!"
       },
       "preSoon": {
-        "title": "Almost Time!",
-        "message": "Only {{days}} days to go! We're preparing everything for your arrival."
+        "title": "Almost There!",
+        "message": "Only {{days}} days! We're preparing everything for you."
+      },
+      "preTwoDays": {
+        "title": "Almost Here!",
+        "message": "Only 2 days! Have you completed the online check-in?"
       },
       "preTomorrow": {
         "title": "See You Tomorrow!",
-        "message": "Your stay begins tomorrow! Don't forget to complete your online check-in."
+        "message": "Tomorrow your adventure begins! Remember: check-in from 3 PM."
+      },
+      "checkinEarlyMorning": {
+        "title": "Today You Arrive!",
+        "message": "Check-in is from 3 PM. Safe travels to Puglia!"
       },
       "checkinMorning": {
         "title": "Today's the Day!",
-        "message": "Check-in is from 3 PM. Explore Mola di Bari while you wait!"
+        "message": "Check-in from 3 PM. Explore Mola di Bari while you wait!"
+      },
+      "checkinMidday": {
+        "title": "Almost There!",
+        "message": "Just a few hours until check-in! At 3 PM you can enter."
       },
       "checkinAfternoon": {
         "title": "Welcome!",
         "message": "Check-in time is here! Get your access code and make yourself at home."
+      },
+      "checkinEvening": {
+        "title": "Good Evening!",
+        "message": "Have you arrived? Settle in and enjoy your evening in Puglia!"
+      },
+      "checkinNight": {
+        "title": "Good Night!",
+        "message": "Rest well, tomorrow awaits a day of discoveries!"
       },
       "firstNight": {
         "title": "Good Morning!",
         "message": "Hope you had a great first night! Ready to explore?"
       },
       "earlyStay": {
-        "title": "Good Morning!",
+        "titleEarlyMorning": "Good Morning!",
+        "titleMorning": "Good Morning!",
+        "titleMidday": "Lunchtime!",
         "titleAfternoon": "Good Afternoon!",
         "titleEvening": "Good Evening!",
-        "message": "Day {{current}} of {{total}} nights. Enjoy discovering Puglia!"
+        "titleNight": "Good Night!",
+        "messageEarlyMorning": "Day {{current}} of {{total}}. Find out where to have breakfast!",
+        "messageMorning": "Day {{current}} of {{total}}. Ready for new adventures?",
+        "messageMidday": "Time to taste Puglia cuisine! Discover our partner restaurants.",
+        "messageAfternoon": "Day {{current}} of {{total}}. Explore the beaches and villages!",
+        "messageEvening": "How about an aperitivo? Discover our partner bars!",
+        "messageNight": "Rest well for tomorrow's adventures!"
       },
       "midStay": {
         "title": "You're Halfway There!",
@@ -262,17 +290,29 @@
         "title": "Final Days",
         "message": "Only {{days}} days remaining. Visited all your must-sees?"
       },
-      "preCheckout": {
-        "title": "Last Night",
-        "message": "Tomorrow is checkout day. Enjoy your final evening in Puglia!"
+      "preCheckoutEvening": {
+        "title": "Last Evening!",
+        "message": "Tomorrow is checkout. Enjoy your final evening in Puglia!"
+      },
+      "preCheckoutNight": {
+        "title": "Last Night!",
+        "message": "Rest well, checkout tomorrow by 10 AM."
+      },
+      "checkoutEarlyMorning": {
+        "title": "Good Morning!",
+        "message": "Checkout day! Remember: check-out by 10 AM."
+      },
+      "checkoutMorning": {
+        "title": "Checkout Soon!",
+        "message": "Check-out is by 10 AM. Thank you for staying!"
       },
       "checkoutDay": {
         "title": "Checkout Day",
         "message": "Check-out is by 10 AM. Thank you for staying with us!"
       },
       "postCheckout": {
-        "title": "Thank You!",
-        "message": "We hope you enjoyed your stay. See you next time!"
+        "title": "Thank You & Goodbye!",
+        "message": "We hope you enjoyed your stay! Leave us a review!"
       }
     },
     "tips": {
@@ -294,7 +334,7 @@
       },
       "breakfast": {
         "title": "Breakfast Delivery",
-        "description": "Coffee pods and fresh croissants at your door"
+        "description": "Coffee pods and fresh brioche at your door"
       },
       "rentBike": {
         "title": "Rent a Bike",
@@ -303,6 +343,10 @@
       "midStayCleaning": {
         "title": "Mid-Stay Cleaning",
         "description": "Request a cleaning service during your stay"
+      },
+      "midStayWaste": {
+        "title": "Mid-Stay Waste Collection",
+        "description": "Request waste collection during your stay"
       },
       "bikeTour": {
         "title": "Bike Tour",
@@ -314,20 +358,41 @@
       },
       "wasteCollection": {
         "title": "Waste Collection",
-        "description": "Request extra trash bags before checkout"
+        "description": "Request waste pickup before checkout"
       },
       "needAnything": {
         "title": "Need Anything?",
-        "description": "Contact us if you need late checkout"
+        "description": "Contact us if you need assistance"
       },
       "checkoutTime": {
         "title": "Check-out by 10 AM",
-        "description": "Leave the keys inside the apartment"
+        "description": "Leave any keys in the safe box"
       },
-      "lateCheckout": {
-        "title": "Late Checkout?",
+      "extendStay": {
+        "title": "Want to Extend Your Stay?",
         "description": "Contact us to arrange a later departure"
+      },
+      "fiveStarReview": {
+        "title": "Leave a 5-Star Review",
+        "description": "Help us improve and get a discount voucher!"
       }
+    },
+    "fiveStarPromo": {
+      "title": "5-Star Stay Promotion",
+      "subtitle": "Thank you for staying with us!",
+      "description": "If you enjoyed your stay and leave us a 5-star review, as a thank you we will send you:",
+      "benefit1": "A discount voucher for a future booking",
+      "benefit2": "A complimentary bottle of wine or prosecco on arrival",
+      "howItWorks": "How It Works",
+      "step1": "Leave a 5-star review on the platform where you booked",
+      "step2": "Click \"Participate\" to send us confirmation",
+      "step3": "You will receive the discount voucher and welcome wine instructions via email",
+      "disclaimer": "If you booked through Booking.com, Airbnb or other portals, you must leave a 5-star review on the same platform. The voucher will only be sent after we verify the review.",
+      "participate": "Participate",
+      "close": "Close",
+      "messageSent": "Request Sent!",
+      "messageConfirmation": "We will contact you soon to send your discount voucher!",
+      "autoMessage": "{{name}} - {{apartment}} - Participating in the 5-Star-Stay promotion!"
     }
   },
   "restaurants": {

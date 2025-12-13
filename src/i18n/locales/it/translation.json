@@ -229,30 +229,58 @@
         "message": "{{days}} giorni al tuo arrivo. Inizia a pianificare la tua avventura in Puglia!"
       },
       "preSoon": {
-        "title": "Quasi Arrivato!",
-        "message": "Solo {{days}} giorni! Stiamo preparando tutto per il tuo arrivo."
+        "title": "Manca Poco!",
+        "message": "Solo {{days}} giorni! Stiamo preparando tutto per te."
+      },
+      "preTwoDays": {
+        "title": "Quasi Ci Siamo!",
+        "message": "Solo 2 giorni! Hai completato il check-in online?"
       },
       "preTomorrow": {
         "title": "Ci Vediamo Domani!",
-        "message": "Il tuo soggiorno inizia domani! Non dimenticare di completare il check-in online."
+        "message": "Domani inizia la tua avventura! Ricorda: check-in dalle 15:00."
+      },
+      "checkinEarlyMorning": {
+        "title": "Oggi Arrivi!",
+        "message": "Il check-in è dalle 15:00. Buon viaggio verso la Puglia!"
       },
       "checkinMorning": {
-        "title": "È il Grande Giorno!",
-        "message": "Il check-in è dalle 15:00. Esplora Mola di Bari nel frattempo!"
+        "title": "Oggi è il Grande Giorno!",
+        "message": "Check-in dalle 15:00. Esplora Mola di Bari nel frattempo!"
+      },
+      "checkinMidday": {
+        "title": "Ci Siamo Quasi!",
+        "message": "Mancano poche ore al check-in! Alle 15:00 potrai entrare."
       },
       "checkinAfternoon": {
         "title": "Benvenuto/a!",
         "message": "È ora del check-in! Ottieni il codice di accesso e mettiti comodo/a."
+      },
+      "checkinEvening": {
+        "title": "Buonasera!",
+        "message": "Sei arrivato/a? Sistemati e goditi la serata in Puglia!"
+      },
+      "checkinNight": {
+        "title": "Buonanotte!",
+        "message": "Riposa bene, domani ti aspetta una giornata di scoperte!"
       },
       "firstNight": {
         "title": "Buongiorno!",
         "message": "Speriamo tu abbia dormito bene! Pronto/a ad esplorare?"
       },
       "earlyStay": {
-        "title": "Buongiorno!",
+        "titleEarlyMorning": "Buongiorno!",
+        "titleMorning": "Buongiorno!",
+        "titleMidday": "Buon Pranzo!",
         "titleAfternoon": "Buon Pomeriggio!",
         "titleEvening": "Buonasera!",
-        "message": "Giorno {{current}} di {{total}} notti. Goditi la scoperta della Puglia!"
+        "titleNight": "Buonanotte!",
+        "messageEarlyMorning": "Giorno {{current}} di {{total}}. Scopri dove fare colazione!",
+        "messageMorning": "Giorno {{current}} di {{total}}. Pronto/a per nuove avventure?",
+        "messageMidday": "È ora di gustare la cucina pugliese! Scopri i ristoranti partner.",
+        "messageAfternoon": "Giorno {{current}} di {{total}}. Esplora le spiagge e i borghi!",
+        "messageEvening": "Che ne dici di un aperitivo? Scopri i bar convenzionati!",
+        "messageNight": "Riposa bene per le avventure di domani!"
       },
       "midStay": {
         "title": "Sei a Metà!",
@@ -262,17 +290,29 @@
         "title": "Ultimi Giorni",
         "message": "Solo {{days}} giorni rimasti. Hai visitato tutto quello che volevi?"
       },
-      "preCheckout": {
-        "title": "Ultima Notte",
-        "message": "Domani è il giorno del checkout. Goditi la tua ultima serata in Puglia!"
+      "preCheckoutEvening": {
+        "title": "Ultima Sera!",
+        "message": "Domani è checkout. Goditi l'ultima serata in Puglia!"
+      },
+      "preCheckoutNight": {
+        "title": "Ultima Notte!",
+        "message": "Riposa bene, domani checkout entro le 10:00."
+      },
+      "checkoutEarlyMorning": {
+        "title": "Buongiorno!",
+        "message": "Giorno del checkout! Ricorda: uscita entro le 10:00."
+      },
+      "checkoutMorning": {
+        "title": "Checkout Vicino!",
+        "message": "Il checkout è entro le 10:00. Grazie per aver soggiornato!"
       },
       "checkoutDay": {
         "title": "Giorno del Checkout",
         "message": "Il checkout è entro le 10:00. Grazie per aver soggiornato con noi!"
       },
       "postCheckout": {
-        "title": "Grazie!",
-        "message": "Speriamo tu abbia apprezzato il soggiorno. Alla prossima!"
+        "title": "Grazie e Arrivederci!",
+        "message": "Speriamo ti sia trovato/a bene! Lasciaci una recensione!"
       }
     },
     "tips": {
@@ -294,7 +334,7 @@
       },
       "breakfast": {
         "title": "Colazione a Domicilio",
-        "description": "Cialde caffè e cornetti freschi alla tua porta"
+        "description": "Cialde caffè e brioche fresche alla tua porta"
       },
       "rentBike": {
         "title": "Noleggia una Bici",
@@ -303,6 +343,10 @@
       "midStayCleaning": {
         "title": "Pulizia Intermedia",
         "description": "Richiedi un servizio di pulizia durante il soggiorno"
+      },
+      "midStayWaste": {
+        "title": "Raccolta Rifiuti Intermedia",
+        "description": "Richiedi il ritiro dei rifiuti durante il soggiorno"
       },
       "bikeTour": {
         "title": "Tour in Bici",
@@ -314,20 +358,41 @@
       },
       "wasteCollection": {
         "title": "Raccolta Rifiuti",
-        "description": "Richiedi sacchetti extra prima del checkout"
+        "description": "Richiedi il ritiro dei rifiuti prima del checkout"
       },
       "needAnything": {
         "title": "Hai Bisogno di Qualcosa?",
-        "description": "Contattaci se hai bisogno di late checkout"
+        "description": "Contattaci se hai bisogno di assistenza"
       },
       "checkoutTime": {
         "title": "Check-out entro le 10:00",
-        "description": "Lascia le chiavi dentro l'appartamento"
+        "description": "Lascia eventuali chiavi nella cassetta di sicurezza"
       },
-      "lateCheckout": {
-        "title": "Late Checkout?",
+      "extendStay": {
+        "title": "Vuoi Prolungare il Soggiorno?",
         "description": "Contattaci per organizzare una partenza posticipata"
+      },
+      "fiveStarReview": {
+        "title": "Lascia una Recensione a 5 Stelle",
+        "description": "Aiutaci a migliorare e ricevi un buono sconto!"
       }
+    },
+    "fiveStarPromo": {
+      "title": "Promozione Soggiorno a 5 Stelle",
+      "subtitle": "Grazie per aver soggiornato con noi!",
+      "description": "Se ti sei trovato bene e ci lasci una recensione con il massimo dei voti, come ringraziamento ti inviamo:",
+      "benefit1": "Un buono sconto per una futura prenotazione",
+      "benefit2": "Una bottiglia di vino o prosecco all'arrivo",
+      "howItWorks": "Come Funziona",
+      "step1": "Lascia una recensione a 5 stelle sulla piattaforma dove hai prenotato",
+      "step2": "Clicca su \"Partecipa\" per inviarci la conferma",
+      "step3": "Riceverai via email il buono sconto e le istruzioni per il vino di benvenuto",
+      "disclaimer": "Se hai prenotato tramite Booking.com, Airbnb o altri portali, devi lasciare la recensione con il massimo dei voti sulla stessa piattaforma. Il buono verrà inviato solo dopo aver verificato la recensione.",
+      "participate": "Partecipa",
+      "close": "Chiudi",
+      "messageSent": "Richiesta Inviata!",
+      "messageConfirmation": "Ti contatteremo presto per inviarti il buono sconto!",
+      "autoMessage": "{{name}} - {{apartment}} - Partecipa alla promozione Soggiorno-a-5-Stelle!"
     }
   },
   "restaurants": {

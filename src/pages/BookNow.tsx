@@ -131,6 +131,21 @@ const BookNow: React.FC = () => {
         console.log('[BOOK NOW] Close requested');
         navigate('/');
         break;
+
+      case 'REDIRECT_TO_PAYMENT':
+        // Handle Stripe payment redirect from embedded iframe
+        // Stripe blocks embedding in iframes, so we need to redirect the main window
+        console.log('[BOOK NOW] Redirect to payment requested:', data);
+
+        if (!data?.url) {
+          console.error('[BOOK NOW] Missing payment URL in REDIRECT_TO_PAYMENT');
+          return;
+        }
+
+        // Redirect the main window to Stripe checkout
+        // After payment, Stripe will redirect back to the success page
+        window.location.href = data.url;
+        break;
     }
   }, [guestLogin, deviceId, refreshSession, navigate]);
 

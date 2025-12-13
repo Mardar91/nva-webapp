@@ -824,5 +824,16 @@
     "deleteAllNotifications": "Elimina Tutte le Notifiche",
     "apiResponse": "Risposta API",
     "debugLog": "Log di Debug"
+  },
+  "giftCardPage": {
+    "loadingPage": "Caricamento Gift Cards...",
+    "loadError": "Impossibile caricare la pagina",
+    "loadErrorDesc": "Non siamo riusciti a caricare la pagina Gift Cards. Verifica la tua connessione e riprova.",
+    "confirmed": "Gift Card Acquistata!",
+    "thankYou": "Grazie per il tuo acquisto!",
+    "details": "Dettagli Gift Card",
+    "code": "Codice Gift Card",
+    "sentTo": "Inviata a",
+    "value": "Valore"
   }
 }

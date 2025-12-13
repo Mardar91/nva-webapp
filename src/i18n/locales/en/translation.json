@@ -824,5 +824,16 @@
     "deleteAllNotifications": "Delete All Notifications",
     "apiResponse": "API Response",
     "debugLog": "Debug Log"
+  },
+  "giftCardPage": {
+    "loadingPage": "Loading Gift Cards...",
+    "loadError": "Unable to load page",
+    "loadErrorDesc": "We couldn't load the Gift Cards page. Please check your connection and try again.",
+    "confirmed": "Gift Card Purchased!",
+    "thankYou": "Thank you for your purchase!",
+    "details": "Gift Card Details",
+    "code": "Gift Card Code",
+    "sentTo": "Sent to",
+    "value": "Value"
   }
 }

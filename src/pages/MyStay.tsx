@@ -519,7 +519,7 @@ const MyStay: React.FC = () => {
     }
 
     // Late stay / Pre-checkout
-    if (phase === 'late_stay' || phase === 'pre_checkout') {
+    if (phase === 'late_stay' || phase === 'pre_checkout_evening' || phase === 'pre_checkout_night') {
       tips.push({
         icon: <Recycle className="h-4 w-4" />,
         title: t('myStay.tips.wasteCollection.title'),
@@ -535,7 +535,7 @@ const MyStay: React.FC = () => {
     }
 
     // Checkout day
-    if (phase === 'checkout_day') {
+    if (phase === 'checkout_day' || phase === 'checkout_early_morning' || phase === 'checkout_morning') {
       tips.push({
         icon: <Clock className="h-4 w-4" />,
         title: t('myStay.tips.checkoutTime.title'),

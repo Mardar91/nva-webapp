@@ -835,5 +835,20 @@
     "code": "Gift Card Code",
     "sentTo": "Sent to",
     "value": "Value"
+  },
+  "paymentSuccess": {
+    "processing": "Processing Payment...",
+    "pleaseWait": "Please wait while we confirm your payment",
+    "bookingSuccess": "Booking Confirmed!",
+    "bookingMessage": "Your reservation has been successfully completed",
+    "giftCardSuccess": "Gift Card Purchased!",
+    "giftCardMessage": "Your gift card has been sent to your email",
+    "reference": "Reference",
+    "amount": "Amount Paid",
+    "redirecting": "Redirecting in {{seconds}} seconds...",
+    "goToMyStay": "Go to My Stay",
+    "goHome": "Go to Home",
+    "error": "Something went wrong",
+    "errorMessage": "We couldn't process your request. Please try again."
   }
 }

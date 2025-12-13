@@ -835,5 +835,20 @@
     "code": "Codice Gift Card",
     "sentTo": "Inviata a",
     "value": "Valore"
+  },
+  "paymentSuccess": {
+    "processing": "Elaborazione Pagamento...",
+    "pleaseWait": "Attendere mentre confermiamo il pagamento",
+    "bookingSuccess": "Prenotazione Confermata!",
+    "bookingMessage": "La tua prenotazione è stata completata con successo",
+    "giftCardSuccess": "Gift Card Acquistata!",
+    "giftCardMessage": "La tua gift card è stata inviata alla tua email",
+    "reference": "Riferimento",
+    "amount": "Importo Pagato",
+    "redirecting": "Reindirizzamento tra {{seconds}} secondi...",
+    "goToMyStay": "Vai a Il Mio Soggiorno",
+    "goHome": "Vai alla Home",
+    "error": "Qualcosa è andato storto",
+    "errorMessage": "Non siamo riusciti a elaborare la tua richiesta. Riprova."
   }
 }

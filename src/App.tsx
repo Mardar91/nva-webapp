@@ -23,6 +23,7 @@ import PoliganoAMare from "./pages/cities/PoliganoAMare";
 import Monopoli from "./pages/cities/Monopoli";
 import Bari from "./pages/cities/Bari";
 import MyStay from "./pages/MyStay";
+import GiftCards from "./pages/GiftCards";
 
 interface ExternalRedirectProps {
   to: string;
@@ -103,15 +104,7 @@ const AppContent: React.FC = () => {
             />
           }
         />
-        <Route
-          path="/gift-card"
-          element={
-            <IframeView
-              src="https://book.nonnavittoriaapartments.it/gift-cards?embedded=true"
-              title={t('app.giftCard')}
-            />
-          }
-        />
+        <Route path="/gift-card" element={<GiftCards />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
